@@ -87,7 +87,7 @@ export default function Notifications({ userId }: { userId: string }) {
   useEffect(() => {
     socket.emit("join", userId);
 
-    socket.on("notification", (msg: string) => {
+    socket.on("notifications", (msg: string) => {
       setMessages((prev) => [...prev, msg]);
     });
 

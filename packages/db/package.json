@@ -6,7 +6,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "default": "./src/index.ts"
+      "default": "./dist/index.js"
     },
     "./client": {
       "types": "./dist/client.d.ts",
@@ -19,7 +19,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsup --clean",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "pnpm with-env drizzle-kit studio --config=drizzle.config.ts --port=8080 --verbose",
     "format": "prettier --check . --ignore-path ../../.gitignore",

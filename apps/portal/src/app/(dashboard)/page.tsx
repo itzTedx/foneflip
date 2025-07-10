@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LogoutButton } from "@/components/ui/logout-button";
 import { NotifyButton } from "@/features/notifications/components/notification-button";
+import { NotificationSocket } from "@/features/notifications/components/notification-socket";
 import { getSession } from "@/lib/auth/server";
 
 import { Button } from "@ziron/ui/components/button";
@@ -25,6 +26,7 @@ export default async function Page() {
         )}
 
         {session && <NotifyButton userId={session.user.id} />}
+        {session && <NotificationSocket userId={session.user.id} />}
       </div>
     </div>
   );

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsup --clean",
     "check-types": "tsc --noEmit",
-    "dev": "tsup --watch",
+    "dev": "tsup --watch --onSuccess \"pnpm start\"",
     "lint": "eslint .",
     "start": "node dist/index.js"
   },
