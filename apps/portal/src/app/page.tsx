@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoutButton } from "@/components/logout-button";
 import { getSession } from "@/lib/auth/server";
 
 import { Button } from "@ziron/ui/components/button";
@@ -11,9 +12,14 @@ export default async function Page() {
         <h1 className="text-2xl font-bold">Hello World</h1>
 
         <pre>{JSON.stringify(session, null, 2)}</pre>
-        <Button asChild>
-          <Link href="/register">Register</Link>
-        </Button>
+
+        {session ? (
+          <LogoutButton />
+        ) : (
+          <Button asChild>
+            <Link href="/register">Register</Link>
+          </Button>
+        )}
       </div>
     </div>
   );

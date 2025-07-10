@@ -1,5 +1,7 @@
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { LoginForm } from "@/features/auth/components/login-form";
+import { getSession } from "@/lib/auth/server";
 
 import { createMetadata } from "@ziron/seo";
 import { IconLogoMono } from "@ziron/ui/assets/logo";
@@ -12,7 +14,11 @@ export const generateMetadata = (): Metadata => {
   });
 };
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await getSession();
+
+  if (session) redirect("/");
+
   return (
     <div className="relative flex min-h-screen items-center justify-center">
       <div className="flex flex-1 flex-col justify-center px-4 py-10 lg:px-6">

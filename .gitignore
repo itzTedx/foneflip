@@ -18,6 +18,9 @@ coverage
 # Turbo
 .turbo
 
+# Cache
+.cache
+
 # Vercel
 .vercel
 
