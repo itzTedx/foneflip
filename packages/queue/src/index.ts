@@ -1,17 +1,18 @@
 import { Queue, QueueEvents } from "bullmq";
 
 import redis from "@ziron/redis";
-import { NotificationPayload } from "@ziron/validators";
+
+// import { NotificationPayload } from "@ziron/validators";
 
 export const QUEUE_NAME = "queue";
 export const queue = new Queue(QUEUE_NAME, { connection: redis });
 
 export enum JobType {
-  Notifications = "notifications",
+  Notification = "notification",
 }
 
 export type JobData = {
-  [JobType.Notifications]: { notifications: NotificationPayload };
+  [JobType.Notification]: { userId: string; type: string; message: string };
 };
 
 export async function enqueue<T extends JobType>(type: T, data: JobData[T]) {

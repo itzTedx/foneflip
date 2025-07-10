@@ -10,7 +10,7 @@ type Notification = {
 
 export function NotificationSocket({ userId }: { userId: string }) {
   const [messages, setMessages] = useState<Notification[]>([]);
-  const socket = io("http://localhost:4001", { transports: ["websocket"] });
+  const socket = io("http://localhost:4000", { transports: ["websocket"] });
 
   useEffect(() => {
     socket.emit("join", userId);

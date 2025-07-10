@@ -79,7 +79,7 @@ function Dot({ className }: { className?: string }) {
   );
 }
 
-const socket = io("http://localhost:4001", { transports: ["websocket"] });
+const socket = io("http://localhost:4000", { transports: ["websocket"] });
 
 export default function Notifications({ userId }: { userId: string }) {
   const [messages, setMessages] = useState<string[]>([]);
