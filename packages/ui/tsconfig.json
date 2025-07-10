@@ -2,6 +2,7 @@
   "extends": "@ziron/typescript-config/react-library.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "lib": ["dom", "esnext"],
     "paths": {
       "@ziron/ui/*": ["./src/*"]
     }

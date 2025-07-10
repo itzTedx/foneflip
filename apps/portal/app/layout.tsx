@@ -1,39 +1,41 @@
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist, Geist_Mono } from "next/font/google";
 
-import '@ziron/ui/globals.css'
-import { Providers } from '@/components/providers'
-import { Metadata } from 'next'
-import { createMetadata } from '@ziron/seo'
+import "@ziron/ui/globals.css";
+
+import { Metadata } from "next";
+import { Providers } from "@/components/providers";
+
+import { createMetadata } from "@ziron/seo";
 
 const fontSans = Geist({
-  subsets: ['latin'],
-  variable: '--font-sans',
-})
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 const fontMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-})
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 export const generateMetadata = async (): Promise<Metadata> => {
   return createMetadata({
-    title: 'Testing',
-    description: 'Testing shadcn',
-  })
-}
+    title: "Testing",
+    description: "Testing shadcn",
+  });
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
+        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
       >
         <Providers>{children}</Providers>
       </body>
     </html>
-  )
+  );
 }
