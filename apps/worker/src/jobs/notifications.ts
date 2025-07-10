@@ -10,6 +10,7 @@ export const runNotification = async (data: JobData[JobType.Notifications]) => {
     console.error("Invalid notification job:", result.error);
     return;
   }
+  console.log("notification worker running");
 
   const { userId, message, type } = result.data;
 

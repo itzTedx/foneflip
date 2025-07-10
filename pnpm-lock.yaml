@@ -334,6 +334,9 @@ importers:
         specifier: ^5.6.1
         version: 5.6.1
     devDependencies:
+      '@ziron/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint
       '@ziron/prettier-config':
         specifier: workspace:*
         version: link:../../tooling/prettier

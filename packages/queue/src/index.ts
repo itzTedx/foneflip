@@ -7,12 +7,10 @@ export const QUEUE_NAME = "queue";
 export const queue = new Queue(QUEUE_NAME, { connection: redis });
 
 export enum JobType {
-  GeneratePosts = "generate-posts",
   Notifications = "notifications",
 }
 
 export type JobData = {
-  [JobType.GeneratePosts]: { count: number };
   [JobType.Notifications]: { notifications: NotificationPayload };
 };
 

@@ -12,6 +12,7 @@ const notificationQueue = new Queue("notifications", {
 
 export async function sendNotification(input: unknown) {
   const parsed = NotificationPayloadSchema.safeParse(input);
+
   if (!parsed.success) {
     throw new Error("Invalid notification payload");
   }

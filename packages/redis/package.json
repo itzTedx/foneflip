@@ -3,15 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "tsup --clean",
+    "build": "pnpm with-env tsup --clean",
     "check-types": "tsc --noEmit",
-    "dev": "tsup --watch",
-    "lint": "eslint ."
+    "dev": "pnpm with-env tsup --watch",
+    "lint": "eslint .",
+    "with-env": "dotenv -e ../../.env --"
   },
   "exports": {
     ".": {
       "types": "./src/index.ts",
-      "default": "./dist/index.js"
+      "default": "./dist/index.mjs"
     }
   },
   "dependencies": {
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@ziron/prettier-config": "workspace:*",
     "@ziron/typescript-config": "workspace:*",
+    "@ziron/eslint-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "catalog:"
   }
