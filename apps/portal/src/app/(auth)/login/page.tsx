@@ -1,7 +1,16 @@
+import { Metadata } from "next";
 import { LoginForm } from "@/features/auth/components/login-form";
 
+import { createMetadata } from "@ziron/seo";
 import { IconLogoMono } from "@ziron/ui/assets/logo";
 import { Card, CardContent } from "@ziron/ui/components/card";
+
+export const generateMetadata = (): Metadata => {
+  return createMetadata({
+    title: "Login",
+    description: "Login",
+  });
+};
 
 export default function LoginPage() {
   return (

@@ -3,9 +3,9 @@
 import { FormEvent, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { PasswordInput } from "@/components/ui/password-input";
-import { authClient } from "@/lib/auth/client";
 import { toast } from "sonner";
 
+import { authClient } from "@ziron/auth/client";
 import { Button } from "@ziron/ui/components/button";
 import { Input } from "@ziron/ui/components/input";
 import { Label } from "@ziron/ui/components/label";
