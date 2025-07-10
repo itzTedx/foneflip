@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 
 import "@ziron/ui/globals.css";
 
@@ -6,15 +6,11 @@ import type { Metadata } from "next";
 import { Providers } from "@/components/providers";
 
 import { createMetadata } from "@ziron/seo";
+import { cn } from "@ziron/ui/lib/utils";
 
-const fontSans = Geist({
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  variable: "--font-sans",
-});
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
 });
 
 export const generateMetadata = (): Metadata => {
@@ -31,9 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
-      >
+      <body className={cn("antialiased", geistSans.className)}>
         <Providers>{children}</Providers>
       </body>
     </html>

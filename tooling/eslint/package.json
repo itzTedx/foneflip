@@ -16,6 +16,9 @@
   "dependencies": {
     "@eslint/compat": "^1.2.9",
     "@next/eslint-plugin-next": "^15.3.3",
+    "@typescript-eslint/eslint-plugin": "^8.24.1",
+    "@typescript-eslint/parser": "^8.24.1",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
@@ -27,6 +30,7 @@
     "@ziron/prettier-config": "workspace:*",
     "@ziron/typescript-config": "workspace:*",
     "eslint": "catalog:",
+    "eslint-plugin-only-warn": "^1.1.0",
     "prettier": "catalog:",
     "typescript": "catalog:"
   },
