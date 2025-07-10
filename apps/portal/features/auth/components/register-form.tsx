@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
+import { authClient } from "@ziron/auth/client";
 import { Button } from "@ziron/ui/components/button";
 import {
   Form,
@@ -18,12 +19,13 @@ import {
 } from "@ziron/ui/components/form";
 import { Input } from "@ziron/ui/components/input";
 import { LoadingSwap } from "@ziron/ui/components/loading-swap";
+import { toast } from "@ziron/ui/components/sonner";
 import { registerUserSchema } from "@ziron/validators";
 
 export const RegisterForm = () => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
-  const [emailPending, startEmailTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
@@ -36,9 +38,23 @@ export const RegisterForm = () => {
     },
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof registerUserSchema>) {
-    console.log(values);
+    startTransition(async () => {
+      await authClient.signUp.email({
+        email: values.email,
+        name: values.username,
+        password: values.password,
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success("Registration Successful!");
+            router.push("/");
+          },
+          onError: (error) => {
+            toast.error(error.error.message);
+          },
+        },
+      });
+    });
   }
 
   return (
@@ -120,8 +136,8 @@ export const RegisterForm = () => {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={emailPending}>
-              <LoadingSwap isLoading={emailPending}>Register</LoadingSwap>
+            <Button type="submit" className="w-full" disabled={isPending}>
+              <LoadingSwap isLoading={isPending}>Register</LoadingSwap>
             </Button>
           </div>
         </form>

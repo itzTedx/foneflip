@@ -63,6 +63,9 @@ importers:
       '@tabler/icons-react':
         specifier: ^3.34.0
         version: 3.34.0(react@19.0.0)
+      '@ziron/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@ziron/seo':
         specifier: workspace:*
         version: link:../../packages/seo
