@@ -2,21 +2,31 @@
   "name": "test-shadcn",
   "version": "0.0.1",
   "private": true,
-  "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
-  },
-  "devDependencies": {
-    "@ziron/eslint-config": "workspace:*",
-    "@ziron/typescript-config": "workspace:*",
-    "prettier": "^3.5.1",
-    "turbo": "^2.4.2",
-    "typescript": "5.7.3"
-  },
-  "packageManager": "pnpm@10.4.1",
   "engines": {
     "node": ">=20"
-  }
+  },
+  "packageManager": "pnpm@10.4.1",
+  "scripts": {
+    "build": "turbo build",
+    "clean": "git clean -xdf node_modules",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "docker": "docker-compose up",
+    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
+    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "db:generate": "pnpm -F @ziron/db generate",
+    "db:migrate": "turbo -F @ziron/db migrate",
+    "db:studio": "turbo -F @ziron/db studio",
+    "ui-add": "turbo run ui-add"
+  },
+  "devDependencies": {
+    "@turbo/gen": "^2.4.2",
+    "@ziron/eslint-config": "workspace:*",
+    "@ziron/prettier-config": "workspace:*",
+    "@ziron/typescript-config": "workspace:*",
+    "prettier": "catalog:",
+    "turbo": "^2.5.4",
+    "typescript": "catalog:"
+  },
+  "prettier": "@ziron/prettier-config"
 }

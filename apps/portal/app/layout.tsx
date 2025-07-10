@@ -2,6 +2,8 @@ import { Geist, Geist_Mono } from 'next/font/google'
 
 import '@ziron/ui/globals.css'
 import { Providers } from '@/components/providers'
+import { Metadata } from 'next'
+import { createMetadata } from '@ziron/seo'
 
 const fontSans = Geist({
   subsets: ['latin'],
@@ -12,6 +14,13 @@ const fontMono = Geist_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
 })
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  return createMetadata({
+    title: 'Testing',
+    description: 'Testing shadcn',
+  })
+}
 
 export default function RootLayout({
   children,

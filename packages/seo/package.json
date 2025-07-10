@@ -1,0 +1,25 @@
+{
+  "name": "@ziron/seo",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "export": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "lodash.merge": "^4.6.2",
+    "react": "^19.0.0",
+    "schema-dts": "^1.1.5"
+  },
+  "devDependencies": {
+    "@ziron/typescript-config": "workspace:*",
+    "@types/lodash.merge": "^4.6.9",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "next": "^15.3.5"
+  }
+}
