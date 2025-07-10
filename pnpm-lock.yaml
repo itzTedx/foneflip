@@ -66,6 +66,9 @@ importers:
       '@ziron/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@ziron/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@ziron/seo':
         specifier: workspace:*
         version: link:../../packages/seo
