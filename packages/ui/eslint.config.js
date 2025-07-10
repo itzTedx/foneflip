@@ -1,4 +1,4 @@
-import { config } from '@ziron/eslint-config/react-internal'
+import reactConfig from '@ziron/eslint-config/react'
 
-/** @type {import("eslint").Linter.Config} */
-export default config
+/** @type {import('typescript-eslint').Config} */
+export default [...reactConfig]
