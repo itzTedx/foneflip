@@ -7,6 +7,7 @@ import { Slot } from "@radix-ui/react-slot";
 import {
   Controller,
   FormProvider,
+  useForm,
   useFormContext,
   useFormState,
 } from "react-hook-form";
@@ -162,5 +163,6 @@ export {
   FormItem,
   FormLabel,
   FormMessage,
+  useForm,
   useFormField,
 };

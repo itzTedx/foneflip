@@ -60,12 +60,18 @@ importers:
 
   apps/portal:
     dependencies:
+      '@tabler/icons-react':
+        specifier: ^3.34.0
+        version: 3.34.0(react@19.0.0)
       '@ziron/seo':
         specifier: workspace:*
         version: link:../../packages/seo
       '@ziron/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@ziron/validators':
+        specifier: workspace:*
+        version: link:../../packages/validators
       lucide-react:
         specifier: ^0.475.0
         version: 0.475.0(react@19.0.0)
@@ -377,6 +383,31 @@ importers:
       tailwindcss:
         specifier: ^4.0.8
         version: 4.0.8
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
+  packages/validators:
+    dependencies:
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
+    devDependencies:
+      '@ziron/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      '@ziron/prettier-config':
+        specifier: workspace:*
+        version: link:../../tooling/prettier
+      '@ziron/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      eslint:
+        specifier: 'catalog:'
+        version: 9.20.1(jiti@2.4.2)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.6.2
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -1803,6 +1834,14 @@ packages:
         optional: true
       zod:
         optional: true
+
+  '@tabler/icons-react@3.34.0':
+    resolution: {integrity: sha512-OpEIR2iZsIXECtAIMbn1zfKfQ3zKJjXyIZlkgOGUL9UkMCFycEiF2Y8AVfEQsyre/3FnBdlWJvGr0NU47n2TbQ==}
+    peerDependencies:
+      react: '>= 16'
+
+  '@tabler/icons@3.34.0':
+    resolution: {integrity: sha512-jtVqv0JC1WU2TTEBN32D9+R6mc1iEBuPwLnBsWaR02SIEciu9aq5806AWkCHuObhQ4ERhhXErLEK7Fs+tEZxiA==}
 
   '@tailwindcss/node@4.0.8':
     resolution: {integrity: sha512-FKArQpbrbwv08TNT0k7ejYXpF+R8knZFAatNc0acOxbgeqLzwb86r+P3LGOjIeI3Idqe9CVkZrh4GlsJLJKkkw==}
@@ -5612,6 +5651,13 @@ snapshots:
     optionalDependencies:
       typescript: 5.8.3
       zod: 3.25.76
+
+  '@tabler/icons-react@3.34.0(react@19.0.0)':
+    dependencies:
+      '@tabler/icons': 3.34.0
+      react: 19.0.0
+
+  '@tabler/icons@3.34.0': {}
 
   '@tailwindcss/node@4.0.8':
     dependencies:

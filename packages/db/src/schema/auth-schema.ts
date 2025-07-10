@@ -1,6 +1,6 @@
 import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
-export const user = pgTable("users", {
+export const Users = pgTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
@@ -31,7 +31,7 @@ export const session = pgTable("sessions", {
   userAgent: text("user_agent"),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => Users.id, { onDelete: "cascade" }),
   impersonatedBy: text("impersonated_by"),
   activeOrganizationId: text("active_vendors_id"),
 });
@@ -42,7 +42,7 @@ export const account = pgTable("accounts", {
   providerId: text("provider_id").notNull(),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => Users.id, { onDelete: "cascade" }),
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
@@ -83,7 +83,7 @@ export const member = pgTable("members", {
     .references(() => vendors.id, { onDelete: "cascade" }),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => Users.id, { onDelete: "cascade" }),
   role: text("role").default("member").notNull(),
   createdAt: timestamp("created_at").notNull(),
 });
@@ -99,7 +99,7 @@ export const invitation = pgTable("invitations", {
   expiresAt: timestamp("expires_at").notNull(),
   inviterId: text("inviter_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => Users.id, { onDelete: "cascade" }),
 });
 
 export const twoFactor = pgTable("two_factors", {
@@ -108,5 +108,5 @@ export const twoFactor = pgTable("two_factors", {
   backupCodes: text("backup_codes").notNull(),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => Users.id, { onDelete: "cascade" }),
 });

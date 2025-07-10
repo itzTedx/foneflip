@@ -1,9 +1,7 @@
+import { RegisterForm } from "@/features/auth/components/register-form";
+
 import { IconLogoMono } from "@ziron/ui/assets/logo";
-import { Button } from "@ziron/ui/components/button";
 import { Card, CardContent } from "@ziron/ui/components/card";
-import { Input } from "@ziron/ui/components/input";
-import { Label } from "@ziron/ui/components/label";
-import { LoadingSwap } from "@ziron/ui/components/loading-swap";
 
 export default function RegisterPage() {
   return (
@@ -24,68 +22,7 @@ export default function RegisterPage() {
             <p className="text-muted-foreground text-center text-sm">
               Enter your email to sign in to your account
             </p>
-
-            <form className="mt-9">
-              <div className="grid gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <Input
-                    id="username"
-                    type="text"
-                    placeholder="John Doe"
-                    // value={username}
-                    // onChange={(e) => setUsername(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="johndoe@mail.com"
-                    // value={email}
-                    // onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="*:not-first:mt-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      className="pe-9"
-                      placeholder="Password"
-                      //   type={isVisible ? "text" : "password"}
-                      //   value={password}
-                      //   onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                    <button
-                      className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                      type="button"
-                      //   onClick={toggleVisibility}
-                      //   aria-label={isVisible ? "Hide password" : "Show password"}
-                      //   aria-pressed={isVisible}
-                      aria-controls="password"
-                    >
-                      {/* {isVisible ? (
-                    <EyeOffIcon size={16} aria-hidden="true" />
-                  ) : (
-                    <EyeIcon size={16} aria-hidden="true" />
-                  )} */}
-                    </button>
-                  </div>
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  //   disabled={emailPending}
-                >
-                  <LoadingSwap isLoading={false}>Register</LoadingSwap>
-                </Button>
-              </div>
-            </form>
+            <RegisterForm />
           </CardContent>
         </Card>
       </div>
