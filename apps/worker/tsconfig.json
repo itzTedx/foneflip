@@ -1,0 +1,3 @@
+{
+  "extends": "@ziron/typescript-config/base.json"
+}

@@ -8,6 +8,13 @@
       "when": 1752138790540,
       "tag": "0000_condemned_whizzer",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1752147228594,
+      "tag": "0001_handy_nico_minoru",
+      "breakpoints": true
     }
   ]
 }

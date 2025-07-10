@@ -1,0 +1,30 @@
+{
+  "name": "@ziron/queue",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup --clean",
+    "check-types": "tsc --noEmit",
+    "dev": "tsup --watch",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@ziron/eslint-config": "workspace:*",
+    "@ziron/typescript-config": "workspace:*",
+    "tsup": "^8.5.0",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@ziron/redis": "workspace:*",
+    "@ziron/validators": "workspace:*",
+    "bullmq": "^5.56.3",
+    "ioredis": "^5.6.1"
+  }
+}

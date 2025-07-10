@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LogoutButton } from "@/components/logout-button";
+import { LogoutButton } from "@/components/ui/logout-button";
+import { NotifyButton } from "@/features/notifications/components/notification-button";
 import { getSession } from "@/lib/auth/server";
 
 import { Button } from "@ziron/ui/components/button";
@@ -14,12 +15,16 @@ export default async function Page() {
         <pre>{JSON.stringify(session, null, 2)}</pre>
 
         {session ? (
-          <LogoutButton />
+          <Button asChild>
+            <LogoutButton>Logout</LogoutButton>
+          </Button>
         ) : (
           <Button asChild>
             <Link href="/register">Register</Link>
           </Button>
         )}
+
+        {session && <NotifyButton userId={session.user.id} />}
       </div>
     </div>
   );

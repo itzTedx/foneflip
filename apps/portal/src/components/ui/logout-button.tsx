@@ -4,9 +4,14 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { authClient } from "@ziron/auth/client";
-import { Button } from "@ziron/ui/components/button";
+import { cn } from "@ziron/ui/lib/utils";
 
-export const LogoutButton = () => {
+interface Props {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const LogoutButton = ({ children, className }: Props) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -15,15 +20,20 @@ export const LogoutButton = () => {
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            router.push("/login"); // redirect to login page
+            router.push("/login");
           },
         },
       });
     });
   }
   return (
-    <Button onClick={logout} disabled={isPending} aria-disabled={isPending}>
-      Logout
-    </Button>
+    <button
+      onClick={logout}
+      disabled={isPending}
+      aria-disabled={isPending}
+      className={cn("flex cursor-pointer items-center gap-2", className)}
+    >
+      {children}
+    </button>
   );
 };

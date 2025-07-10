@@ -39,7 +39,7 @@ export const restrictEnvAccess = tseslint.config(
   },
 );
 
-export const config = [
+export const baseConfig = [
   js.configs.recommended,
   eslintConfigPrettier,
   ...tseslint.configs.recommended,
