@@ -1,4 +1,4 @@
-import { cn } from "@ziron/ui/lib/utils";
+import { cn } from "@ziron/utils";
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (

@@ -525,6 +525,9 @@ importers:
       '@ziron/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
+      '@ziron/utils':
+        specifier: workspace:*
+        version: link:../utils
       tailwindcss:
         specifier: ^4.0.8
         version: 4.0.8

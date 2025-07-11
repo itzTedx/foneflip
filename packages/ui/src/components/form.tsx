@@ -13,7 +13,7 @@ import {
 } from "react-hook-form";
 
 import { Label } from "@ziron/ui/components/label";
-import { cn } from "@ziron/ui/lib/utils";
+import { cn } from "@ziron/utils";
 
 const Form = FormProvider;
 

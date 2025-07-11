@@ -12,7 +12,7 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@ziron/ui/components",
-    "utils": "@ziron/ui/lib/utils",
+    "utils": "@ziron/utils",
     "hooks": "@ziron/ui/hooks",
     "lib": "@ziron/ui/lib",
     "ui": "@ziron/ui/components"

@@ -9,7 +9,7 @@ import {
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 
 import { Button, buttonVariants } from "@ziron/ui/components/button";
-import { cn } from "@ziron/ui/lib/utils";
+import { cn } from "@ziron/utils";
 
 function Calendar({
   className,

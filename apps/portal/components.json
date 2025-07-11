@@ -14,7 +14,7 @@
     "components": "@/components",
     "hooks": "@/hooks",
     "lib": "@/lib",
-    "utils": "@ziron/ui/lib/utils",
+    "utils": "@ziron/utils",
     "ui": "@ziron/ui/components"
   }
 }

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@ziron/ui/lib/utils";
+import { cn } from "@ziron/utils";
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (

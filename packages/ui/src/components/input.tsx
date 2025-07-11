@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@ziron/ui/lib/utils";
+import { cn } from "@ziron/utils";
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (

@@ -1,7 +1,7 @@
 import type { JSX, ReactNode } from "react";
 import { Loader } from "lucide-react";
 
-import { cn } from "../lib/utils";
+import { cn } from "@ziron/utils";
 
 export function LoadingSwap({
   isLoading,

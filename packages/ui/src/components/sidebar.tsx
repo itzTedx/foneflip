@@ -23,7 +23,7 @@ import {
   TooltipTrigger,
 } from "@ziron/ui/components/tooltip";
 import { useIsMobile } from "@ziron/ui/hooks/use-mobile";
-import { cn } from "@ziron/ui/lib/utils";
+import { cn } from "@ziron/utils";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

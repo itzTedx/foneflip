@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { authClient } from "@ziron/auth/client";
-import { cn } from "@ziron/ui/lib/utils";
+import { cn } from "@ziron/utils";
 
 interface Props {
   children: React.ReactNode;
