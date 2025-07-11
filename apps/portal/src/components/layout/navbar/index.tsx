@@ -1,3 +1,5 @@
+import { getNotifications } from "@/features/notifications/actions/queries";
+
 import { Session } from "@ziron/auth";
 
 import { NavBreadcrumb } from "./nav-breadcrumb";
@@ -8,7 +10,9 @@ interface NavbarProps {
   session: Session | null;
 }
 
-export default function Navbar({ session }: NavbarProps) {
+export default async function Navbar({ session }: NavbarProps) {
+  const notifications = await getNotifications(session?.user.id);
+
   return (
     <header className="bg-background/90 sticky top-0 z-50 border-b backdrop-blur-xl">
       <div className="mx-auto grid h-12 max-w-7xl grid-cols-2 items-center gap-1 px-4 sm:grid-cols-3 md:px-6">
@@ -19,10 +23,15 @@ export default function Navbar({ session }: NavbarProps) {
         <div></div>
         {/* <SearchField /> */}
 
-        <div className="flex flex-1 items-center justify-end gap-3">
-          <Notifications />
-          <UserMenu data={session} />
-        </div>
+        {session && (
+          <div className="flex flex-1 items-center justify-end gap-3">
+            <Notifications
+              userId={session.user.id}
+              initialNotifications={notifications}
+            />
+            <UserMenu data={session} />
+          </div>
+        )}
       </div>
     </header>
   );

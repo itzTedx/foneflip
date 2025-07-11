@@ -1,3 +1,5 @@
+import { and, eq, isNull, lt } from "drizzle-orm";
+
 import { db } from "@ziron/db";
 import { notificationsTable } from "@ziron/db/schema";
 import { JobData, JobType } from "@ziron/queue";
@@ -11,8 +13,6 @@ export const runNotification = async (data: JobData[JobType.Notification]) => {
     return;
   }
 
-  console.log("result: ", result);
-
   const { userId, message, type } = result.data;
 
   await db.insert(notificationsTable).values({ userId, message, type });
@@ -21,5 +21,34 @@ export const runNotification = async (data: JobData[JobType.Notification]) => {
   await redis.publish(
     "notifications",
     JSON.stringify({ userId, type, message }),
+  );
+};
+
+export const deleteOldNotifications = async () => {
+  const THIRTY_DAYS_AGO = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const result = await db
+    .update(notificationsTable)
+    .set({ deletedAt: now })
+    .where(
+      and(
+        lt(notificationsTable.createdAt, THIRTY_DAYS_AGO),
+        eq(notificationsTable.read, true),
+        isNull(notificationsTable.deletedAt),
+      ),
+    )
+    .returning();
+  console.log(`Soft-deleted notifications older than 30 days:`, result);
+};
+
+export const deleteSoftDeletedNotifications = async () => {
+  const SIXTY_DAYS_AGO = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+  const result = await db
+    .delete(notificationsTable)
+    .where(lt(notificationsTable.deletedAt, SIXTY_DAYS_AGO))
+    .returning();
+  console.log(
+    `Hard-deleted notifications soft-deleted over 2 months ago:`,
+    result,
   );
 };
