@@ -7,6 +7,7 @@ catalog:
   typescript: ^5.8.3
   eslint: ^9.20.1
   zod: 3.25.76
+  next: "^15.3.5"
 catalogs:
   react19:
     react: 19.0.0
