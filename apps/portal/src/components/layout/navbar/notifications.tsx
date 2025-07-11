@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { markAllNotificationsAsRead } from "@/features/notifications/actions/mutation";
+import {
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+} from "@/features/notifications/actions/mutation";
 import { getNotifications } from "@/features/notifications/actions/queries";
 import { BellIcon } from "lucide-react";
 import { io, Socket } from "socket.io-client";
@@ -25,19 +28,24 @@ interface NotificationProp {
   type: string;
   message: string;
   read: boolean | null;
-  createdAt: Date;
+  createdAt: Date; // keep as string
 }
+
+type NormalizedNotification = Omit<NotificationProp, "createdAt"> & {
+  createdAt: Date;
+};
 
 // Helper to ensure notification dates are Date objects
 function normalizeNotification(
-  notification: Partial<NotificationProp>,
-): NotificationProp {
+  notification: NotificationProp,
+): NormalizedNotification {
   return {
     ...notification,
-    createdAt: notification.createdAt
-      ? new Date(notification.createdAt)
-      : new Date(),
-  } as NotificationProp;
+    createdAt:
+      notification.createdAt instanceof Date
+        ? notification.createdAt
+        : new Date(notification.createdAt),
+  };
 }
 
 export default function Notifications({
@@ -51,10 +59,12 @@ export default function Notifications({
   const notificationsArray = (initialNotifications ?? []).map(
     normalizeNotification,
   );
-  const [notifications, setNotifications] =
-    useState<NotificationProp[]>(notificationsArray);
+  // Remove unused notifications state
   const [allLoaded, setAllLoaded] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  const [notifications, setNotifications] =
+    useState<NormalizedNotification[]>(notificationsArray);
 
   useEffect(() => {
     if (!userId) return;
@@ -62,7 +72,7 @@ export default function Notifications({
       query: { userId },
       transports: ["websocket"],
     });
-    socket.on("notification", (notification) => {
+    socket.on("notification", (notification: NotificationProp) => {
       const normalized = normalizeNotification(notification);
       setNotifications((prev) => [normalized, ...prev]);
     });
@@ -75,25 +85,31 @@ export default function Notifications({
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleMarkAllAsRead = async () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        read: true,
-      })),
+    // Optimistically update UI
+    setNotifications((prev) =>
+      prev.map((notification) => ({ ...notification, read: true })),
     );
     try {
       await markAllNotificationsAsRead(userId);
     } catch {
       toast.error("Failed to mark all as read. Please try again.");
+      // Optionally: refetch notifications or handle rollback if needed
     }
   };
 
-  const handleNotificationClick = (id: string) => {
-    setNotifications(
-      notifications.map((notification) =>
+  const handleNotificationClick = async (id: string) => {
+    // Optimistically update UI
+    setNotifications((prev) =>
+      prev.map((notification) =>
         notification.id === id ? { ...notification, read: true } : notification,
       ),
     );
+    try {
+      await markNotificationAsRead(id);
+    } catch {
+      toast.error("Failed to mark notification as read. Please try again.");
+      // Optionally: refetch notifications or handle rollback if needed
+    }
   };
 
   // Handler for loading more notifications using server action
