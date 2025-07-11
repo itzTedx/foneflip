@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { markAllNotificationsAsRead } from "@/features/notifications/actions/mutation";
+import { getNotifications } from "@/features/notifications/actions/queries";
 import { BellIcon } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 
 import { Badge } from "@ziron/ui/components/badge";
 import { Button } from "@ziron/ui/components/button";
+import { LoadingSwap } from "@ziron/ui/components/loading-swap";
 import {
   Popover,
   PopoverContent,
@@ -14,6 +16,7 @@ import {
 } from "@ziron/ui/components/popover";
 import { ScrollArea } from "@ziron/ui/components/scroll-area";
 import { toast } from "@ziron/ui/components/sonner";
+import { cn, formatDate } from "@ziron/utils";
 
 interface NotificationProp {
   userId: string;
@@ -23,8 +26,18 @@ interface NotificationProp {
   message: string;
   read: boolean | null;
   createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
+}
+
+// Helper to ensure notification dates are Date objects
+function normalizeNotification(
+  notification: Partial<NotificationProp>,
+): NotificationProp {
+  return {
+    ...notification,
+    createdAt: notification.createdAt
+      ? new Date(notification.createdAt)
+      : new Date(),
+  } as NotificationProp;
 }
 
 export default function Notifications({
@@ -34,9 +47,14 @@ export default function Notifications({
   userId: string;
   initialNotifications?: NotificationProp[] | null;
 }) {
-  const notificationsArray = initialNotifications ?? [];
+  // When initializing state
+  const notificationsArray = (initialNotifications ?? []).map(
+    normalizeNotification,
+  );
   const [notifications, setNotifications] =
     useState<NotificationProp[]>(notificationsArray);
+  const [allLoaded, setAllLoaded] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (!userId) return;
@@ -44,32 +62,19 @@ export default function Notifications({
       query: { userId },
       transports: ["websocket"],
     });
-    socket.on("connect", () => console.log("Socket.IO connected"));
-    socket.onAny((event, ...args) => {
-      console.log("Socket event:", event, args);
-    });
     socket.on("notification", (notification) => {
-      console.log(
-        "Received notification",
-        notification,
-        typeof notification,
-        notification && notification.id,
-      );
-      setNotifications((prev) => {
-        const updated = [notification, ...prev];
-        console.log("Updated notifications state:", updated);
-        return updated;
-      });
+      const normalized = normalizeNotification(notification);
+      setNotifications((prev) => [normalized, ...prev]);
     });
     return () => {
       socket.disconnect();
     };
   }, [userId]);
 
-  const unreadCount = notifications.filter((n) => n.read === false).length;
+  // Update unreadCount logic to count falsy read values
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleMarkAllAsRead = async () => {
-    console.log("Mark all as read clicked");
     setNotifications(
       notifications.map((notification) => ({
         ...notification,
@@ -84,7 +89,6 @@ export default function Notifications({
   };
 
   const handleNotificationClick = (id: string) => {
-    console.log("Notification clicked:", id);
     setNotifications(
       notifications.map((notification) =>
         notification.id === id ? { ...notification, read: true } : notification,
@@ -92,8 +96,25 @@ export default function Notifications({
     );
   };
 
-  // Log notifications in the render
-  console.log("Rendering notifications:", notifications);
+  // Handler for loading more notifications using server action
+  const handleLoadMore = () => {
+    startTransition(async () => {
+      const newNotifications = await getNotifications(
+        userId,
+        10,
+        notifications.length,
+      );
+      if (!newNotifications || newNotifications.length === 0) {
+        setAllLoaded(true);
+      } else {
+        setNotifications((prev) => [
+          ...prev,
+          ...newNotifications.map(normalizeNotification),
+        ]);
+        if (newNotifications.length < 10) setAllLoaded(true);
+      }
+    });
+  };
 
   // Render empty state if no notifications
   if (!notifications.length) {
@@ -157,13 +178,13 @@ export default function Notifications({
         ></div>
 
         <ScrollArea className="h-80">
-          {notifications.map((notification) => (
+          {notifications.map((notification, i) => (
             <div
-              key={notification.id}
-              className={
-                `hover:bg-accent rounded-md px-3 py-2 text-sm transition-colors ` +
-                (!notification.read ? "bg-accent/30 font-semibold" : "")
-              }
+              key={`${notification.id}-${i}`}
+              className={cn(
+                "hover:bg-accent my-1 rounded-md px-3 py-2 text-sm transition-colors",
+                !notification.read ? "bg-accent/30 font-semibold" : "",
+              )}
             >
               <div className="relative flex items-start pe-3">
                 <div className="flex-1 space-y-1">
@@ -173,12 +194,13 @@ export default function Notifications({
                   >
                     {notification.type}{" "}
                     <span className="text-foreground font-medium hover:underline">
-                      {notification.type}
+                      {notification.message}
                     </span>
-                    .
                   </button>
                   <div className="text-muted-foreground text-xs">
-                    {notification.createdAt.toLocaleString()}
+                    {formatDate(notification.createdAt, {
+                      includeTime: true,
+                    })}
                   </div>
                 </div>
                 {!notification.read && (
@@ -190,6 +212,17 @@ export default function Notifications({
               </div>
             </div>
           ))}
+          {!allLoaded && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleLoadMore}
+              disabled={isPending}
+              className="w-full"
+            >
+              <LoadingSwap isLoading={isPending}>Load More</LoadingSwap>
+            </Button>
+          )}
         </ScrollArea>
       </PopoverContent>
     </Popover>

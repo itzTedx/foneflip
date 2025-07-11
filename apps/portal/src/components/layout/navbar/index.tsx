@@ -13,6 +13,8 @@ interface NavbarProps {
 export default async function Navbar({ session }: NavbarProps) {
   const notifications = await getNotifications(session?.user.id);
 
+  console.log(notifications);
+
   return (
     <header className="bg-background/90 sticky top-0 z-50 border-b backdrop-blur-xl">
       <div className="mx-auto grid h-12 max-w-7xl grid-cols-2 items-center gap-1 px-4 sm:grid-cols-3 md:px-6">

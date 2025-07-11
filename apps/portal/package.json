@@ -23,6 +23,7 @@
     "@ziron/seo": "workspace:*",
     "@ziron/ui": "workspace:*",
     "@ziron/validators": "workspace:*",
+    "@ziron/utils": "workspace:*",
     "bullmq": "^5.56.3",
     "drizzle-orm": "^0.44.2",
     "lucide-react": "^0.475.0",
