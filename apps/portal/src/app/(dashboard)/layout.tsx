@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import Navbar from "@/components/layout/navbar";
 import { auth } from "@/lib/auth/server";
 
@@ -14,8 +14,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+  // const cookieStore = await cookies();
+  // const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
   // Get session server-side
   const session = await auth.api.getSession({

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node index.ts"
+    "dev": "pnpm with-env ts-node index.ts",
+    "with-env": "dotenv -e ../../.env --"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +13,7 @@
   "packageManager": "pnpm@10.12.4",
   "dependencies": {
     "@types/express": "^5.0.3",
+    "@ziron/redis": "workspace:*",
     "express": "^5.1.0",
     "socket.io": "^4.8.1",
     "ws": "^8.18.3"

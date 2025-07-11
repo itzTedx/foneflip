@@ -20,10 +20,10 @@ interface NotificationProp {
   id: string;
   metadata: unknown;
   type: string;
-  createdAt: Date;
-  updatedAt: Date;
   message: string;
   read: boolean | null;
+  createdAt: Date;
+  updatedAt: Date;
   deletedAt: Date | null;
 }
 
@@ -49,8 +49,17 @@ export default function Notifications({
       console.log("Socket event:", event, args);
     });
     socket.on("notification", (notification) => {
-      console.log("Received notification", notification);
-      setNotifications((prev) => [notification, ...prev]);
+      console.log(
+        "Received notification",
+        notification,
+        typeof notification,
+        notification && notification.id,
+      );
+      setNotifications((prev) => {
+        const updated = [notification, ...prev];
+        console.log("Updated notifications state:", updated);
+        return updated;
+      });
     });
     return () => {
       socket.disconnect();
@@ -60,6 +69,7 @@ export default function Notifications({
   const unreadCount = notifications.filter((n) => n.read === false).length;
 
   const handleMarkAllAsRead = async () => {
+    console.log("Mark all as read clicked");
     setNotifications(
       notifications.map((notification) => ({
         ...notification,
@@ -74,12 +84,16 @@ export default function Notifications({
   };
 
   const handleNotificationClick = (id: string) => {
+    console.log("Notification clicked:", id);
     setNotifications(
       notifications.map((notification) =>
         notification.id === id ? { ...notification, read: true } : notification,
       ),
     );
   };
+
+  // Log notifications in the render
+  console.log("Rendering notifications:", notifications);
 
   // Render empty state if no notifications
   if (!notifications.length) {

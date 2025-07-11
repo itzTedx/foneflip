@@ -170,6 +170,9 @@ importers:
       '@types/express':
         specifier: ^5.0.3
         version: 5.0.3
+      '@ziron/redis':
+        specifier: workspace:*
+        version: link:../../packages/redis
       express:
         specifier: ^5.1.0
         version: 5.1.0
