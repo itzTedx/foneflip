@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 import Navbar from "@/components/layout/navbar";
-import { auth } from "@/lib/auth/server";
+import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
+import { getSession } from "@/lib/auth/server";
+
+import { SidebarInset, SidebarProvider } from "@ziron/ui/components/sidebar";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -14,18 +17,29 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const cookieStore = await cookies();
-  // const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
   // Get session server-side
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
 
   return (
-    <div className="relative flex-1">
-      <Navbar session={session} />
-      {children}
-    </div>
+    <SidebarProvider
+      defaultOpen={defaultOpen}
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 52)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar variant="sidebar" session={session} />
+      <SidebarInset>
+        <div className="relative flex-1">
+          <Navbar session={session} />
+          {children}
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
