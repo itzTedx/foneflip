@@ -22,6 +22,19 @@ services:
       - redis-data:/data
     command: redis-server --appendonly yes
     restart: unless-stopped
+
+  redisinsight:
+    image: redis/redisinsight:2.70
+    container_name: redisinsight
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight-data:/db
+    restart: unless-stopped
+    depends_on:
+      - redis
+
 volumes:
   redis-data:
   pg-data:
+  redisinsight-data:

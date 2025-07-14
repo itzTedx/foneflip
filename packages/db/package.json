@@ -4,24 +4,15 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./client": {
-      "types": "./dist/client.d.ts",
-      "default": "./dist/client.js"
-    },
-    "./schema": {
-      "types": "./dist/schema.d.ts",
-      "default": "./dist/schema.js"
-    }
+    ".": ".src/index.ts",
+    "./client": "./src/client.ts",
+    "./schema": "./src/schema.ts"
   },
   "license": "MIT",
   "scripts": {
     "build": "tsup --clean",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev": "pnpm with-env drizzle-kit studio --config=drizzle.config.ts --port=8080 --verbose",
+    "dev": "concurrently \"pnpm with-env drizzle-kit studio --config=drizzle.config.ts --port=8080 --verbose\" \"tsc --watch\"",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "generate": "pnpm with-env drizzle-kit generate",
@@ -44,6 +35,7 @@
     "@ziron/eslint-config": "workspace:*",
     "@ziron/prettier-config": "workspace:*",
     "@ziron/typescript-config": "workspace:*",
+    "concurrently": "^9.2.0",
     "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.31.1",
     "eslint": "catalog:",

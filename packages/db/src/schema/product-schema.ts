@@ -13,7 +13,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { user } from "./auth-schema";
+import { users as user } from "./auth-schema";
 import { baseSchema } from "./base-schema";
 import { collectionsTable } from "./collection-schema";
 import { mediaTable } from "./media-schema";
@@ -57,7 +57,7 @@ export const productsTable = pgTable(
       () => productDeliveriesTable.id,
       {
         onDelete: "set null",
-      }
+      },
     ),
     userId: uuid("user_id").references(() => user.id, {
       onDelete: "set null",
@@ -74,7 +74,7 @@ export const productsTable = pgTable(
     conditionIdx: index("products_condition_idx").on(table.condition),
     userIdIdx: index("products_user_id_idx").on(table.userId),
     vendorIdIdx: index("products_vendor_id_idx").on(table.vendorId),
-  })
+  }),
 );
 
 export const productVariantsTable = pgTable("product_variants", {
@@ -108,9 +108,9 @@ export const productAttributeOptionsTable = pgTable(
   },
   (table) => ({
     attributeIdIdx: index("attribute_options_attribute_id_idx").on(
-      table.attributeId
+      table.attributeId,
     ),
-  })
+  }),
 );
 
 export const productVariantOptionsTable = pgTable(
@@ -129,7 +129,7 @@ export const productVariantOptionsTable = pgTable(
   (table) => ({
     variantIdIdx: index("variant_options_variant_id_idx").on(table.variantId),
     optionIdIdx: index("variant_options_option_id_idx").on(table.optionId),
-  })
+  }),
 );
 
 export const productImagesTable = pgTable("product_images", {
@@ -156,9 +156,9 @@ export const productSpecificationsTable = pgTable(
   },
   (table) => ({
     productIdIdx: index("product_specifications_product_id_idx").on(
-      table.productId
+      table.productId,
     ),
-  })
+  }),
 );
 
 export const productDeliveriesTable = pgTable("product_deliveries", {
@@ -196,7 +196,7 @@ export const productSettingsTable = pgTable(
   },
   (table) => ({
     productIdIdx: index("product_settings_product_id_idx").on(table.productId),
-  })
+  }),
 );
 
 export const productReviewsTable = pgTable("product_reviews", {
@@ -250,7 +250,7 @@ export const productVariantsRelations = relations(
       references: [productsTable.id],
     }),
     options: many(productVariantOptionsTable),
-  })
+  }),
 );
 
 export const productAttributesRelations = relations(
@@ -261,7 +261,7 @@ export const productAttributesRelations = relations(
       references: [productsTable.id],
     }),
     options: many(productAttributeOptionsTable),
-  })
+  }),
 );
 
 export const productAttributeOptionsRelations = relations(
@@ -272,7 +272,7 @@ export const productAttributeOptionsRelations = relations(
       references: [productAttributesTable.id],
     }),
     variantOptions: many(productVariantOptionsTable),
-  })
+  }),
 );
 
 export const productVariantOptionsRelations = relations(
@@ -286,7 +286,7 @@ export const productVariantOptionsRelations = relations(
       fields: [productVariantOptionsTable.optionId],
       references: [productAttributeOptionsTable.id],
     }),
-  })
+  }),
 );
 
 export const productImagesRelations = relations(
@@ -300,7 +300,7 @@ export const productImagesRelations = relations(
       fields: [productImagesTable.mediaId],
       references: [mediaTable.id],
     }),
-  })
+  }),
 );
 
 export const productReviewsRelations = relations(
@@ -310,7 +310,7 @@ export const productReviewsRelations = relations(
       fields: [productReviewsTable.productId],
       references: [productsTable.id],
     }),
-  })
+  }),
 );
 
 export const productSpecificationsRelations = relations(
@@ -320,7 +320,7 @@ export const productSpecificationsRelations = relations(
       fields: [productSpecificationsTable.productId],
       references: [productsTable.id],
     }),
-  })
+  }),
 );
 
 export const productSettingsRelations = relations(
@@ -330,5 +330,5 @@ export const productSettingsRelations = relations(
       fields: [productSettingsTable.productId],
       references: [productsTable.id],
     }),
-  })
+  }),
 );

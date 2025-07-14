@@ -8,10 +8,12 @@ import { Button } from "@ziron/ui/components/button";
 import { Form, useForm, zodResolver } from "@ziron/ui/components/form";
 import { LoadingSwap } from "@ziron/ui/components/loading-swap";
 import { Tabs, TabsContent } from "@ziron/ui/components/tabs";
+import { useLocalStorage } from "@ziron/ui/hooks/use-local-storage";
 import { CollectionFormType, collectionSchema } from "@ziron/validators";
 
+import { upsertCollection } from "../actions/mutations";
 import { collectionTabs } from "../data/constants";
-import { validateForm } from "../utils/validation";
+import { getDefaultValues } from "../utils/helper";
 import { CollectionDetails } from "./form-sections/collection-details";
 import { TabsTriggers } from "./ui/tabs";
 
@@ -23,30 +25,59 @@ interface Props {
     | null;
 }
 
+const LOCAL_STORAGE_KEY = "collection-form-draft";
+
 export const CollectionForm = ({ isEditMode, initialData }: Props) => {
   const [isPending, startTransition] = useTransition();
 
+  const [draft, setDraft, removeDraft] =
+    useLocalStorage<Partial<CollectionFormType> | null>(
+      LOCAL_STORAGE_KEY,
+      null,
+    );
+
   const form = useForm<CollectionFormType>({
     resolver: zodResolver(collectionSchema),
+    defaultValues: {
+      ...getDefaultValues(),
+      ...initialData,
+      ...draft,
+      meta: {
+        ...getDefaultValues().meta,
+        ...(initialData?.meta || {}),
+        ...(draft?.meta || {}),
+      },
+      settings: {
+        ...getDefaultValues().settings,
+        ...(initialData?.settings || {}),
+        ...(draft?.settings || {}),
+      },
+    },
   });
   const isArchived = initialData?.settings?.status === "archived";
 
+  form.watch((values) => {
+    setDraft(values as Partial<CollectionFormType>);
+  });
+
   function onSubmit(values: CollectionFormType) {
-    startTransition(() =>
-      console.log({
+    startTransition(() => {
+      upsertCollection({
         ...values,
         settings: {
           ...values.settings,
           status: "active",
         },
-      }),
-    );
+      });
+
+      removeDraft();
+    });
   }
 
-  const data = form.watch();
-  const validation = validateForm(data, collectionSchema);
+  // const data = form.watch();
+  // const validation = validateForm(data, collectionSchema);
 
-  console.info("validate form data: ", validation);
+  // console.info("validate form data: ", validation);
   return (
     <Form {...form}>
       <form

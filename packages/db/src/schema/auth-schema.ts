@@ -8,6 +8,8 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
+import { vendorsTable } from "./vendor-schema";
+
 export const rolesEnum = pgEnum("roles", ["user", "vendor", "admin", "dev"]);
 
 export const users = pgTable("users", {
@@ -73,20 +75,11 @@ export const verifications = pgTable("verifications", {
   updatedAt: timestamp("updated_at").$defaultFn(() => new Date()),
 });
 
-export const vendors = pgTable("vendors", {
-  id: uuid("id").primaryKey().defaultRandom().notNull(),
-  name: text("name").notNull(),
-  slug: text("slug").unique(),
-  logo: text("logo"),
-  createdAt: timestamp("created_at").notNull(),
-  metadata: text("metadata"),
-});
-
 export const members = pgTable("members", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
   organizationId: uuid("vendors_id")
     .notNull()
-    .references(() => vendors.id, { onDelete: "cascade" }),
+    .references(() => vendorsTable.id, { onDelete: "cascade" }),
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
@@ -98,7 +91,7 @@ export const invitations = pgTable("invitations", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
   vendorsId: uuid("vendors_id")
     .notNull()
-    .references(() => vendors.id, { onDelete: "cascade" }),
+    .references(() => vendorsTable.id, { onDelete: "cascade" }),
   email: text("email").notNull(),
   role: rolesEnum("role").default("user"),
   status: text("status").default("pending").notNull(),

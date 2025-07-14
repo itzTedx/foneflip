@@ -5,6 +5,7 @@ import { nextCookies } from "better-auth/next-js";
 import { emailOTP, organization, twoFactor } from "better-auth/plugins";
 
 import { db } from "@ziron/db/client";
+import redis from "@ziron/redis";
 
 export function initAuth(options: {
   baseUrl: string;
@@ -50,19 +51,19 @@ export function initAuth(options: {
         },
       }),
     ],
-    // secondaryStorage: {
-    //   get: async (key) => {
-    //     const value = await redis.get(key);
-    //     return value ? value : null;
-    //   },
-    //   set: async (key, value, ttl) => {
-    //     if (ttl) await redis.setex(key, ttl, value);
-    //     else await redis.set(key, value);
-    //   },
-    //   delete: async (key) => {
-    //     await redis.del(key);
-    //   },
-    // },
+    secondaryStorage: {
+      get: async (key) => {
+        const value = await redis.get(key);
+        return value ? value : null;
+      },
+      set: async (key, value, ttl) => {
+        if (ttl) await redis.setex(key, ttl, value);
+        else await redis.set(key, value);
+      },
+      delete: async (key) => {
+        await redis.del(key);
+      },
+    },
     advanced: {
       cookiePrefix: "foneflip",
       database: {
