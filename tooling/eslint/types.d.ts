@@ -36,3 +36,7 @@ declare module "@next/eslint-plugin-next" {
 declare module "eslint-config-prettier" {
   export const rules: Record<string, 0 | "off">;
 }
+
+declare module "@ziron/eslint-config/nextjs";
+declare module "@ziron/eslint-config/base";
+declare module "@ziron/eslint-config/react";

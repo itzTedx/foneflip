@@ -8,7 +8,9 @@ export const collectionMediaTypeEnum = z.enum(["thumbnail", "banner"]);
 
 export const collectionSchema = z.object({
   id: z.string().optional(),
-  title: z.string().min(1),
+  title: z
+    .string()
+    .min(1, { message: "Title is required and cannot be empty" }),
   description: z.string().optional(),
   label: z.string().optional(),
   sortOrder: z.number().optional(),

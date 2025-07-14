@@ -1,14 +1,12 @@
 {
   "extends": "@ziron/typescript-config/nextjs.json",
   "compilerOptions": {
-    "lib": ["ES2022", "dom", "dom.iterable"],
-    "jsx": "preserve",
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "plugins": [{ "name": "next" }],
-    "module": "esnext"
+    }
   },
   "include": [".", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
