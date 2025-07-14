@@ -21,15 +21,16 @@
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "catalog:react19",
+    "@ziron/typescript-config": "workspace:*",
     "next": "catalog:",
     "react": "catalog:react19",
-    "@ziron/typescript-config": "workspace:*",
     "tsup": "^6.1.3",
     "typescript": "catalog:"
   },
   "dependencies": {
     "clsx": "^2.1.1",
-    "tailwind-merge": "^2.4.0"
+    "tailwind-merge": "^2.4.0",
+    "zod": "catalog:"
   },
   "prettier": "@ziron/prettier-config"
 }

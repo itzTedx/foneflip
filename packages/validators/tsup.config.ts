@@ -1,10 +1,10 @@
-import { defineConfig } from "tsup";
+import { defineConfig, Options } from "tsup";
 
-export default defineConfig({
-  entry: ["src/index.ts"],
+export default defineConfig((options: Options) => ({
+  entry: ["src/**/*.ts"],
   format: ["esm"],
-  clean: true,
-  sourcemap: true,
-  bundle: true,
-  external: [], // <-- Force tsup to bundle everything, including local packages
-});
+  dts: true,
+  minify: true,
+  external: ["react"],
+  ...options,
+}));

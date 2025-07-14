@@ -2,8 +2,8 @@
 
 import type { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
 import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Label as LabelPrimitive, Slot as SlotPrimitive } from "radix-ui";
-
 import {
   Controller,
   FormProvider,
@@ -103,7 +103,9 @@ function FormLabel({
   );
 }
 
-function FormControl({ ...props }: React.ComponentProps<typeof SlotPrimitive.Slot>) {
+function FormControl({
+  ...props
+}: React.ComponentProps<typeof SlotPrimitive.Slot>) {
   const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
 
@@ -165,4 +167,5 @@ export {
   FormMessage,
   useForm,
   useFormField,
+  zodResolver,
 };

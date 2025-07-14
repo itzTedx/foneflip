@@ -15,6 +15,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@bprogress/next": "^3.2.12",
     "@tabler/icons-react": "^3.34.0",
     "@ziron/auth": "workspace:*",
     "@ziron/db": "workspace:*",
@@ -22,8 +23,8 @@
     "@ziron/redis": "workspace:*",
     "@ziron/seo": "workspace:*",
     "@ziron/ui": "workspace:*",
-    "@ziron/validators": "workspace:*",
     "@ziron/utils": "workspace:*",
+    "@ziron/validators": "workspace:*",
     "bullmq": "^5.56.3",
     "drizzle-orm": "^0.44.2",
     "lucide-react": "^0.475.0",
