@@ -83,7 +83,7 @@ export class CacheMonitor {
   }
 }
 
-// Wrapper function to monitor cache operations
+// Enhanced wrapper function to monitor cache operations with proper hit/miss detection
 export async function withCacheMonitoring<T>(
   operation: () => Promise<T>,
   cacheKey: string,
@@ -93,6 +93,36 @@ export async function withCacheMonitoring<T>(
   const startTime = Date.now();
 
   try {
+    const result = await operation();
+    const responseTime = Date.now() - startTime;
+
+    if (isCacheHit) {
+      monitor.recordHit(responseTime);
+    } else {
+      monitor.recordMiss(responseTime);
+    }
+
+    return result;
+  } catch (error) {
+    const responseTime = Date.now() - startTime;
+    monitor.recordMiss(responseTime);
+    throw error;
+  }
+}
+
+// Enhanced cache operation wrapper that automatically detects hits/misses
+export async function withSmartCacheMonitoring<T>(
+  operation: () => Promise<T>,
+  cacheKey: string,
+): Promise<T> {
+  const monitor = CacheMonitor.getInstance();
+  const startTime = Date.now();
+
+  try {
+    // Check if data exists in cache before operation
+    const cachedData = await redisCache.get(cacheKey);
+    const isCacheHit = cachedData !== null;
+
     const result = await operation();
     const responseTime = Date.now() - startTime;
 
@@ -150,4 +180,45 @@ export async function getCacheInsights(): Promise<{
     metrics,
     insights,
   };
+}
+
+// Cache warming utilities
+export async function warmCollectionCache(slug: string) {
+  const monitor = CacheMonitor.getInstance();
+  const startTime = Date.now();
+
+  try {
+    // Import the query function dynamically to avoid circular dependencies
+    const { getCollectionBySlug } = await import("../actions/queries");
+    await getCollectionBySlug(slug);
+
+    const responseTime = Date.now() - startTime;
+    monitor.recordHit(responseTime); // Warming is considered a hit since we're pre-loading
+
+    console.log(`Warmed cache for collection: ${slug} (${responseTime}ms)`);
+  } catch (error) {
+    const responseTime = Date.now() - startTime;
+    monitor.recordMiss(responseTime);
+    console.error(`Cache warming failed for ${slug}:`, error);
+  }
+}
+
+export async function warmAllCollectionCaches() {
+  const monitor = CacheMonitor.getInstance();
+  const startTime = Date.now();
+
+  try {
+    // Import the query function dynamically to avoid circular dependencies
+    const { getCollections } = await import("../actions/queries");
+    await getCollections();
+
+    const responseTime = Date.now() - startTime;
+    monitor.recordHit(responseTime);
+
+    console.log(`Warmed all collection caches (${responseTime}ms)`);
+  } catch (error) {
+    const responseTime = Date.now() - startTime;
+    monitor.recordMiss(responseTime);
+    console.error("Cache warming failed:", error);
+  }
 }
