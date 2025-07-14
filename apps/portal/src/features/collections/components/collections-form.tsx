@@ -2,11 +2,13 @@
 
 import { useTransition } from "react";
 import { Header } from "@/components/layout/header";
+import { useRouter } from "@bprogress/next";
 import { IconCheck, IconDeviceFloppy } from "@tabler/icons-react";
 
 import { Button } from "@ziron/ui/components/button";
 import { Form, useForm, zodResolver } from "@ziron/ui/components/form";
 import { LoadingSwap } from "@ziron/ui/components/loading-swap";
+import { toast } from "@ziron/ui/components/sonner";
 import { Tabs, TabsContent } from "@ziron/ui/components/tabs";
 import { useLocalStorage } from "@ziron/ui/hooks/use-local-storage";
 import { CollectionFormType, collectionSchema } from "@ziron/validators";
@@ -28,6 +30,7 @@ interface Props {
 const LOCAL_STORAGE_KEY = "collection-form-draft";
 
 export const CollectionForm = ({ isEditMode, initialData }: Props) => {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const [draft, setDraft, removeDraft] =
@@ -61,16 +64,25 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
   });
 
   function onSubmit(values: CollectionFormType) {
-    startTransition(() => {
-      upsertCollection({
+    startTransition(async () => {
+      const result = await upsertCollection({
         ...values,
         settings: {
           ...values.settings,
           status: "active",
         },
       });
-
-      removeDraft();
+      if (result.success) {
+        removeDraft();
+        router.push("/collections");
+      }
+      if (result.error) {
+        toast.error(
+          typeof result.details === "string"
+            ? result.details
+            : "An error occurred",
+        );
+      }
     });
   }
 

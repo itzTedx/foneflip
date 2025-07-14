@@ -4,13 +4,29 @@ import { createLog } from "@/lib/utils";
 
 import { db } from "@ziron/db/client";
 import { collectionsTable } from "@ziron/db/schema";
-import redis from "@ziron/redis";
 import { slugify } from "@ziron/utils";
 import { collectionSchema, z } from "@ziron/validators";
 
-import { revalidateCollectionCaches } from "../utils/cache";
+import {
+  invalidateCollectionCaches,
+  revalidateCollectionCaches,
+} from "../utils/cache";
+import { existingCollection } from "./queries";
 
 const log = createLog("Collection");
+
+// Helper function to generate a unique slug
+async function generateUniqueSlug(baseSlug: string): Promise<string> {
+  let slug = baseSlug;
+  let counter = 1;
+
+  while (await existingCollection(slug)) {
+    slug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  return slug;
+}
 
 export async function upsertCollection(formData: unknown) {
   log.info("Received upsertCollection request", { formData });
@@ -26,6 +42,11 @@ export async function upsertCollection(formData: unknown) {
 
   try {
     // --- Prepare collection data ---
+    const baseSlug = data.slug ?? slugify(data.title);
+
+    // Generate unique slug if it doesn't exist or if we're creating a new collection
+    const uniqueSlug = await generateUniqueSlug(baseSlug);
+
     const collectionData: {
       title: string;
       description?: string;
@@ -36,7 +57,7 @@ export async function upsertCollection(formData: unknown) {
       title: data.title,
       description: data.description,
       label: data.label,
-      slug: data.slug ?? slugify(data.title),
+      slug: uniqueSlug,
       sortOrder: data.sortOrder,
     };
 
@@ -64,12 +85,7 @@ export async function upsertCollection(formData: unknown) {
     log.info("Updating Redis cache for collection", {
       slug: collectionData.slug,
     });
-    await redis.del(`collection:${collectionData.slug}`);
-    await redis.setex(
-      `collection:${collectionData.slug}`,
-      3600,
-      JSON.stringify(collection),
-    );
+    await invalidateCollectionCaches(collection?.id, collectionData.slug);
 
     log.info("Revalidating collection caches", {
       id: collection?.id,
