@@ -41,7 +41,7 @@ export function Header({ title, status, children }: CollectionHeaderProps) {
   };
 
   return (
-    <div className="bg-background/80 sticky top-[calc(3rem+1px)] z-50 flex items-center justify-between px-6 py-3 backdrop-blur-xl">
+    <div className="bg-background/80 sticky top-[calc(3rem)] z-50 flex items-center justify-between px-6 py-3 backdrop-blur-xl">
       <div className="flex items-center justify-center gap-2">
         <h1 className="text-xl leading-none font-medium sm:text-2xl">
           {title}
