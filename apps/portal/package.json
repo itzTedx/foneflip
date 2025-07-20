@@ -1,5 +1,5 @@
 {
-  "name": "@ziron/portal",
+  "name": "portal",
   "version": "0.1.2",
   "type": "module",
   "private": true,

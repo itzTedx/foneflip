@@ -1,8 +1,6 @@
 "use server";
 
-import { asc, eq } from "drizzle-orm";
-
-import { db } from "@ziron/db/client";
+import { asc, db, eq } from "@ziron/db";
 import { notificationsTable } from "@ziron/db/schema";
 import { enqueue, JobType } from "@ziron/queue";
 

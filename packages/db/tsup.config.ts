@@ -5,7 +5,7 @@ export default defineConfig({
   format: ["esm"],
   clean: true,
   sourcemap: true,
-  // bundle: true,
-  // dts: true,
-  // external: [], // <-- Force tsup to bundle everything, including local packages
+  bundle: true,
+  dts: true,
+  external: [], // <-- Force tsup to bundle everything, including local packages
 });

@@ -3,7 +3,7 @@
 import { createLog } from "@/lib/utils";
 import { eq } from "drizzle-orm";
 
-import { db } from "@ziron/db/client";
+import { db } from "@ziron/db";
 import { collectionsTable } from "@ziron/db/schema";
 import { slugify } from "@ziron/utils";
 import { collectionSchema, z } from "@ziron/validators";

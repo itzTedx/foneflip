@@ -1,8 +1,6 @@
 "use server";
 
-import { and, desc, eq, isNull } from "drizzle-orm";
-
-import { db } from "@ziron/db/client";
+import { and, db, desc, eq, isNull } from "@ziron/db";
 import { notificationsTable } from "@ziron/db/schema";
 
 export async function getNotifications(

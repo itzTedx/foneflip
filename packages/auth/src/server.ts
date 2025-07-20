@@ -4,7 +4,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { emailOTP, organization, twoFactor } from "better-auth/plugins";
 
-import { db } from "@ziron/db/client";
+import { db } from "@ziron/db";
 import redis from "@ziron/redis";
 
 export function initAuth(options: {

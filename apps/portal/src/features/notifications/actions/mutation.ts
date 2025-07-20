@@ -1,8 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
-
-import { db } from "@ziron/db/client";
+import { db, eq } from "@ziron/db";
 import { notificationsTable } from "@ziron/db/schema";
 
 export async function markAllNotificationsAsRead(userId: string) {

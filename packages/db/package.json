@@ -4,9 +4,14 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": ".src/index.ts",
-    "./client": "./src/client.ts",
-    "./schema": "./src/schema.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./schema": {
+      "types": "./src/schema.ts",
+      "default": "./dist/schema.js"
+    }
   },
   "license": "MIT",
   "scripts": {

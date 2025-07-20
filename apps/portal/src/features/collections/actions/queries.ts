@@ -1,7 +1,6 @@
 import { unstable_cache as cache } from "next/cache";
-import { asc, eq, isNull } from "drizzle-orm";
 
-import { db } from "@ziron/db/client";
+import { asc, db, eq, isNull } from "@ziron/db";
 import { collectionsTable } from "@ziron/db/schema";
 
 import type {
