@@ -151,18 +151,12 @@ importers:
       '@ziron/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@ziron/eslint-config':
-        specifier: workspace:*
-        version: link:../../tooling/eslint
       '@ziron/queue':
         specifier: workspace:*
         version: link:../../packages/queue
       '@ziron/redis':
         specifier: workspace:*
         version: link:../../packages/redis
-      '@ziron/typescript-config':
-        specifier: workspace:*
-        version: link:../../tooling/typescript
       '@ziron/validators':
         specifier: workspace:*
         version: link:../../packages/validators
@@ -170,6 +164,12 @@ importers:
         specifier: ^5.56.3
         version: 5.56.3
     devDependencies:
+      '@ziron/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      '@ziron/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
       tsup:
         specifier: ^8.5.0
         version: 8.5.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.20.3)(typescript@5.8.3)

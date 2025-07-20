@@ -1,6 +1,6 @@
 import { and, eq, isNull, lt } from "drizzle-orm";
 
-import { db } from "@ziron/db";
+import { db } from "@ziron/db/client";
 import { notificationsTable } from "@ziron/db/schema";
 import { JobData, JobType } from "@ziron/queue";
 import redis from "@ziron/redis";

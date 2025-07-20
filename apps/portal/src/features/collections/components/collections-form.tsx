@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { Header } from "@/components/layout/header";
 import { useRouter } from "@bprogress/next";
 import { IconCheck, IconDeviceFloppy } from "@tabler/icons-react";
@@ -30,6 +30,7 @@ interface Props {
 const LOCAL_STORAGE_KEY = "collection-form-draft";
 
 export const CollectionForm = ({ isEditMode, initialData }: Props) => {
+  console.log("initial form data", initialData);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -59,9 +60,14 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
   });
   const isArchived = initialData?.settings?.status === "archived";
 
-  form.watch((values) => {
-    setDraft(values as Partial<CollectionFormType>);
-  });
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      if (!isEditMode) {
+        setDraft(values as Partial<CollectionFormType>);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form, isEditMode, setDraft]);
 
   function onSubmit(values: CollectionFormType) {
     startTransition(async () => {

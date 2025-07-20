@@ -78,18 +78,57 @@ export const redisCache = {
     }
   },
 
-  async getStats(): Promise<{ totalKeys: number; memoryUsage: string } | null> {
+  async getStats(): Promise<{
+    totalKeys: number;
+    memoryUsage: string;
+    evictedKeys: number;
+    uptimeSeconds: number;
+    peakMemoryUsage: string;
+    maxMemoryPolicy: string;
+  } | null> {
     try {
-      const info = await redis.info("memory");
+      const infoMemoryRaw = await redis.info("memory");
+      const infoStatsRaw = await redis.info("stats");
+      const infoServerRaw = await redis.info("server");
+      const infoMemory = typeof infoMemoryRaw === "string" ? infoMemoryRaw : "";
+      const infoStats = typeof infoStatsRaw === "string" ? infoStatsRaw : "";
+      const infoServer = typeof infoServerRaw === "string" ? infoServerRaw : "";
       const keys = await redis.dbsize();
 
-      // Parse memory info to get used memory
-      const memoryMatch = info.match(/used_memory_human:(\S+)/);
+      // Parse memory info
+      const memoryMatch = infoMemory.match(/used_memory_human:(\S+)/);
       const memoryUsage = memoryMatch?.[1] || "unknown";
+      const peakMemoryMatch =
+        (infoMemory ?? "").match(/peak_memory_human:(\S+)/) ||
+        (infoMemory ?? "").match(/used_memory_peak_human:(\S+)/);
+      const peakMemoryUsage = peakMemoryMatch?.[1] || "unknown";
+      const maxMemoryPolicyMatch = (infoMemory ?? "").match(
+        /maxmemory_policy:(\S+)/,
+      );
+      const maxMemoryPolicy = maxMemoryPolicyMatch?.[1] || "unknown";
+
+      // Parse stats info
+      const evictedKeysMatch = infoStats.match(/evicted_keys:(\d+)/);
+
+      const evictedKeys =
+        evictedKeysMatch && evictedKeysMatch[1] !== undefined
+          ? parseInt(evictedKeysMatch[1], 10)
+          : 0;
+
+      // Parse server info
+      const uptimeMatch = infoServer.match(/uptime_in_seconds:(\d+)/);
+      const uptimeSeconds =
+        uptimeMatch && uptimeMatch[1] !== undefined
+          ? parseInt(uptimeMatch[1], 10)
+          : 0;
 
       return {
         totalKeys: keys,
         memoryUsage,
+        evictedKeys,
+        uptimeSeconds,
+        peakMemoryUsage,
+        maxMemoryPolicy,
       };
     } catch (error) {
       console.error("Redis stats error:", error);

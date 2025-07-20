@@ -44,6 +44,7 @@ export default async function CollectionPage({ params }: { params: Params }) {
 
   const collection = id !== "new" && (await getCollectionById(id));
   const initialData = transformCollectionToFormType(collection);
+  console.log("initial data from the page", initialData);
 
   return (
     <MainWrapper>

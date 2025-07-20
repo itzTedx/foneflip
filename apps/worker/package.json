@@ -4,23 +4,24 @@
   "type": "module",
   "scripts": {
     "build": "tsup --clean",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
     "check-types": "tsc --noEmit",
     "dev": "pnpm with-env tsup --watch --onSuccess \"pnpm start\"",
     "lint": "eslint .",
-    "start": "node dist/index.js",
+    "start": "ts-node dist/index.js",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
     "@ziron/db": "workspace:*",
-    "@ziron/eslint-config": "workspace:*",
     "@ziron/queue": "workspace:*",
     "@ziron/redis": "workspace:*",
-    "@ziron/typescript-config": "workspace:*",
     "@ziron/validators": "workspace:*",
     "bullmq": "^5.56.3"
   },
   "devDependencies": {
+    "@ziron/eslint-config": "workspace:*",
+    "@ziron/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "catalog:"
   }
