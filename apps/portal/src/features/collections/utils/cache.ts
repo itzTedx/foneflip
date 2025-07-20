@@ -252,6 +252,7 @@ export const revalidateCollectionCaches = (
     revalidateTag(`${CACHE_TAGS.COLLECTION_BY_SLUG}:${slug}`);
   }
 
+  revalidatePath("/");
   revalidatePath("/collections");
   revalidatePath("/collections/[slug]", "page");
   revalidatePath("/products");
