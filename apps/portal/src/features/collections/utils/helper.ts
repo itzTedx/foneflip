@@ -16,7 +16,7 @@ export const getDefaultValues = (): CollectionFormType => {
       keywords: "",
     },
     settings: {
-      status: "draft",
+      status: "active",
       isFeatured: false,
       layout: "grid",
       showLabel: true,

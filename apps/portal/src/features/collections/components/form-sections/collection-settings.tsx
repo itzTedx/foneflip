@@ -1,20 +1,21 @@
 "use client";
 
-import Image from "next/image";
 import { memo } from "react";
-
+import Image from "next/image";
+import { TabNavigation } from "@/components/layout/tab-navigation";
+import { InfoTooltip } from "@/components/ui/tooltip";
 import { IconSpeakerphone } from "@tabler/icons-react";
 import { CheckIcon, MinusIcon } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
-import { InfoTooltip } from "@/components/atom/tooltip";
+import { IconDot } from "@ziron/ui/assets/icons";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@ziron/ui/components/card";
 import {
   FormControl,
   FormDescription,
@@ -22,27 +23,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import MultiInput from "@/components/ui/multi-input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "@ziron/ui/components/form";
+import { Input } from "@ziron/ui/components/input";
+import { MultiInput } from "@ziron/ui/components/multi-input";
+import { RadioGroup, RadioGroupItem } from "@ziron/ui/components/radio-group";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { StatusDot } from "@/features/products/components/form-sections/product-settings";
-import { TabNavigation } from "@/features/products/components/tab-navigation";
-import { cn } from "@/lib/utils";
-
-import {
-  CollectionFormType,
-  collectionStatusEnum,
-} from "../../collection-schema";
+} from "@ziron/ui/components/select";
+import { Switch } from "@ziron/ui/components/switch";
+import { Textarea } from "@ziron/ui/components/textarea";
+import { cn } from "@ziron/utils";
+import { CollectionFormType, collectionStatusEnum } from "@ziron/validators";
 
 const layouts = [
   {
@@ -83,13 +78,14 @@ export const CollectionSettings = memo(function CollectionSettings() {
                 <FormItem>
                   <FormLabel htmlFor={field.name}>
                     Status{" "}
-                    <InfoTooltip info="Control whether the collection is live, in draft, or archived." />
+                    <InfoTooltip info="Determines the collection's visibility status. New collections default to 'active', while saving as a draft sets the status to 'draft'." />
                   </FormLabel>
                   <FormControl>
                     <Select
-                      defaultValue={collectionStatusEnum.Enum.draft}
+                      defaultValue={collectionStatusEnum.enum.draft}
                       value={field.value}
                       onValueChange={field.onChange}
+                      disabled
                     >
                       <SelectTrigger
                         id={field.name}
@@ -104,12 +100,12 @@ export const CollectionSettings = memo(function CollectionSettings() {
                         {collectionStatusEnum.options.map((status) => (
                           <SelectItem value={status} key={status}>
                             <span className="flex items-center gap-2">
-                              <StatusDot
+                              <IconDot
                                 className={cn(
                                   "size-2",
                                   status === "active" && "text-emerald-600",
                                   status === "draft" && "text-muted-foreground",
-                                  status === "archived" && "text-destructive"
+                                  status === "archived" && "text-destructive",
                                 )}
                               />
                               <span className="truncate capitalize">

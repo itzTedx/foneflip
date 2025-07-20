@@ -1,9 +1,7 @@
 import { memo } from "react";
+import { TabNavigation } from "@/components/layout/tab-navigation";
 
-import { IconEmpty } from "@/assets/empty";
-import { ProductCard } from "@/features/products/components/product-card";
-import { TabNavigation } from "@/features/products/components/tab-navigation";
-import { ProductType } from "@/server/types";
+import { IconEmpty } from "@ziron/ui/assets/empty";
 
 interface Props {
   products?: ProductType[] | null;
@@ -23,7 +21,7 @@ export const CollectionProducts = memo(function CollectionProducts({
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
             <div key={product.id} className="cursor-pointer">
-              <ProductCard data={product} />
+              {/* <ProductCard data={product} /> */}
             </div>
           ))}
         </div>

@@ -95,39 +95,39 @@ export const getCollections = cache(
 
 export const getCollectionBySlug = cache(
   async (slug: string): Promise<CollectionQueryResult> => {
-    return withCacheMonitoring(
-      async () => {
-        // Try Redis first
-        const cached = await redisCache.get<Collection>(
-          REDIS_KEYS.COLLECTION_BY_SLUG(slug),
-        );
-        if (cached) {
-          return cached;
-        }
-
-        // Fallback to database
-        const collection = await db.query.collectionsTable.findFirst({
-          where: eq(collectionsTable.slug, slug),
-        });
-
-        // Cache the result
-        if (collection) {
-          await redisCache.set(
-            REDIS_KEYS.COLLECTION_BY_SLUG(slug),
-            collection,
-            CACHE_DURATIONS.MEDIUM,
-          );
-        }
-
-        return collection;
-      },
+    // Try Redis first
+    const cached = await redisCache.get<Collection>(
       REDIS_KEYS.COLLECTION_BY_SLUG(slug),
-      false, // This is a miss since we're fetching fresh data
     );
+    if (cached) {
+      return cached;
+    }
+
+    // Fallback to database
+    const collection = await db.query.collectionsTable.findFirst({
+      where: eq(collectionsTable.slug, slug),
+    });
+
+    // Cache the result
+    if (collection) {
+      await redisCache.set(
+        REDIS_KEYS.COLLECTION_BY_SLUG(slug),
+        collection,
+        CACHE_DURATIONS.MEDIUM,
+      );
+    }
+
+    return collection;
   },
-  ["get-collection-by-slug"],
+
+  [CACHE_TAGS.COLLECTION_BY_SLUG, "slug"],
   {
-    tags: [CACHE_TAGS.COLLECTION_BY_SLUG],
+    tags: [
+      CACHE_TAGS.COLLECTION_BY_ID,
+      CACHE_TAGS.COLLECTION,
+      CACHE_TAGS.PRODUCT,
+      CACHE_TAGS.MEDIA,
+    ],
     revalidate: CACHE_DURATIONS.MEDIUM,
   },
 );
@@ -147,6 +147,10 @@ export const getCollectionById = cache(
         // Fallback to database
         const collection = await db.query.collectionsTable.findFirst({
           where: eq(collectionsTable.id, id),
+          with: {
+            seo: true,
+            settings: true,
+          },
         });
 
         // Cache the result
@@ -164,9 +168,14 @@ export const getCollectionById = cache(
       false, // This is a miss since we're fetching fresh data
     );
   },
-  ["get-collection-by-id"],
+  [CACHE_TAGS.COLLECTION_BY_ID, "id"],
   {
-    tags: [CACHE_TAGS.COLLECTION_BY_ID],
+    tags: [
+      CACHE_TAGS.COLLECTION_BY_ID,
+      CACHE_TAGS.COLLECTION,
+      CACHE_TAGS.PRODUCT,
+      CACHE_TAGS.MEDIA,
+    ],
     revalidate: CACHE_DURATIONS.MEDIUM,
   },
 );
@@ -188,58 +197,3 @@ export const getActiveCollections = cache(
     revalidate: CACHE_DURATIONS.MEDIUM,
   },
 );
-
-// Optimistic cache updates
-export const updateCollectionCache = async (
-  collection: Collection,
-  operation: "create" | "update" | "delete" = "update",
-) => {
-  try {
-    if (operation === "delete") {
-      // Remove from cache
-      await redisCache.del(
-        REDIS_KEYS.COLLECTION_BY_SLUG(collection.slug),
-        REDIS_KEYS.COLLECTION_BY_ID(collection.id),
-      );
-    } else {
-      // Update cache optimistically
-      await Promise.all([
-        redisCache.set(
-          REDIS_KEYS.COLLECTION_BY_SLUG(collection.slug),
-          collection,
-          CACHE_DURATIONS.MEDIUM,
-        ),
-        redisCache.set(
-          REDIS_KEYS.COLLECTION_BY_ID(collection.id),
-          collection,
-          CACHE_DURATIONS.MEDIUM,
-        ),
-      ]);
-    }
-
-    // Always invalidate the collections list cache
-    await redisCache.del(REDIS_KEYS.COLLECTIONS);
-  } catch (error) {
-    console.error("Failed to update collection cache:", error);
-    // Don't throw - cache updates should not break the main operation
-  }
-};
-
-// Cache invalidation functions
-export const invalidateCollectionCache = async (slug?: string, id?: string) => {
-  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS];
-
-  if (slug) {
-    keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_SLUG(slug));
-  }
-
-  if (id) {
-    keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_ID(id));
-  }
-
-  await redisCache.del(...keysToInvalidate);
-};
-
-export const invalidateAllCollectionCaches = async () => {
-  await redisCache.invalidatePattern("collection:*");
-};

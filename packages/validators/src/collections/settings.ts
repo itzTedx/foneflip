@@ -27,11 +27,13 @@ export const collectionsSettingsSchema = z.object({
     .array(z.string({ message: "Each tag must be a string" }), {
       message: "Tags must be an array",
     })
+    .optional()
     .optional(),
   internalNotes: z
     .string({ message: "internalNotes must be a string" })
     .max(1000, { message: "internalNotes is too long" })
     .optional(),
+
   customCTA: z
     .string({ message: "customCTA must be a string" })
     .max(40, { message: "customCTA is too long" })

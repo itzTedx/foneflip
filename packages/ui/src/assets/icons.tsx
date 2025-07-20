@@ -1,7 +1,7 @@
 import { JSX, SVGProps } from "react";
 
 export const IconMenu = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ) => {
   return (
     <svg
@@ -34,7 +34,7 @@ export const IconMenu = (
 };
 
 export const IconProducts = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ) => {
   return (
     <svg
@@ -52,7 +52,7 @@ export const IconProducts = (
 };
 
 export const IconDashboard = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ) => {
   return (
     <svg
@@ -75,7 +75,7 @@ export const IconDashboard = (
 };
 
 export const IconOrders = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ) => {
   return (
     <svg
@@ -91,7 +91,7 @@ export const IconOrders = (
 };
 
 export const IconVendors = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ) => {
   return (
     <svg
@@ -109,7 +109,7 @@ export const IconVendors = (
 };
 
 export const IconUsers = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ) => {
   return (
     <svg
@@ -127,7 +127,7 @@ export const IconUsers = (
 };
 
 export const IconChevronDoubleRight = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ) => {
   return (
     <svg
@@ -145,7 +145,7 @@ export const IconChevronDoubleRight = (
 };
 
 export const IconClock = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ) => {
   return (
     <svg
@@ -222,6 +222,24 @@ export const IconClock = (
           stroke="none"
         ></circle>
       </g>
+    </svg>
+  );
+};
+
+export const IconDot = (
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+) => {
+  return (
+    <svg
+      {...props}
+      width="8"
+      height="8"
+      fill="currentColor"
+      viewBox="0 0 8 8"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <circle cx="4" cy="4" r="4" />
     </svg>
   );
 };

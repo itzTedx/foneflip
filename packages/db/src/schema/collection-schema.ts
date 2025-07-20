@@ -6,6 +6,7 @@ import {
   pgEnum,
   pgTable,
   text,
+  uniqueIndex,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -35,10 +36,10 @@ export const collectionsTable = pgTable(
     }),
     ...baseSchema,
   },
-  (table) => ({
-    slugIdx: index("collections_slug_idx").on(table.slug),
-    seoIdIdx: index("collections_seo_id_idx").on(table.seoId),
-  }),
+  (table) => [
+    uniqueIndex("collections_slug_idx").on(table.slug),
+    index("collections_seo_id_idx").on(table.seoId),
+  ],
 );
 
 export const collectionMediaTable = pgTable(
@@ -54,13 +55,11 @@ export const collectionMediaTable = pgTable(
     type: text("type").notNull(),
     ...baseSchema,
   },
-  (table) => ({
-    collectionIdIdx: index("collection_media_collection_id_idx").on(
-      table.collectionId,
-    ),
-    mediaIdIdx: index("collection_media_media_id_idx").on(table.mediaId),
-    typeIdx: index("collection_media_type_idx").on(table.type),
-  }),
+  (table) => [
+    index("collection_media_collection_id_idx").on(table.collectionId),
+    index("collection_media_media_id_idx").on(table.mediaId),
+    index("collection_media_type_idx").on(table.type),
+  ],
 );
 
 export const collectionSettingsTable = pgTable(
@@ -73,22 +72,20 @@ export const collectionSettingsTable = pgTable(
       .references(() => collectionsTable.id, {
         onDelete: "cascade",
       }),
-    status: collectionStatusEnum("status").default("draft"),
-    isFeatured: boolean("featured").notNull().default(false),
-    layout: varchar("layout").default("grid"),
-    showLabel: boolean("show_label").default(true),
-    showBanner: boolean("show_banner").default(false),
+    status: collectionStatusEnum("status").default("draft").notNull(),
+    isFeatured: boolean("featured").default(false).notNull(),
+    layout: varchar("layout").default("grid").notNull(),
+    showLabel: boolean("show_label").default(true).notNull(),
+    showBanner: boolean("show_banner").default(false).notNull(),
     showInNav: boolean("show_in_nav").default(true).notNull(),
-    tags: text("tags").array(),
-    internalNotes: text("internal_notes"),
-    customCTA: varchar("custom_cta"),
+    tags: text("tags").array().default([]).notNull(),
+    internalNotes: text("internal_notes").default("").notNull(),
+    customCTA: varchar("custom_cta").default("").notNull(),
     ...baseSchema,
   },
-  (table) => ({
-    collectionIdIdx: index("collection_settings_collection_id_idx").on(
-      table.collectionId,
-    ),
-  }),
+  (table) => [
+    index("collection_settings_collection_id_idx").on(table.collectionId),
+  ],
 );
 
 export const collectionsRelations = relations(

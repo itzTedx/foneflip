@@ -17,6 +17,8 @@ import { upsertCollection } from "../actions/mutations";
 import { collectionTabs } from "../data/constants";
 import { getDefaultValues } from "../utils/helper";
 import { CollectionDetails } from "./form-sections/collection-details";
+import { CollectionSEO } from "./form-sections/collection-seo";
+import { CollectionSettings } from "./form-sections/collection-settings";
 import { TabsTriggers } from "./ui/tabs";
 
 interface Props {
@@ -79,14 +81,19 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         },
       });
       if (result.success) {
+        const message = (result as { message?: string }).message;
         removeDraft();
+        toast.success(
+          typeof message === "string"
+            ? message
+            : "Collection Updated successfully",
+        );
         router.push("/collections");
       }
-      if (result.error) {
+      if (!result.success) {
+        const message = (result as { message?: string }).message;
         toast.error(
-          typeof result.details === "string"
-            ? result.details
-            : "An error occurred",
+          typeof message === "string" ? message : "An error occurred",
         );
       }
     });
@@ -104,42 +111,64 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
       >
         <Header title={isEditMode ? "Edit Collection" : "Add Collection"}>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              type="button"
-              // onClick={onSaveDraft}
-              disabled={form.formState.isSubmitting || isArchived}
-            >
-              <LoadingSwap
-                isLoading={false}
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
+            {isArchived ? (
+              <Button
+                variant="outline"
+                type="button"
+                // onClick={onSaveDraft}
+                disabled={form.formState.isSubmitting || isArchived}
               >
-                <IconDeviceFloppy className="text-muted-foreground -ml-1 size-4" />
-                <div>
-                  <span className="hidden sm:inline">Save as </span>Draft
-                </div>
-              </LoadingSwap>
-            </Button>
-            <Button
-              type="submit"
-              disabled={form.formState.isSubmitting || isArchived}
-            >
-              <LoadingSwap
-                isLoading={isPending}
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
-              >
-                <IconCheck className="-ml-1 size-4" />
-                {isEditMode ? (
-                  <span>
-                    Save <span className="hidden sm:inline">Changes</span>
-                  </span>
-                ) : (
-                  <span>
-                    Create <span className="hidden sm:inline">Collection</span>
-                  </span>
-                )}
-              </LoadingSwap>
-            </Button>
+                <LoadingSwap
+                  isLoading={false}
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  <IconDeviceFloppy className="text-muted-foreground -ml-1 size-4" />
+                  <div>
+                    <span className="hidden sm:inline">Save as </span>Draft
+                  </div>
+                </LoadingSwap>
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  type="button"
+                  // onClick={onSaveDraft}
+                  disabled={form.formState.isSubmitting || isArchived}
+                >
+                  <LoadingSwap
+                    isLoading={false}
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
+                  >
+                    <IconDeviceFloppy className="text-muted-foreground -ml-1 size-4" />
+                    <div>
+                      <span className="hidden sm:inline">Save as </span>Draft
+                    </div>
+                  </LoadingSwap>
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting || isArchived}
+                >
+                  <LoadingSwap
+                    isLoading={isPending}
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
+                  >
+                    <IconCheck className="-ml-1 size-4" />
+                    {isEditMode ? (
+                      <span>
+                        Save <span className="hidden sm:inline">Changes</span>
+                      </span>
+                    ) : (
+                      <span>
+                        Create{" "}
+                        <span className="hidden sm:inline">Collection</span>
+                      </span>
+                    )}
+                  </LoadingSwap>
+                </Button>
+              </>
+            )}
           </div>
         </Header>
 
@@ -156,10 +185,12 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
               {/* <CollectionProducts products={initialData?.products} /> */}
             </TabsContent>
 
-            <TabsContent value="seo">{/* <CollectionSEO /> */}</TabsContent>
+            <TabsContent value="seo">
+              <CollectionSEO />
+            </TabsContent>
 
             <TabsContent value="settings">
-              {/* <CollectionSettings /> */}
+              <CollectionSettings />
             </TabsContent>
           </div>
         </Tabs>

@@ -1,6 +1,7 @@
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { getCollectionById } from "@/features/collections/actions/queries";
 import { CollectionForm } from "@/features/collections/components/collections-form";
+import { CollectionQueryResult } from "@/features/collections/types";
 
 import type { CollectionFormType } from "@ziron/validators";
 
@@ -8,7 +9,7 @@ type Params = Promise<{ id: string }>;
 
 // Transform database collection to form type
 function transformCollectionToFormType(
-  collection: any,
+  collection: false | CollectionQueryResult,
 ): CollectionFormType | null {
   if (!collection) return null;
 
@@ -20,20 +21,12 @@ function transformCollectionToFormType(
     sortOrder: collection.sortOrder || 0,
     slug: collection.slug,
     meta: {
-      title: "",
-      description: "",
-      keywords: "",
+      title: collection.seo?.metaTitle || undefined,
+      description: collection.seo?.metaDescription || undefined,
+      keywords: collection.seo?.keywords || undefined,
     },
     settings: {
-      status: "draft",
-      isFeatured: false,
-      layout: "grid",
-      showLabel: true,
-      showBanner: false,
-      showInNav: true,
-      tags: [],
-      internalNotes: "",
-      customCTA: "",
+      ...collection.settings,
     },
   };
 }
