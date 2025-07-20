@@ -3,6 +3,7 @@ import { Queue, Worker } from "bullmq";
 import { JobType, QUEUE_NAME } from "@ziron/queue";
 import redis from "@ziron/redis";
 
+import { deleteSoftDeletedCollections } from "./jobs/collections";
 import {
   deleteOldNotifications,
   deleteSoftDeletedNotifications,
@@ -13,6 +14,7 @@ const runners = {
   [JobType.Notification]: runNotification,
   deleteOldNotifications,
   deleteSoftDeletedNotifications,
+  [JobType.DeleteSoftDeletedCollections]: deleteSoftDeletedCollections,
 };
 
 const queue = new Queue(QUEUE_NAME, { connection: redis });
@@ -20,7 +22,7 @@ const queue = new Queue(QUEUE_NAME, { connection: redis });
 (async () => {
   // Add a repeatable job to delete old notifications every day at midnight using BullMQ v5+ API
   await queue.upsertJobScheduler(
-    "delete-old-notifications-scheduler", // unique scheduler id
+    JobType.DeleteSoftDeletedCollections, // unique scheduler id
     { pattern: "0 0 1 * *" }, // every 1st of the month at midnight (approx. every 30 days)
     {
       name: "deleteOldNotifications", // must match the handler name in runners
@@ -38,6 +40,20 @@ const queue = new Queue(QUEUE_NAME, { connection: redis });
     { pattern: "0 1 1 * *" }, // every 1st of the month at 1:00 AM
     {
       name: "deleteSoftDeletedNotifications",
+      data: {},
+      opts: {
+        removeOnComplete: true,
+        removeOnFail: true,
+      },
+    },
+  );
+
+  // Schedule hard deletion of soft-deleted collections every day at 2:00 AM
+  await queue.upsertJobScheduler(
+    "delete-soft-deleted-collections-scheduler",
+    { pattern: "0 2 * * *" }, // every day at 2:00 AM
+    {
+      name: JobType.DeleteSoftDeletedCollections,
       data: {},
       opts: {
         removeOnComplete: true,

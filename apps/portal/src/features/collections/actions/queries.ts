@@ -70,6 +70,10 @@ export const getCollections = cache(
         // Fallback to database
         const collections = await db.query.collectionsTable.findMany({
           where: isNull(collectionsTable.deletedAt),
+          with: {
+            seo: true,
+            settings: true,
+          },
           orderBy: asc(collectionsTable.sortOrder),
         });
 

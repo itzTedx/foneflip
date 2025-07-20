@@ -3,7 +3,7 @@
 import { useEffect, useTransition } from "react";
 import { Header } from "@/components/layout/header";
 import { useRouter } from "@bprogress/next";
-import { IconCheck, IconDeviceFloppy } from "@tabler/icons-react";
+import { IconCheck, IconDeviceFloppy, IconRestore } from "@tabler/icons-react";
 
 import { Button } from "@ziron/ui/components/button";
 import { Form, useForm, zodResolver } from "@ziron/ui/components/form";
@@ -13,7 +13,7 @@ import { Tabs, TabsContent } from "@ziron/ui/components/tabs";
 import { useLocalStorage } from "@ziron/ui/hooks/use-local-storage";
 import { CollectionFormType, collectionSchema } from "@ziron/validators";
 
-import { upsertCollection } from "../actions/mutations";
+import { setCollectionStatus, upsertCollection } from "../actions/mutations";
 import { collectionTabs } from "../data/constants";
 import { getDefaultValues } from "../utils/helper";
 import { CollectionDetails } from "./form-sections/collection-details";
@@ -32,15 +32,17 @@ interface Props {
 const LOCAL_STORAGE_KEY = "collection-form-draft";
 
 export const CollectionForm = ({ isEditMode, initialData }: Props) => {
-  console.log("initial form data", initialData);
+  // console.log("initial form data", initialData);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isRestorePending, startRestoreTransition] = useTransition();
 
   const [draft, setDraft, removeDraft] =
     useLocalStorage<Partial<CollectionFormType> | null>(
       LOCAL_STORAGE_KEY,
       null,
     );
+  const isArchived = initialData?.settings?.status === "archived";
 
   const form = useForm<CollectionFormType>({
     resolver: zodResolver(collectionSchema),
@@ -59,8 +61,8 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         ...(draft?.settings || {}),
       },
     },
+    disabled: isArchived,
   });
-  const isArchived = initialData?.settings?.status === "archived";
 
   useEffect(() => {
     const subscription = form.watch((values) => {
@@ -70,6 +72,27 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
     });
     return () => subscription.unsubscribe();
   }, [form, isEditMode, setDraft]);
+
+  function handleRestore() {
+    startRestoreTransition(async () => {
+      const result = await setCollectionStatus(initialData?.id, "active");
+      if (result.success) {
+        const message = (result as { message?: string }).message;
+
+        toast.success(
+          typeof message === "string"
+            ? message
+            : "Collection status changed successfully",
+        );
+      }
+      if (!result.success) {
+        const message = (result as { message?: string }).message;
+        toast.error(
+          typeof message === "string" ? message : "An error occurred",
+        );
+      }
+    });
+  }
 
   function onSubmit(values: CollectionFormType) {
     startTransition(async () => {
@@ -115,16 +138,17 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
               <Button
                 variant="outline"
                 type="button"
-                // onClick={onSaveDraft}
-                disabled={form.formState.isSubmitting || isArchived}
+                onClick={handleRestore}
+                disabled={form.formState.isSubmitting}
               >
                 <LoadingSwap
-                  isLoading={false}
+                  isLoading={isRestorePending}
                   className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
                 >
-                  <IconDeviceFloppy className="text-muted-foreground -ml-1 size-4" />
+                  <IconRestore className="text-muted-foreground -ml-1 size-4" />
                   <div>
-                    <span className="hidden sm:inline">Save as </span>Draft
+                    Restore{" "}
+                    <span className="hidden sm:inline">from archive</span>
                   </div>
                 </LoadingSwap>
               </Button>
@@ -173,7 +197,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         </Header>
 
         <Tabs defaultValue="details" className="w-full">
-          <TabsTriggers tabTriggers={collectionTabs} />
+          <TabsTriggers tabTriggers={collectionTabs} disabled={isArchived} />
           <div className="px-6">
             <TabsContent value="details">
               <CollectionDetails />

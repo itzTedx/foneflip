@@ -6,6 +6,8 @@ import {
   seoTable,
 } from "@ziron/db/schema";
 
+import { Product } from "../products/types";
+
 // Cache types
 export interface CacheMetrics {
   hitRate: number;
@@ -40,6 +42,7 @@ export type CollectionQueryResult =
   | (Collection & {
       settings?: CollectionSettings;
       seo?: Seo;
+      products?: Product[];
     })
   | undefined;
 export type CollectionsQueryResult = Collection[];

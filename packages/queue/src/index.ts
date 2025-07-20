@@ -9,10 +9,12 @@ export const queue = new Queue(QUEUE_NAME, { connection: redis });
 
 export enum JobType {
   Notification = "notification",
+  DeleteSoftDeletedCollections = "deleteSoftDeletedCollections",
 }
 
 export type JobData = {
   [JobType.Notification]: { userId: string; type: string; message: string };
+  [JobType.DeleteSoftDeletedCollections]: object;
 };
 
 export async function enqueue<T extends JobType>(type: T, data: JobData[T]) {

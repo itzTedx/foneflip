@@ -1,15 +1,17 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { getCollections } from "@/features/collections/actions/queries";
+import { CollectionListSortable } from "@/features/collections/components/sortable-collections";
 import { IconPlus } from "@tabler/icons-react";
 
 import { IconEmpty } from "@ziron/ui/assets/empty";
 import { Button } from "@ziron/ui/components/button";
-import { Card, CardContent } from "@ziron/ui/components/card";
 
 export default async function CollectionsPage() {
   const collections = await getCollections();
+  console.log(collections);
   return (
     <MainWrapper>
       <PageHeader
@@ -49,16 +51,9 @@ async function CollectionsContent({
           Linked Products
         </h2>
       </div>
-      {/* <CollectionListSortable collections={collections} /> */}
-      <div className="grid grid-cols-3 gap-4">
-        {collections.map((col) => (
-          <Card key={col.id}>
-            <CardContent>
-              <Link href={`/collections/${col.id}`}>{col.title}</Link>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Suspense fallback={"Loading..."}>
+        <CollectionListSortable collections={collections} />
+      </Suspense>
     </div>
   );
 }

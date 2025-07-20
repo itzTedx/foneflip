@@ -8,7 +8,8 @@ export type TabTrigger = {
   label: string;
 };
 
-export interface TabsTriggersProps {
+export interface TabsTriggersProps
+  extends Omit<React.ComponentProps<typeof TabsTrigger>, "value"> {
   tabTriggers: readonly TabTrigger[];
   showSettings?: boolean;
   onSettingsClick?: () => void;
@@ -22,6 +23,7 @@ export function TabsTriggers({
   tabTriggers,
   showSettings = true,
   onSettingsClick,
+  ...props
 }: TabsTriggersProps) {
   const handleSettingsClick = useCallback(() => {
     onSettingsClick?.();
@@ -34,7 +36,12 @@ export function TabsTriggers({
       <TabsList className="flex h-auto w-full justify-between gap-2 rounded-none border-b bg-transparent p-0">
         <div className="flex gap-2">
           {tabTriggers.map(({ value, label }) => (
-            <TabsTrigger key={value} value={value} className={tabTriggerClass}>
+            <TabsTrigger
+              key={value}
+              value={value}
+              className={tabTriggerClass}
+              {...props}
+            >
               {label}
             </TabsTrigger>
           ))}

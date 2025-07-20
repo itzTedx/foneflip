@@ -7,6 +7,7 @@ import { db } from "@ziron/db";
 import {
   collectionSettingsTable,
   collectionsTable,
+  collectionStatusEnum,
   seoTable,
 } from "@ziron/db/schema";
 import { slugify } from "@ziron/utils";
@@ -321,5 +322,90 @@ export async function deleteCollection(id: string) {
       error: "Database error",
       message: error instanceof Error ? error.message : error,
     };
+  }
+}
+
+/**
+ * Set the status of a collection by updating its settings.
+ * @param id - The collection ID
+ * @param status - The new status to set
+ */
+export async function setCollectionStatus(
+  id?: string,
+  status?: (typeof collectionStatusEnum)["enumValues"][number],
+) {
+  try {
+    if (!id) {
+      log.warn(`Set status failed: ID not valid`);
+      return {
+        error:
+          "Error updating collection status. Please contact technical support to fix this issue.",
+      };
+    }
+    log.info(`Setting collection status to ${status} for ID: ${id}`);
+    const collection = await db.query.collectionsTable.findFirst({
+      where: eq(collectionsTable.id, id),
+      columns: {
+        id: true,
+        title: true,
+        slug: true,
+      },
+    });
+
+    if (!collection) {
+      log.warn(`Set status failed: Collection with ID ${id} not found.`);
+      return { error: "Collection not found." };
+    }
+
+    await db
+      .update(collectionSettingsTable)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(collectionSettingsTable.collectionId, id));
+
+    // Invalidate both Next.js and Redis caches
+    await invalidateCollectionCaches(collection.id, collection.slug);
+    log.info(
+      `Successfully set collection status to ${status} for: "${collection.title}" (ID: ${id})`,
+    );
+    return {
+      success: `Collection (${collection.title}) has been set to ${status}`,
+      data: collection,
+    };
+  } catch (err) {
+    log.error(`Error in setCollectionStatus action for ID: ${id}`, {
+      error: err,
+      message: err instanceof Error ? err.message : "Unknown error occurred",
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    const message =
+      err instanceof Error ? err.message : "Unknown error occurred";
+    return { error: `Failed to set collection status: ${message}` };
+  }
+}
+
+/**
+ * Update the sort order of multiple collections.
+ * @param orders - Array of objects with id and sortOrder
+ */
+export async function updateCollectionsOrder({
+  orders,
+}: {
+  orders: { id: string; sortOrder: number }[];
+}) {
+  try {
+    log.info("Updating collections order", { orders });
+    for (const { id, sortOrder } of orders) {
+      await db
+        .update(collectionsTable)
+        .set({ sortOrder })
+        .where(eq(collectionsTable.id, id));
+    }
+    // Invalidate both Next.js and Redis caches
+    await invalidateCollectionCaches();
+    log.info("Successfully updated collections order");
+    return { success: true };
+  } catch (err) {
+    log.error("Error updating collection order", err);
+    return { error: err instanceof Error ? err.message : "Unknown error" };
   }
 }
