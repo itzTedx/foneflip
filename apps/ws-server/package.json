@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "pnpm with-env ts-node index.ts",
-    "with-env": "dotenv -e ../../.env --"
+    "with-env": "dotenv -e ../../.env --",
+    "clean": "git clean -xdf .cache .turbo dist node_modules"
   },
   "keywords": [],
   "author": "",

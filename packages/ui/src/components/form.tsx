@@ -166,6 +166,7 @@ export {
   FormLabel,
   FormMessage,
   useForm,
+  useFormContext,
   useFormField,
   zodResolver,
 };
