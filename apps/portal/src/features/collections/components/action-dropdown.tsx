@@ -33,7 +33,11 @@ import {
   DropdownMenuTrigger,
 } from "@ziron/ui/components/dropdown-menu";
 
-import { deleteCollection, setCollectionStatus } from "../actions/mutations";
+import {
+  deleteCollection,
+  duplicateCollection,
+  setCollectionStatus,
+} from "../actions/mutations";
 
 interface Props {
   slug: string;
@@ -77,8 +81,30 @@ const ConfirmDialog = ({
 export const ActionDropdown = ({ slug, id, status }: Props) => {
   const [isDeletePending, startDeleteTransition] = useTransition();
   const [isStatusPending, startStatusTransition] = useTransition();
+  const [isDuplicatePending, startDuplicateTransition] = useTransition();
   const router = useRouter();
   const [dialog, setDialog] = useState<DialogType>(null);
+
+  function handleDuplicate() {
+    startDuplicateTransition(async () => {
+      const result = await duplicateCollection(id);
+      if (result.success) {
+        router.refresh();
+        const message = (result as { message?: string }).message;
+        toast.success(
+          typeof message === "string"
+            ? message
+            : "Collection Duplicated successfully",
+        );
+      }
+      if (!result.success) {
+        const message = (result as { message?: string }).message;
+        toast.error(
+          typeof message === "string" ? message : "An error occurred",
+        );
+      }
+    });
+  }
 
   function handleDelete() {
     startDeleteTransition(async () => {
@@ -86,6 +112,7 @@ export const ActionDropdown = ({ slug, id, status }: Props) => {
       if (result.success) {
         const message = (result as { message?: string }).message;
         setDialog(null);
+        router.refresh();
         toast.success(
           typeof message === "string"
             ? message
@@ -111,6 +138,7 @@ export const ActionDropdown = ({ slug, id, status }: Props) => {
       if (result.success) {
         const message = (result as { message?: string }).message;
         setDialog(null);
+        router.refresh();
         toast.success(
           typeof message === "string"
             ? message
@@ -156,7 +184,10 @@ export const ActionDropdown = ({ slug, id, status }: Props) => {
                 <span>Edit</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem aria-label="Duplicate collection">
+            <DropdownMenuItem
+              onClick={handleDuplicate}
+              aria-label="Duplicate collection"
+            >
               <IconCopy size={16} className="opacity-60" aria-hidden="true" />
               <span>Duplicate</span>
             </DropdownMenuItem>

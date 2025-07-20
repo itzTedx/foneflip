@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@ziron/db";
 import {
+  collectionMediaTable,
   collectionSettingsTable,
   collectionsTable,
   collectionStatusEnum,
@@ -407,5 +408,148 @@ export async function updateCollectionsOrder({
   } catch (err) {
     log.error("Error updating collection order", err);
     return { error: err instanceof Error ? err.message : "Unknown error" };
+  }
+}
+
+/**
+ * Duplicate a collection, including its SEO, settings, and media, with a new slug and title.
+ * @param id - The collection ID to duplicate
+ */
+export async function duplicateCollection(id: string) {
+  log.info(`Duplicating collection with ID: ${id}`);
+  try {
+    // Fetch the original collection with relations
+    const originalCollection = await db.query.collectionsTable.findFirst({
+      where: eq(collectionsTable.id, id),
+      with: {
+        collectionMedia: true,
+        seo: true,
+        settings: true,
+      },
+    });
+
+    if (!originalCollection) {
+      log.warn(`Collection with ID ${id} not found for duplication`);
+      return { error: "Collection not found" };
+    }
+
+    const duplicatedCollection = await db.transaction(async (trx) => {
+      // Duplicate SEO
+      let newSeoId: string | undefined = undefined;
+      if (originalCollection.seo) {
+        const [newSeo] = await trx
+          .insert(seoTable)
+          .values({
+            metaTitle: originalCollection.seo.metaTitle || "",
+            metaDescription: originalCollection.seo.metaDescription || "",
+            keywords: originalCollection.seo.keywords || "",
+            deletedAt: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
+        if (!newSeo) {
+          throw new Error("Failed to duplicate SEO meta");
+        }
+        newSeoId = newSeo!.id;
+      }
+
+      // Generate a unique slug for the duplicate
+      const baseSlug = `${originalCollection.slug}-copy`;
+      const uniqueSlug = await generateUniqueSlug(baseSlug);
+
+      // Create new collection with duplicated data
+      const [newCollection] = await trx
+        .insert(collectionsTable)
+        .values({
+          title: `${originalCollection.title} (Copy)`,
+          description: originalCollection.description,
+          label: originalCollection.label,
+          slug: uniqueSlug,
+          sortOrder: (originalCollection.sortOrder || 0) + 1,
+          seoId: newSeoId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+      if (!newCollection) {
+        throw new Error("Failed to duplicate collection - no data returned");
+      }
+
+      // Duplicate settings
+      if (originalCollection.settings) {
+        await trx.insert(collectionSettingsTable).values({
+          collectionId: newCollection.id,
+          status: "draft", // Always set duplicated collections as draft
+          isFeatured: originalCollection.settings.isFeatured,
+          layout: originalCollection.settings.layout,
+          showLabel: originalCollection.settings.showLabel,
+          showBanner: originalCollection.settings.showBanner,
+          showInNav: originalCollection.settings.showInNav,
+          tags: originalCollection.settings.tags,
+          internalNotes: originalCollection.settings.internalNotes,
+          customCTA: originalCollection.settings.customCTA,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+        });
+      }
+
+      // Duplicate media
+      if (
+        originalCollection.collectionMedia &&
+        Array.isArray(originalCollection.collectionMedia)
+      ) {
+        for (const mediaItem of originalCollection.collectionMedia) {
+          await trx.insert(collectionMediaTable).values({
+            collectionId: newCollection.id,
+            mediaId: mediaItem.mediaId,
+            type: mediaItem.type,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            deletedAt: null,
+          });
+        }
+      }
+
+      log.info("Collection duplicated successfully", { id: newCollection!.id });
+      return newCollection;
+    });
+
+    if (!duplicatedCollection) {
+      throw new Error(
+        "Failed to duplicate collection - transaction returned no data",
+      );
+    }
+    // Invalidate all related caches (Next.js and Redis)
+    await invalidateCollectionCaches(
+      duplicatedCollection.id,
+      duplicatedCollection.slug,
+    );
+    log.info(
+      "Invalidated all collection-related caches for duplicated collection",
+    );
+    // Optionally revalidate Next.js paths/tags (already handled in invalidateCollectionCaches)
+    revalidateCollectionCaches(
+      duplicatedCollection.id,
+      duplicatedCollection.slug,
+    );
+    log.info(
+      "Revalidated all collection-related caches for duplicated collection",
+    );
+
+    return {
+      success: `Collection \"${originalCollection.title}\" has been duplicated`,
+      data: duplicatedCollection,
+    };
+  } catch (err) {
+    log.error("Error in duplicateCollection action", {
+      error: err,
+      message: err instanceof Error ? err.message : "Unknown error occurred",
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    const message =
+      err instanceof Error ? err.message : "Unknown error occurred";
+    return { error: `Failed to duplicate collection: ${message}` };
   }
 }
