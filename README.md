@@ -43,6 +43,7 @@ A modern, scalable monorepo for building web applications with a focus on e-comm
 apps/
   portal/         # Main admin dashboard (Next.js)
   ws-server/      # WebSocket server for real-time features
+  worker/         # Background job processor (BullMQ)
 packages/
   auth/           # Authentication logic and providers
   db/             # Database schema and ORM
@@ -122,6 +123,7 @@ This runs all apps/packages in development mode using TurboRepo.
 
 - **portal**: The main admin dashboard for managing products, collections, orders, users, and vendors. Built with Next.js and React.
 - **ws-server**: WebSocket server for real-time features (e.g., live updates, notifications).
+- **worker**: Background job processor for scheduled and queued tasks (e.g., notifications, cleanup, data maintenance) using BullMQ and Redis.
 
 ---
 
@@ -201,6 +203,28 @@ Common scripts (run from the repo root):
 - Powers live features in the admin dashboard and potentially customer-facing apps.
 - Enables instant updates for orders, inventory changes, or support chat.
 - Improves user engagement and operational responsiveness.
+
+---
+
+#### 3. `apps/worker` (Worker App)
+
+**Technical:**
+
+- Node.js background worker using BullMQ for job and queue management.
+- Consumes jobs from a central queue (via Redis) and runs scheduled or on-demand background tasks.
+- Handles jobs such as:
+  - Sending and managing notifications (including live push via Redis pub/sub)
+  - Soft- and hard-deleting old notifications and collections based on business rules
+  - Scheduling recurring jobs (e.g., cleanup tasks) using cron-like patterns
+- Integrates with `@ziron/db` for database access, `@ziron/queue` for job types, and `@ziron/validators` for data validation.
+- Built and managed with TypeScript, tsup, and a shared lint/config setup.
+
+**Business:**
+
+- Automates critical maintenance and cleanup tasks (e.g., deleting old or soft-deleted data) to keep the system performant and compliant.
+- Ensures admins are notified of important system events (like permanent deletion of collections).
+- Reduces manual intervention and risk of data bloat or missed notifications.
+- Frees up the main application for user-facing tasks by offloading heavy or scheduled work to a dedicated process.
 
 ---
 
