@@ -15,7 +15,7 @@ export const collectionSchema = z.object({
   label: z.string().optional(),
   sortOrder: z.number().optional(),
 
-  slug: z.string(),
+  slug: z.string().optional(),
 
   thumbnail: mediaSchema.optional(),
   banner: mediaSchema.optional(),

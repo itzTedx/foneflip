@@ -1,5 +1,6 @@
 "use server";
 
+import { requireUser } from "@/features/auth/actions/data-access";
 import { createLog } from "@/lib/utils";
 
 import { db, desc, eq, isNull } from "@ziron/db";
@@ -33,6 +34,8 @@ import {
 const log = createLog("Collection");
 
 export async function upsertCollection(formData: unknown) {
+  await requireUser();
+
   log.info("Received upsertCollection request", { formData });
   const { success, data, error } = collectionSchema.safeParse(formData);
   if (!success) {
@@ -157,7 +160,7 @@ export async function upsertCollection(formData: unknown) {
       log.info("upsertCollection succeeded", { collection });
       return {
         success: true,
-        collection,
+        message: `${collection.title} has been ${data.id ? "updated" : "created"}`,
       };
     });
   } catch (error) {

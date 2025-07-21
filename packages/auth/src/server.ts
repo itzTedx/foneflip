@@ -29,7 +29,7 @@ export function initAuth(options: {
     user: {
       additionalFields: {
         role: {
-          type: ["user", "vendor", "admin"],
+          type: ["user", "vendor", "admin", "dev"],
           input: false,
         },
       },

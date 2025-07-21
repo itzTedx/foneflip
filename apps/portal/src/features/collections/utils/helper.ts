@@ -7,7 +7,7 @@ export const getDefaultValues = (): CollectionFormType => {
     description: "",
     label: "",
     sortOrder: 0,
-    slug: "",
+    slug: undefined,
     thumbnail: undefined,
     banner: undefined,
     meta: {
