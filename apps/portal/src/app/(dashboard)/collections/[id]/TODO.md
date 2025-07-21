@@ -2,8 +2,8 @@
 
 ## 1. Add "Delete Collection" in the Collection Form (Settings Tab)
 
-- [ ] In `CollectionSettings` (`form-sections/collection-settings.tsx`), add a "Delete Collection" button at the bottom (outside or below the last `<Card>`).
-- [ ] Show this button only if `form.getValues("id")` exists (i.e., edit mode).
+- [x] In `CollectionSettings` (`form-sections/collection-settings.tsx`), add a "Delete Collection" button at the bottom (outside or below the last `<Card>`).
+- [x] Show this button only if `form.getValues("id")` exists (i.e., edit mode).
 - [ ] On click, open a confirmation modal (use your UI library’s modal/dialog).
 - [ ] On confirm, call the `deleteCollection(id)` mutation (import from `actions/mutations`).
 - [ ] On success:
