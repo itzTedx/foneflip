@@ -1,9 +1,8 @@
 "use server";
 
 import { createLog } from "@/lib/utils";
-import { eq } from "drizzle-orm";
 
-import { db } from "@ziron/db";
+import { db, desc, eq, isNull } from "@ziron/db";
 import {
   collectionMediaTable,
   collectionSettingsTable,
@@ -14,27 +13,24 @@ import {
 import { slugify } from "@ziron/utils";
 import { collectionSchema, z } from "@ziron/validators";
 
+import { invalidateCollectionCaches } from "../utils/cache";
 import {
-  invalidateCollectionCaches,
-  revalidateCollectionCaches,
-} from "../utils/cache";
+  invalidateAndRevalidateCaches,
+  performOptimisticCacheUpdate,
+  revertOptimisticCache,
+  updateCacheWithResult,
+} from "../utils/cache-helpers";
 import { updateCollectionCache } from "./cache";
-import { existingCollection } from "./queries";
+import {
+  createCollectionSlug,
+  prepareCollectionData,
+  prepareDuplicateCollectionData,
+  prepareDuplicateSettingsData,
+  upsertCollectionSettings,
+  upsertSeoMeta,
+} from "./helpers";
 
 const log = createLog("Collection");
-
-// Helper function to generate a unique slug
-async function generateUniqueSlug(baseSlug: string): Promise<string> {
-  let slug = baseSlug;
-  let counter = 1;
-
-  while (await existingCollection(slug)) {
-    slug = `${baseSlug}-${counter}`;
-    counter++;
-  }
-
-  return slug;
-}
 
 export async function upsertCollection(formData: unknown) {
   log.info("Received upsertCollection request", { formData });
@@ -51,63 +47,24 @@ export async function upsertCollection(formData: unknown) {
   try {
     return await db.transaction(async (tx) => {
       // --- Prepare collection data ---
-      const baseSlug = data.slug ?? slugify(data.title);
-      const uniqueSlug = await generateUniqueSlug(baseSlug);
+      const uniqueSlug = await createCollectionSlug({
+        title: data.title,
+        customSlug: data.slug,
+      });
 
       // --- Upsert SEO meta ---
       let seoId: string | undefined = undefined;
       if (data.meta) {
-        let seoRow;
-        if (data.id) {
-          // Try to find existing SEO row by collection id
-          const existing = await tx.query.collectionsTable.findFirst({
-            where: eq(collectionsTable.id, data.id),
-          });
-          if (existing?.seoId) {
-            // Update existing SEO row
-            [seoRow] = await tx
-              .update(seoTable)
-              .set({
-                metaTitle: data.meta.title,
-                metaDescription: data.meta.description,
-                keywords: data.meta.keywords,
-                deletedAt: null,
-                updatedAt: new Date(),
-              })
-              .where(eq(seoTable.id, existing.seoId))
-              .returning();
-          }
-        }
-        if (!seoRow) {
-          // Insert new SEO row
-          [seoRow] = await tx
-            .insert(seoTable)
-            .values({
-              metaTitle: data.meta.title,
-              metaDescription: data.meta.description,
-              keywords: data.meta.keywords,
-              deletedAt: null,
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            })
-            .returning();
-        }
-        if (!seoRow) {
-          throw new Error("Failed to upsert SEO meta");
-        }
-        seoId = seoRow.id;
+        const seoResult = await upsertSeoMeta({
+          collectionId: data.id,
+          meta: data.meta,
+          transaction: tx,
+        });
+        seoId = seoResult.seoId;
       }
 
       // --- Prepare collection data ---
-      const collectionData: {
-        id?: string;
-        title: string;
-        description?: string;
-        label?: string;
-        slug: string;
-        sortOrder?: number;
-        seoId?: string;
-      } = {
+      const collectionData = prepareCollectionData({
         id: data.id,
         title: data.title,
         description: data.description,
@@ -115,7 +72,7 @@ export async function upsertCollection(formData: unknown) {
         slug: uniqueSlug,
         sortOrder: data.sortOrder,
         seoId,
-      };
+      });
 
       log.info("Prepared collection data", { collectionData });
 
@@ -128,7 +85,10 @@ export async function upsertCollection(formData: unknown) {
             createdAt: new Date(),
             updatedAt: new Date(),
           };
-          await updateCollectionCache(optimisticData as any, "update");
+          await performOptimisticCacheUpdate({
+            collection: optimisticData as any,
+            operation: "update",
+          });
           log.info("Applied optimistic cache update", { id: data.id });
         } catch (cacheError) {
           log.warn("Optimistic cache update failed", { cacheError });
@@ -162,30 +122,18 @@ export async function upsertCollection(formData: unknown) {
 
       // --- Upsert collection settings ---
       if (data.settings) {
-        const settingsData = {
-          ...data.settings,
-          collectionId: collection.id,
-          deletedAt: null,
-          updatedAt: new Date(),
-        };
-        // Try update first
-        const [existingSettings] = await tx
-          .update(collectionSettingsTable)
-          .set(settingsData)
-          .where(eq(collectionSettingsTable.collectionId, collection.id))
-          .returning();
-        if (!existingSettings) {
-          // Insert if not exists
-          await tx.insert(collectionSettingsTable).values({
-            ...settingsData,
-            createdAt: new Date(),
-          });
-        }
+        await upsertCollectionSettings(
+          {
+            collectionId: collection.id,
+            ...data.settings,
+          },
+          tx,
+        );
       }
 
       // Update cache with the actual result
       try {
-        await updateCollectionCache(collection, data.id ? "update" : "create");
+        await updateCacheWithResult(collection, data.id ? "update" : "create");
         log.info("Updated cache with actual collection data", {
           id: collection.id,
           slug: collection.slug,
@@ -201,13 +149,10 @@ export async function upsertCollection(formData: unknown) {
         id: collection.id,
         slug: collection.slug,
       });
-      await invalidateCollectionCaches(collection.id, collection.slug);
-
-      log.info("Revalidating collection caches", {
+      await invalidateAndRevalidateCaches({
         id: collection.id,
         slug: collection.slug,
       });
-      revalidateCollectionCaches(collection.id, collection.slug);
 
       log.info("upsertCollection succeeded", { collection });
       return {
@@ -222,7 +167,10 @@ export async function upsertCollection(formData: unknown) {
     if (data.id) {
       try {
         const baseSlug = data.slug ?? slugify(data.title);
-        await invalidateCollectionCaches(data.id, baseSlug);
+        await revertOptimisticCache({
+          id: data.id,
+          slug: baseSlug,
+        });
         log.info("Reverted optimistic cache updates due to error");
       } catch (cacheError) {
         log.warn("Failed to revert optimistic cache updates", { cacheError });
@@ -455,44 +403,38 @@ export async function duplicateCollection(id: string) {
       }
 
       // Generate a unique slug for the duplicate
-      const baseSlug = `${originalCollection.slug}-copy`;
-      const uniqueSlug = await generateUniqueSlug(baseSlug);
+      const uniqueSlug = await createCollectionSlug({
+        title: originalCollection.title,
+        customSlug: `${originalCollection.slug}-copy`,
+      });
 
       // Create new collection with duplicated data
+      const collectionData = prepareDuplicateCollectionData(
+        originalCollection,
+        uniqueSlug,
+        newSeoId,
+      );
+
       const [newCollection] = await trx
         .insert(collectionsTable)
         .values({
-          title: `${originalCollection.title} (Copy)`,
-          description: originalCollection.description,
-          label: originalCollection.label,
-          slug: uniqueSlug,
-          sortOrder: (originalCollection.sortOrder || 0) + 1,
-          seoId: newSeoId,
+          ...collectionData,
           createdAt: new Date(),
           updatedAt: new Date(),
         })
         .returning();
+
       if (!newCollection) {
         throw new Error("Failed to duplicate collection - no data returned");
       }
 
       // Duplicate settings
       if (originalCollection.settings) {
-        await trx.insert(collectionSettingsTable).values({
-          collectionId: newCollection.id,
-          status: "draft", // Always set duplicated collections as draft
-          isFeatured: originalCollection.settings.isFeatured,
-          layout: originalCollection.settings.layout,
-          showLabel: originalCollection.settings.showLabel,
-          showBanner: originalCollection.settings.showBanner,
-          showInNav: originalCollection.settings.showInNav,
-          tags: originalCollection.settings.tags,
-          internalNotes: originalCollection.settings.internalNotes,
-          customCTA: originalCollection.settings.customCTA,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          deletedAt: null,
-        });
+        const settingsData = prepareDuplicateSettingsData(
+          originalCollection.settings,
+          newCollection.id,
+        );
+        await upsertCollectionSettings(settingsData, trx);
       }
 
       // Duplicate media
@@ -521,22 +463,12 @@ export async function duplicateCollection(id: string) {
         "Failed to duplicate collection - transaction returned no data",
       );
     }
+
     // Invalidate all related caches (Next.js and Redis)
-    await invalidateCollectionCaches(
-      duplicatedCollection.id,
-      duplicatedCollection.slug,
-    );
-    log.info(
-      "Invalidated all collection-related caches for duplicated collection",
-    );
-    // Optionally revalidate Next.js paths/tags (already handled in invalidateCollectionCaches)
-    revalidateCollectionCaches(
-      duplicatedCollection.id,
-      duplicatedCollection.slug,
-    );
-    log.info(
-      "Revalidated all collection-related caches for duplicated collection",
-    );
+    await invalidateAndRevalidateCaches({
+      id: duplicatedCollection.id,
+      slug: duplicatedCollection.slug,
+    });
 
     return {
       success: `Collection \"${originalCollection.title}\" has been duplicated`,
@@ -551,5 +483,172 @@ export async function duplicateCollection(id: string) {
     const message =
       err instanceof Error ? err.message : "Unknown error occurred";
     return { error: `Failed to duplicate collection: ${message}` };
+  }
+}
+
+/**
+ * Save a collection as draft. This always sets settings.status to 'draft'.
+ * @param formData - The collection data (partial or full)
+ * @param user - The user object (must contain userId)
+ */
+export async function saveCollectionDraft(formData: unknown) {
+  // Parse and validate using the same schema as upsertCollection
+  const { success, data, error } = collectionSchema.safeParse(formData);
+  if (!success) {
+    log.warn("Validation failed for saveCollectionDraft", { error });
+    return {
+      success: false,
+      error: "Invalid data",
+      message: z.prettifyError(error),
+    };
+  }
+
+  const {
+    id,
+    title,
+    description,
+    label,
+    slug,
+    sortOrder,
+    meta,
+    settings = {},
+    thumbnail,
+    banner,
+    ...restOfData
+  } = data;
+
+  try {
+    log.info("Draft collection action started", { id, title });
+
+    // --- Determine sortOrder for new draft collections ---
+    let sortOrderToUse: number | undefined = undefined;
+    if (!id) {
+      const maxSortOrderResult = await db.query.collectionsTable.findFirst({
+        where: isNull(collectionsTable.deletedAt),
+        orderBy: desc(collectionsTable.sortOrder),
+        columns: { sortOrder: true },
+      });
+      sortOrderToUse = (maxSortOrderResult?.sortOrder ?? 0) + 1;
+    }
+
+    const collection = await db.transaction(async (trx) => {
+      // --- Upsert SEO meta ---
+      let seo;
+      const safeMeta = meta || { title: "", description: "", keywords: "" };
+      if (id) {
+        const existingCollection = await trx.query.collectionsTable.findFirst({
+          where: eq(collectionsTable.id, id),
+        });
+        seo = await upsertSeoMeta({
+          collectionId: id,
+          meta: safeMeta,
+          transaction: trx,
+        });
+      } else {
+        seo = await upsertSeoMeta({
+          meta: safeMeta,
+          transaction: trx,
+        });
+      }
+
+      // --- Upsert collection ---
+      const [savedCollection] = await trx
+        .insert(collectionsTable)
+        .values({
+          id,
+          title: title || "Untitled Collection",
+          description,
+          label,
+          slug: slug || (title ? slugify(title) : `draft-${Date.now()}`),
+          sortOrder: sortOrderToUse !== undefined ? sortOrderToUse : sortOrder,
+          seoId: seo.seoId,
+          ...restOfData,
+          updatedAt: new Date(),
+          createdAt: id ? undefined : new Date(),
+        })
+        .onConflictDoUpdate({
+          target: collectionsTable.id,
+          set: {
+            title: title || "Untitled Collection",
+            description,
+            label,
+            slug: slug || (title ? slugify(title) : `draft-${Date.now()}`),
+            sortOrder:
+              sortOrderToUse !== undefined ? sortOrderToUse : sortOrder,
+            seoId: seo.seoId,
+            updatedAt: new Date(),
+          },
+        })
+        .returning();
+      if (!savedCollection)
+        throw new Error("Failed to save collection draft data");
+
+      // --- Upsert collection settings ---
+      await upsertCollectionSettings(
+        {
+          collectionId: savedCollection.id,
+          ...settings,
+          status: "draft",
+        },
+        trx,
+      );
+
+      // --- Upsert media (thumbnail, banner) ---
+      // Remove existing media for this collection (for simplicity)
+      await trx
+        .delete(collectionMediaTable)
+        .where(eq(collectionMediaTable.collectionId, savedCollection.id));
+      const mediaToInsert = [];
+      if (thumbnail && typeof thumbnail.url === "string") {
+        // Insert thumbnail media
+        const [mediaRow] = await trx
+          .insert(collectionMediaTable)
+          .values({
+            collectionId: savedCollection.id,
+            mediaId: thumbnail.url, // assumes thumbnail.id is the media id
+            type: "thumbnail",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            deletedAt: null,
+          })
+          .returning();
+        if (mediaRow) mediaToInsert.push(mediaRow);
+      }
+      if (banner && typeof banner.url === "string") {
+        // Insert banner media
+        const [mediaRow] = await trx
+          .insert(collectionMediaTable)
+          .values({
+            collectionId: savedCollection.id,
+            mediaId: banner.url, // assumes banner.id is the media id
+            type: "banner",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            deletedAt: null,
+          })
+          .returning();
+        if (mediaRow) mediaToInsert.push(mediaRow);
+      }
+
+      log.success(
+        "Transaction completed for draft collection",
+        savedCollection.id,
+      );
+      return savedCollection;
+    });
+
+    await invalidateCollectionCaches(collection.id, collection.slug);
+    log.success("Revalidated all collection-related caches for draft");
+    return {
+      success: true,
+      message: `Collection draft: (${collection.title}) has been ${id ? "updated" : "created"}`,
+      data: collection,
+    };
+  } catch (err) {
+    log.error("Collection draft action error:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
   }
 }

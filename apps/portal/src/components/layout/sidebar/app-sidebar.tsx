@@ -88,7 +88,7 @@ const getNavigationData = (userRole: UserRole) => {
       title: "Cache Monitor",
       url: "/cache-monitor",
       icon: IconWorld, // You can choose a more appropriate icon if available
-      allowedRoles: ["admin", "dev"] as UserRole[],
+      allowedRoles: ["dev"] as UserRole[],
     },
   ];
 

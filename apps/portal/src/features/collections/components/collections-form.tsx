@@ -13,7 +13,11 @@ import { Tabs, TabsContent } from "@ziron/ui/components/tabs";
 import { useLocalStorage } from "@ziron/ui/hooks/use-local-storage";
 import { CollectionFormType, collectionSchema } from "@ziron/validators";
 
-import { setCollectionStatus, upsertCollection } from "../actions/mutations";
+import {
+  saveCollectionDraft,
+  setCollectionStatus,
+  upsertCollection,
+} from "../actions/mutations";
 import { collectionTabs } from "../data/constants";
 import { getDefaultValues } from "../utils/helper";
 import { CollectionDetails } from "./form-sections/collection-details";
@@ -35,6 +39,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
   // console.log("initial form data", initialData);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isDraftPending, startDraftTransition] = useTransition();
   const [isRestorePending, startRestoreTransition] = useTransition();
 
   const [draft, setDraft, removeDraft] =
@@ -122,6 +127,33 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
     });
   }
 
+  function onSaveDraft() {
+    startDraftTransition(async () => {
+      const values = form.getValues();
+      const result = await saveCollectionDraft({
+        ...values,
+        settings: {
+          ...values.settings,
+          status: "draft",
+        },
+      });
+      if (result.success) {
+        const message = (result as { message?: string }).message;
+        removeDraft();
+        toast.success(
+          typeof message === "string" ? message : "Collection Saved on draft",
+        );
+        router.push("/collections");
+      }
+      if (!result.success) {
+        const message = (result as { message?: string }).message;
+        toast.error(
+          typeof message === "string" ? message : "An error occurred",
+        );
+      }
+    });
+  }
+
   // const data = form.watch();
   // const validation = validateForm(data, collectionSchema);
 
@@ -139,7 +171,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
                 variant="outline"
                 type="button"
                 onClick={handleRestore}
-                disabled={form.formState.isSubmitting}
+                disabled={form.formState.isSubmitting || isRestorePending}
               >
                 <LoadingSwap
                   isLoading={isRestorePending}
@@ -157,11 +189,13 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
                 <Button
                   variant="outline"
                   type="button"
-                  // onClick={onSaveDraft}
-                  disabled={form.formState.isSubmitting || isArchived}
+                  onClick={onSaveDraft}
+                  disabled={
+                    form.formState.isSubmitting || isArchived || isDraftPending
+                  }
                 >
                   <LoadingSwap
-                    isLoading={false}
+                    isLoading={isDraftPending}
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
                   >
                     <IconDeviceFloppy className="text-muted-foreground -ml-1 size-4" />

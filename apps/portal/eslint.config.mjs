@@ -6,9 +6,6 @@ import reactConfig from "@ziron/eslint-config/react";
 export default [
   {
     ignores: [".next/**"],
-    rules: {
-      "@typescript-eslint/no-unsafe-assignment": "off",
-    },
   },
   ...baseConfig,
   ...reactConfig,
