@@ -10,7 +10,7 @@ type Params = Promise<{ id: string }>;
 // Transform database collection to form type
 function transformCollectionToFormType(
   collection: false | CollectionQueryResult,
-): CollectionFormType | null {
+): (CollectionFormType & { updatedAt: Date }) | null {
   if (!collection) return null;
 
   return {
@@ -28,6 +28,7 @@ function transformCollectionToFormType(
     settings: {
       ...collection.settings,
     },
+    updatedAt: collection.updatedAt,
   };
 }
 

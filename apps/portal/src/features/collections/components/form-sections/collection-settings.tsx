@@ -9,10 +9,13 @@ import { CheckIcon, MinusIcon } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
 import { IconDot } from "@ziron/ui/assets/icons";
+import { Button } from "@ziron/ui/components/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@ziron/ui/components/card";
@@ -36,7 +39,7 @@ import {
 } from "@ziron/ui/components/select";
 import { Switch } from "@ziron/ui/components/switch";
 import { Textarea } from "@ziron/ui/components/textarea";
-import { cn } from "@ziron/utils";
+import { cn, formatDate } from "@ziron/utils";
 import { CollectionFormType, collectionStatusEnum } from "@ziron/validators";
 
 const layouts = [
@@ -52,7 +55,15 @@ const layouts = [
   },
 ];
 
-export const CollectionSettings = memo(function CollectionSettings() {
+interface Props {
+  isEditMode: boolean;
+  updatedAt?: Date;
+}
+
+export const CollectionSettings = memo(function CollectionSettings({
+  isEditMode,
+  updatedAt,
+}: Props) {
   const form = useFormContext<CollectionFormType>();
 
   return (
@@ -364,6 +375,60 @@ export const CollectionSettings = memo(function CollectionSettings() {
             />
           </CardContent>
         </Card>
+        {isEditMode && (
+          <Card className="h-fit break-inside-avoid">
+            <CardHeader className="flex items-center justify-center">
+              <div className="space-y-1.5">
+                <CardTitle>Archive Collection</CardTitle>
+                <CardDescription>
+                  This action will move the collection to the archive, removing
+                  it from public view. This action is reversible.
+                </CardDescription>
+              </div>
+              <CardAction>
+                <Button variant="outline" type="button">
+                  Move to Archive
+                </Button>
+              </CardAction>
+            </CardHeader>
+          </Card>
+        )}
+        {isEditMode && (
+          <Card className="border-destructive h-fit break-inside-avoid pb-0">
+            <CardHeader>
+              <CardTitle>Delete Collection</CardTitle>
+              <CardDescription>
+                The project will be permanently deleted, including its
+                deployments and domains. This action is irreversible and can not
+                be undone.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-start gap-4">
+                <div className="aspect-5/3 h-16 rounded-sm bg-red-400"></div>
+                <div>
+                  <p>{form.getValues("title")}</p>
+                  {updatedAt && (
+                    <p className="text-xs">
+                      Last Updated{" "}
+                      {formatDate(updatedAt, {
+                        includeTime: true,
+                        relative: true,
+                      })}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="border-destructive bg-destructive/10 justify-end border-t pb-3">
+              <CardAction>
+                <Button variant="destructive" type="button">
+                  Delete
+                </Button>
+              </CardAction>
+            </CardFooter>
+          </Card>
+        )}
       </div>
     </>
   );

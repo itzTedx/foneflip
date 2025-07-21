@@ -101,7 +101,14 @@ const CollectionCard = React.memo(function CollectionCard({
 
   if (collection)
     return (
-      <Card className="grid grid-cols-5 gap-4" key={collection?.id}>
+      <Card
+        className="hover:border-muted-foreground/50 relative grid grid-cols-5 gap-4"
+        key={collection?.id}
+      >
+        <Link
+          className="absolute inset-0 z-0"
+          href={`/collections/${collection.id}?title=${collection.title.replace(" ", "+")}`}
+        ></Link>
         <CardHeader className="col-span-2 flex shrink-0 justify-between">
           <div className="flex gap-3">
             {/* {thumbnail && (
@@ -120,11 +127,7 @@ const CollectionCard = React.memo(function CollectionCard({
           )} */}
             <div className="py-1">
               <CardTitle className="flex items-center gap-2 text-lg font-medium">
-                <Link
-                  href={`/collections/${collection.id}?title=${collection.title.replace(" ", "+")}`}
-                >
-                  {collection.title}{" "}
-                </Link>
+                {collection.title}
                 <StatusBadge status={collection.settings?.status} />
                 {collection.label && <Badge>{collection.label}</Badge>}
                 {collection.settings &&
@@ -179,7 +182,7 @@ const CollectionCard = React.memo(function CollectionCard({
           <Button
             size={"icon"}
             variant={"ghost"}
-            className="text-muted-foreground/60 my-auto size-7"
+            className="text-muted-foreground/60 z-10 my-auto size-7"
             ref={dragHandleRef}
             {...dragHandleProps}
           >

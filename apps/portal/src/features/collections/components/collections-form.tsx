@@ -29,7 +29,7 @@ import { TabsTriggers } from "./ui/tabs";
 interface Props {
   isEditMode: boolean;
   initialData:
-    | CollectionFormType
+    | (CollectionFormType & { updatedAt?: Date })
     // & { products?: ProductType[] }
     | null;
 }
@@ -81,6 +81,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         setDraft(values as Partial<CollectionFormType>);
       }
     });
+    if (isEditMode) removeDraft();
     return () => subscription.unsubscribe();
   }, [form, isEditMode, setDraft]);
 
@@ -254,10 +255,14 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
             </TabsContent>
 
             <TabsContent value="settings">
-              <CollectionSettings />
+              <CollectionSettings
+                updatedAt={initialData?.updatedAt}
+                isEditMode={isEditMode}
+              />
             </TabsContent>
           </div>
         </Tabs>
+        {/* <pre>{JSON.stringify(initialData, null, 2)}</pre> */}
       </form>
     </Form>
   );
