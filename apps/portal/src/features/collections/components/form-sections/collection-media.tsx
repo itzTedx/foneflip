@@ -1,11 +1,12 @@
 "use client";
 
 import type { FileWithPreview } from "@/hooks/use-file-upload";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 import Image from "next/image";
 import { TabNavigation } from "@/components/layout/tab-navigation";
 import { getSignedURL } from "@/features/media/actions/mutations";
 import { computeSHA256 } from "@/features/media/utils/compute-sha256";
+import { getImageMetadata } from "@/features/media/utils/get-image-data";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { IconX } from "@tabler/icons-react";
 import { AlertCircleIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react";
@@ -29,6 +30,7 @@ import {
   FormMessage,
 } from "@ziron/ui/components/form";
 import { Input } from "@ziron/ui/components/input";
+import { Progress } from "@ziron/ui/components/progress";
 import { CollectionFormType } from "@ziron/validators";
 
 // Reusable component for media upload and preview
@@ -60,6 +62,9 @@ function MediaUploadPreview({
     "image/webp",
   ];
 
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
   const handleFilesAdded = async (addedFiles: FileWithPreview[]) => {
     const { data: session } = await authClient.getSession();
     if (!session) return;
@@ -71,23 +76,66 @@ function MediaUploadPreview({
       try {
         const checksum = await computeSHA256(file);
 
-        const signedUrl = await getSignedURL(file.type, file.size, checksum);
+        const signedUrl = await getSignedURL(
+          file.type,
+          file.size,
+          checksum,
+          file.name,
+        );
+
         if (signedUrl.error !== undefined) {
-          form.setError("banner", new Error(signedUrl.message));
+          form.setError(name, new Error(signedUrl.message));
         }
         if (signedUrl.success) {
           const url = signedUrl.success.url;
+          const key = signedUrl.success.key;
 
-          await fetch(url, {
-            method: "PUT",
-            body: file,
-            headers: {
-              "Content-Type": file.type,
-              "Content-Language": file.size.toString(),
-            },
-          });
+          // Get image metadata (blurData, width, height)
+          const metadata = await getImageMetadata(file);
+
+          setIsUploading(true);
+          setUploadProgress(0);
+
+          const xhr = new XMLHttpRequest();
+          xhr.open("PUT", url, true);
+          xhr.setRequestHeader("Content-Type", file.type);
+          xhr.setRequestHeader("Content-Language", file.size.toString());
+
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              setUploadProgress((event.loaded / event.total) * 100);
+            }
+          };
+
+          xhr.onload = () => {
+            setIsUploading(false);
+            setUploadProgress(null);
+            if (xhr.status >= 200 && xhr.status < 300) {
+              form.setValue(name, {
+                url: url.split("?")[0] ?? "",
+                fileName: file.name,
+                fileSize: file.size,
+                blurData: metadata.blurData,
+                height: metadata.height,
+                width: metadata.width,
+                // alt: '', // user can fill in
+              });
+            } else {
+              form.setError(name, new Error("Upload failed"));
+            }
+          };
+
+          xhr.onerror = () => {
+            setIsUploading(false);
+            setUploadProgress(null);
+            form.setError(name, new Error("Upload error"));
+          };
+
+          xhr.send(file);
         }
       } catch (err) {
+        setIsUploading(false);
+        setUploadProgress(null);
         console.error("[MediaUploadPreview] Upload exception:", err);
       }
     }
@@ -123,6 +171,14 @@ function MediaUploadPreview({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {isUploading && (
+          <div className="mb-2">
+            <Progress value={uploadProgress ?? 0} />
+            {/* <div className="text-muted-foreground mt-1 text-xs">
+              {Math.round(uploadProgress ?? 0)}%
+            </div> */}
+          </div>
+        )}
         <FormField
           control={form.control}
           name={name}

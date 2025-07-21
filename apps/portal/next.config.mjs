@@ -9,6 +9,10 @@ const nextConfig = {
     "@ziron/utils",
   ],
 
+  images: {
+    remotePatterns: [{ hostname: "foneflip-local.s3.us-east-1.amazonaws.com" }],
+  },
+
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
 };

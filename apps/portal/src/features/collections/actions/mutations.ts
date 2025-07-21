@@ -34,7 +34,7 @@ import {
 const log = createLog("Collection");
 
 export async function upsertCollection(formData: unknown) {
-  await requireUser();
+  const session = await requireUser();
 
   log.info("Received upsertCollection request", { formData });
   const { success, data, error } = collectionSchema.safeParse(formData);
@@ -146,6 +146,72 @@ export async function upsertCollection(formData: unknown) {
           },
           tx,
         );
+      }
+
+      // --- Upsert media (thumbnail, banner) ---
+      // Remove existing media for this collection (for simplicity)
+      await tx
+        .delete(collectionMediaTable)
+        .where(eq(collectionMediaTable.collectionId, collection.id));
+      const { thumbnail, banner } = data;
+      const mediaToInsert = [];
+      if (thumbnail && typeof thumbnail.url === "string") {
+        const mediaId = await (
+          await import("@/features/media/actions/mutations")
+        ).upsertMedia(
+          {
+            url: thumbnail.url,
+            fileName: thumbnail.fileName ?? undefined,
+            fileSize: thumbnail.fileSize ?? undefined,
+            width: thumbnail.width ?? undefined,
+            height: thumbnail.height ?? undefined,
+            blurData: thumbnail.blurData ?? undefined,
+            alt: thumbnail.alt,
+            userId: session.user.id,
+          },
+          tx,
+        );
+        const [mediaRow] = await tx
+          .insert(collectionMediaTable)
+          .values({
+            collectionId: collection.id,
+            mediaId,
+            type: "thumbnail",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            deletedAt: null,
+          })
+          .returning();
+        if (mediaRow) mediaToInsert.push(mediaRow);
+      }
+      if (banner && typeof banner.url === "string") {
+        const mediaId = await (
+          await import("@/features/media/actions/mutations")
+        ).upsertMedia(
+          {
+            url: banner.url,
+            fileName: banner.fileName ?? undefined,
+            fileSize: banner.fileSize ?? undefined,
+            width: banner.width ?? undefined,
+            height: banner.height ?? undefined,
+            blurData: banner.blurData ?? undefined,
+            alt: banner.alt,
+            userId: session.user.id,
+          },
+          tx,
+        );
+        const [mediaRow] = await tx
+          .insert(collectionMediaTable)
+          .values({
+            collectionId: collection.id,
+            mediaId,
+            type: "banner",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            deletedAt: null,
+          })
+          .returning();
+        if (mediaRow) mediaToInsert.push(mediaRow);
       }
 
       // Update cache with the actual result
@@ -509,6 +575,7 @@ export async function duplicateCollection(id: string) {
  * @param user - The user object (must contain userId)
  */
 export async function saveCollectionDraft(formData: unknown) {
+  const session = await requireUser();
   // Parse and validate using the same schema as upsertCollection
   const { success, data, error } = collectionSchema.safeParse(formData);
   if (!success) {
@@ -617,12 +684,26 @@ export async function saveCollectionDraft(formData: unknown) {
         .where(eq(collectionMediaTable.collectionId, savedCollection.id));
       const mediaToInsert = [];
       if (thumbnail && typeof thumbnail.url === "string") {
-        // Insert thumbnail media
+        const mediaId = await (
+          await import("@/features/media/actions/mutations")
+        ).upsertMedia(
+          {
+            url: thumbnail.url,
+            fileName: thumbnail.fileName ?? undefined,
+            fileSize: thumbnail.fileSize ?? undefined,
+            width: thumbnail.width ?? undefined,
+            height: thumbnail.height ?? undefined,
+            blurData: thumbnail.blurData ?? undefined,
+            alt: thumbnail.alt,
+            userId: session.user.id,
+          },
+          trx,
+        );
         const [mediaRow] = await trx
           .insert(collectionMediaTable)
           .values({
             collectionId: savedCollection.id,
-            mediaId: thumbnail.url, // assumes thumbnail.id is the media id
+            mediaId,
             type: "thumbnail",
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -632,12 +713,26 @@ export async function saveCollectionDraft(formData: unknown) {
         if (mediaRow) mediaToInsert.push(mediaRow);
       }
       if (banner && typeof banner.url === "string") {
-        // Insert banner media
+        const mediaId = await (
+          await import("@/features/media/actions/mutations")
+        ).upsertMedia(
+          {
+            url: banner.url,
+            fileName: banner.fileName ?? undefined,
+            fileSize: banner.fileSize ?? undefined,
+            width: banner.width ?? undefined,
+            height: banner.height ?? undefined,
+            blurData: banner.blurData ?? undefined,
+            alt: banner.alt,
+            userId: session.user.id,
+          },
+          trx,
+        );
         const [mediaRow] = await trx
           .insert(collectionMediaTable)
           .values({
             collectionId: savedCollection.id,
-            mediaId: banner.url, // assumes banner.id is the media id
+            mediaId,
             type: "banner",
             createdAt: new Date(),
             updatedAt: new Date(),

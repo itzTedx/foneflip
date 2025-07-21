@@ -3,11 +3,7 @@ import { unstable_cache as cache } from "next/cache";
 import { asc, db, eq, isNull } from "@ziron/db";
 import { collectionsTable } from "@ziron/db/schema";
 
-import type {
-  Collection,
-  CollectionQueryResult,
-  CollectionsQueryResult,
-} from "../types";
+import type { Collection, CollectionsQueryResult } from "../types";
 import {
   CACHE_DURATIONS,
   CACHE_TAGS,
@@ -17,7 +13,7 @@ import {
 import { withCacheMonitoring } from "../utils/cache-monitor";
 
 export const existingCollection = cache(
-  async (slug: string): Promise<CollectionQueryResult> => {
+  async (slug: string) => {
     return withCacheMonitoring(
       async () => {
         // Try Redis first
@@ -98,7 +94,7 @@ export const getCollections = cache(
 );
 
 export const getCollectionBySlug = cache(
-  async (slug: string): Promise<CollectionQueryResult> => {
+  async (slug: string) => {
     // Try Redis first
     const cached = await redisCache.get<Collection>(
       REDIS_KEYS.COLLECTION_BY_SLUG(slug),
@@ -137,7 +133,7 @@ export const getCollectionBySlug = cache(
 );
 
 export const getCollectionById = cache(
-  async (id: string): Promise<CollectionQueryResult> => {
+  async (id: string) => {
     return withCacheMonitoring(
       async () => {
         // Try Redis first
@@ -154,6 +150,7 @@ export const getCollectionById = cache(
           with: {
             seo: true,
             settings: true,
+            collectionMedia: { with: { media: true } },
           },
         });
 

@@ -1,12 +1,14 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 import {
+  collectionMediaTable,
   collectionSettingsTable,
   collectionsTable,
+  mediaTable,
   seoTable,
 } from "@ziron/db/schema";
 
-import { Product } from "../products/types";
+import { ProductQueryResult } from "../products/types";
 
 // Cache types
 export interface CacheMetrics {
@@ -30,11 +32,13 @@ export interface CacheStats {
 
 // Database types
 export type Seo = InferSelectModel<typeof seoTable>;
+export type Media = InferSelectModel<typeof mediaTable>;
 
 export type Collection = InferSelectModel<typeof collectionsTable>;
 export type CollectionSettings = InferSelectModel<
   typeof collectionSettingsTable
 >;
+export type CollectionMedia = InferSelectModel<typeof collectionMediaTable>;
 export type NewCollection = InferInsertModel<typeof collectionsTable>;
 
 // Query result types
@@ -42,7 +46,10 @@ export type CollectionQueryResult =
   | (Collection & {
       settings?: CollectionSettings;
       seo?: Seo;
-      products?: Product[];
+      products?: ProductQueryResult[];
+      collectionMedia: (CollectionMedia & {
+        media: Media;
+      })[];
     })
   | undefined;
 export type CollectionsQueryResult = Collection[];

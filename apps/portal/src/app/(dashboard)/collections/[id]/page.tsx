@@ -13,6 +13,20 @@ function transformCollectionToFormType(
 ): (CollectionFormType & { updatedAt: Date }) | null {
   if (!collection) return null;
 
+  function toFormMedia(media: any) {
+    if (!media || !media.url) return undefined; // url is required
+    return {
+      url: media.url,
+      fileName: media.fileName ?? undefined,
+      fileSize: media.fileSize ?? undefined,
+      alt: media.alt ?? undefined,
+      width: media.width ?? undefined,
+      height: media.height ?? undefined,
+      blurData: media.blurData ?? undefined,
+      // add other fields as needed
+    };
+  }
+
   return {
     id: collection.id,
     title: collection.title,
@@ -25,6 +39,12 @@ function transformCollectionToFormType(
       description: collection.seo?.metaDescription || undefined,
       keywords: collection.seo?.keywords || undefined,
     },
+    banner: toFormMedia(
+      collection.collectionMedia.find((c) => c.type === "banner")?.media,
+    ),
+    thumbnail: toFormMedia(
+      collection.collectionMedia.find((c) => c.type === "thumbnail")?.media,
+    ),
     settings: {
       ...collection.settings,
     },
@@ -38,7 +58,7 @@ export default async function CollectionPage({ params }: { params: Params }) {
 
   const collection = id !== "new" && (await getCollectionById(id));
   const initialData = transformCollectionToFormType(collection);
-  console.log("initial data from the page", initialData);
+  console.log("initial data from the page", collection);
 
   return (
     <MainWrapper>
