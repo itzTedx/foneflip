@@ -67,6 +67,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         ...(draft?.settings || {}),
       },
     },
+    mode: "onTouched",
     disabled: isArchived,
   });
 
