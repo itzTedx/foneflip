@@ -173,7 +173,7 @@ const CollectionCard = React.memo(function CollectionCard({
             )}
           </div>
         </CardContent>
-        <CardFooter className="gap-2 justify-self-end">
+        <CardFooter className="z-10 gap-2 justify-self-end">
           <ActionDropdown
             title={collection.title}
             id={collection.id ?? ""}

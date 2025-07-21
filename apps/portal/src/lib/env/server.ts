@@ -20,6 +20,11 @@ export const env = createEnv({
     REDIS_PASSWORD: z.string().min(1),
 
     PRODUCTION_URL: z.url(),
+
+    AWS_BUCKET_NAME: z.string().min(1),
+    AWS_BUCKET_REGION: z.string().min(1),
+    AWS_ACCESS_KEY: z.string().min(1),
+    AWS_SECRET_ACCESS_KEY: z.string().min(1),
   },
 
   createFinalSchema: (env) => {

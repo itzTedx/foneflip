@@ -22,6 +22,7 @@ import {
 import { collectionTabs } from "../data/constants";
 import { getDefaultValues } from "../utils/helper";
 import { CollectionDetails } from "./form-sections/collection-details";
+import { CollectionMedia } from "./form-sections/collection-media";
 import { CollectionSEO } from "./form-sections/collection-seo";
 import { CollectionSettings } from "./form-sections/collection-settings";
 import { TabsTriggers } from "./ui/tabs";
@@ -244,7 +245,9 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
               <CollectionDetails />
             </TabsContent>
 
-            <TabsContent value="media">{/* <CollectionMedia /> */}</TabsContent>
+            <TabsContent value="media">
+              <CollectionMedia />
+            </TabsContent>
 
             <TabsContent value="products">
               {/* <CollectionProducts products={initialData?.products} /> */}

@@ -1,76 +1,116 @@
 "use client";
 
-import Image from "next/image";
+import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { memo, useCallback } from "react";
-
+import Image from "next/image";
+import { TabNavigation } from "@/components/layout/tab-navigation";
+import { getSignedURL } from "@/features/media/actions/mutations";
+import { computeSHA256 } from "@/features/media/utils/compute-sha256";
+import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { IconX } from "@tabler/icons-react";
+import { AlertCircleIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { useFormContext } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
 
-import { OurFileRouter } from "@/app/api/(core)/uploadthing/core";
-import { Button } from "@/components/ui/button";
+import { authClient } from "@ziron/auth/client";
+import { Button } from "@ziron/ui/components/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@ziron/ui/components/card";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Media,
-  MediaPickerModal,
-} from "@/features/media/components/media-picker-modal";
-import { TabNavigation } from "@/features/products/components/tab-navigation";
-import { UploadDropzone } from "@/lib/uploadthing";
-import { formatFileSize } from "@/lib/utils";
-import { MediaType } from "@/server/types";
-
-import { CollectionFormType, collectionSchema } from "../../collection-schema";
+} from "@ziron/ui/components/form";
+import { Input } from "@ziron/ui/components/input";
+import { CollectionFormType } from "@ziron/validators";
 
 // Reusable component for media upload and preview
 function MediaUploadPreview({
   label,
   name,
-  endpoint,
   value,
   onRemove,
   form,
 }: {
   label: string;
   name: "thumbnail" | "banner";
-  endpoint: keyof OurFileRouter;
-  value: z.infer<typeof collectionSchema.shape.thumbnail> | MediaType | null;
+
+  value: CollectionFormType["thumbnail"] | null;
   onRemove: () => void;
   form: ReturnType<typeof useFormContext<CollectionFormType>>;
 }) {
   // Dialog state for selecting existing media
   const [mediaDialog, setMediaDialog] = useQueryState(
-    `${name}MediaDialog`,
-    parseAsString.withDefault("")
+    `${name}-media-dialog`,
+    parseAsString.withDefault(""),
   );
+  const maxSizeMB = 2;
+  const maxSize = maxSizeMB * 1024 * 1024; // 2MB default
+  const acceptedFileTypes = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/webp",
+  ];
 
-  const handleSelectMedia = (media: Media | Media[]) => {
-    const selected = Array.isArray(media) ? media[0] : media;
-    if (!selected) return;
-    form.setValue(`${name}.fileName`, selected.fileName ?? undefined);
-    form.setValue(`${name}.url`, selected.url ?? undefined);
-    form.setValue(`${name}.fileSize`, selected.fileSize ?? undefined);
-    form.setValue(`${name}.height`, selected.height ?? undefined);
-    form.setValue(`${name}.width`, selected.width ?? undefined);
-    form.setValue(`${name}.blurData`, selected.blurData ?? undefined);
-    setMediaDialog("");
-    toast.success(`${label} selected from library`);
+  const handleFilesAdded = async (addedFiles: FileWithPreview[]) => {
+    const { data: session } = await authClient.getSession();
+    if (!session) return;
+
+    if (addedFiles.length === 0) return;
+
+    const file = addedFiles[0]?.file;
+    if (file && file instanceof File) {
+      try {
+        const checksum = await computeSHA256(file);
+
+        const signedUrl = await getSignedURL(file.type, file.size, checksum);
+        if (signedUrl.error !== undefined) {
+          form.setError("banner", new Error(signedUrl.message));
+        }
+        if (signedUrl.success) {
+          const url = signedUrl.success.url;
+
+          await fetch(url, {
+            method: "PUT",
+            body: file,
+            headers: {
+              "Content-Type": file.type,
+              "Content-Language": file.size.toString(),
+            },
+          });
+        }
+      } catch (err) {
+        console.error("[MediaUploadPreview] Upload exception:", err);
+      }
+    }
   };
+
+  const [
+    { files, isDragging, errors },
+    {
+      handleDragEnter,
+      handleDragLeave,
+      handleDragOver,
+      handleDrop,
+      openFileDialog,
+      removeFile,
+      getInputProps,
+    },
+  ] = useFileUpload({
+    accept: acceptedFileTypes.join(","),
+    maxSize,
+    onFilesAdded: handleFilesAdded,
+  });
+  const previewUrl = files[0]?.preview || null;
+  const fileName = files[0]?.file.name || null;
 
   return (
     <Card>
@@ -102,36 +142,86 @@ function MediaUploadPreview({
                 </Button>
               </div>
               <FormControl>
-                <UploadDropzone
-                  endpoint={endpoint}
-                  className="ut-allowed-content:text-muted-foreground ut-button:h-9 ut-button:w-32 ut-label:text-primary ut-upload-icon:text-primary/70 hover:bg-primary/5 ut-button:bg-primary ut-upload-icon:size-10 ut-label:mt-1 cursor-pointer border border-dashed transition-all duration-500 ease-in-out"
-                  onClientUploadComplete={(res) => {
-                    form.setValue(`${name}.fileName`, res[0].name);
-                    form.setValue(`${name}.url`, res[0].ufsUrl);
-                    form.setValue(`${name}.fileSize`, res[0].size);
-                    toast.dismiss();
-                    form.setValue(
-                      `${name}.height`,
-                      res[0].serverData?.metadata.height
-                    );
-                    form.setValue(
-                      `${name}.width`,
-                      res[0].serverData?.metadata.width
-                    );
-                    form.setValue(
-                      `${name}.blurData`,
-                      res[0].serverData?.metadata.blurData
-                    );
-                    toast.success(`${label} Uploaded`);
-                  }}
-                  onUploadError={(error: Error) => {
-                    toast.error("Something went wrong while uploading image");
-                    console.error(`ERROR! ${error.message}`);
-                  }}
-                  config={{
-                    mode: "auto",
-                  }}
-                />
+                <div className="flex flex-col gap-2">
+                  <div className="relative">
+                    {/* Drop area */}
+                    <div
+                      onDragEnter={handleDragEnter}
+                      onDragLeave={handleDragLeave}
+                      onDragOver={handleDragOver}
+                      onDrop={handleDrop}
+                      data-dragging={isDragging || undefined}
+                      className="border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 relative flex min-h-52 flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed p-4 transition-colors has-[input:focus]:ring-[3px]"
+                    >
+                      <input
+                        {...getInputProps()}
+                        className="sr-only"
+                        aria-label="Upload image file"
+                      />
+                      {previewUrl ? (
+                        <div className="absolute inset-0 flex items-center justify-center p-4">
+                          <img
+                            src={previewUrl}
+                            alt={files[0]?.file?.name || "Uploaded image"}
+                            className="mx-auto max-h-full rounded object-contain"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center px-4 py-3 text-center">
+                          <div
+                            className="bg-background mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border"
+                            aria-hidden="true"
+                          >
+                            <ImageIcon className="size-4 opacity-60" />
+                          </div>
+                          <p className="mb-1.5 text-sm font-medium">
+                            Drop your image here
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
+                          </p>
+                          <Button
+                            variant="outline"
+                            className="mt-4"
+                            type="button"
+                            onClick={openFileDialog}
+                          >
+                            <UploadIcon
+                              className="-ms-1 size-4 opacity-60"
+                              aria-hidden="true"
+                            />
+                            Select image
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+
+                    {previewUrl && (
+                      <div className="absolute top-4 right-4">
+                        <button
+                          type="button"
+                          className="focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-[3px]"
+                          onClick={() =>
+                            files[0]?.id && removeFile(files[0].id)
+                          }
+                          aria-label="Remove image"
+                        >
+                          <XIcon className="size-4" aria-hidden="true" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {errors.length > 0 && (
+                    <div
+                      className="text-destructive flex items-center gap-1 text-xs"
+                      role="alert"
+                    >
+                      <AlertCircleIcon className="size-3 shrink-0" />
+                      <span>{errors[0]}</span>
+                    </div>
+                  )}
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -139,11 +229,11 @@ function MediaUploadPreview({
         />
 
         {/* Media Picker Dialog */}
-        <MediaPickerModal
+        {/* <MediaPickerModal
           open={!!mediaDialog}
           onOpenChange={() => setMediaDialog("")}
           onSelect={handleSelectMedia}
-        />
+        /> */}
         {/* End Media Picker Dialog */}
         {value && (
           <FormField
@@ -180,7 +270,7 @@ function MediaUploadPreview({
                         <p className="text-muted-foreground mt-1 mb-4 shrink-0 text-xs">
                           Size:{" "}
                           <span className="font-medium">
-                            {formatFileSize(value.fileSize ?? 0)}
+                            {formatBytes(value.fileSize ?? 0)}
                           </span>
                         </p>
                       </div>
@@ -229,7 +319,6 @@ export const CollectionMedia = memo(function CollectionMedia() {
         <MediaUploadPreview
           label="Thumbnail"
           name="thumbnail"
-          endpoint="thumbnailUploader"
           value={thumbnail}
           onRemove={handleRemoveThumbnail}
           form={form}
@@ -237,7 +326,6 @@ export const CollectionMedia = memo(function CollectionMedia() {
         <MediaUploadPreview
           label="Banner"
           name="banner"
-          endpoint="bannerUploader"
           value={banner}
           onRemove={handleRemoveBanner}
           form={form}

@@ -1,13 +1,19 @@
 import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { getCollections } from "@/features/collections/actions/queries";
-import { CollectionListSortable } from "@/features/collections/components/sortable-collections";
 import { IconPlus } from "@tabler/icons-react";
 
 import { IconEmpty } from "@ziron/ui/assets/empty";
 import { Button } from "@ziron/ui/components/button";
+
+const CollectionListSortable = dynamic(() =>
+  import("@/features/collections/components/sortable-collections").then(
+    (mod) => mod.CollectionListSortable,
+  ),
+);
 
 export default async function CollectionsPage() {
   const collections = await getCollections();
