@@ -55,6 +55,20 @@ export async function upsertCollection(formData: unknown) {
         customSlug: data.slug,
       });
 
+      let sortOrderToUse: number | undefined = undefined;
+      if (!data.id) {
+        // Only for new collections
+        const maxSortOrderResult = await db.query.collectionsTable.findFirst({
+          where: isNull(collectionsTable.deletedAt),
+          orderBy: [desc(collectionsTable.sortOrder)],
+          columns: { sortOrder: true },
+        });
+        sortOrderToUse = (maxSortOrderResult?.sortOrder ?? 0) + 1;
+        if (sortOrderToUse !== undefined) {
+          data.sortOrder = sortOrderToUse;
+        }
+      }
+
       // --- Upsert SEO meta ---
       let seoId: string | undefined = undefined;
       if (data.meta) {

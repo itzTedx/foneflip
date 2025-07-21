@@ -40,7 +40,7 @@ import {
 } from "../actions/mutations";
 
 interface Props {
-  slug: string;
+  title: string;
   id: string;
   status: "draft" | "active" | "archived" | null;
 }
@@ -78,7 +78,7 @@ const ConfirmDialog = ({
   </AlertDialog>
 );
 
-export const ActionDropdown = ({ slug, id, status }: Props) => {
+export const ActionDropdown = ({ title, id, status }: Props) => {
   const [isDeletePending, startDeleteTransition] = useTransition();
   const [isStatusPending, startStatusTransition] = useTransition();
   const [isDuplicatePending, startDuplicateTransition] = useTransition();
@@ -179,7 +179,10 @@ export const ActionDropdown = ({ slug, id, status }: Props) => {
         <DropdownMenuContent>
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href={`/collections/${id}`} aria-label="Edit collection">
+              <Link
+                href={`/collections/${id}?=${title}`}
+                aria-label="Edit collection"
+              >
                 <IconEdit size={16} className="opacity-60" aria-hidden="true" />
                 <span>Edit</span>
               </Link>
