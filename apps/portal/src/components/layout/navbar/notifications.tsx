@@ -28,7 +28,7 @@ interface NotificationProp {
   type: string;
   message: string;
   read: boolean | null;
-  createdAt: Date; // keep as string
+  createdAt: string; // comes as ISO string from server
 }
 
 type NormalizedNotification = Omit<NotificationProp, "createdAt"> & {
@@ -41,10 +41,7 @@ function normalizeNotification(
 ): NormalizedNotification {
   return {
     ...notification,
-    createdAt:
-      notification.createdAt instanceof Date
-        ? notification.createdAt
-        : new Date(notification.createdAt),
+    createdAt: new Date(notification.createdAt),
   };
 }
 
@@ -67,15 +64,21 @@ export default function Notifications({
     useState<NormalizedNotification[]>(notificationsArray);
 
   useEffect(() => {
-    if (!userId) return;
     const socket: Socket = io("ws://localhost:4000", {
       query: { userId },
       transports: ["websocket"],
     });
+
     socket.on("notification", (notification: NotificationProp) => {
       const normalized = normalizeNotification(notification);
-      setNotifications((prev) => [normalized, ...prev]);
+
+      setNotifications((prev) => {
+        const updated = [normalized, ...prev];
+
+        return updated;
+      });
     });
+
     return () => {
       socket.disconnect();
     };
@@ -108,7 +111,6 @@ export default function Notifications({
       await markNotificationAsRead(id);
     } catch {
       toast.error("Failed to mark notification as read. Please try again.");
-      // Optionally: refetch notifications or handle rollback if needed
     }
   };
 

@@ -3,7 +3,7 @@ import { collectionsTable, users } from "@ziron/db/schema";
 import { enqueue, JobType } from "@ziron/queue";
 
 export const deleteSoftDeletedCollections = async () => {
-  const THIRTY_DAYS_AGO = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const THIRTY_DAYS_AGO = new Date(Date.now() - 1 * 60 * 1000);
   const result = await db
     .delete(collectionsTable)
     .where(lt(collectionsTable.deletedAt, THIRTY_DAYS_AGO))

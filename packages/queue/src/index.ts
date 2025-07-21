@@ -9,7 +9,7 @@ export const queue = new Queue(QUEUE_NAME, { connection: redis });
 
 export enum JobType {
   Notification = "notification",
-  DeleteSoftDeletedCollections = "deleteSoftDeletedCollections",
+  DeleteSoftDeletedCollections = "delete-soft-deleted-collections",
 }
 
 export type JobData = {

@@ -22,7 +22,7 @@ const queue = new Queue(QUEUE_NAME, { connection: redis });
 (async () => {
   // Add a repeatable job to delete old notifications every day at midnight using BullMQ v5+ API
   await queue.upsertJobScheduler(
-    JobType.DeleteSoftDeletedCollections, // unique scheduler id
+    "delete-old-notifications-scheduler", // unique scheduler id
     { pattern: "0 0 1 * *" }, // every 1st of the month at midnight (approx. every 30 days)
     {
       name: "deleteOldNotifications", // must match the handler name in runners

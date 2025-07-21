@@ -18,7 +18,12 @@ export const runNotification = async (data: JobData[JobType.Notification]) => {
   // Send live notification via Redis pub/sub
   await redis.publish(
     "notifications",
-    JSON.stringify({ userId, type, message }),
+    JSON.stringify({
+      userId,
+      type,
+      message,
+      createdAt: new Date().toISOString(),
+    }),
   );
 };
 

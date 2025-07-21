@@ -8,8 +8,8 @@ export async function getNotifications(
   limit = 10,
   offset = 0,
 ) {
-  if (userId)
-    return db.query.notificationsTable.findMany({
+  if (userId) {
+    const notifications = await db.query.notificationsTable.findMany({
       where: and(
         eq(notificationsTable.userId, userId),
         isNull(notificationsTable.deletedAt),
@@ -18,6 +18,15 @@ export async function getNotifications(
       limit,
       offset,
     });
+
+    // Serialize Date objects to ISO strings for Next.js serialization
+    return notifications.map((notification) => ({
+      ...notification,
+      createdAt: notification.createdAt.toISOString(),
+      updatedAt: notification.updatedAt.toISOString(),
+      deletedAt: notification.deletedAt?.toISOString() || null,
+    }));
+  }
 
   return null;
 }
