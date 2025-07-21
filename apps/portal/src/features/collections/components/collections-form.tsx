@@ -4,6 +4,7 @@ import { useEffect, useTransition } from "react";
 import { Header } from "@/components/layout/header";
 import { useRouter } from "@bprogress/next";
 import { IconCheck, IconDeviceFloppy, IconRestore } from "@tabler/icons-react";
+import { parseAsString, useQueryState } from "nuqs";
 
 import { Button } from "@ziron/ui/components/button";
 import { Form, useForm, zodResolver } from "@ziron/ui/components/form";
@@ -36,7 +37,7 @@ interface Props {
 const LOCAL_STORAGE_KEY = "collection-form-draft";
 
 export const CollectionForm = ({ isEditMode, initialData }: Props) => {
-  // console.log("initial form data", initialData);
+  const [, setTitle] = useQueryState("title", parseAsString.withDefault(""));
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isDraftPending, startDraftTransition] = useTransition();
@@ -68,6 +69,10 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
     },
     disabled: isArchived,
   });
+
+  useEffect(() => {
+    setTitle(initialData?.title ?? null);
+  }, []);
 
   useEffect(() => {
     const subscription = form.watch((values) => {

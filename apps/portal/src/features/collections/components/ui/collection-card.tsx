@@ -120,7 +120,9 @@ const CollectionCard = React.memo(function CollectionCard({
           )} */}
             <div className="py-1">
               <CardTitle className="flex items-center gap-2 text-lg font-medium">
-                <Link href={`/collections/${collection.id}`}>
+                <Link
+                  href={`/collections/${collection.id}?title=${collection.title.replace(" ", "+")}`}
+                >
                   {collection.title}{" "}
                 </Link>
                 <StatusBadge status={collection.settings?.status} />

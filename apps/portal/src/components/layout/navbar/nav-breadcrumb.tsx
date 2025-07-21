@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import { usePathname } from "next/navigation";
+import { parseAsString, useQueryState } from "nuqs";
 
 import { IconLogoMono } from "@ziron/ui/assets/logo";
 import {
@@ -37,6 +38,8 @@ const getSegmentText = (segment: string, previousSegment?: string): string => {
 export const NavBreadcrumb = () => {
   const pathname = usePathname();
   const isMobile = useIsMobile();
+  // Get 'name' from search params using nuqs
+  const [title] = useQueryState("title", parseAsString.withDefault(""));
 
   // Memoize path segments to avoid recalculation on every render
   const pathSegments = useMemo(() => {
@@ -50,16 +53,21 @@ export const NavBreadcrumb = () => {
   const breadcrumbItems = useMemo(() => {
     if (pathSegments.length === 0) return null;
 
+    // If 'title' is present, use it as the last segment
+    const displaySegments = title
+      ? [...pathSegments.slice(0, -1), title]
+      : pathSegments;
+
     if (isMobile) {
       // Mobile: Only show last segment with ellipsis if there are previous segments
-      const lastSegment = pathSegments[pathSegments.length - 1];
-      const previousSegment = pathSegments[pathSegments.length - 2];
+      const lastSegment = displaySegments[displaySegments.length - 1];
+      const previousSegment = displaySegments[displaySegments.length - 2];
 
       return (
         <span className="flex items-center gap-2">
-          {pathSegments.length > 1 && <BreadcrumbEllipsis />}
+          {displaySegments.length > 1 && <BreadcrumbEllipsis />}
           <BreadcrumbItem>
-            <BreadcrumbPage className="capitalize">
+            <BreadcrumbPage className="truncate overflow-hidden capitalize">
               {getSegmentText(lastSegment ?? "", previousSegment ?? "")}
             </BreadcrumbPage>
           </BreadcrumbItem>
@@ -70,17 +78,17 @@ export const NavBreadcrumb = () => {
     // Desktop: Show full breadcrumb
     return (
       <span className="flex items-center gap-2">
-        {pathSegments.map((segment, index) => {
+        {displaySegments.map((segment, index) => {
           const href = "/" + pathSegments.slice(0, index + 1).join("/");
-          const isLast = index === pathSegments.length - 1;
-          const previousSegment = index > 0 ? pathSegments[index - 1] : "";
+          const isLast = index === displaySegments.length - 1;
+          const previousSegment = index > 0 ? displaySegments[index - 1] : "";
 
           return (
             <React.Fragment key={href}>
               <BreadcrumbSeparator />
               <BreadcrumbItem className="capitalize">
                 {isLast ? (
-                  <BreadcrumbPage>
+                  <BreadcrumbPage className="truncate overflow-hidden">
                     {getSegmentText(segment, previousSegment)}
                   </BreadcrumbPage>
                 ) : (
@@ -94,7 +102,7 @@ export const NavBreadcrumb = () => {
         })}
       </span>
     );
-  }, [pathSegments, isMobile]);
+  }, [pathSegments, isMobile, title]);
 
   return (
     <Breadcrumb className="flex-1">
