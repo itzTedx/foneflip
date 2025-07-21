@@ -65,7 +65,7 @@ export const CollectionSettings = memo(function CollectionSettings({
   updatedAt,
 }: Props) {
   const form = useFormContext<CollectionFormType>();
-
+  const thumbnail = form.getValues("thumbnail");
   return (
     <>
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -405,7 +405,18 @@ export const CollectionSettings = memo(function CollectionSettings({
             </CardHeader>
             <CardContent>
               <div className="flex items-start gap-4">
-                <div className="aspect-5/3 h-16 rounded-sm bg-red-400"></div>
+                {thumbnail && (
+                  <div className="relative aspect-5/3 h-16 overflow-hidden rounded-sm">
+                    <Image
+                      src={thumbnail?.url}
+                      alt={thumbnail.alt ?? ""}
+                      fill
+                      placeholder={thumbnail.blurData ? "blur" : "empty"}
+                      blurDataURL={thumbnail.blurData ?? undefined}
+                      className="object-cover"
+                    />
+                  </div>
+                )}
                 <div>
                   <p>{form.getValues("title")}</p>
                   {updatedAt && (

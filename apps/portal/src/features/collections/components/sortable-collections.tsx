@@ -38,7 +38,7 @@ const SortableCollectionCard = React.memo(function SortableCollectionCard({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: collection.id as string });
+  } = useSortable({ id: collection?.id as string });
   const style = useMemo(
     () => ({
       transform: CSS.Transform.toString(transform),
@@ -69,7 +69,7 @@ export function CollectionListSortable({
 
   // Memoize ids array
   const ids = useMemo(
-    () => collections.map((c) => c.id as string),
+    () => collections.map((c) => c?.id as string),
     [collections],
   );
 
@@ -82,15 +82,15 @@ export function CollectionListSortable({
       const { active, over } = event;
       setActiveId(null);
       if (active.id !== over?.id) {
-        const oldIndex = collections.findIndex((c) => c.id === active.id);
-        const newIndex = collections.findIndex((c) => c.id === over?.id);
+        const oldIndex = collections.findIndex((c) => c?.id === active.id);
+        const newIndex = collections.findIndex((c) => c?.id === over?.id);
         if (oldIndex === -1 || newIndex === -1) return;
         const newCollections = arrayMove(collections, oldIndex, newIndex);
         setCollections(newCollections);
         const toastId = toast.loading("Saving order...");
         // Prepare new order payload
         const orders = newCollections.map((c, idx) => ({
-          id: c.id as string,
+          id: c?.id as string,
           sortOrder: idx,
         }));
         await updateCollectionsOrder({ orders });
@@ -101,7 +101,7 @@ export function CollectionListSortable({
   );
 
   const activeCollection = useMemo(
-    () => collections.find((c) => c.id === activeId),
+    () => collections.find((c) => c?.id === activeId),
     [collections, activeId],
   );
 
@@ -116,7 +116,7 @@ export function CollectionListSortable({
         <div className="space-y-3">
           {collections.map((collection) => (
             <SortableCollectionCard
-              key={collection.id}
+              key={collection?.id}
               collection={collection}
             />
           ))}

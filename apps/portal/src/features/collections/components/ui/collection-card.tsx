@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { TooltipBadge } from "@/components/ui/tooltip";
@@ -93,11 +94,11 @@ const CollectionCard = React.memo(function CollectionCard({
   dragHandleProps,
   dragHandleRef,
 }: CollectionCardProps) {
-  //   const thumbnail = useMemo(
-  //     () =>
-  //       collection?.collectionMedia.find((t) => t.type === "thumbnail")?.media,
-  //     [collection?.collectionMedia],
-  //   );
+  const thumbnail = useMemo(
+    () =>
+      collection?.collectionMedia.find((t) => t.type === "thumbnail")?.media,
+    [collection?.collectionMedia],
+  );
 
   if (collection)
     return (
@@ -111,20 +112,20 @@ const CollectionCard = React.memo(function CollectionCard({
         ></Link>
         <CardHeader className="col-span-2 flex shrink-0 justify-between">
           <div className="flex gap-3">
-            {/* {thumbnail && (
-            <div className="bg-muted relative aspect-square size-24 shrink-0 overflow-hidden rounded-sm">
-              <Image
-                src={thumbnail?.url}
-                alt={thumbnail.alt ?? ""}
-                width={100}
-                height={100}
-                quality={50}
-                className="h-full w-full object-cover"
-                placeholder={thumbnail.blurData ? "blur" : "empty"}
-                blurDataURL={thumbnail.blurData ?? ""}
-              />
-            </div>
-          )} */}
+            {thumbnail && (
+              <div className="bg-muted relative aspect-square size-24 shrink-0 overflow-hidden rounded-sm">
+                <Image
+                  src={thumbnail?.url}
+                  alt={thumbnail.alt ?? ""}
+                  width={100}
+                  height={100}
+                  quality={50}
+                  className="h-full w-full object-cover"
+                  placeholder={thumbnail.blurData ? "blur" : "empty"}
+                  blurDataURL={thumbnail.blurData ?? ""}
+                />
+              </div>
+            )}
             <div className="py-1">
               <CardTitle className="flex items-center gap-2 text-lg font-medium">
                 {collection.title}
@@ -159,7 +160,7 @@ const CollectionCard = React.memo(function CollectionCard({
               <>
                 {collection.products?.slice(0, 4).map((product) => (
                   <ProductBadgeHover
-                    key={product.id}
+                    key={product?.id}
                     product={product}
                     collection={collection}
                   />

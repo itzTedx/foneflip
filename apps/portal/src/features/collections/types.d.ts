@@ -52,7 +52,7 @@ export type CollectionQueryResult =
       })[];
     })
   | undefined;
-export type CollectionsQueryResult = Collection[];
+export type CollectionsQueryResult = CollectionQueryResult[];
 
 // Cache key types
 export type CacheKey = string;

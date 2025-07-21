@@ -69,6 +69,9 @@ export const getCollections = cache(
           with: {
             seo: true,
             settings: true,
+            collectionMedia: {
+              with: { media: true },
+            },
           },
           orderBy: asc(collectionsTable.sortOrder),
         });
