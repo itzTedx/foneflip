@@ -3,11 +3,7 @@ description:
 globs: 
 alwaysApply: false
 ---
----
-description: 
-globs: 
-alwaysApply: true
----
+
 Always search the codebase for relevant files and do research before you begin a task.
 
 
