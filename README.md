@@ -1,4 +1,4 @@
-# Foneflip Monorepo
+# Foneflip
 
 A modern, scalable monorepo for building web applications with a focus on e-commerce, admin dashboards, and real-time features. Built with [Next.js](https://nextjs.org/), [shadcn/ui](https://ui.shadcn.com/), [TurboRepo](https://turbo.build/), and a modular package structure.
 
@@ -18,6 +18,8 @@ A modern, scalable monorepo for building web applications with a focus on e-comm
 - [Scripts](#scripts)
 - [Contributing](#contributing)
 - [License](#license)
+- [Detailed Breakdown](#detailed-breakdown)
+- [How to Use This Breakdown](#how-to-use-this-breakdown)
 
 ---
 
@@ -162,6 +164,204 @@ Common scripts (run from the repo root):
 
 ---
 
+## Detailed Breakdown
+
+### Apps
+
+#### 1. `apps/portal` (Admin Dashboard)
+
+**Technical:**
+
+- Built with Next.js and React.
+- Provides a user interface for managing products, collections, orders, users, and vendors.
+- Integrates with shared UI components (`@ziron/ui`), authentication (`@ziron/auth`), and data from the database (`@ziron/db`).
+- Implements advanced features like caching (Redis + Next.js), role-based navigation, and real-time updates via WebSockets.
+- Uses Tailwind CSS for styling and shadcn/ui for consistent UI patterns.
+
+**Business:**
+
+- The central hub for business operations.
+- Enables admins and vendors to efficiently manage inventory, sales, and user accounts.
+- Supports workflows like product onboarding, order tracking, and vendor management.
+- Designed for scalability and ease of use, even for non-technical staff.
+
+---
+
+#### 2. `apps/ws-server` (WebSocket Server)
+
+**Technical:**
+
+- Node.js server using Express and Socket.IO.
+- Handles real-time communication (e.g., live notifications, updates, chat).
+- Connects to Redis for pub/sub and state management.
+- Can be extended to support additional real-time features as the business grows.
+
+**Business:**
+
+- Powers live features in the admin dashboard and potentially customer-facing apps.
+- Enables instant updates for orders, inventory changes, or support chat.
+- Improves user engagement and operational responsiveness.
+
+---
+
+### Packages
+
+#### 1. `packages/ui` (`@ziron/ui`)
+
+**Technical:**
+
+- Shared React component library using shadcn/ui and Tailwind CSS.
+- Houses reusable UI elements: buttons, forms, modals, sidebars, etc.
+- Ensures design consistency across all apps.
+- Easy to extend with new components as needed.
+
+**Business:**
+
+- Reduces development time by providing ready-to-use, branded UI components.
+- Ensures a professional and cohesive look across all user interfaces.
+
+---
+
+#### 2. `packages/auth` (`@ziron/auth`)
+
+**Technical:**
+
+- Handles authentication and authorization logic.
+- Supports email/password, OTP, 2FA, and organization-based roles.
+- Integrates with Better Auth and uses Redis for session management.
+- Exposes hooks and utilities for use in frontend apps.
+
+**Business:**
+
+- Secures the platform with modern authentication methods.
+- Supports complex business roles (user, vendor, admin, dev) for granular access control.
+- Enables features like vendor onboarding and multi-tenant access.
+
+---
+
+#### 3. `packages/db` (`@ziron/db`)
+
+**Technical:**
+
+- Database schema and ORM logic using Drizzle ORM and PostgreSQL.
+- Contains migration scripts, schema definitions, and type-safe query utilities.
+- Integrates with Zod for runtime validation.
+
+**Business:**
+
+- Centralizes all business data (products, users, orders, vendors, etc.).
+- Ensures data integrity and supports business analytics and reporting.
+
+---
+
+#### 4. `packages/queue` (`@ziron/queue`)
+
+**Technical:**
+
+- Manages background jobs and task queues using BullMQ.
+- Useful for tasks like sending emails, processing uploads, or syncing data.
+
+**Business:**
+
+- Improves performance and reliability by offloading heavy or time-consuming tasks.
+- Enables scalable automation for business processes.
+
+---
+
+#### 5. `packages/redis` (`@ziron/redis`)
+
+**Technical:**
+
+- Provides a Redis client and helper utilities.
+- Used for caching, session storage, and pub/sub messaging.
+
+**Business:**
+
+- Boosts performance by reducing database load.
+- Enables real-time features and fast data access.
+
+---
+
+#### 6. `packages/seo` (`@ziron/seo`)
+
+**Technical:**
+
+- Utilities for generating SEO metadata.
+- Ensures all pages have proper titles, descriptions, and Open Graph tags.
+
+**Business:**
+
+- Improves search engine visibility and social sharing.
+- Helps drive organic traffic to the platform.
+
+---
+
+#### 7. `packages/utils` (`@ziron/utils`)
+
+**Technical:**
+
+- General-purpose utility functions and constants.
+- Shared across all apps and packages.
+
+**Business:**
+
+- Reduces code duplication and improves maintainability.
+
+---
+
+#### 8. `packages/validators` (`@ziron/validators`)
+
+**Technical:**
+
+- Zod schemas for validating data structures.
+- Used for form validation, API input validation, and database integrity.
+
+**Business:**
+
+- Prevents invalid data from entering the system.
+- Reduces bugs and support issues.
+
+---
+
+#### 9. `packages/docker`
+
+**Technical:**
+
+- Docker Compose files for local development.
+- Sets up Postgres, Redis, and RedisInsight for easy onboarding.
+
+**Business:**
+
+- Simplifies developer setup and ensures consistency across environments.
+- Reduces onboarding time for new team members.
+
+---
+
+### turbo/ (TurboRepo Generators and Templates)
+
+**Technical:**
+
+- Contains code generators and templates for quickly scaffolding new packages.
+- Ensures new code follows project conventions.
+
+**Business:**
+
+- Accelerates development and enforces best practices.
+
+---
+
+## How to Use This Breakdown
+
+- **Developers:** Use this as a reference for where to add new features or fix bugs.
+- **Product Managers:** Understand what each part of the system does and how it supports business goals.
+- **Contributors:** Quickly get up to speed on the project’s structure and responsibilities.
+
+---
+
+**For more details, see the README files in each package/app and the code comments.**
+
+---
+
 ## Contributing
 
 1. Fork the repo and create your branch.
@@ -176,5 +376,3 @@ Common scripts (run from the repo root):
 [MIT](LICENSE)
 
 ---
-
-**For more details, see the README files in each package/app and the code comments.**
