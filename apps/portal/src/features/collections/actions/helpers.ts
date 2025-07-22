@@ -6,6 +6,7 @@ import {
   collectionsTable,
   seoTable,
 } from "@ziron/db/schema";
+import redis from "@ziron/redis";
 import { slugify } from "@ziron/utils";
 
 import type { Collection, CollectionSettings, Seo } from "../types";
@@ -389,3 +390,10 @@ export async function generateDuplicateSlug(
   const baseSlug = `${originalSlug}-copy`;
   return generateUniqueSlug(baseSlug);
 }
+
+type CacheOptions<T> = {
+  key: string;
+  ttl?: number; // in seconds
+  redis: typeof redis;
+  query: () => Promise<T>;
+};

@@ -45,7 +45,7 @@ export type NewCollection = InferInsertModel<typeof collectionsTable>;
 export type CollectionQueryResult =
   | (Collection & {
       settings?: CollectionSettings;
-      seo?: Seo;
+      seo?: Seo | null;
       products?: ProductQueryResult[];
       collectionMedia: (CollectionMedia & {
         media: Media;

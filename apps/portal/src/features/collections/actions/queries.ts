@@ -3,7 +3,11 @@ import { unstable_cache as cache } from "next/cache";
 import { asc, db, eq, isNull } from "@ziron/db";
 import { collectionsTable } from "@ziron/db/schema";
 
-import type { Collection, CollectionsQueryResult } from "../types";
+import type {
+  Collection,
+  CollectionQueryResult,
+  CollectionsQueryResult,
+} from "../types";
 import {
   CACHE_DURATIONS,
   CACHE_TAGS,
@@ -56,7 +60,7 @@ export const getCollections = cache(
     return withCacheMonitoring(
       async () => {
         // Try Redis first
-        const cached = await redisCache.get<Collection[]>(
+        const cached = await redisCache.get<CollectionsQueryResult>(
           REDIS_KEYS.COLLECTIONS,
         );
         if (cached) {
@@ -95,6 +99,9 @@ export const getCollections = cache(
     revalidate: CACHE_DURATIONS.LONG,
   },
 );
+export type CollectionsQueryResultType = Awaited<
+  ReturnType<typeof getCollections>
+>;
 
 export const getCollectionBySlug = cache(
   async (slug: string) => {
@@ -136,11 +143,11 @@ export const getCollectionBySlug = cache(
 );
 
 export const getCollectionById = cache(
-  async (id: string) => {
+  async (id: string): Promise<CollectionQueryResult> => {
     return withCacheMonitoring(
       async () => {
         // Try Redis first
-        const cached = await redisCache.get<Collection>(
+        const cached = await redisCache.get<CollectionQueryResult>(
           REDIS_KEYS.COLLECTION_BY_ID(id),
         );
         if (cached) {
@@ -189,7 +196,8 @@ export const getActiveCollections = cache(
     return withCacheMonitoring(
       async () => {
         const collections = await getCollections();
-        return collections.filter((collection) => !collection.deletedAt);
+
+        return collections.filter((collection) => !collection?.deletedAt);
       },
       `${REDIS_KEYS.COLLECTIONS}:active`,
       false,
