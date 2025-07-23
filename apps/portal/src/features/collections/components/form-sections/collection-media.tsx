@@ -6,7 +6,6 @@ import { InfoTooltip } from "@/components/ui/tooltip";
 import { getSignedURL } from "@/features/media/actions/mutations";
 import { computeSHA256 } from "@/features/media/utils/compute-sha256";
 import { getImageMetadata } from "@/features/media/utils/get-image-data";
-import { validateForm } from "@/lib/utils";
 import { CloudUpload, X } from "lucide-react";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useFormContext } from "react-hook-form";
@@ -37,7 +36,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@ziron/ui/components/form";
-import { CollectionFormType, collectionSchema, z } from "@ziron/validators";
+import { CollectionFormType } from "@ziron/validators";
 
 // Reusable component for media upload and preview
 function MediaUploadPreview({
@@ -148,11 +147,11 @@ function MediaUploadPreview({
     [],
   );
 
-  const formValue = form.watch();
-  const { data, error } = validateForm(formValue, collectionSchema);
-  if (error) console.log("Error: ", z.prettifyError(error));
+  // const formValue = form.watch();
+  // const { data, error } = validateForm(formValue, collectionSchema);
+  // if (error) console.log("Error: ", z.prettifyError(error));
 
-  console.log("Validation Data: ", data);
+  // console.log("Validation Data: ", data);
 
   return (
     <Card className="h-fit">
@@ -212,7 +211,9 @@ function MediaUploadPreview({
                   <FileUploadList>
                     {files.map((file) => (
                       <FileUploadItem value={file} key={file.name}>
-                        <FileUploadItemPreview />
+                        <FileUploadItemPreview asChild>
+                          Hello
+                        </FileUploadItemPreview>
 
                         <FileUploadItemMetadata />
                         <FileUploadItemDelete asChild>

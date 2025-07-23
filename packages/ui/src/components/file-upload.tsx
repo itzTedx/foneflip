@@ -1115,8 +1115,9 @@ function FileUploadItemPreview(props: FileUploadItemPreviewProps) {
         className,
       )}
     >
-      {onPreviewRender(itemContext.fileState.file)}
-      {children}
+      {asChild && children
+        ? children
+        : onPreviewRender(itemContext.fileState.file)}
     </ItemPreviewPrimitive>
   );
 }
