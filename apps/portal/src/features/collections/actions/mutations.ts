@@ -155,17 +155,21 @@ export async function upsertCollection(formData: unknown) {
         .where(eq(collectionMediaTable.collectionId, collection.id));
       const { thumbnail, banner } = data;
       const mediaToInsert = [];
-      if (thumbnail && typeof thumbnail.url === "string") {
+      if (
+        thumbnail &&
+        thumbnail.file &&
+        typeof thumbnail.file.url === "string"
+      ) {
         const mediaId = await (
           await import("@/features/media/actions/mutations")
         ).upsertMedia(
           {
-            url: thumbnail.url,
-            fileName: thumbnail.fileName ?? undefined,
-            fileSize: thumbnail.fileSize ?? undefined,
-            width: thumbnail.width ?? undefined,
-            height: thumbnail.height ?? undefined,
-            blurData: thumbnail.blurData ?? undefined,
+            url: thumbnail.file.url,
+            fileName: thumbnail.file.name ?? undefined,
+            fileSize: thumbnail.file.size ?? undefined,
+            width: thumbnail.metadata?.width ?? undefined,
+            height: thumbnail.metadata?.height ?? undefined,
+            blurData: thumbnail.metadata?.blurData ?? undefined,
             alt: thumbnail.alt,
             userId: session.user.id,
           },
@@ -184,17 +188,17 @@ export async function upsertCollection(formData: unknown) {
           .returning();
         if (mediaRow) mediaToInsert.push(mediaRow);
       }
-      if (banner && typeof banner.url === "string") {
+      if (banner && banner.file && typeof banner.file.url === "string") {
         const mediaId = await (
           await import("@/features/media/actions/mutations")
         ).upsertMedia(
           {
-            url: banner.url,
-            fileName: banner.fileName ?? undefined,
-            fileSize: banner.fileSize ?? undefined,
-            width: banner.width ?? undefined,
-            height: banner.height ?? undefined,
-            blurData: banner.blurData ?? undefined,
+            url: banner.file.url,
+            fileName: banner.file.name ?? undefined,
+            fileSize: banner.file.size ?? undefined,
+            width: banner.metadata?.width ?? undefined,
+            height: banner.metadata?.height ?? undefined,
+            blurData: banner.metadata?.blurData ?? undefined,
             alt: banner.alt,
             userId: session.user.id,
           },
@@ -683,17 +687,21 @@ export async function saveCollectionDraft(formData: unknown) {
         .delete(collectionMediaTable)
         .where(eq(collectionMediaTable.collectionId, savedCollection.id));
       const mediaToInsert = [];
-      if (thumbnail && typeof thumbnail.url === "string") {
+      if (
+        thumbnail &&
+        thumbnail.file &&
+        typeof thumbnail.file.url === "string"
+      ) {
         const mediaId = await (
           await import("@/features/media/actions/mutations")
         ).upsertMedia(
           {
-            url: thumbnail.url,
-            fileName: thumbnail.fileName ?? undefined,
-            fileSize: thumbnail.fileSize ?? undefined,
-            width: thumbnail.width ?? undefined,
-            height: thumbnail.height ?? undefined,
-            blurData: thumbnail.blurData ?? undefined,
+            url: thumbnail.file.url,
+            fileName: thumbnail.file.name ?? undefined,
+            fileSize: thumbnail.file.size ?? undefined,
+            width: thumbnail.metadata?.width ?? undefined,
+            height: thumbnail.metadata?.height ?? undefined,
+            blurData: thumbnail.metadata?.blurData ?? undefined,
             alt: thumbnail.alt,
             userId: session.user.id,
           },
@@ -712,17 +720,17 @@ export async function saveCollectionDraft(formData: unknown) {
           .returning();
         if (mediaRow) mediaToInsert.push(mediaRow);
       }
-      if (banner && typeof banner.url === "string") {
+      if (banner && banner.file && typeof banner.file.url === "string") {
         const mediaId = await (
           await import("@/features/media/actions/mutations")
         ).upsertMedia(
           {
-            url: banner.url,
-            fileName: banner.fileName ?? undefined,
-            fileSize: banner.fileSize ?? undefined,
-            width: banner.width ?? undefined,
-            height: banner.height ?? undefined,
-            blurData: banner.blurData ?? undefined,
+            url: banner.file.url,
+            fileName: banner.file.name ?? undefined,
+            fileSize: banner.file.size ?? undefined,
+            width: banner.metadata?.width ?? undefined,
+            height: banner.metadata?.height ?? undefined,
+            blurData: banner.metadata?.blurData ?? undefined,
             alt: banner.alt,
             userId: session.user.id,
           },
