@@ -1,19 +1,12 @@
 "use client";
 
-import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { memo, useCallback, useState } from "react";
-import Image from "next/image";
 import { TabNavigation } from "@/components/layout/tab-navigation";
 import { InfoTooltip } from "@/components/ui/tooltip";
-import { getSignedURL } from "@/features/media/actions/mutations";
-import { computeSHA256 } from "@/features/media/utils/compute-sha256";
-import { getImageMetadata } from "@/features/media/utils/get-image-data";
-import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
-import { AlertCircleIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react";
+import { CloudUpload, X } from "lucide-react";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useFormContext } from "react-hook-form";
 
-import { authClient } from "@ziron/auth/client";
 import { Button } from "@ziron/ui/components/button";
 import {
   Card,
@@ -23,14 +16,23 @@ import {
   CardTitle,
 } from "@ziron/ui/components/card";
 import {
+  FileUpload,
+  FileUploadDropzone,
+  FileUploadItem,
+  FileUploadItemDelete,
+  FileUploadItemMetadata,
+  FileUploadItemPreview,
+  FileUploadList,
+  FileUploadProps,
+  FileUploadTrigger,
+} from "@ziron/ui/components/file-upload";
+import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@ziron/ui/components/form";
-import { Input } from "@ziron/ui/components/input";
-import { Progress } from "@ziron/ui/components/progress";
 import { CollectionFormType } from "@ziron/validators";
 
 // Reusable component for media upload and preview
@@ -49,117 +51,58 @@ function MediaUploadPreview({
   onRemove: () => void;
   form: ReturnType<typeof useFormContext<CollectionFormType>>;
 }) {
+  const [files, setFiles] = useState<File[]>([]);
   // Dialog state for selecting existing media
   const [mediaDialog, setMediaDialog] = useQueryState(
     `${name}-media-dialog`,
     parseAsBoolean.withDefault(false),
   );
-  const maxSizeMB = 2;
+  const maxSizeMB = 4;
   const maxSize = maxSizeMB * 1024 * 1024; // 2MB default
-  const acceptedFileTypes = [
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "image/webp",
-  ];
 
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-
-  const handleFilesAdded = async (addedFiles: FileWithPreview[]) => {
-    const { data: session } = await authClient.getSession();
-    if (!session) return;
-
-    if (addedFiles.length === 0) return;
-
-    const file = addedFiles[0]?.file;
-    if (file && file instanceof File) {
+  const onUpload: NonNullable<FileUploadProps["onUpload"]> = useCallback(
+    async (files, { onProgress, onSuccess, onError }) => {
       try {
-        const checksum = await computeSHA256(file);
+        // Process each file individually
+        const uploadPromises = files.map(async (file) => {
+          try {
+            // Simulate file upload with progress
+            const totalChunks = 10;
+            let uploadedChunks = 0;
 
-        const signedUrl = await getSignedURL(
-          file.type,
-          file.size,
-          checksum,
-          file.name,
-        );
+            // Simulate chunk upload with delays
+            for (let i = 0; i < totalChunks; i++) {
+              // Simulate network delay (100-300ms per chunk)
+              await new Promise((resolve) =>
+                setTimeout(resolve, Math.random() * 200 + 100),
+              );
 
-        if (signedUrl.error !== undefined) {
-          form.setError(name, new Error(signedUrl.message));
-        }
-        if (signedUrl.success) {
-          const url = signedUrl.success.url;
-          const key = signedUrl.success.key;
-
-          // Get image metadata (blurData, width, height)
-          const metadata = await getImageMetadata(file);
-
-          setIsUploading(true);
-          setUploadProgress(0);
-
-          const xhr = new XMLHttpRequest();
-          xhr.open("PUT", url, true);
-          xhr.setRequestHeader("Content-Type", file.type);
-          xhr.setRequestHeader("Content-Language", file.size.toString());
-
-          xhr.upload.onprogress = (event) => {
-            if (event.lengthComputable) {
-              setUploadProgress((event.loaded / event.total) * 100);
+              // Update progress for this specific file
+              uploadedChunks++;
+              const progress = (uploadedChunks / totalChunks) * 100;
+              onProgress(file, progress);
             }
-          };
 
-          xhr.onload = () => {
-            setIsUploading(false);
-            setUploadProgress(null);
-            if (xhr.status >= 200 && xhr.status < 300) {
-              form.setValue(name, {
-                url: url.split("?")[0] ?? "",
-                fileName: file.name,
-                fileSize: file.size,
-                blurData: metadata.blurData,
-                height: metadata.height,
-                width: metadata.width,
-              });
-            } else {
-              form.setError(name, new Error("Upload failed"));
-            }
-          };
+            // Simulate server processing delay
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            onSuccess(file);
+          } catch (error) {
+            onError(
+              file,
+              error instanceof Error ? error : new Error("Upload failed"),
+            );
+          }
+        });
 
-          xhr.onerror = () => {
-            setIsUploading(false);
-            setUploadProgress(null);
-            form.setError(name, new Error("Upload error"));
-          };
-
-          xhr.send(file);
-        }
-      } catch (err) {
-        setIsUploading(false);
-        setUploadProgress(null);
-        console.error("[MediaUploadPreview] Upload exception:", err);
+        // Wait for all uploads to complete
+        await Promise.all(uploadPromises);
+      } catch (error) {
+        // This handles any error that might occur outside the individual upload processes
+        console.error("Unexpected error during upload:", error);
       }
-    }
-  };
-
-  const [
-    { files, isDragging, errors },
-    {
-      handleDragEnter,
-      handleDragLeave,
-      handleDragOver,
-      handleDrop,
-      openFileDialog,
-      removeFile,
-      getInputProps,
     },
-  ] = useFileUpload({
-    accept: acceptedFileTypes.join(","),
-    maxSize,
-    onFilesAdded: handleFilesAdded,
-  });
-  const previewUrl = files[0]?.preview || null;
-  const fileName = files[0]?.file.name || null;
-  const fileSize = files[0]?.file.size || null;
+    [],
+  );
 
   return (
     <Card className="h-fit">
@@ -172,18 +115,10 @@ function MediaUploadPreview({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {isUploading && (
-          <div className="mb-2">
-            <Progress value={uploadProgress ?? 0} />
-            {/* <div className="text-muted-foreground mt-1 text-xs">
-              {Math.round(uploadProgress ?? 0)}%
-            </div> */}
-          </div>
-        )}
         <FormField
           control={form.control}
-          name={name}
-          render={() => (
+          name={`${name}.image`}
+          render={({ field }) => (
             <FormItem>
               <div className="flex items-center justify-between">
                 <FormLabel>
@@ -201,194 +136,54 @@ function MediaUploadPreview({
                 </Button>
               </div>
               <FormControl>
-                <div className="flex flex-col gap-2">
-                  <div className="relative">
-                    {/* Drop area */}
-                    <div
-                      onDragEnter={handleDragEnter}
-                      onDragLeave={handleDragLeave}
-                      onDragOver={handleDragOver}
-                      onDrop={handleDrop}
-                      data-dragging={isDragging || undefined}
-                      className="border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 relative flex min-h-52 flex-col items-center justify-center overflow-hidden rounded-md border border-dashed p-3 transition-colors has-[input:focus]:ring-[3px]"
-                    >
-                      <input
-                        {...getInputProps()}
-                        className="sr-only"
-                        aria-label="Upload image file"
-                      />
-                      {previewUrl || value ? (
-                        <div className="flex h-full w-full flex-col gap-3">
-                          <div className="relative aspect-5/3 h-full shrink-0 overflow-hidden rounded">
-                            <Image
-                              src={previewUrl ?? value?.url!}
-                              alt={files[0]?.file?.name || "Uploaded image"}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <div className="flex w-full flex-col justify-between">
-                            <div>
-                              <p className="truncate font-medium">
-                                {value?.fileName ?? fileName}
-                              </p>
+                <FileUpload
+                  value={files}
+                  onValueChange={setFiles}
+                  accept="image/*"
+                  maxFiles={1}
+                  maxSize={maxSize}
+                  onUpload={onUpload}
+                  onFileReject={(_, message) => {
+                    form.setError(name, {
+                      message,
+                    });
+                  }}
+                >
+                  <FileUploadDropzone className="flex-row flex-wrap border-dotted text-center">
+                    <CloudUpload className="size-4" />
+                    Drag and drop or
+                    <FileUploadTrigger asChild>
+                      <Button variant="link" size="sm" className="p-0">
+                        choose files
+                      </Button>
+                    </FileUploadTrigger>
+                    to upload
+                  </FileUploadDropzone>
+                  <FileUploadList>
+                    {files.map((file) => (
+                      <FileUploadItem value={file} key={file.name}>
+                        <FileUploadItemPreview />
 
-                              <div className="text-muted-foreground mt-1 mb-4 flex shrink-0 items-center divide-x text-xs">
-                                <p className="pr-2 font-medium">
-                                  {formatBytes(
-                                    value?.fileSize ?? fileSize ?? 0,
-                                  )}
-                                </p>
-                                <p className="pl-2 font-medium">
-                                  {value?.height}x{value?.width}
-                                </p>
-                              </div>
-                            </div>
-                            <FormField
-                              control={form.control}
-                              name={
-                                `${name}.alt` as `thumbnail.alt` | `banner.alt`
-                              }
-                              render={({ field }) => (
-                                <FormItem className="flex w-full flex-col">
-                                  <FormLabel>Alternative text</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      {...field}
-                                      placeholder="Enter alt text for accessibility"
-                                      className="w-full"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center px-4 py-3 text-center">
-                          <div
-                            className="bg-background mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border"
-                            aria-hidden="true"
-                          >
-                            <ImageIcon className="size-4 opacity-60" />
-                          </div>
-                          <p className="mb-1.5 text-sm font-medium">
-                            Drop your image here
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
-                          </p>
+                        <FileUploadItemMetadata />
+                        <FileUploadItemDelete asChild>
                           <Button
-                            variant="outline"
-                            className="mt-4"
-                            type="button"
-                            onClick={openFileDialog}
+                            variant="ghost"
+                            size="icon"
+                            className="size-7"
                           >
-                            <UploadIcon
-                              className="-ms-1 size-4 opacity-60"
-                              aria-hidden="true"
-                            />
-                            Select image
+                            <X />
+                            <span className="sr-only">Delete</span>
                           </Button>
-                        </div>
-                      )}
-                    </div>
-
-                    {previewUrl && (
-                      <div className="absolute top-4 right-4">
-                        <button
-                          type="button"
-                          className="focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-[3px]"
-                          onClick={() =>
-                            files[0]?.id && removeFile(files[0].id)
-                          }
-                          aria-label="Remove image"
-                        >
-                          <XIcon className="size-4" aria-hidden="true" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {errors.length > 0 && (
-                    <div
-                      className="text-destructive flex items-center gap-1 text-xs"
-                      role="alert"
-                    >
-                      <AlertCircleIcon className="size-3 shrink-0" />
-                      <span>{errors[0]}</span>
-                    </div>
-                  )}
-                </div>
+                        </FileUploadItemDelete>
+                      </FileUploadItem>
+                    ))}
+                  </FileUploadList>
+                </FileUpload>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        {/* Media Picker Dialog */}
-        {/* <MediaPickerModal
-          open={!!mediaDialog}
-          onOpenChange={() => setMediaDialog("")}
-          onSelect={handleSelectMedia}
-        /> */}
-        {/* End Media Picker Dialog */}
-        {/* {value && (
-          <FormField
-            control={form.control}
-            name={`${name}.alt` as `thumbnail.alt` | `banner.alt`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Image Preview</FormLabel>
-                <FormControl>
-                  <div className="flex gap-4">
-                    <div className="bg-muted relative aspect-square size-40 shrink-0 overflow-hidden rounded-lg border">
-                      <Image
-                        fill
-                        src={value.url}
-                        alt={value.fileName ?? ""}
-                        className="h-full w-full object-cover"
-                        placeholder={value.blurData ? "blur" : "empty"}
-                        blurDataURL={value.blurData ?? undefined}
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-1 right-1 size-5 rounded-full border backdrop-blur-xl"
-                        onClick={onRemove}
-                        aria-label={`Remove ${label}`}
-                      >
-                        <IconX className="size-3" />
-                      </Button>
-                    </div>
-                    <div className="flex w-full flex-col justify-between py-4">
-                      <div>
-                        <p className="truncate text-sm">{value.fileName}</p>
-                        <p className="text-muted-foreground mt-1 mb-4 shrink-0 text-xs">
-                          Size:{" "}
-                          <span className="font-medium">
-                            {formatBytes(value.fileSize ?? 0)}
-                          </span>
-                        </p>
-                      </div>
-                      <div className="space-y-1">
-                        <FormLabel>Alternative text</FormLabel>
-                        <Input
-                          {...field}
-                          placeholder="Enter alt text for accessibility"
-                          className="w-full"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )} */}
       </CardContent>
     </Card>
   );
