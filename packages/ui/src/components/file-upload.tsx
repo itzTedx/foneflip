@@ -821,7 +821,7 @@ function FileUploadDropzone(props: FileUploadDropzoneProps) {
       tabIndex={context.disabled ? undefined : 0}
       {...dropzoneProps}
       className={cn(
-        "hover:bg-accent/30 focus-visible:border-ring/50 data-[dragging]:border-primary/30 data-[invalid]:border-destructive data-[dragging]:bg-accent/30 data-[invalid]:ring-destructive/20 relative flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-6 transition-colors outline-none select-none data-[disabled]:pointer-events-none",
+        "hover:bg-accent/30 focus-visible:border-ring/50 data-[dragging]:border-primary data-[invalid]:border-destructive data-[dragging]:bg-accent/30 data-[invalid]:ring-destructive/20 relative flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-6 transition-colors outline-none select-none data-[disabled]:pointer-events-none",
         className,
       )}
       onClick={onClick}
@@ -1115,9 +1115,7 @@ function FileUploadItemPreview(props: FileUploadItemPreviewProps) {
         className,
       )}
     >
-      {asChild && children
-        ? children
-        : onPreviewRender(itemContext.fileState.file)}
+      {asChild ? children : onPreviewRender(itemContext.fileState.file)}
     </ItemPreviewPrimitive>
   );
 }
@@ -1229,7 +1227,7 @@ function FileUploadItemProgress(props: FileUploadItemProgressProps) {
           data-slot="file-upload-progress"
           {...progressProps}
           className={cn(
-            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+            "absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2",
             className,
           )}
         >

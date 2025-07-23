@@ -1,12 +1,14 @@
 "use client";
 
 import { memo, useCallback, useState } from "react";
+import Image from "next/image";
 import { TabNavigation } from "@/components/layout/tab-navigation";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { getSignedURL } from "@/features/media/actions/mutations";
 import { computeSHA256 } from "@/features/media/utils/compute-sha256";
 import { getImageMetadata } from "@/features/media/utils/get-image-data";
-import { CloudUpload, X } from "lucide-react";
+import { validateForm } from "@/lib/utils";
+import { Upload } from "lucide-react";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useFormContext } from "react-hook-form";
 
@@ -21,11 +23,6 @@ import {
 import {
   FileUpload,
   FileUploadDropzone,
-  FileUploadItem,
-  FileUploadItemDelete,
-  FileUploadItemMetadata,
-  FileUploadItemPreview,
-  FileUploadList,
   FileUploadProps,
   FileUploadTrigger,
 } from "@ziron/ui/components/file-upload";
@@ -36,7 +33,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@ziron/ui/components/form";
-import { CollectionFormType } from "@ziron/validators";
+import { CollectionFormType, collectionSchema, z } from "@ziron/validators";
 
 // Reusable component for media upload and preview
 function MediaUploadPreview({
@@ -54,6 +51,7 @@ function MediaUploadPreview({
   onRemove: () => void;
   form: ReturnType<typeof useFormContext<CollectionFormType>>;
 }) {
+  console.log(value);
   const [files, setFiles] = useState<File[]>([]);
   // Dialog state for selecting existing media
   const [mediaDialog, setMediaDialog] = useQueryState(
@@ -147,11 +145,11 @@ function MediaUploadPreview({
     [],
   );
 
-  // const formValue = form.watch();
-  // const { data, error } = validateForm(formValue, collectionSchema);
-  // if (error) console.log("Error: ", z.prettifyError(error));
+  const formValue = form.watch();
+  const { data, error } = validateForm(formValue, collectionSchema);
+  if (error) console.log("Error: ", z.prettifyError(error));
 
-  // console.log("Validation Data: ", data);
+  console.log("Validation Data: ", data);
 
   return (
     <Card className="h-fit">
@@ -167,7 +165,7 @@ function MediaUploadPreview({
         <FormField
           control={form.control}
           name={name}
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <div className="flex items-center justify-between">
                 <FormLabel>
@@ -198,37 +196,43 @@ function MediaUploadPreview({
                     });
                   }}
                 >
-                  <FileUploadDropzone className="flex-row flex-wrap border-dotted text-center">
-                    <CloudUpload className="size-4" />
-                    Drag and drop or
-                    <FileUploadTrigger asChild>
-                      <Button variant="link" size="sm" className="p-0">
-                        choose files
-                      </Button>
-                    </FileUploadTrigger>
-                    to upload
-                  </FileUploadDropzone>
-                  <FileUploadList>
-                    {files.map((file) => (
-                      <FileUploadItem value={file} key={file.name}>
-                        <FileUploadItemPreview asChild>
-                          Hello
-                        </FileUploadItemPreview>
-
-                        <FileUploadItemMetadata />
-                        <FileUploadItemDelete asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-7"
-                          >
-                            <X />
-                            <span className="sr-only">Delete</span>
-                          </Button>
-                        </FileUploadItemDelete>
-                      </FileUploadItem>
-                    ))}
-                  </FileUploadList>
+                  {value ? (
+                    <div className="h-fit">
+                      <div className="relative aspect-5/3 overflow-hidden rounded-sm">
+                        {value && value.file && (
+                          <Image
+                            src={value.file.url}
+                            alt={value.alt ?? "Uploaded Image"}
+                            fill
+                            className="object-cover"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <FileUploadDropzone className="hover:bg-accent/30 focus-visible:border-ring/50 data-[dragging]:border-primary data-[invalid]:border-destructive data-[dragging]:bg-accent/30 data-[invalid]:ring-destructive/20 relative flex flex-col items-center justify-center gap-2 rounded-lg border-dashed py-12 transition-colors outline-none select-none data-[disabled]:pointer-events-none">
+                      <div className="flex flex-col items-center gap-1 text-center">
+                        <div className="flex items-center justify-center rounded-full border p-2.5">
+                          <Upload className="text-muted-foreground size-6" />
+                        </div>
+                        <p className="text-sm font-medium">
+                          Drag & drop files here
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          Or click to browse (max 2 files)
+                        </p>
+                      </div>
+                      <FileUploadTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mt-2 w-fit"
+                        >
+                          Browse files
+                        </Button>
+                      </FileUploadTrigger>
+                    </FileUploadDropzone>
+                  )}
                 </FileUpload>
               </FormControl>
               <FormMessage />
