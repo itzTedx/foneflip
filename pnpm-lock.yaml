@@ -444,7 +444,7 @@ importers:
         specifier: ^4.6.2
         version: 4.6.2
       react:
-        specifier: ^19.0.0
+        specifier: catalog:react19
         version: 19.0.0
       schema-dts:
         specifier: ^1.1.5
@@ -457,16 +457,16 @@ importers:
         specifier: ^20
         version: 20.17.19
       '@types/react':
-        specifier: ^19
-        version: 19.0.10
+        specifier: catalog:react19
+        version: 19.1.8
       '@types/react-dom':
-        specifier: ^19
-        version: 19.0.4(@types/react@19.0.10)
+        specifier: catalog:react19
+        version: 19.1.6(@types/react@19.1.8)
       '@ziron/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       next:
-        specifier: ^15.3.5
+        specifier: 'catalog:'
         version: 15.3.5(react-dom@19.1.0(react@19.0.0))(react@19.0.0)
 
   packages/ui:
