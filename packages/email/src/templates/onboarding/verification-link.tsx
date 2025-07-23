@@ -41,10 +41,10 @@ const VerificationEmail = (props: {
                 alt="Foneflip"
                 className="mx-auto mb-[24px] h-auto w-full max-w-[180px] object-cover"
               />
-              <Heading className="m-0 mb-[8px] text-[28px] font-bold text-white">
+              <Heading className="m-0 mb-[8px] text-[28px] font-bold">
                 Welcome to Foneflip! 🎉
               </Heading>
-              <Text className="m-0 text-[16px] leading-[24px] text-white/90">
+              <Text className="m-0 text-[16px] leading-[24px]">
                 Your journey to sustainable tech starts here
               </Text>
             </Section>

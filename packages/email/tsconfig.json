@@ -1,6 +1,13 @@
 {
-  "extends": "@ziron/typescript-config/react-library.json",
-  "compilerOptions": {},
-  "include": ["*.ts", "src"],
+  "extends": "@ziron/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "strict": true
+  },
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }
