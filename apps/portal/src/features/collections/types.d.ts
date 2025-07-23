@@ -6,6 +6,7 @@ import {
   collectionsTable,
   mediaTable,
   seoTable,
+  users,
 } from "@ziron/db/schema";
 
 import { ProductQueryResult } from "../products/types";
@@ -33,6 +34,7 @@ export interface CacheStats {
 // Database types
 export type Seo = InferSelectModel<typeof seoTable>;
 export type Media = InferSelectModel<typeof mediaTable>;
+export type User = InferSelectModel<typeof users>;
 
 export type Collection = InferSelectModel<typeof collectionsTable>;
 export type CollectionSettings = InferSelectModel<
@@ -53,6 +55,9 @@ export type CollectionQueryResult =
     })
   | undefined;
 export type CollectionsQueryResult = CollectionQueryResult[];
+export type MediaQueryResult = Media & {
+  user: User;
+};
 
 // Cache key types
 export type CacheKey = string;

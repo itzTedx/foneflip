@@ -22,9 +22,7 @@ export const mediaTable = pgTable(
     }),
     ...baseSchema,
   },
-  (table) => ({
-    urlIdx: index("media_url_idx").on(table.url),
-  }),
+  (table) => [index("media_url_idx").on(table.url)],
 );
 
 export const mediaRelations = relations(mediaTable, ({ many, one }) => ({

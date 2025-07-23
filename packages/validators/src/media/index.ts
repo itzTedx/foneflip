@@ -9,3 +9,5 @@ export const mediaSchema = z.object({
   height: z.number({ message: "Height must be a number." }).nullish(),
   blurData: z.string({ message: "Blur data must be a string." }).nullish(),
 });
+
+export type MediaFormType = z.infer<typeof mediaSchema>;

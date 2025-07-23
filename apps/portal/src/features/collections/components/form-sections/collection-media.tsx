@@ -4,13 +4,13 @@ import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { memo, useCallback, useState } from "react";
 import Image from "next/image";
 import { TabNavigation } from "@/components/layout/tab-navigation";
+import { InfoTooltip } from "@/components/ui/tooltip";
 import { getSignedURL } from "@/features/media/actions/mutations";
 import { computeSHA256 } from "@/features/media/utils/compute-sha256";
 import { getImageMetadata } from "@/features/media/utils/get-image-data";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
-import { IconX } from "@tabler/icons-react";
 import { AlertCircleIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react";
-import { parseAsString, useQueryState } from "nuqs";
+import { parseAsBoolean, useQueryState } from "nuqs";
 import { useFormContext } from "react-hook-form";
 
 import { authClient } from "@ziron/auth/client";
@@ -40,10 +40,11 @@ function MediaUploadPreview({
   value,
   onRemove,
   form,
+  tooltip,
 }: {
   label: string;
   name: "thumbnail" | "banner";
-
+  tooltip: string;
   value: CollectionFormType["thumbnail"] | null;
   onRemove: () => void;
   form: ReturnType<typeof useFormContext<CollectionFormType>>;
@@ -51,7 +52,7 @@ function MediaUploadPreview({
   // Dialog state for selecting existing media
   const [mediaDialog, setMediaDialog] = useQueryState(
     `${name}-media-dialog`,
-    parseAsString.withDefault(""),
+    parseAsBoolean.withDefault(false),
   );
   const maxSizeMB = 2;
   const maxSize = maxSizeMB * 1024 * 1024; // 2MB default
@@ -118,7 +119,6 @@ function MediaUploadPreview({
                 blurData: metadata.blurData,
                 height: metadata.height,
                 width: metadata.width,
-                // alt: '', // user can fill in
               });
             } else {
               form.setError(name, new Error("Upload failed"));
@@ -159,9 +159,10 @@ function MediaUploadPreview({
   });
   const previewUrl = files[0]?.preview || null;
   const fileName = files[0]?.file.name || null;
+  const fileSize = files[0]?.file.size || null;
 
   return (
-    <Card>
+    <Card className="h-fit">
       <CardHeader>
         <CardTitle>{label}</CardTitle>
         <CardDescription>
@@ -184,15 +185,17 @@ function MediaUploadPreview({
           name={name}
           render={() => (
             <FormItem>
-              <div className="-mb-3 flex items-center justify-between">
-                <FormLabel>Upload {label}</FormLabel>
+              <div className="flex items-center justify-between">
+                <FormLabel>
+                  Upload {label} <InfoTooltip info={tooltip} />
+                </FormLabel>
 
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   className="text-muted-foreground text-xs"
-                  onClick={() => setMediaDialog("1")}
+                  onClick={() => setMediaDialog(true)}
                 >
                   Choose from existing
                 </Button>
@@ -207,20 +210,60 @@ function MediaUploadPreview({
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
                       data-dragging={isDragging || undefined}
-                      className="border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 relative flex min-h-52 flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed p-4 transition-colors has-[input:focus]:ring-[3px]"
+                      className="border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 relative flex min-h-52 flex-col items-center justify-center overflow-hidden rounded-md border border-dashed p-3 transition-colors has-[input:focus]:ring-[3px]"
                     >
                       <input
                         {...getInputProps()}
                         className="sr-only"
                         aria-label="Upload image file"
                       />
-                      {previewUrl ? (
-                        <div className="absolute inset-0 flex items-center justify-center p-4">
-                          <img
-                            src={previewUrl}
-                            alt={files[0]?.file?.name || "Uploaded image"}
-                            className="mx-auto max-h-full rounded object-contain"
-                          />
+                      {previewUrl || value ? (
+                        <div className="flex h-full w-full flex-col gap-3">
+                          <div className="relative aspect-5/3 h-full shrink-0 overflow-hidden rounded">
+                            <Image
+                              src={previewUrl ?? value?.url!}
+                              alt={files[0]?.file?.name || "Uploaded image"}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex w-full flex-col justify-between">
+                            <div>
+                              <p className="truncate font-medium">
+                                {value?.fileName ?? fileName}
+                              </p>
+
+                              <div className="text-muted-foreground mt-1 mb-4 flex shrink-0 items-center divide-x text-xs">
+                                <p className="pr-2 font-medium">
+                                  {formatBytes(
+                                    value?.fileSize ?? fileSize ?? 0,
+                                  )}
+                                </p>
+                                <p className="pl-2 font-medium">
+                                  {value?.height}x{value?.width}
+                                </p>
+                              </div>
+                            </div>
+                            <FormField
+                              control={form.control}
+                              name={
+                                `${name}.alt` as `thumbnail.alt` | `banner.alt`
+                              }
+                              render={({ field }) => (
+                                <FormItem className="flex w-full flex-col">
+                                  <FormLabel>Alternative text</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="Enter alt text for accessibility"
+                                      className="w-full"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center justify-center px-4 py-3 text-center">
@@ -291,7 +334,7 @@ function MediaUploadPreview({
           onSelect={handleSelectMedia}
         /> */}
         {/* End Media Picker Dialog */}
-        {value && (
+        {/* {value && (
           <FormField
             control={form.control}
             name={`${name}.alt` as `thumbnail.alt` | `banner.alt`}
@@ -345,7 +388,7 @@ function MediaUploadPreview({
               </FormItem>
             )}
           />
-        )}
+        )} */}
       </CardContent>
     </Card>
   );
@@ -378,6 +421,7 @@ export const CollectionMedia = memo(function CollectionMedia() {
           value={thumbnail}
           onRemove={handleRemoveThumbnail}
           form={form}
+          tooltip="This wil show as a thumbnail for this category in the storefront"
         />
         <MediaUploadPreview
           label="Banner"
@@ -385,6 +429,7 @@ export const CollectionMedia = memo(function CollectionMedia() {
           value={banner}
           onRemove={handleRemoveBanner}
           form={form}
+          tooltip="This wil show as a Banner below or above the collection in homepage and in the individual collection page."
         />
       </div>
     </>

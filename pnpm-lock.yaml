@@ -84,6 +84,12 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.0.0)
+      '@headless-tree/core':
+        specifier: ^1.2.1
+        version: 1.2.1
+      '@headless-tree/react':
+        specifier: ^1.2.1
+        version: 1.2.1(@headless-tree/core@1.2.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tabler/icons-react':
         specifier: ^3.34.0
         version: 3.34.0(react@19.0.0)
@@ -1712,6 +1718,16 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
+  '@headless-tree/core@1.2.1':
+    resolution: {integrity: sha512-4sVCtZGIqDml6mnOW+EStb1Iu37yxn3Rbv0IN6+dV6QBKSg4qh+oQwUWwD0dfxWpqTjVBKqgXPY/f+Jsui+xFQ==}
+
+  '@headless-tree/react@1.2.1':
+    resolution: {integrity: sha512-n86JzNwQ9Tkabee8JxUuzUftPCuIWYvfFyqAc+W0p00TG10e+W2VjUR8BIMK6jwYlo4K8vBnIpW17FSC/wZkkQ==}
+    peerDependencies:
+      '@headless-tree/core': '*'
+      react: '*'
+      react-dom: '*'
 
   '@hexagon/base64@1.1.28':
     resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
@@ -8805,6 +8821,14 @@ snapshots:
       react-dom: 19.0.0(react@19.0.0)
 
   '@floating-ui/utils@0.2.10': {}
+
+  '@headless-tree/core@1.2.1': {}
+
+  '@headless-tree/react@1.2.1(@headless-tree/core@1.2.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      '@headless-tree/core': 1.2.1
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
 
   '@hexagon/base64@1.1.28': {}
 

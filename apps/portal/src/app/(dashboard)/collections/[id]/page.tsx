@@ -3,7 +3,7 @@ import { getCollectionById } from "@/features/collections/actions/queries";
 import { CollectionForm } from "@/features/collections/components/collections-form";
 import { CollectionQueryResult } from "@/features/collections/types";
 
-import type { CollectionFormType } from "@ziron/validators";
+import type { CollectionFormType, MediaFormType } from "@ziron/validators";
 
 type Params = Promise<{ id: string }>;
 
@@ -13,7 +13,7 @@ function transformCollectionToFormType(
 ): (CollectionFormType & { updatedAt: Date }) | null {
   if (!collection) return null;
 
-  function toFormMedia(media: any) {
+  function toFormMedia(media: any): MediaFormType | undefined {
     if (!media || !media.url) return undefined; // url is required
     return {
       url: media.url,
@@ -23,7 +23,6 @@ function transformCollectionToFormType(
       width: media.width ?? undefined,
       height: media.height ?? undefined,
       blurData: media.blurData ?? undefined,
-      // add other fields as needed
     };
   }
 
@@ -58,7 +57,7 @@ export default async function CollectionPage({ params }: { params: Params }) {
 
   const collection = id !== "new" && (await getCollectionById(id));
   const initialData = transformCollectionToFormType(collection);
-  console.log("initial data from the page", collection);
+  // console.log("initial data from the page", collection);
 
   return (
     <MainWrapper>
