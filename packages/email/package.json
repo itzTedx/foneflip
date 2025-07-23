@@ -9,11 +9,18 @@
   "license": "MIT",
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev:email": "email dev -p 4000",
+    "dev:email": "email dev --dir src -p 4000",
     "export": "email export",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@react-email/components": "^0.3.2",
+    "@react-email/preview-server": "^4.2.3",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "react-email": "^4.2.3"
   },
   "devDependencies": {
     "@ziron/eslint-config": "workspace:*",
@@ -23,9 +30,5 @@
     "prettier": "catalog:",
     "typescript": "catalog:"
   },
-  "prettier": "@ziron/prettier-config",
-  "dependencies": {
-    "@react-email/components": "^0.3.2",
-    "react-email": "^4.2.3"
-  }
+  "prettier": "@ziron/prettier-config"
 }

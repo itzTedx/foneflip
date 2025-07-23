@@ -1,5 +1,5 @@
 {
-  "extends": "@ziron/typescript-config/internal-package.json",
+  "extends": "@ziron/typescript-config/react-library.json",
   "compilerOptions": {},
   "include": ["*.ts", "src"],
   "exclude": ["node_modules"]
