@@ -27,7 +27,7 @@
     "@ziron/prettier-config": "workspace:*",
     "@ziron/typescript-config": "workspace:*",
     "prettier": "catalog:",
-    "turbo": "^2.5.4",
+    "turbo": "^2.5.5",
     "typescript": "catalog:"
   },
   "prettier": "@ziron/prettier-config"
