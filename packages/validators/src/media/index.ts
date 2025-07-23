@@ -1,14 +1,22 @@
 import { z } from "zod/v4";
 
 export const mediaSchema = z.object({
-  image: z
-    .array(z.custom<File>())
-    .min(1, "Please select at least one file")
-    .max(1, "Please select up to 1 file")
-    .refine((files) => files.every((file) => file.size <= 5 * 1024 * 1024), {
-      message: "File size must be less than 5MB",
-      path: ["image"],
-    }),
+  file: z
+    .object({
+      url: z.url({ message: "Please provide a valid URL." }),
+      name: z.string({ message: "File name must be a string." }).nullish(),
+      size: z.number({ message: "File size must be a number." }).nullish(),
+      key: z.string("Failed to upload image").optional(),
+    })
+    .optional(),
+  metadata: z
+    .object({
+      width: z.number({ message: "Width must be a number." }).nullish(),
+      height: z.number({ message: "Height must be a number." }).nullish(),
+      blurData: z.string({ message: "Blur data must be a string." }).nullish(),
+    })
+    .optional(),
+  alt: z.string({ message: "Alt text must be a string." }).optional(),
 });
 
 export type MediaFormType = z.infer<typeof mediaSchema>;

@@ -113,12 +113,14 @@ function MediaUploadPreview({
             setUploadProgress(null);
             if (xhr.status >= 200 && xhr.status < 300) {
               form.setValue(name, {
-                url: url.split("?")[0] ?? "",
-                fileName: file.name,
-                fileSize: file.size,
-                blurData: metadata.blurData,
-                height: metadata.height,
-                width: metadata.width,
+                file: {
+                  url: url.split("?")[0] ?? "",
+                  name: file.name,
+                  size: file.size,
+                },
+                metadata: {
+                  ...metadata,
+                },
               });
             } else {
               form.setError(name, new Error("Upload failed"));

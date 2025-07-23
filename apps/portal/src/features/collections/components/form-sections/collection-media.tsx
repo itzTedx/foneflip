@@ -3,6 +3,10 @@
 import { memo, useCallback, useState } from "react";
 import { TabNavigation } from "@/components/layout/tab-navigation";
 import { InfoTooltip } from "@/components/ui/tooltip";
+import { getSignedURL } from "@/features/media/actions/mutations";
+import { computeSHA256 } from "@/features/media/utils/compute-sha256";
+import { getImageMetadata } from "@/features/media/utils/get-image-data";
+import { validateForm } from "@/lib/utils";
 import { CloudUpload, X } from "lucide-react";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useFormContext } from "react-hook-form";
@@ -33,7 +37,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@ziron/ui/components/form";
-import { CollectionFormType } from "@ziron/validators";
+import { CollectionFormType, collectionSchema, z } from "@ziron/validators";
 
 // Reusable component for media upload and preview
 function MediaUploadPreview({
@@ -66,26 +70,66 @@ function MediaUploadPreview({
         // Process each file individually
         const uploadPromises = files.map(async (file) => {
           try {
-            // Simulate file upload with progress
-            const totalChunks = 10;
-            let uploadedChunks = 0;
+            const checksum = await computeSHA256(file);
 
-            // Simulate chunk upload with delays
-            for (let i = 0; i < totalChunks; i++) {
-              // Simulate network delay (100-300ms per chunk)
-              await new Promise((resolve) =>
-                setTimeout(resolve, Math.random() * 200 + 100),
-              );
+            const signedUrl = await getSignedURL(
+              file.type,
+              file.size,
+              checksum,
+              file.name,
+            );
 
-              // Update progress for this specific file
-              uploadedChunks++;
-              const progress = (uploadedChunks / totalChunks) * 100;
-              onProgress(file, progress);
+            if (signedUrl.error !== undefined) {
+              form.setError(name, new Error(signedUrl.message));
             }
 
-            // Simulate server processing delay
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            onSuccess(file);
+            if (signedUrl.success) {
+              const url = signedUrl.success.url;
+              const key = signedUrl.success.key;
+
+              // Get image metadata (blurData, width, height)
+              const metadata = await getImageMetadata(file);
+
+              const xhr = new XMLHttpRequest();
+              xhr.open("PUT", url, true);
+              xhr.setRequestHeader("Content-Type", file.type);
+              xhr.setRequestHeader("Content-Language", file.size.toString());
+              xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                  const progress = (event.loaded / event.total) * 100;
+                  onProgress(file, progress);
+                }
+              };
+
+              xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  form.setValue(name, {
+                    file: {
+                      url: url.split("?")[0] ?? "",
+                      name: file.name,
+                      size: file.size,
+                      key: key,
+                    },
+                    metadata: {
+                      ...metadata,
+                    },
+                  });
+                } else {
+                  form.setError(name, new Error("Upload failed"));
+                }
+              };
+
+              xhr.onerror = (error) => {
+                form.setError(name, new Error("Upload error"));
+                onError(
+                  file,
+                  error instanceof Error ? error : new Error("Upload failed"),
+                );
+              };
+
+              xhr.send(file);
+              onSuccess(file);
+            }
           } catch (error) {
             onError(
               file,
@@ -104,6 +148,12 @@ function MediaUploadPreview({
     [],
   );
 
+  const formValue = form.watch();
+  const { data, error } = validateForm(formValue, collectionSchema);
+  if (error) console.log("Error: ", z.prettifyError(error));
+
+  console.log("Validation Data: ", data);
+
   return (
     <Card className="h-fit">
       <CardHeader>
@@ -117,7 +167,7 @@ function MediaUploadPreview({
       <CardContent className="space-y-4">
         <FormField
           control={form.control}
-          name={`${name}.image`}
+          name={name}
           render={({ field }) => (
             <FormItem>
               <div className="flex items-center justify-between">
