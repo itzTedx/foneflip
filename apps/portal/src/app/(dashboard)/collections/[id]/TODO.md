@@ -12,7 +12,18 @@
 - [ ] On error: Show an error toast.
 - [ ] Disable the button if the collection is archived or a mutation is in progress.
 
-## 2. UI/UX Improvements
+## 2. File Upload Enhancement
+
+- [ ] Implement file upload component similar to https://github.com/sadmann7/file-uploader/blob/main/src/app/components/file-upload-form-demo.tsx
+  - [ ] Create reusable file upload component with drag-and-drop functionality
+  - [ ] Support multiple file types and size validation
+  - [ ] Add progress indicators for file uploads
+  - [ ] Implement file preview functionality
+  - [ ] Add error handling for failed uploads
+  - [ ] Integrate with existing form validation system
+  - [ ] Style component to match current design system 
+
+## 3. UI/UX Improvements
 
 - [ ] Add loading spinners and error states for all actions (create, update, delete, duplicate).
 - [ ] Add toast notifications for all major actions.
@@ -20,7 +31,7 @@
 - [ ] Make the collection list sortable by drag-and-drop (if not already).
 - [ ] Add search and filter to the collections list (by name, status, tags).
 
-## 3. Feature Enhancements
+## 4. Feature Enhancements
 
 - [ ] Bulk actions: allow selecting multiple collections for delete/archive/status change.
 - [ ] Archive/unarchive collections (toggle status between "active" and "archived").
@@ -29,24 +40,24 @@
 - [ ] Allow editing and previewing SEO meta for each collection.
 - [ ] Expose custom CTA and banner fields in the UI.
 
-## 4. Settings & Metadata
+## 5. Settings & Metadata
 
 - [ ] Allow editing all settings fields: featured, layout, showLabel, showBanner, showInNav, tags, internalNotes, customCTA.
 - [ ] Add tooltips/help text for each setting.
 - [ ] Show and allow changing collection status in the settings tab.
 
-## 5. Performance & Caching
+## 6. Performance & Caching
 
 - [ ] Add cache monitoring UI for admins (see README for cache strategy).
 - [ ] Add manual cache invalidation controls for admins.
 
-## 6. Developer/Code Quality
+## 7. Developer/Code Quality
 
 - [ ] Add more unit/integration tests for collection actions.
 - [ ] Ensure all code is type-safe and uses the latest schema/types.
 - [ ] Refactor any duplicated logic in helpers/actions.
 
-## 7. Documentation
+## 8. Documentation
 
 - [ ] Update README and in-app docs for new features and workflows.
 - [ ] Document caching and cache invalidation for collections.

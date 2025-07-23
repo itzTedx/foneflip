@@ -1,5 +1,5 @@
 {
-  "name": "@ziron/{{ name }}",
+  "name": "@ziron/email",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,9 +8,9 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "tsup --clean",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev": "tsup --watch",
+    "dev:email": "email dev -p 4000",
+    "export": "email export",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
@@ -23,5 +23,9 @@
     "prettier": "catalog:",
     "typescript": "catalog:"
   },
-  "prettier": "@ziron/prettier-config"
+  "prettier": "@ziron/prettier-config",
+  "dependencies": {
+    "@react-email/components": "^0.3.2",
+    "react-email": "^4.2.3"
+  }
 }

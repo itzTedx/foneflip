@@ -10,6 +10,7 @@
     "build": "turbo build",
     "clean": "git clean -xdf node_modules",
     "dev": "turbo dev",
+    "dev:email": "turbo -F @ziron/email dev:email",
     "lint": "turbo lint",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
     "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
