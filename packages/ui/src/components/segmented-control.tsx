@@ -33,7 +33,7 @@ const SegmentedControlList = React.forwardRef<
     <TabsPrimitive.List
       ref={mergeRefs(forwardedRef, listRef)}
       className={cn(
-        "rounded-10 bg-bg-weak-50 relative isolate grid w-full auto-cols-fr grid-flow-col gap-1 p-1",
+        "bg-muted/50 relative isolate grid w-full auto-cols-fr grid-flow-col gap-1 rounded-md p-1",
         className,
       )}
       {...rest}
@@ -43,7 +43,7 @@ const SegmentedControlList = React.forwardRef<
       {/* floating bg */}
       <div
         className={cn(
-          "bg-bg-white-0 shadow-toggle-switch absolute inset-y-1 left-0 -z-10 rounded-md transition-transform duration-300",
+          "bg-background absolute inset-y-1 left-0 -z-10 rounded-md shadow-[0_6px_10px_0_#0e121b0f,0_2px_4px_0_#0e121b08] transition-transform duration-300",
           {
             hidden: !mounted,
           },
@@ -71,13 +71,13 @@ const SegmentedControlTrigger = React.forwardRef<
       className={cn(
         // base
         "peer",
-        "text-label-sm text-text-soft-400 relative z-10 h-7 rounded-md px-1 whitespace-nowrap outline-none",
+        "text-muted-foreground relative z-10 h-7 rounded-md px-2 text-sm whitespace-nowrap outline-none",
         "flex items-center justify-center gap-1.5",
         "transition duration-300 ease-out",
         // focus
         "focus:outline-none",
         // active
-        "data-[state=active]:text-text-strong-950",
+        "data-[state=active]:text-foreground",
         className,
       )}
       {...rest}
