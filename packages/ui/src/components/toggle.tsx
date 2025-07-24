@@ -2,8 +2,8 @@
 
 import type { VariantProps } from "class-variance-authority";
 import * as React from "react";
-import { Toggle as TogglePrimitive } from "radix-ui";
 import { cva } from "class-variance-authority";
+import { Toggle as TogglePrimitive } from "radix-ui";
 
 import { cn } from "@ziron/utils";
 

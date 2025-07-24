@@ -1,13 +1,10 @@
 "use client";
 
-import { type Variants, motion } from "motion/react";
+import type { Variants } from "motion/react";
+import { motion } from "motion/react";
 
-import {
-  type IconProps,
-  IconWrapper,
-  getVariants,
-  useAnimateIconContext,
-} from "./icon";
+import type { IconProps } from "./icon";
+import { getVariants, IconWrapper, useAnimateIconContext } from "./icon";
 
 type Trash2Props = IconProps<keyof typeof animations>;
 
