@@ -17,7 +17,7 @@ const CollectionListSortable = dynamic(() =>
 
 export default async function CollectionsPage() {
   const collections = await getCollections();
-  console.log(collections);
+
   return (
     <MainWrapper>
       <PageHeader

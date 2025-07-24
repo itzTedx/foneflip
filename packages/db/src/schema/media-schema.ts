@@ -17,6 +17,7 @@ export const mediaTable = pgTable(
     height: integer("height"),
     fileSize: integer("file_size"),
     blurData: text("blur_data"),
+    key: text("key"),
     userId: uuid("user_id").references(() => users.id, {
       onDelete: "set null",
     }),

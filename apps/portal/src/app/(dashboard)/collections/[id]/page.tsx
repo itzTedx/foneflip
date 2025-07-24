@@ -16,13 +16,17 @@ function transformCollectionToFormType(
   function toFormMedia(media: any): MediaFormType | undefined {
     if (!media || !media.url) return undefined; // url is required
     return {
-      url: media.url,
-      fileName: media.fileName ?? undefined,
-      fileSize: media.fileSize ?? undefined,
+      file: {
+        url: media.url,
+        name: media.fileName ?? undefined,
+        size: media.fileSize ?? undefined,
+      },
+      metadata: {
+        width: media.width ?? undefined,
+        height: media.height ?? undefined,
+        blurData: media.blurData ?? undefined,
+      },
       alt: media.alt ?? undefined,
-      width: media.width ?? undefined,
-      height: media.height ?? undefined,
-      blurData: media.blurData ?? undefined,
     };
   }
 
