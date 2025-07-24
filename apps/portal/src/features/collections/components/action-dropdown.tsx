@@ -13,16 +13,6 @@ import {
 import { toast } from "sonner";
 
 import { collectionStatusEnum } from "@ziron/db/schema";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@ziron/ui/components/alert-dialog";
 import { Button } from "@ziron/ui/components/button";
 import {
   DropdownMenu,
@@ -38,6 +28,7 @@ import {
   duplicateCollection,
   setCollectionStatus,
 } from "../actions/mutations";
+import { ActionConfirmDialog } from "./ui/action-confirm-dialog";
 
 interface Props {
   title: string;
@@ -46,37 +37,6 @@ interface Props {
 }
 
 type DialogType = null | "delete" | "archive";
-
-const ConfirmDialog = ({
-  open,
-  onOpenChange,
-  title,
-  description,
-  onConfirm,
-  confirmClassName,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description: string;
-  onConfirm: () => void;
-  confirmClassName?: string;
-}) => (
-  <AlertDialog open={open} onOpenChange={onOpenChange}>
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>{title}</AlertDialogTitle>
-        <AlertDialogDescription>{description}</AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction onClick={onConfirm} className={confirmClassName}>
-          Confirm
-        </AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-);
 
 export const ActionDropdown = ({ title, id, status }: Props) => {
   const [isDeletePending, startDeleteTransition] = useTransition();
@@ -241,21 +201,17 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ConfirmDialog
+      <ActionConfirmDialog
         open={dialog === "delete"}
         onOpenChange={(open) => setDialog(open ? "delete" : null)}
-        title="Are you absolutely sure?"
-        description="This action cannot be undone. This will permanently delete your product and remove your data from servers."
         onConfirm={handleDelete}
-        confirmClassName="hover:from-destructive shadow-destructive/20 text-red-50 hover:to-destructive from-red-600 to-red-400 transition-colors ease-out"
+        isLoading={isDeletePending}
       />
-      <ConfirmDialog
+      <ActionConfirmDialog
         open={dialog === "archive"}
         onOpenChange={(open) => setDialog(open ? "archive" : null)}
-        title="Are you absolutely sure?"
-        description="This action cannot be undone. This will permanently delete your product and remove your data from servers."
         onConfirm={handleArchive}
-        confirmClassName="hover:from-destructive shadow-destructive/20 text-red-50 hover:to-destructive from-red-600 to-red-400 transition-colors ease-out"
+        isLoading={isStatusPending}
       />
     </>
   );
