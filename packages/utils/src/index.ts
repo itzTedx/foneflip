@@ -2,4 +2,7 @@ export * from "./cn";
 export * from "./format-byte";
 export * from "./format-date";
 export * from "./pluralize";
+export * from "./polymorphic";
+export * from "./recursive-clone-children";
 export * from "./slugify";
+export * from "./tv";

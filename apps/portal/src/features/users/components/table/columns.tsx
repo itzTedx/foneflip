@@ -1,5 +1,9 @@
+import {
+  StatusBadge,
+  StatusBadgeIcon,
+} from "@/components/ui/status-badge-align";
 import { User } from "@/features/collections/types";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck, IconCircleCheckFilled, IconX } from "@tabler/icons-react";
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 
 import {
@@ -7,7 +11,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@ziron/ui/components/avatar";
-import { Badge } from "@ziron/ui/components/badge";
 import { Checkbox } from "@ziron/ui/components/checkbox";
 import { cn, formatDate } from "@ziron/utils";
 
@@ -107,14 +110,10 @@ export const columns: ColumnDef<User>[] = [
     header: "Role",
     accessorKey: "role",
     cell: ({ row }) => (
-      <Badge
-        className={cn(
-          row.getValue("role") === "Inactive" &&
-            "bg-muted-foreground/60 text-primary-foreground",
-        )}
-      >
+      <StatusBadge status="completed" className="capitalize">
+        <StatusBadgeIcon as={IconCircleCheckFilled} />
         {row.getValue("role")}
-      </Badge>
+      </StatusBadge>
     ),
     size: 100,
     filterFn: roleFilterFn,

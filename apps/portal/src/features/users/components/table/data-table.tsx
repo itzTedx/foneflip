@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import React, { useId, useState } from "react";
 import { User } from "@/features/collections/types";
 import {
   ColumnFiltersState,
@@ -16,6 +16,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { parseAsInteger, useQueryState } from "nuqs";
 
 import { Label } from "@ziron/ui/components/label";
 import {
@@ -41,22 +42,64 @@ import { TablePagination } from "./pagination";
 
 interface Props {
   data: User[];
+  initialPageSize?: number;
 }
 
-export default function UsersTable({ data }: Props) {
+export default function UsersTable({ data, initialPageSize }: Props) {
   const id = useId();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: "name",
       desc: false,
     },
   ]);
+
+  // nuqs pagination state (1-based for URL, 0-based for table)
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const [pageSize, setPageSize] = useQueryState(
+    "pageSize",
+    parseAsInteger.withDefault(10),
+  );
+
+  // On mount, if no pageSize in URL, use initialPageSize from cookie
+  React.useEffect(() => {
+    const urlPageSize = new URLSearchParams(window.location.search).get(
+      "pageSize",
+    );
+    if (!urlPageSize && initialPageSize) {
+      setPageSize(initialPageSize);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPageSize]);
+
+  // When pageSize changes, set cookie using document.cookie
+  React.useEffect(() => {
+    document.cookie = `users_table_pageSize=${pageSize}; path=/; max-age=${60 * 60 * 24 * 365}`;
+  }, [pageSize]);
+
+  // Sync TanStack Table pagination with nuqs
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: Math.max(0, page - 1),
+    pageSize: pageSize,
+  });
+
+  // When nuqs page/pageSize changes, update table pagination
+  React.useEffect(() => {
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: Math.max(0, page - 1),
+      pageSize: pageSize,
+    }));
+  }, [page, pageSize]);
+
+  // When table pagination changes, update nuqs
+  React.useEffect(() => {
+    if (pagination.pageIndex + 1 !== page) setPage(pagination.pageIndex + 1);
+    if (pagination.pageSize !== pageSize) setPageSize(pagination.pageSize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   const table = useReactTable({
     data,
