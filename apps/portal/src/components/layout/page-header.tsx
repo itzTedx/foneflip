@@ -17,7 +17,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "bg-background/80 sticky top-[calc(3rem)] z-50 flex items-center justify-between border-b px-4 py-3 backdrop-blur-2xl md:px-6",
+        "bg-background/80 sticky top-[calc(3rem)] z-50 flex items-center justify-between px-4 py-3 backdrop-blur-2xl md:px-6",
         className,
       )}
     >

@@ -132,7 +132,7 @@ function SidebarProvider({
 
   return (
     <SidebarContext.Provider value={contextValue}>
-      <TooltipProvider delayDuration={0}>
+      <TooltipProvider delayDuration={100}>
         <div
           data-slot="sidebar-wrapper"
           style={
