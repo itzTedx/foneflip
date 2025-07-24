@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { canCollectionCreate } from "@/features/auth/actions/data-access";
 import { getCollections } from "@/features/collections/actions/queries";
 import { CollectionsContent } from "@/features/collections/components/collections-content";
+import { ExportCsvButton } from "@/features/collections/components/export-csv-button";
 import { getSession } from "@/lib/auth/server";
 import { IconPlus } from "@tabler/icons-react";
 
@@ -23,8 +24,7 @@ export default async function CollectionsPage() {
         title="Collections"
         badge={`${collections.length} Collections`}
       >
-        {session?.user.role}
-        {/* <ExportCsvButton /> */}
+        <ExportCsvButton />
         <Button asChild>
           <Link href="/collections/new">
             <IconPlus />
