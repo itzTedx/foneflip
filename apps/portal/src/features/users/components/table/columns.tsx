@@ -1,5 +1,6 @@
 import {
   StatusBadge,
+  StatusBadgeDot,
   StatusBadgeIcon,
 } from "@/components/ui/status-badge-align";
 import { User } from "@/features/collections/types";
@@ -119,7 +120,7 @@ export const columns: ColumnDef<User>[] = [
             role === "admin"
               ? "success"
               : role === "vendor"
-                ? "warn"
+                ? "info"
                 : role === "dev"
                   ? "error"
                   : "disabled"
@@ -127,7 +128,7 @@ export const columns: ColumnDef<User>[] = [
           variant="light"
           className="capitalize"
         >
-          <StatusBadgeIcon as={IconCircleCheckFilled} />
+          <StatusBadgeDot />
           {role}
         </StatusBadge>
       );

@@ -48,6 +48,10 @@ export const statusBadgeVariants = tv({
         icon: "text-muted-foreground",
         dot: "text-muted-foreground",
       },
+      info: {
+        icon: "text-info",
+        dot: "text-info",
+      },
     },
   },
   compoundVariants: [
@@ -77,6 +81,13 @@ export const statusBadgeVariants = tv({
       status: "disabled",
       class: {
         root: "bg-muted-foreground/10 text-muted-foreground",
+      },
+    },
+    {
+      variant: "light",
+      status: "info",
+      class: {
+        root: "bg-info-foreground/10 text-info",
       },
     },
   ],
