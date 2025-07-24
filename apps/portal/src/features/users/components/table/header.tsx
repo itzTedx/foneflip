@@ -7,7 +7,6 @@ import {
   Columns3Icon,
   FilterIcon,
   ListFilterIcon,
-  PlusIcon,
   TrashIcon,
 } from "lucide-react";
 
@@ -266,11 +265,6 @@ export const DataTableHeader = ({ table, data }: Props) => {
             </AlertDialogContent>
           </AlertDialog>
         )}
-        {/* Add user button */}
-        <Button className="ml-auto" variant="outline">
-          <PlusIcon className="-ms-1 opacity-60" size={16} aria-hidden="true" />
-          Add user
-        </Button>
       </div>
     </div>
   );

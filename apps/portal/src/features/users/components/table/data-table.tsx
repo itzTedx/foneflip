@@ -123,7 +123,7 @@ export default function UsersTable({ data, initialPageSize }: Props) {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-4 md:px-6">
       <DataTableHeader table={table} data={data} />
 
       {/* Table */}
