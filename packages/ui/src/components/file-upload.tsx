@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Slot as SlotPrimitive } from "radix-ui";
 import {
   FileArchiveIcon,
   FileAudioIcon,
@@ -11,6 +10,7 @@ import {
   FileTextIcon,
   FileVideoIcon,
 } from "lucide-react";
+import { Slot as SlotPrimitive } from "radix-ui";
 
 import { cn } from "@ziron/utils";
 

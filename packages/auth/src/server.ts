@@ -74,6 +74,7 @@ export function initAuth(options: {
       "expo://",
       "http://localhost:3000",
       "http://192.168.0.206:3000",
+      "http://192.168.1.158:3000",
     ],
   } satisfies BetterAuthOptions;
 

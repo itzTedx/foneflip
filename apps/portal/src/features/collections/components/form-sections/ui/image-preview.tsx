@@ -32,7 +32,7 @@ export const ImagePreview = ({ value, onRemove, files, name }: Props) => {
   function handleOnRemove() {
     startTransition(async () => {
       if (value && value.file && value.file.key) {
-        console.log(value.file.key);
+        // console.log(value.file.key);
         const res = await deleteMediaFromS3(value.file.key);
         if (res.success) toast.success(res.success);
       }

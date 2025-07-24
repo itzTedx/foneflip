@@ -12,7 +12,9 @@ export default async function Page() {
       <div className="flex flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-bold">Hello World</h1>
 
-        <pre className="text-xs">{JSON.stringify(session, null, 2)}</pre>
+        <pre className="text-xs text-wrap">
+          {JSON.stringify(session, null, 2)}
+        </pre>
 
         {session ? (
           <Button asChild>
