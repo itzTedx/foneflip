@@ -9,6 +9,7 @@ import { parseAsString, useQueryState } from "nuqs";
 import { Button } from "@ziron/ui/components/button";
 import { Form, useForm, zodResolver } from "@ziron/ui/components/form";
 import { LoadingSwap } from "@ziron/ui/components/loading-swap";
+import { ScrollArea } from "@ziron/ui/components/scroll-area";
 import { toast } from "@ziron/ui/components/sonner";
 import { Tabs, TabsContent } from "@ziron/ui/components/tabs";
 import { useLocalStorage } from "@ziron/ui/hooks/use-local-storage";
@@ -239,7 +240,9 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         </Header>
 
         <Tabs defaultValue="details" className="w-full">
-          <TabsTriggers tabTriggers={collectionTabs} disabled={isArchived} />
+          <ScrollArea>
+            <TabsTriggers tabTriggers={collectionTabs} disabled={isArchived} />
+          </ScrollArea>
           <div className="px-6">
             <TabsContent value="details">
               <CollectionDetails />

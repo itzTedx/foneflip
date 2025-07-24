@@ -377,20 +377,18 @@ export const CollectionSettings = memo(function CollectionSettings({
         </Card>
         {isEditMode && (
           <Card className="h-fit break-inside-avoid">
-            <CardHeader className="flex items-center justify-center">
-              <div className="space-y-1.5">
-                <CardTitle>Archive Collection</CardTitle>
-                <CardDescription>
-                  This action will move the collection to the archive, removing
-                  it from public view. This action is reversible.
-                </CardDescription>
-              </div>
-              <CardAction>
-                <Button variant="outline" type="button">
-                  Move to Archive
-                </Button>
-              </CardAction>
+            <CardHeader>
+              <CardTitle>Archive Collection</CardTitle>
+              <CardDescription>
+                This action will move the collection to the archive, removing it
+                from public view. This action is reversible.
+              </CardDescription>
             </CardHeader>
+            <CardContent>
+              <Button variant="outline" type="button">
+                Move to Archive
+              </Button>
+            </CardContent>
           </Card>
         )}
         {isEditMode && (
@@ -406,13 +404,15 @@ export const CollectionSettings = memo(function CollectionSettings({
             <CardContent>
               <div className="flex items-start gap-4">
                 {thumbnail && (
-                  <div className="relative aspect-5/3 h-16 overflow-hidden rounded-sm">
+                  <div className="relative aspect-5/4 h-24 overflow-hidden rounded-sm">
                     <Image
-                      src={thumbnail?.url}
+                      src={thumbnail?.file?.url ?? ""}
                       alt={thumbnail.alt ?? ""}
                       fill
-                      placeholder={thumbnail.blurData ? "blur" : "empty"}
-                      blurDataURL={thumbnail.blurData ?? undefined}
+                      placeholder={
+                        thumbnail.metadata?.blurData ? "blur" : "empty"
+                      }
+                      blurDataURL={thumbnail.metadata?.blurData ?? undefined}
                       className="object-cover"
                     />
                   </div>

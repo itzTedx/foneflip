@@ -3,7 +3,6 @@ import React from "react";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@ziron/ui/components/tooltip";
 
@@ -47,17 +46,15 @@ export function Header({ title, status, children }: CollectionHeaderProps) {
           {title}
         </h1>
         {status && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <div
-                  className="h-2 w-2 cursor-help rounded-full"
-                  style={{ backgroundColor: getStatusColor(status) }}
-                />
-              </TooltipTrigger>
-              <TooltipContent>Status: {getStatusLabel(status)}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <div
+                className="size-2 cursor-help rounded-full"
+                style={{ backgroundColor: getStatusColor(status) }}
+              />
+            </TooltipTrigger>
+            <TooltipContent>Status: {getStatusLabel(status)}</TooltipContent>
+          </Tooltip>
         )}
       </div>
       {children && children}
