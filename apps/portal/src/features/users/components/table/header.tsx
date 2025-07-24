@@ -77,7 +77,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
     return roleColumn.getFacetedUniqueValues();
   }, [table.getColumn("role")?.getFacetedUniqueValues()]);
 
-  const selectedRolees = useMemo(() => {
+  const selectedRoles = useMemo(() => {
     const filterValue = table.getColumn("role")?.getFilterValue() as string[];
     return filterValue ?? [];
   }, [table.getColumn("role")?.getFilterValue()]);
@@ -148,9 +148,9 @@ export const DataTableHeader = ({ table, data }: Props) => {
                 aria-hidden="true"
               />
               Role
-              {selectedRolees.length > 0 && (
+              {selectedRoles.length > 0 && (
                 <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
-                  {selectedRolees.length}
+                  {selectedRoles.length}
                 </span>
               )}
             </Button>
@@ -165,7 +165,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
                   <div key={value} className="flex items-center gap-2">
                     <Checkbox
                       id={`${id}-${i}`}
-                      checked={selectedRolees.includes(value)}
+                      checked={selectedRoles.includes(value)}
                       onCheckedChange={(checked: boolean) =>
                         handleRoleChange(checked, value)
                       }

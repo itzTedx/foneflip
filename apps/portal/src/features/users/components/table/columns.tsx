@@ -58,7 +58,7 @@ export const columns: ColumnDef<User>[] = [
         aria-label="Select row"
       />
     ),
-    size: 28,
+    size: 18,
     enableSorting: false,
     enableHiding: false,
   },

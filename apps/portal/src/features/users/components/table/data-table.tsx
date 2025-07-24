@@ -131,13 +131,13 @@ export default function UsersTable({ data, initialPageSize }: Props) {
         <Table className="table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent">
+              <TableRow key={headerGroup.id} className="bg-card hover:bg-card">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
                       style={{ width: `${header.getSize()}px` }}
-                      className="h-11"
+                      className="h-10"
                     >
                       {header.isPlaceholder ? null : header.column.getCanSort() ? (
                         <div
