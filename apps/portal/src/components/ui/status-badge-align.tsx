@@ -32,15 +32,15 @@ export const statusBadgeVariants = tv({
       light: {},
     },
     status: {
-      completed: {
+      success: {
         icon: "text-success",
         dot: "text-success",
       },
-      pending: {
+      warn: {
         icon: "text-warn",
         dot: "text-warn",
       },
-      failed: {
+      error: {
         icon: "text-destructive",
         dot: "text-destructive",
       },
@@ -53,30 +53,30 @@ export const statusBadgeVariants = tv({
   compoundVariants: [
     {
       variant: "light",
-      status: "completed",
+      status: "success",
       class: {
-        root: "bg-success/10 text-success",
+        root: "bg-success-foreground/10 text-success",
       },
     },
     {
       variant: "light",
-      status: "pending",
+      status: "warn",
       class: {
-        root: "bg-warning-lighter text-warn",
+        root: "bg-warn-foreground/10 text-warn",
       },
     },
     {
       variant: "light",
-      status: "failed",
+      status: "error",
       class: {
-        root: "bg-destructive-foreground text-destructive",
+        root: "bg-destructive-foreground/10 text-destructive",
       },
     },
     {
       variant: "light",
       status: "disabled",
       class: {
-        root: "bg-faded-lighter text-muted-foreground",
+        root: "bg-muted-foreground/10 text-muted-foreground",
       },
     },
   ],

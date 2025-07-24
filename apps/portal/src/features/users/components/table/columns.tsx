@@ -3,7 +3,10 @@ import {
   StatusBadgeIcon,
 } from "@/components/ui/status-badge-align";
 import { User } from "@/features/collections/types";
-import { IconCheck, IconCircleCheckFilled, IconX } from "@tabler/icons-react";
+import {
+  IconAlertHexagonFilled,
+  IconCircleCheckFilled,
+} from "@tabler/icons-react";
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 
 import {
@@ -12,7 +15,7 @@ import {
   AvatarImage,
 } from "@ziron/ui/components/avatar";
 import { Checkbox } from "@ziron/ui/components/checkbox";
-import { cn, formatDate } from "@ziron/utils";
+import { formatDate } from "@ziron/utils";
 
 import { RowActions } from "./row-actions";
 
@@ -92,30 +95,44 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const isVerified = row.getValue("emailVerified") === true;
       return (
-        <div
-          className={cn(
-            "flex size-5 items-center justify-center rounded-sm border [&_svg]:size-3",
-            isVerified
-              ? "border-success text-success bg-success/20"
-              : "border-destructive text-destructive bg-destructive/20",
-          )}
+        <StatusBadge
+          status={isVerified ? "success" : "warn"}
+          className="capitalize"
         >
-          {isVerified ? <IconCheck /> : <IconX />}
-        </div>
+          <StatusBadgeIcon
+            as={isVerified ? IconCircleCheckFilled : IconAlertHexagonFilled}
+          />
+          {isVerified ? "Verified" : "Pending"}
+        </StatusBadge>
       );
     },
-    size: 60,
+    size: 80,
   },
   {
     header: "Role",
     accessorKey: "role",
-    cell: ({ row }) => (
-      <StatusBadge status="completed" className="capitalize">
-        <StatusBadgeIcon as={IconCircleCheckFilled} />
-        {row.getValue("role")}
-      </StatusBadge>
-    ),
-    size: 100,
+    cell: ({ row }) => {
+      const role = row.getValue("role") as "user" | "vendor" | "admin" | "dev";
+      return (
+        <StatusBadge
+          status={
+            role === "admin"
+              ? "success"
+              : role === "vendor"
+                ? "warn"
+                : role === "dev"
+                  ? "error"
+                  : "disabled"
+          }
+          variant="light"
+          className="capitalize"
+        >
+          <StatusBadgeIcon as={IconCircleCheckFilled} />
+          {role}
+        </StatusBadge>
+      );
+    },
+    size: 80,
     filterFn: roleFilterFn,
   },
 
