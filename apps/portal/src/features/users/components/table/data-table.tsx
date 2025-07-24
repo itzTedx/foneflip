@@ -51,7 +51,6 @@ export default function UsersTable({ data }: Props) {
     pageIndex: 0,
     pageSize: 10,
   });
-
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: "name",

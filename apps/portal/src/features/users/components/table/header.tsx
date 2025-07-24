@@ -172,7 +172,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
                     />
                     <Label
                       htmlFor={`${id}-${i}`}
-                      className="flex grow justify-between gap-2 font-normal"
+                      className="flex grow justify-between gap-2 font-normal capitalize"
                     >
                       {value}{" "}
                       <span className="text-muted-foreground ms-2 text-xs">

@@ -13,18 +13,12 @@ import { cn, formatDate } from "@ziron/utils";
 
 import { RowActions } from "./row-actions";
 
-// export type Item = {
-//   id: string;
-//   name: string;
-//   email: string;
-//   location: string;
-//   flag: string;
-//   status: "Active" | "Inactive" | "Pending";
-//   balance: number;
-// };
-
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<User> = (row, filterValue) => {
+export const multiColumnFilterFn: FilterFn<User> = (
+  row,
+  columnId,
+  filterValue,
+) => {
   const searchableRowContent =
     `${row.original.name} ${row.original.email}`.toLowerCase();
   const searchTerm = (filterValue ?? "").toLowerCase();
@@ -69,9 +63,11 @@ export const columns: ColumnDef<User>[] = [
       const avatar = row.original.image as string | undefined;
       return (
         <div className="flex items-center gap-2 font-medium">
-          <Avatar>
+          <Avatar className="size-10 rounded-md">
             <AvatarImage src={avatar} />
-            <AvatarFallback>{name.slice(0, 1)}</AvatarFallback>
+            <AvatarFallback className="rounded-md">
+              {name.slice(0, 1)}
+            </AvatarFallback>
           </Avatar>
           {name}
         </div>
@@ -128,8 +124,8 @@ export const columns: ColumnDef<User>[] = [
     header: "Created At",
     accessorKey: "createdAt",
     cell: ({ row }) => {
-      const data = parseFloat(row.getValue("createdAt"));
-      const formatted = formatDate(data);
+      const data = row.getValue("createdAt") as string;
+      const formatted = formatDate(data, { includeTime: true });
       return formatted;
     },
     size: 120,
