@@ -6,17 +6,14 @@ import { canCollectionCreate } from "@/features/auth/actions/data-access";
 import { getCollections } from "@/features/collections/actions/queries";
 import { CollectionsContent } from "@/features/collections/components/collections-content";
 import { ExportCsvButton } from "@/features/collections/components/export-csv-button";
-import { getSession } from "@/lib/auth/server";
 import { IconPlus } from "@tabler/icons-react";
 
 import { Button } from "@ziron/ui/components/button";
 
 export default async function CollectionsPage() {
-  const collections = await getCollections();
-
-  const session = await getSession();
-
   await canCollectionCreate();
+
+  const collections = await getCollections();
 
   return (
     <MainWrapper>

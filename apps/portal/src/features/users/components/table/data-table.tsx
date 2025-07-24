@@ -59,18 +59,6 @@ export default function UsersTable({ data }: Props) {
     },
   ]);
 
-  // const [data, setData] = useState<Item[]>([]);
-  // useEffect(() => {
-  //   async function fetchPosts() {
-  //     const res = await fetch(
-  //       "https://raw.githubusercontent.com/origin-space/origin-images/refs/heads/main/users-01_fertyx.json",
-  //     );
-  //     const data = await res.json();
-  //     setData(data);
-  //   }
-  //   fetchPosts();
-  // }, []);
-
   const table = useReactTable({
     data,
     columns,

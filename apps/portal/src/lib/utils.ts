@@ -63,7 +63,7 @@ export function convertToCsv(data: Record<string, unknown>[]): string {
   if (!data || data.length === 0) {
     return "";
   }
-  const headers = Object.keys(data[0]);
+  const headers = Object.keys(data[0]!);
   const headerRow = headers.map((header) => escapeCsvValue(header)).join(",");
   const dataRows = data.map((row) =>
     headers.map((header) => escapeCsvValue(row[header])).join(","),

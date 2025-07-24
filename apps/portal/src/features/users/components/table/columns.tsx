@@ -2,9 +2,14 @@ import { User } from "@/features/collections/types";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@ziron/ui/components/avatar";
 import { Badge } from "@ziron/ui/components/badge";
 import { Checkbox } from "@ziron/ui/components/checkbox";
-import { cn } from "@ziron/utils";
+import { cn, formatDate } from "@ziron/utils";
 
 import { RowActions } from "./row-actions";
 
@@ -19,21 +24,17 @@ import { RowActions } from "./row-actions";
 // };
 
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<User> = (row, columnId, filterValue) => {
+const multiColumnFilterFn: FilterFn<User> = (row, filterValue) => {
   const searchableRowContent =
     `${row.original.name} ${row.original.email}`.toLowerCase();
   const searchTerm = (filterValue ?? "").toLowerCase();
   return searchableRowContent.includes(searchTerm);
 };
 
-const statusFilterFn: FilterFn<User> = (
-  row,
-  columnId,
-  filterValue: string[],
-) => {
+const roleFilterFn: FilterFn<User> = (row, columnId, filterValue: string[]) => {
   if (!filterValue?.length) return true;
-  const status = row.getValue(columnId) as string;
-  return filterValue.includes(status);
+  const role = row.getValue(columnId) as string;
+  return filterValue.includes(role);
 };
 
 export const columns: ColumnDef<User>[] = [
@@ -63,13 +64,24 @@ export const columns: ColumnDef<User>[] = [
   {
     header: "Name",
     accessorKey: "name",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("name")}</div>
-    ),
+    cell: ({ row }) => {
+      const name = row.getValue("name") as string;
+      const avatar = row.original.image as string | undefined;
+      return (
+        <div className="flex items-center gap-2 font-medium">
+          <Avatar>
+            <AvatarImage src={avatar} />
+            <AvatarFallback>{name.slice(0, 1)}</AvatarFallback>
+          </Avatar>
+          {name}
+        </div>
+      );
+    },
     size: 180,
     filterFn: multiColumnFilterFn,
     enableHiding: false,
   },
+
   {
     header: "Email",
     accessorKey: "email",
@@ -83,47 +95,41 @@ export const columns: ColumnDef<User>[] = [
       return (
         <div
           className={cn(
-            "flex size-6 items-center justify-center rounded-sm border [&_svg]:size-4",
+            "flex size-5 items-center justify-center rounded-sm border [&_svg]:size-3",
             isVerified
-              ? "border-success text-success"
-              : "border-destructive text-destructive",
+              ? "border-success text-success bg-success/20"
+              : "border-destructive text-destructive bg-destructive/20",
           )}
         >
           {isVerified ? <IconCheck /> : <IconX />}
         </div>
       );
     },
-    size: 180,
+    size: 60,
   },
   {
-    header: "Status",
-    accessorKey: "status",
+    header: "Role",
+    accessorKey: "role",
     cell: ({ row }) => (
       <Badge
         className={cn(
-          row.getValue("status") === "Inactive" &&
+          row.getValue("role") === "Inactive" &&
             "bg-muted-foreground/60 text-primary-foreground",
         )}
       >
-        {row.getValue("status")}
+        {row.getValue("role")}
       </Badge>
     ),
     size: 100,
-    filterFn: statusFilterFn,
+    filterFn: roleFilterFn,
   },
+
   {
-    header: "Performance",
-    accessorKey: "performance",
-  },
-  {
-    header: "Balance",
-    accessorKey: "balance",
+    header: "Created At",
+    accessorKey: "createdAt",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("balance"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
+      const data = parseFloat(row.getValue("createdAt"));
+      const formatted = formatDate(data);
       return formatted;
     },
     size: 120,
