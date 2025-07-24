@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { LogoutButton } from "@/components/ui/logout-button";
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import {
   IconBook,
   IconLogout,
@@ -63,6 +64,7 @@ export default function UserMenu() {
             </span>
           </div>
         </DropdownMenuLabel>
+        <ThemeSwitcher />
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
