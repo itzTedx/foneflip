@@ -84,7 +84,9 @@ export const columns: ColumnDef<User>[] = [
         <div
           className={cn(
             "flex size-6 items-center justify-center rounded-sm border [&_svg]:size-4",
-            isVerified ? "border-success text-success" : "border-destructive",
+            isVerified
+              ? "border-success text-success"
+              : "border-destructive text-destructive",
           )}
         >
           {isVerified ? <IconCheck /> : <IconX />}
