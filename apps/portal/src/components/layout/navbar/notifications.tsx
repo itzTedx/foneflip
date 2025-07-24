@@ -9,6 +9,7 @@ import { getNotifications } from "@/features/notifications/actions/queries";
 import { BellIcon } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 
+import { useSession } from "@ziron/auth/client";
 import { Badge } from "@ziron/ui/components/badge";
 import { Button } from "@ziron/ui/components/button";
 import { LoadingSwap } from "@ziron/ui/components/loading-swap";
@@ -46,12 +47,12 @@ function normalizeNotification(
 }
 
 export default function Notifications({
-  userId,
   initialNotifications,
 }: {
-  userId: string;
   initialNotifications?: NotificationProp[] | null;
 }) {
+  const { data } = useSession();
+  const userId = data?.user.id;
   // When initializing state
   const notificationsArray = (initialNotifications ?? []).map(
     normalizeNotification,
@@ -93,7 +94,7 @@ export default function Notifications({
       prev.map((notification) => ({ ...notification, read: true })),
     );
     try {
-      await markAllNotificationsAsRead(userId);
+      await markAllNotificationsAsRead(userId!);
     } catch {
       toast.error("Failed to mark all as read. Please try again.");
       // Optionally: refetch notifications or handle rollback if needed

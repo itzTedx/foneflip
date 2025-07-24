@@ -6,6 +6,7 @@ import { SidebarTrigger } from "@ziron/ui/components/sidebar";
 
 import { NavBreadcrumb } from "./nav-breadcrumb";
 import Notifications from "./notifications";
+import { ThemeToggle } from "./theme-toggle";
 import UserMenu from "./user-menu";
 
 interface NavbarProps {
@@ -29,11 +30,9 @@ export default async function Navbar({ session }: NavbarProps) {
 
         {session && (
           <div className="flex flex-1 items-center justify-end gap-3">
-            <Notifications
-              userId={session.user.id}
-              initialNotifications={notifications}
-            />
-            <UserMenu data={session} />
+            <ThemeToggle />
+            <Notifications initialNotifications={notifications} />
+            <UserMenu />
           </div>
         )}
       </div>
