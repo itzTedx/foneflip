@@ -1,3 +1,5 @@
+import { User } from "@/features/collections/types";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 
 import { Badge } from "@ziron/ui/components/badge";
@@ -6,25 +8,25 @@ import { cn } from "@ziron/utils";
 
 import { RowActions } from "./row-actions";
 
-export type Item = {
-  id: string;
-  name: string;
-  email: string;
-  location: string;
-  flag: string;
-  status: "Active" | "Inactive" | "Pending";
-  balance: number;
-};
+// export type Item = {
+//   id: string;
+//   name: string;
+//   email: string;
+//   location: string;
+//   flag: string;
+//   status: "Active" | "Inactive" | "Pending";
+//   balance: number;
+// };
 
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
+const multiColumnFilterFn: FilterFn<User> = (row, columnId, filterValue) => {
   const searchableRowContent =
     `${row.original.name} ${row.original.email}`.toLowerCase();
   const searchTerm = (filterValue ?? "").toLowerCase();
   return searchableRowContent.includes(searchTerm);
 };
 
-const statusFilterFn: FilterFn<Item> = (
+const statusFilterFn: FilterFn<User> = (
   row,
   columnId,
   filterValue: string[],
@@ -34,7 +36,7 @@ const statusFilterFn: FilterFn<Item> = (
   return filterValue.includes(status);
 };
 
-export const columns: ColumnDef<Item>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -74,14 +76,21 @@ export const columns: ColumnDef<Item>[] = [
     size: 220,
   },
   {
-    header: "Location",
-    accessorKey: "location",
-    cell: ({ row }) => (
-      <div>
-        <span className="text-lg leading-none">{row.original.flag}</span>{" "}
-        {row.getValue("location")}
-      </div>
-    ),
+    header: "Verified",
+    accessorKey: "emailVerified",
+    cell: ({ row }) => {
+      const isVerified = row.getValue("emailVerified") === true;
+      return (
+        <div
+          className={cn(
+            "flex size-6 items-center justify-center rounded-sm border [&_svg]:size-4",
+            isVerified ? "border-success text-success" : "border-destructive",
+          )}
+        >
+          {isVerified ? <IconCheck /> : <IconX />}
+        </div>
+      );
+    },
     size: 180,
   },
   {

@@ -1,3 +1,4 @@
+import { User } from "@/features/collections/types";
 import { Table } from "@tanstack/react-table";
 import {
   ChevronFirstIcon,
@@ -13,10 +14,10 @@ import {
   PaginationItem,
 } from "@ziron/ui/components/pagination";
 
-import { Item } from "./columns";
+// import { Item } from "./columns";
 
 interface Props {
-  table: Table<Item>;
+  table: Table<User>;
 }
 
 export const TablePagination = ({ table }: Props) => {

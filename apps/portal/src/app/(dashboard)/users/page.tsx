@@ -6,7 +6,7 @@ export default async function UsersPage() {
   const users = await getUsers();
   return (
     <MainWrapper className="py-6">
-      <UsersTable />
+      <UsersTable data={users} />
     </MainWrapper>
   );
 }
