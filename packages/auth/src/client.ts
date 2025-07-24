@@ -6,11 +6,20 @@ import {
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
+import { ac, admin, dev, user, vendor } from "./permission";
 import { Auth } from "./server";
 
 export const authClient = createAuthClient({
   plugins: [
-    adminClient(),
+    adminClient({
+      ac,
+      roles: {
+        admin,
+        user,
+        vendor,
+        dev,
+      },
+    }),
     emailOTPClient(),
     inferAdditionalFields<Auth>(),
     twoFactorClient(),

@@ -2,10 +2,17 @@ import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { emailOTP, organization, twoFactor } from "better-auth/plugins";
+import {
+  admin as adminPlugin,
+  emailOTP,
+  organization,
+  twoFactor,
+} from "better-auth/plugins";
 
 import { db } from "@ziron/db";
 import redis from "@ziron/redis";
+
+import { ac, admin, dev, user, vendor } from "./permission";
 
 export function initAuth(options: {
   baseUrl: string;
@@ -48,6 +55,15 @@ export function initAuth(options: {
           organization: {
             modelName: "vendors",
           },
+        },
+      }),
+      adminPlugin({
+        ac,
+        roles: {
+          admin,
+          user,
+          vendor,
+          dev,
         },
       }),
       nextCookies(),
