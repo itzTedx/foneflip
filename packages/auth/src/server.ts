@@ -26,6 +26,13 @@ export function initAuth(options: {
     baseURL: options.baseUrl,
     secret: options.secret,
 
+    rateLimit: {
+      enabled: true,
+      window: 10, // time window in seconds
+      max: 100, // max requests in the window
+      storage: "secondary-storage",
+    },
+
     user: {
       additionalFields: {
         role: {
