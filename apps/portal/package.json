@@ -25,6 +25,7 @@
     "@headless-tree/core": "^1.2.1",
     "@headless-tree/react": "^1.2.1",
     "@tabler/icons-react": "^3.34.0",
+    "@tanstack/react-table": "^8.21.3",
     "@ziron/auth": "workspace:*",
     "@ziron/db": "workspace:*",
     "@ziron/queue": "workspace:*",

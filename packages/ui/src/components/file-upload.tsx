@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot as SlotPrimitive } from "radix-ui";
 import {
   FileArchiveIcon,
   FileAudioIcon,
@@ -601,7 +601,7 @@ function FileUploadRoot(props: FileUploadRootProps) {
     [dropzoneId, inputId, listId, labelId, dir, disabled, urlCache],
   );
 
-  const RootPrimitive = asChild ? Slot : "div";
+  const RootPrimitive = asChild ? SlotPrimitive.Slot : "div";
 
   return (
     <StoreContext.Provider value={store}>
@@ -804,7 +804,7 @@ function FileUploadDropzone(props: FileUploadDropzoneProps) {
     [context.inputRef, onKeyDownProp],
   );
 
-  const DropzonePrimitive = asChild ? Slot : "div";
+  const DropzonePrimitive = asChild ? SlotPrimitive.Slot : "div";
 
   return (
     <DropzonePrimitive
@@ -855,7 +855,7 @@ function FileUploadTrigger(props: FileUploadTriggerProps) {
     [context.inputRef, onClickProp],
   );
 
-  const TriggerPrimitive = asChild ? Slot : "button";
+  const TriggerPrimitive = asChild ? SlotPrimitive.Slot : "button";
 
   return (
     <TriggerPrimitive
@@ -891,7 +891,7 @@ function FileUploadList(props: FileUploadListProps) {
 
   if (!shouldRender) return null;
 
-  const ListPrimitive = asChild ? Slot : "div";
+  const ListPrimitive = asChild ? SlotPrimitive.Slot : "div";
 
   return (
     <ListPrimitive
@@ -976,7 +976,7 @@ function FileUploadItem(props: FileUploadItemProps) {
         ? "Upload complete"
         : "Ready to upload";
 
-  const ItemPrimitive = asChild ? Slot : "div";
+  const ItemPrimitive = asChild ? SlotPrimitive.Slot : "div";
 
   return (
     <FileUploadItemContext.Provider value={itemContext}>
@@ -1103,7 +1103,7 @@ function FileUploadItemPreview(props: FileUploadItemPreviewProps) {
 
   if (!itemContext.fileState) return null;
 
-  const ItemPreviewPrimitive = asChild ? Slot : "div";
+  const ItemPreviewPrimitive = asChild ? SlotPrimitive.Slot : "div";
 
   return (
     <ItemPreviewPrimitive
@@ -1141,7 +1141,7 @@ function FileUploadItemMetadata(props: FileUploadItemMetadataProps) {
 
   if (!itemContext.fileState) return null;
 
-  const ItemMetadataPrimitive = asChild ? Slot : "div";
+  const ItemMetadataPrimitive = asChild ? SlotPrimitive.Slot : "div";
 
   return (
     <ItemMetadataPrimitive
@@ -1209,7 +1209,7 @@ function FileUploadItemProgress(props: FileUploadItemProgressProps) {
 
   if (!shouldRender) return null;
 
-  const ItemProgressPrimitive = asChild ? Slot : "div";
+  const ItemProgressPrimitive = asChild ? SlotPrimitive.Slot : "div";
 
   switch (variant) {
     case "circular": {
@@ -1341,7 +1341,7 @@ function FileUploadItemDelete(props: FileUploadItemDeleteProps) {
 
   if (!itemContext.fileState) return null;
 
-  const ItemDeletePrimitive = asChild ? Slot : "button";
+  const ItemDeletePrimitive = asChild ? SlotPrimitive.Slot : "button";
 
   return (
     <ItemDeletePrimitive
@@ -1391,7 +1391,7 @@ function FileUploadClear(props: FileUploadClearProps) {
 
   if (!shouldRender) return null;
 
-  const ClearPrimitive = asChild ? Slot : "button";
+  const ClearPrimitive = asChild ? SlotPrimitive.Slot : "button";
 
   return (
     <ClearPrimitive

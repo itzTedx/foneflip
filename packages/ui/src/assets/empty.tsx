@@ -1,7 +1,7 @@
 import { JSX, SVGProps } from "react";
 
 export const IconEmpty = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ) => {
   return (
     <svg
