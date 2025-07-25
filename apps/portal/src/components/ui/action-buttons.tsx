@@ -7,8 +7,8 @@ import {
   IconSaveFilled,
   IconUnarchiveFilled,
 } from "@ziron/ui/assets/icons";
-import { Button, buttonVariants } from "@ziron/ui/components/button";
-import { LoadingSwap } from "@ziron/ui/components/loading-swap";
+import { Button, buttonVariants } from "@ziron/ui/button";
+import { LoadingSwap } from "@ziron/ui/loading-swap";
 import { VariantProps } from "@ziron/utils";
 
 export const SaveButton = ({

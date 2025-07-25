@@ -17,11 +17,12 @@
     "@ziron/queue": "workspace:*",
     "@ziron/redis": "workspace:*",
     "@ziron/validators": "workspace:*",
-    "bullmq": "^5.56.3"
+    "bullmq": "^5.56.3",
+    "dotenv-cli": "^8.0.0"
   },
   "devDependencies": {
     "@ziron/eslint-config": "workspace:*",
-    "@ziron/typescript-config": "workspace:*",
+    "@ziron/tsconfig": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "catalog:"
   }

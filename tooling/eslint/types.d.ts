@@ -32,13 +32,3 @@ declare module "@next/eslint-plugin-next" {
   };
   export const rules: Record<string, Rule.RuleModule>;
 }
-
-declare module "eslint-config-prettier" {
-  export const rules: Record<string, 0 | "off">;
-}
-
-declare module "@ziron/eslint-config/nextjs";
-declare module "@ziron/eslint-config/base";
-declare module "@ziron/eslint-config/react";
-
-declare module "minimatch";

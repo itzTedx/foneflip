@@ -1,18 +1,17 @@
 /// <reference types="./types.d.ts" />
 
-import * as path from "node:path";
 import { includeIgnoreFile } from "@eslint/compat";
-import { default as eslint, default as js } from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
+import eslint from "@eslint/js";
 import importPlugin from "eslint-plugin-import";
 import turboPlugin from "eslint-plugin-turbo";
+import * as path from "node:path";
 import tseslint from "typescript-eslint";
 
 /**
  * All packages that leverage t3-env should use this rule
  */
 export const restrictEnvAccess = tseslint.config(
-  { ignores: ["**/env.ts", "**/lib/env/*"] },
+  { ignores: ["**/env.ts"] },
   {
     files: ["**/*.js", "**/*.ts", "**/*.tsx"],
     rules: {
@@ -38,25 +37,6 @@ export const restrictEnvAccess = tseslint.config(
   },
 );
 
-const baseConfig = [
-  js.configs.recommended,
-  eslintConfigPrettier,
-  ...tseslint.configs.recommended,
-  {
-    plugins: {
-      turbo: turboPlugin,
-    },
-    rules: {
-      "turbo/no-undeclared-env-vars": ["warn"],
-    },
-  },
-
-  {
-    ignores: ["dist/**"],
-  },
-];
-
-// export default baseConfig;
 export default tseslint.config(
   // Ignore files not tracked by VCS and any config files
   includeIgnoreFile(path.join(import.meta.dirname, "../../.gitignore")),
@@ -65,7 +45,7 @@ export default tseslint.config(
     files: ["**/*.js", "**/*.ts", "**/*.tsx"],
     plugins: {
       import: importPlugin,
-      // turbo: turboPlugin,
+      turbo: turboPlugin,
     },
     extends: [
       eslint.configs.recommended,
@@ -88,7 +68,7 @@ export default tseslint.config(
         { checksVoidReturn: { attributes: false } },
       ],
       "@typescript-eslint/no-unnecessary-condition": [
-        "error",
+        "warn",
         {
           allowConstantLoopConditions: true,
         },

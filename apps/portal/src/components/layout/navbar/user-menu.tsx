@@ -1,33 +1,33 @@
 "use client";
 
-import Link from "next/link";
 import { LogoutButton } from "@/components/ui/logout-button";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import {
-  IconBook,
-  IconLogout,
-  IconPhone,
-  IconSettings,
-  IconUser,
+    IconBook,
+    IconLogout,
+    IconPhone,
+    IconSettings,
+    IconUser,
 } from "@tabler/icons-react";
 import { BookOpenIcon, Layers2Icon } from "lucide-react";
+import Link from "next/link";
 
 import { useSession } from "@ziron/auth/client";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@ziron/ui/components/avatar";
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@ziron/ui/avatar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@ziron/ui/components/dropdown-menu";
-import GlareHover from "@ziron/ui/components/glare-hover";
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@ziron/ui/dropdown-menu";
+import GlareHover from "@ziron/ui/glare-hover";
 
 export default function UserMenu() {
   const { data } = useSession();

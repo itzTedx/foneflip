@@ -1,19 +1,19 @@
 "use client";
 
-import React, { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { parseAsString, useQueryState } from "nuqs";
+import React, { useMemo } from "react";
 
 import { IconLogoMono } from "@ziron/ui/assets/logo";
 import {
-  Breadcrumb,
-  BreadcrumbEllipsis,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@ziron/ui/components/breadcrumb";
+    Breadcrumb,
+    BreadcrumbEllipsis,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@ziron/ui/breadcrumb";
 import { useIsMobile } from "@ziron/ui/hooks/use-mobile";
 
 // Constants for better maintainability

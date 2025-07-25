@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { LogoutButton } from "@/components/ui/logout-button";
 import { sendMockNotification } from "@/features/notifications/actions/sendMockNotification";
 import { getSession } from "@/lib/auth/server";
+import Link from "next/link";
 
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 
 export default async function Page() {
   const session = await getSession();

@@ -1,11 +1,7 @@
 {
-  "name": "@ziron/typescript-config",
-  "version": "0.0.0",
+  "name": "@ziron/tsconfig",
   "private": true,
-  "license": "PROPRIETARY",
-  "publishConfig": {
-    "access": "public"
-  },
+  "version": "0.1.0",
   "files": [
     "*.json"
   ]

@@ -21,7 +21,7 @@
     "@types/react-dom": "catalog:react19",
     "@ziron/eslint-config": "workspace:*",
     "@ziron/prettier-config": "workspace:*",
-    "@ziron/typescript-config": "workspace:*",
+    "@ziron/tsconfig": "workspace:*",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },

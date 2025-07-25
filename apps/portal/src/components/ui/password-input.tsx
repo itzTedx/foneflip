@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useState } from "react";
 
-import { Input } from "@ziron/ui/components/input";
+import { Input } from "@ziron/ui/input";
 
 interface PasswordInputProps {
   id?: string;

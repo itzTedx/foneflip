@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 
 import { IconSettingsFilled } from "@ziron/ui/assets/icons";
-import { TabsList, TabsTrigger } from "@ziron/ui/components/tabs";
 
+import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabTriggerType } from "../../data/constants";
 
 export type TabTrigger = {

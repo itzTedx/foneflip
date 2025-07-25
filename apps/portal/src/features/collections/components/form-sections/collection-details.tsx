@@ -2,17 +2,15 @@
 
 import { TabNavigation } from "@/components/layout/tab-navigation";
 import { IconSparkles } from "@tabler/icons-react";
-import { useFormContext } from "react-hook-form";
 
-import type { CollectionFormType } from "@ziron/validators";
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@ziron/ui/components/card";
+} from "@ziron/ui/card";
 import {
   FormControl,
   FormDescription,
@@ -20,11 +18,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@ziron/ui/components/form";
-import { Input } from "@ziron/ui/components/input";
-import { Switch } from "@ziron/ui/components/switch";
-import { Textarea } from "@ziron/ui/components/textarea";
+  useFormContext,
+} from "@ziron/ui/form";
+import { Input } from "@ziron/ui/input";
+import { Switch } from "@ziron/ui/switch";
+import { Textarea } from "@ziron/ui/textarea";
 import { slugify } from "@ziron/utils";
+import type { CollectionFormType } from "@ziron/validators";
 
 export function CollectionDetails() {
   const form = useFormContext<CollectionFormType>();

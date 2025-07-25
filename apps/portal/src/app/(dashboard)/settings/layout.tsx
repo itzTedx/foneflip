@@ -1,7 +1,8 @@
-import { ReactNode } from "react";
-import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
+import Link from "next/link";
+import { ReactNode } from "react";
 
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   IconBankCardFilled,
   IconHomeGearFilled,
@@ -11,8 +12,7 @@ import {
   IconShoppingBasketFilled,
   IconStoreFilled,
 } from "@ziron/ui/assets/icons";
-import { ScrollArea, ScrollBar } from "@ziron/ui/components/scroll-area";
-import { Tabs, TabsList, TabsTrigger } from "@ziron/ui/components/tabs";
+import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
 
 export default async function SettingsLayout({
   children,

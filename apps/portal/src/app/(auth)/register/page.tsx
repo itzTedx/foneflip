@@ -1,7 +1,7 @@
 import { RegisterForm } from "@/features/auth/components/register-form";
 
 import { IconLogoMono } from "@ziron/ui/assets/logo";
-import { Card, CardContent } from "@ziron/ui/components/card";
+import { Card, CardContent } from "@ziron/ui/card";
 
 export default function RegisterPage() {
   return (

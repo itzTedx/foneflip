@@ -1,5 +1,10 @@
 {
-  "extends": "@ziron/typescript-config/internal-package.json",
+  "extends": "@ziron/tsconfig/internal-package.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "dom", "dom.iterable"],
+    "jsx": "preserve",
+    "rootDir": "."
+  },
   "include": ["src"],
   "exclude": ["node_modules"]
 }

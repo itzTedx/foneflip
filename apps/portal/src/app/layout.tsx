@@ -1,9 +1,9 @@
-import { Geist } from "next/font/google";
-
 import "@ziron/ui/globals.css";
+import { Geist } from "next/font/google";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
-import type { Metadata } from "next";
 import { Providers } from "@/components/providers";
+import type { Metadata } from "next";
 
 import { createMetadata } from "@ziron/seo";
 import { cn } from "@ziron/utils";
@@ -28,7 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={cn("no-scrollbar")}>
       <body className={cn("antialiased", geistSans.className)}>
+        <NuqsAdapter>
+          
         <Providers>{children}</Providers>
+      </NuqsAdapter>
       </body>
     </html>
   );

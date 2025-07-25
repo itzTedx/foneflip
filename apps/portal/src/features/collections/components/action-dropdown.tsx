@@ -1,32 +1,32 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { IconCopy, IconEdit, IconRestore } from "@tabler/icons-react";
 import {
-  ArchiveRestoreIcon,
-  Ellipsis,
-  Share2Icon,
-  TrashIcon,
+    ArchiveRestoreIcon,
+    Ellipsis,
+    Share2Icon,
+    TrashIcon,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { collectionStatusEnum } from "@ziron/db/schema";
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@ziron/ui/components/dropdown-menu";
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@ziron/ui/dropdown-menu";
 
 import {
-  deleteCollection,
-  duplicateCollection,
-  setCollectionStatus,
+    deleteCollection,
+    duplicateCollection,
+    setCollectionStatus,
 } from "../actions/mutations";
 import { ActionConfirmDialog } from "./ui/action-confirm-dialog";
 

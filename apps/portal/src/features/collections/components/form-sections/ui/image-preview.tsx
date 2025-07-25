@@ -1,20 +1,20 @@
-import { useTransition } from "react";
-import Image from "next/image";
 import { deleteMediaFromS3 } from "@/features/media/actions/mutations";
 import { formatBytes } from "@/hooks/use-file-upload";
 import { IconX } from "@tabler/icons-react";
+import Image from "next/image";
+import { useTransition } from "react";
 
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useFormContext,
-} from "@ziron/ui/components/form";
-import { Input } from "@ziron/ui/components/input";
-import { toast } from "@ziron/ui/components/sonner";
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+    useFormContext,
+} from "@ziron/ui/form";
+import { Input } from "@ziron/ui/input";
+import { toast } from "@ziron/ui/sonner";
 import { CollectionFormType } from "@ziron/validators";
 
 interface Props {

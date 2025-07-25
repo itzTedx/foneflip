@@ -1,15 +1,14 @@
 "use client";
 
-import { memo } from "react";
-import Image from "next/image";
 import { TabNavigation } from "@/components/layout/tab-navigation";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { IconSpeakerphone } from "@tabler/icons-react";
 import { CheckIcon, MinusIcon } from "lucide-react";
-import { useFormContext } from "react-hook-form";
+import Image from "next/image";
+import { memo } from "react";
 
 import { IconDot } from "@ziron/ui/assets/icons";
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 import {
   Card,
   CardAction,
@@ -18,27 +17,27 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@ziron/ui/components/card";
+} from "@ziron/ui/card";
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from "@ziron/ui/components/form";
-import { Input } from "@ziron/ui/components/input";
-import { MultiInput } from "@ziron/ui/components/multi-input";
-import { RadioGroup, RadioGroupItem } from "@ziron/ui/components/radio-group";
+  FormMessage, useFormContext
+} from "@ziron/ui/form";
+import { Input } from "@ziron/ui/input";
+import { MultiInput } from "@ziron/ui/multi-input";
+import { RadioGroup, RadioGroupItem } from "@ziron/ui/radio-group";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ziron/ui/components/select";
-import { Switch } from "@ziron/ui/components/switch";
-import { Textarea } from "@ziron/ui/components/textarea";
+} from "@ziron/ui/select";
+import { Switch } from "@ziron/ui/switch";
+import { Textarea } from "@ziron/ui/textarea";
 import { cn, formatDate } from "@ziron/utils";
 import { CollectionFormType, collectionStatusEnum } from "@ziron/validators";
 

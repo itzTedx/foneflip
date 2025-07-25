@@ -1,4 +1,4 @@
-import { Badge } from "@ziron/ui/components/badge";
+import { Badge } from "@ziron/ui/badge";
 import { cn } from "@ziron/utils";
 
 type PageHeaderProps = {

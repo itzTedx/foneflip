@@ -1,6 +1,7 @@
 "use client";
 
-import { Cropper as CropperPrimitive } from "@origin-space/image-cropper";
+
+import { Cropper as CropperPrimitive } from "./package/Cropper";
 
 import { cn } from "@ziron/utils";
 
@@ -66,3 +67,5 @@ function CropperCropArea({
 }
 
 export { Cropper, CropperCropArea, CropperDescription, CropperImage };
+
+

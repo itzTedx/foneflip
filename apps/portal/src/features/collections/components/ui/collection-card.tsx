@@ -1,27 +1,27 @@
-import React, { useMemo } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { TooltipBadge } from "@/components/ui/tooltip";
 import { ProductQueryResult } from "@/features/products/types";
 import { IconGripVertical, IconInfoCircle } from "@tabler/icons-react";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useMemo } from "react";
 
 import { IconEmpty } from "@ziron/ui/assets/empty";
-import { Badge } from "@ziron/ui/components/badge";
-import { Button } from "@ziron/ui/components/button";
+import { Badge } from "@ziron/ui/badge";
+import { Button } from "@ziron/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@ziron/ui/components/card";
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@ziron/ui/card";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@ziron/ui/components/hover-card";
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@ziron/ui/hover-card";
 
 import { CollectionQueryResult } from "../../types";
 import { ActionDropdown } from "../action-dropdown";
@@ -196,3 +196,4 @@ const CollectionCard = React.memo(function CollectionCard({
 });
 
 export { CollectionCard };
+

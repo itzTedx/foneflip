@@ -1,15 +1,15 @@
 "use client";
 
-import { FormEvent, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useRouter } from "next/navigation";
+import { FormEvent, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { authClient } from "@ziron/auth/client";
-import { Button } from "@ziron/ui/components/button";
-import { Input } from "@ziron/ui/components/input";
-import { Label } from "@ziron/ui/components/label";
-import { LoadingSwap } from "@ziron/ui/components/loading-swap";
+import { Button } from "@ziron/ui/button";
+import { Input } from "@ziron/ui/input";
+import { Label } from "@ziron/ui/label";
+import { LoadingSwap } from "@ziron/ui/loading-swap";
 
 export function LoginForm() {
   const router = useRouter();

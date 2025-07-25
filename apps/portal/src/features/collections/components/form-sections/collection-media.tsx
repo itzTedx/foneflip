@@ -1,6 +1,5 @@
 "use client";
 
-import { memo, useCallback, useState } from "react";
 import { TabNavigation } from "@/components/layout/tab-navigation";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { getSignedURL } from "@/features/media/actions/mutations";
@@ -9,16 +8,16 @@ import { getImageMetadata } from "@/features/media/utils/get-image-data";
 import { IconX } from "@tabler/icons-react";
 import { Upload } from "lucide-react";
 import { parseAsBoolean, useQueryState } from "nuqs";
-import { useFormContext } from "react-hook-form";
+import { memo, useCallback, useState } from "react";
 
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@ziron/ui/components/card";
+} from "@ziron/ui/card";
 import {
   FileUpload,
   FileUploadDropzone,
@@ -30,14 +29,15 @@ import {
   FileUploadList,
   FileUploadProps,
   FileUploadTrigger,
-} from "@ziron/ui/components/file-upload";
+} from "@ziron/ui/file-upload";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@ziron/ui/components/form";
+  useFormContext,
+} from "@ziron/ui/form";
 import { CollectionFormType } from "@ziron/validators";
 
 import { ImagePreview } from "./ui/image-preview";

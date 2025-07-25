@@ -1,11 +1,11 @@
-import * as React from "react";
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  MoreHorizontalIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    MoreHorizontalIcon,
 } from "lucide-react";
+import * as React from "react";
 
-import { Button, buttonVariants } from "@ziron/ui/components/button";
+import { Button, buttonVariants } from "@ziron/ui/button";
 import { cn } from "@ziron/utils";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
@@ -117,11 +117,12 @@ function PaginationEllipsis({
 }
 
 export {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious
 };
+

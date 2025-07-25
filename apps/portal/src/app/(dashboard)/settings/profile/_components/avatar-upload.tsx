@@ -1,33 +1,33 @@
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { getSignedURL } from "@/features/media/actions/mutations";
 import { computeSHA256 } from "@/features/media/utils/compute-sha256";
 import { deleteAvatar } from "@/features/users/actions/mutation";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { ArrowLeftIcon, XIcon, ZoomInIcon, ZoomOutIcon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@ziron/ui/components/avatar";
-import { Button } from "@ziron/ui/components/button";
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@ziron/ui/avatar";
+import { Button } from "@ziron/ui/button";
 import {
-  Cropper,
-  CropperCropArea,
-  CropperDescription,
-  CropperImage,
-} from "@ziron/ui/components/cropper";
+    Cropper,
+    CropperCropArea,
+    CropperDescription,
+    CropperImage,
+} from "@ziron/ui/cropper";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@ziron/ui/components/dialog";
-import { useFormContext } from "@ziron/ui/components/form";
-import { LoadingSwap } from "@ziron/ui/components/loading-swap";
-import { Slider } from "@ziron/ui/components/slider";
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@ziron/ui/dialog";
+import { useFormContext } from "@ziron/ui/form";
+import { LoadingSwap } from "@ziron/ui/loading-swap";
+import { Slider } from "@ziron/ui/slider";
 
 import { ProfileFormType } from "../profile-schema";
 
