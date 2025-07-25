@@ -17,6 +17,7 @@ export const mediaSchema = z.object({
     })
     .optional(),
   alt: z.string({ message: "Alt text must be a string." }).optional(),
+  isPrimary: z.boolean().optional(),
 });
 
 export type MediaFormType = z.infer<typeof mediaSchema>;
