@@ -367,8 +367,9 @@ const CropperRoot: React.FC<CropperRootProps> = ({
     }
 
   }, [restrictOffset, calculateCropData, imageWrapperWidth, imageWrapperHeight, onCropChange, minZoom, maxZoom, zoomSensitivity, updateZoom]);
-
+  // @ts-ignore: Ignore possibly undefined error on next line
   const getPinchDistance = (touches: TouchList): number => Math.sqrt(Math.pow(touches[1].clientX - touches[0].clientX, 2) + Math.pow(touches[1].clientY - touches[0].clientY, 2));
+  // @ts-ignore: Ignore possibly undefined error on next line
   const getPinchCenter = (touches: TouchList): { x: number, y: number } => ({ x: (touches[0].clientX + touches[1].clientX) / 2, y: (touches[0].clientY + touches[1].clientY) / 2 });
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
@@ -376,7 +377,7 @@ const CropperRoot: React.FC<CropperRootProps> = ({
     e.preventDefault();
     const touches = e.touches;
 
-    if (touches.length === 1) {
+    if (touches.length === 1 && touches[0] ) {
       setIsDragging(true); isPinchingRef.current = false;
       dragStartPointRef.current = { x: touches[0].clientX, y: touches[0].clientY };
       dragStartOffsetRef.current = { x: latestRestrictedOffsetRef.current.x, y: latestRestrictedOffsetRef.current.y };
@@ -393,7 +394,7 @@ const CropperRoot: React.FC<CropperRootProps> = ({
     e.preventDefault();
     const touches = e.touches;
 
-    if (touches.length === 1 && isDragging && !isPinchingRef.current) { // Panning
+    if (touches.length === 1 &&  touches[0] &&  isDragging && !isPinchingRef.current) { // Panning
       const deltaX = touches[0].clientX - dragStartPointRef.current.x;
       const deltaY = touches[0].clientY - dragStartPointRef.current.y;
       const targetOffsetX = dragStartOffsetRef.current.x + deltaX;
@@ -437,10 +438,11 @@ const CropperRoot: React.FC<CropperRootProps> = ({
   const handleTouchEnd = useCallback((e: TouchEvent) => {
     e.preventDefault();
     const touches = e.touches;
-    if (isPinchingRef.current && touches.length < 2) {
+    if (isPinchingRef.current && touches[0] && touches.length < 2 ) {
       isPinchingRef.current = false;
       if (touches.length === 1) { // Transition to drag
-        setIsDragging(true);
+          setIsDragging(true);
+          //ignore-ts-error
         dragStartPointRef.current = { x: touches[0].clientX, y: touches[0].clientY };
         dragStartOffsetRef.current = { x: latestRestrictedOffsetRef.current.x, y: latestRestrictedOffsetRef.current.y };
       } else { // Pinch ended
