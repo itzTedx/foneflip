@@ -1,3 +1,27 @@
-export default function ProfileSettingsPage() {
-  return <div>ProfileSettingsPage</div>;
+import type { Metadata } from "next";
+import { requireUser } from "@/features/auth/actions/data-access";
+import { getUserSessions } from "@/features/auth/actions/queries";
+
+import { TabsContent } from "@ziron/ui/components/tabs";
+
+import { ProfileForm } from "./profile-form";
+
+export const metadata: Metadata = {
+  title: "Profile Settings | Foneflip",
+  description: "Browse and manage your media assets.",
+};
+
+export default async function ProfileSettingsPage() {
+  const session = await requireUser();
+
+  const sessions = await getUserSessions(session.user.id);
+
+  //   const sessions = await authClient.listSessions();
+  console.log(sessions);
+
+  return (
+    <TabsContent value="profile">
+      <ProfileForm initialData={session} sessions={sessions} />
+    </TabsContent>
+  );
 }

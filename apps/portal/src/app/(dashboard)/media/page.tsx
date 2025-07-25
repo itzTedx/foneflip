@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { getMedia } from "@/features/media/actions/queries";

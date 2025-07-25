@@ -13,10 +13,12 @@ export const ac = createAccessControl(statement);
 
 export const user = ac.newRole({
   collections: [],
+  ...adminAc.statements,
 });
 
 export const vendor = ac.newRole({
   collections: [],
+  ...adminAc.statements,
 });
 
 export const admin = ac.newRole({
