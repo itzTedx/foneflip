@@ -16,19 +16,18 @@ import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
 import { toast } from "@ziron/ui/sonner";
 import { CollectionFormType, collectionSchema } from "@ziron/validators";
 
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsTriggers } from "@/components/ui/tabs";
 import {
   saveCollectionDraft,
   setCollectionStatus,
   upsertCollection,
 } from "../actions/mutations";
-import { collectionTabs } from "../data/constants";
+import { COLLECTION_TABS } from "../data/constants";
 import { getDefaultValues } from "../utils/helper";
 import { CollectionDetails } from "./form-sections/collection-details";
 import { CollectionMedia } from "./form-sections/collection-media";
 import { CollectionSEO } from "./form-sections/collection-seo";
 import { CollectionSettings } from "./form-sections/collection-settings";
-import { TabsTriggers } from "./ui/tabs";
 
 interface Props {
   isEditMode: boolean;
@@ -208,7 +207,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
 
         <Tabs defaultValue="details" className="w-full">
           <ScrollArea>
-            <TabsTriggers tabTriggers={collectionTabs} disabled={isArchived} />
+            <TabsTriggers tabTriggers={COLLECTION_TABS} disabled={isArchived} />
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
           <div className="px-6">

@@ -1,4 +1,4 @@
-import { TabNavigation } from "@/components/layout/tab-navigation";
+import { TabNavigation } from "@/components/ui/tab-navigation";
 import { memo } from "react";
 
 import { IconEmpty } from "@ziron/ui/assets/empty";

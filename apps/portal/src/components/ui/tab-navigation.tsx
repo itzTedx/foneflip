@@ -1,22 +1,15 @@
-import { collectionTabs } from "@/features/collections/data/constants";
-import { IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react";
-import { useQueryState } from "nuqs";
 import { useMemo } from "react";
 
+import { IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react";
+import { useQueryState } from "nuqs";
+
+
+import { COLLECTION_TABS } from "@/features/collections/data/constants";
+import { PRODUCTS_TABS } from "@/features/products/data/constants";
 import { Button } from "@ziron/ui/button";
 import { cn } from "@ziron/utils";
 
-const productTabs = [
-  { value: "details", label: "General Info" },
-  { value: "media", label: "Media" },
-  { value: "seo", label: "SEO & Meta" },
-  { value: "settings", label: "Settings" },
-] as const;
 
-interface Tab {
-  value: string;
-  label: string;
-}
 
 interface TabNavigationProps {
   currentTab: string;
@@ -34,13 +27,13 @@ export function TabNavigation({
   type = "products",
 }: TabNavigationProps) {
   const [, setTab] = useQueryState("tab");
-  const tabs: readonly Tab[] = useMemo(
-    () => (type === "collections" ? collectionTabs : productTabs),
-    [type],
+  const tabs = useMemo(
+    () => (type === "collections" ? COLLECTION_TABS : PRODUCTS_TABS),
+    [type]
   );
-  const currentIdx: number = useMemo(
+  const currentIdx = useMemo(
     () => tabs.findIndex((t) => t.value === currentTab),
-    [tabs, currentTab],
+    [tabs, currentTab]
   );
   const isFirst = currentIdx <= 0;
   const isLast = currentIdx === tabs.length - 1 || currentIdx === -1;
@@ -54,9 +47,7 @@ export function TabNavigation({
         variant="outline"
         type="button"
         onClick={() => {
-          const prev = tabs[currentIdx - 1];
-          if (!isFirst && prev && typeof prev.value === "string")
-            setTab(prev.value);
+          if (!isFirst) setTab(tabs[currentIdx - 1]?.value);
         }}
         disabled={isFirst}
         aria-label={prevLabel}
@@ -68,9 +59,7 @@ export function TabNavigation({
         variant="outline"
         type="button"
         onClick={() => {
-          const next = tabs[currentIdx + 1];
-          if (!isLast && next && typeof next.value === "string")
-            setTab(next.value);
+          if (!isLast) setTab(tabs[currentIdx + 1]?.value);
         }}
         disabled={isLast}
         aria-label={nextLabel}

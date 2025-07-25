@@ -1,7 +1,7 @@
 "use client";
 
-import { TabNavigation } from "@/components/layout/tab-navigation";
 import { SeoPreview } from "@/components/preview/seo";
+import { TabNavigation } from "@/components/ui/tab-navigation";
 import { memo } from "react";
 
 import {

@@ -1,6 +1,6 @@
 "use client";
 
-import { TabNavigation } from "@/components/layout/tab-navigation";
+import { TabNavigation } from "@/components/ui/tab-navigation";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { IconSpeakerphone } from "@tabler/icons-react";
 import { CheckIcon, MinusIcon } from "lucide-react";

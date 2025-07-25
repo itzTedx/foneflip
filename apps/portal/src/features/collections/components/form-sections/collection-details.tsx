@@ -1,6 +1,6 @@
 "use client";
 
-import { TabNavigation } from "@/components/layout/tab-navigation";
+import { TabNavigation } from "@/components/ui/tab-navigation";
 import { IconSparkles } from "@tabler/icons-react";
 
 import { Button } from "@ziron/ui/button";

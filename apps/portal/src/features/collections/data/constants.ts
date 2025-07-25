@@ -15,7 +15,7 @@ export type TabTriggerType = {
   ) => JSX.Element;
 };
 
-export const collectionTabs = [
+export const COLLECTION_TABS = [
   { value: "details", label: "General Info", Icon: IconInformationFilled },
   { value: "media", label: "Media", Icon: IconImageFilled },
   { value: "products", label: "Products", Icon: IconShoppingBasketFilled },

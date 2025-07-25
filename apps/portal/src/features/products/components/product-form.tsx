@@ -1,27 +1,41 @@
 "use client";
 
 import { Header } from "@/components/layout/header";
+import { Tabs, TabsContent, TabsTriggers } from "@/components/ui/tabs";
 
+import { DraftButton, RestoreArchiveButton, SaveButton } from "@/components/ui/action-buttons";
 import { Form, useForm, zodResolver } from "@ziron/ui/form";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
-import { Tabs, TabsContent } from "@ziron/ui/tabs";
 import { ProductFormType, productSchema } from "@ziron/validators";
+import { PRODUCTS_TABS } from "../data/constants";
+import { ProductDetails } from "./form-sections/info";
 
 interface Props {
   isEditMode: boolean;
 }
 
 export const ProductForm = ({ isEditMode }: Props) => {
+  const isArchived = false
   const form = useForm<ProductFormType>({
     resolver: zodResolver(productSchema),
 
     mode: "onTouched",
-    // disabled: isArchived,
+    disabled: isArchived,
   });
 
   function onSubmit(values: ProductFormType) {
     console.log(values);
   }
+
+  function handleRestore() {
+    console.log("restore");
+  }
+
+  function onSaveDraft() {
+    console.log("restore");
+  }
+
+
 
   return (
     <Form {...form}>
@@ -30,43 +44,45 @@ export const ProductForm = ({ isEditMode }: Props) => {
         className="relative mx-auto max-w-7xl flex-1 pb-6"
       >
         <Header
-          title={isEditMode ? "Edit Collection" : "Add Collection"}
-          backLink="/collections"
+          title={isEditMode ? "Edit Product" : "Add Product"}
+          backLink="/products"
         >
           <div className="flex items-center gap-3">
-            {/* {isArchived ? (
+            {isArchived ? (
           <RestoreArchiveButton
             onClick={handleRestore}
-            isLoading={isRestorePending}
-            disabled={form.formState.isSubmitting || isRestorePending}
+            isLoading={false}
+            disabled={false}
           />
         ) : (
           <>
             <DraftButton
               type="button"
               disabled={
-                form.formState.isSubmitting || isArchived || isDraftPending
+                form.formState.isSubmitting || isArchived || false
               }
               onClick={onSaveDraft}
-              isLoading={isDraftPending}
+              isLoading={false}
             />
             <SaveButton
-              disabled={isArchived || isPending}
+              disabled={isArchived || false}
               isEditMode={isEditMode}
-              isLoading={isPending}
+              isLoading={false}
             />
           </>
-        )}*/}
+        )}
           </div>
         </Header>
 
-        <Tabs defaultValue="details" className="w-full">
+        <Tabs defaultValue="info" className="w-full">
           <ScrollArea>
-            {/* <TabsTriggers tabTriggers={collectionTabs} disabled={isArchived} /> */}
+            <TabsTriggers tabTriggers={PRODUCTS_TABS} disabled={false} />
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
           <div className="px-6">
-            <TabsContent value="details"></TabsContent>
+            <TabsContent value="info">
+              <ProductDetails />
+            </TabsContent>
 
             <TabsContent value="media"></TabsContent>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { TabNavigation } from "@/components/layout/tab-navigation";
+import { TabNavigation } from "@/components/ui/tab-navigation";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { getSignedURL } from "@/features/media/actions/mutations";
 import { computeSHA256 } from "@/features/media/utils/compute-sha256";
