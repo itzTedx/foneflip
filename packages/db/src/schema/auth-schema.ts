@@ -1,6 +1,7 @@
 import {
   boolean,
   date,
+  index,
   pgEnum,
   pgTable,
   text,
@@ -31,7 +32,9 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at")
     .$defaultFn(() => new Date())
     .notNull(),
-});
+  },(table) => [
+    index("users_email_idx").on(table.email),
+]);
 
 export const sessions = pgTable("sessions", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
@@ -46,7 +49,10 @@ export const sessions = pgTable("sessions", {
     .references(() => users.id, { onDelete: "cascade" }),
   impersonatedBy: text("impersonated_by"),
   activeOrganizationId: text("active_vendors_id"),
-});
+}, (table) => [
+  index("sessions_user_id_idx").on(table.userId),
+  index("sessions_token_idx").on(table.token)
+]);
 
 export const accounts = pgTable("accounts", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
@@ -64,7 +70,9 @@ export const accounts = pgTable("accounts", {
   password: text("password"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
-});
+},(table) => [
+  index("accounts_user_id_idx").on(table.userId),
+]);
 
 export const verifications = pgTable("verifications", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
@@ -73,19 +81,9 @@ export const verifications = pgTable("verifications", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").$defaultFn(() => new Date()),
   updatedAt: timestamp("updated_at").$defaultFn(() => new Date()),
-});
-
-export const members = pgTable("members", {
-  id: uuid("id").primaryKey().defaultRandom().notNull(),
-  organizationId: uuid("vendors_id")
-    .notNull()
-    .references(() => vendorsTable.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  role: text("role").default("member").notNull(),
-  createdAt: timestamp("created_at").notNull(),
-});
+},(table) => [
+  index("verifications_identifier_idx").on(table.identifier),
+]);
 
 export const invitations = pgTable("invitations", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
@@ -99,7 +97,23 @@ export const invitations = pgTable("invitations", {
   inviterId: uuid("inviter_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+},(table) => [
+  index("invitations_email_idx").on(table.email),
+]);
+
+
+export const members = pgTable("members", {
+  id: uuid("id").primaryKey().defaultRandom().notNull(),
+  organizationId: uuid("vendors_id")
+    .notNull()
+    .references(() => vendorsTable.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  role: text("role").default("member").notNull(),
+  createdAt: timestamp("created_at").notNull(),
 });
+
 
 export const twoFactors = pgTable("two_factors", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
@@ -108,4 +122,7 @@ export const twoFactors = pgTable("two_factors", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-});
+}, (table) => [
+  index("two_factors_secret_idx").on(table.secret)
+]
+);
