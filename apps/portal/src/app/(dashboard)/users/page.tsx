@@ -1,12 +1,9 @@
 import { cookies } from "next/headers";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
-import { ThemeSwitcher } from "@/components/ui/theme-switcher";
+import { ExportButton } from "@/components/ui/action-buttons";
 import { getUsers } from "@/features/users/actions/queries";
 import UsersTable from "@/features/users/components/table/data-table";
-import { IconFileExport } from "@tabler/icons-react";
-
-import { Button } from "@ziron/ui/components/button";
 
 export default async function UsersPage() {
   const users = await getUsers();
@@ -15,10 +12,7 @@ export default async function UsersPage() {
   return (
     <MainWrapper>
       <PageHeader title="Manage Users" badge={`${users.length} Users`}>
-        <ThemeSwitcher />
-        <Button>
-          <IconFileExport /> Export
-        </Button>
+        <ExportButton />
       </PageHeader>
       <UsersTable
         data={users}
