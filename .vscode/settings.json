@@ -13,5 +13,5 @@
     ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
 
-  "cSpell.words": ["Foneflip", "nuqs", "ziron"]
+  "cSpell.words": ["esbuild", "Foneflip", "nuqs", "ziron"]
 }
