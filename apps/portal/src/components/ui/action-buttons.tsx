@@ -116,11 +116,14 @@ export const ExportButton = ({
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
-    isLoading: boolean;
+    isLoading?: boolean;
   }) => {
   return (
     <Button variant="outline" {...props}>
-      <LoadingSwap isLoading={isLoading} className="flex items-center gap-2">
+      <LoadingSwap
+        isLoading={isLoading ?? false}
+        className="flex items-center gap-2"
+      >
         <IconExportFilled />
         Export
       </LoadingSwap>

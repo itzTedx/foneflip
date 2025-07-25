@@ -1,15 +1,16 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
-import {
-  IconBell,
-  IconBuildingStore,
-  IconCreditCard,
-  IconShoppingBag,
-  IconUserEdit,
-} from "@tabler/icons-react";
-import { HouseIcon, SettingsIcon } from "lucide-react";
 
+import {
+  IconBankCardFilled,
+  IconHomeGearFilled,
+  IconNotificationFilled,
+  IconSettingsFilled,
+  IconShieldUserFilled,
+  IconShoppingBasketFilled,
+  IconStoreFilled,
+} from "@ziron/ui/assets/icons";
 import { ScrollArea, ScrollBar } from "@ziron/ui/components/scroll-area";
 import { Tabs, TabsList, TabsTrigger } from "@ziron/ui/components/tabs";
 
@@ -29,9 +30,8 @@ export default async function SettingsLayout({
                 value="settings"
                 className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
               >
-                <HouseIcon
-                  className="-ms-0.5 me-1 opacity-60"
-                  size={16}
+                <IconHomeGearFilled
+                  className="-ms-0.5 me-0.5"
                   aria-hidden="true"
                 />
                 General
@@ -42,9 +42,8 @@ export default async function SettingsLayout({
                 value="profile"
                 className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
               >
-                <IconUserEdit
-                  className="-ms-0.5 me-1 opacity-60"
-                  size={16}
+                <IconShieldUserFilled
+                  className="-ms-0.5 me-0.5"
                   aria-hidden="true"
                 />
                 Profile & Security
@@ -56,9 +55,8 @@ export default async function SettingsLayout({
                 value="store"
                 className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
               >
-                <IconBuildingStore
-                  className="-ms-0.5 me-1 opacity-60"
-                  size={16}
+                <IconStoreFilled
+                  className="-ms-0.5 me-0.5"
                   aria-hidden="true"
                 />
                 Business Info
@@ -70,9 +68,8 @@ export default async function SettingsLayout({
                 value="payout"
                 className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
               >
-                <IconCreditCard
-                  className="-ms-0.5 me-1 opacity-60"
-                  size={16}
+                <IconBankCardFilled
+                  className="-ms-0.5 me-0.5"
                   aria-hidden="true"
                 />
                 Payout & Bank Details
@@ -84,9 +81,8 @@ export default async function SettingsLayout({
                 value="storefront"
                 className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
               >
-                <IconShoppingBag
-                  className="-ms-0.5 me-1 opacity-60"
-                  size={16}
+                <IconShoppingBasketFilled
+                  className="-ms-0.5 me-0.5"
                   aria-hidden="true"
                 />
                 Storefront
@@ -98,9 +94,8 @@ export default async function SettingsLayout({
                 value="notifications"
                 className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
               >
-                <IconBell
-                  className="-ms-0.5 me-1 opacity-60"
-                  size={16}
+                <IconNotificationFilled
+                  className="-ms-0.5 me-0.5"
                   aria-hidden="true"
                 />
                 Notifications
@@ -110,9 +105,8 @@ export default async function SettingsLayout({
               value="tab-6"
               className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             >
-              <SettingsIcon
-                className="-ms-0.5 me-1 opacity-60"
-                size={16}
+              <IconSettingsFilled
+                className="-ms-0.5 me-0.5"
                 aria-hidden="true"
               />
               Settings
