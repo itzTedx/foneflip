@@ -11,7 +11,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Session } from "@ziron/auth";
-import { Badge } from "@ziron/ui/components/badge";
 import { Button } from "@ziron/ui/components/button";
 import {
   Card,
@@ -30,26 +29,24 @@ import {
 } from "@ziron/ui/components/form";
 import { Input } from "@ziron/ui/components/input";
 import { LoadingSwap } from "@ziron/ui/components/loading-swap";
-import { formatDate, formatUserAgent } from "@ziron/utils";
 
 import { ProfileFormType, profileSchema } from "./profile-schema";
-import { getSessionIcon } from "./utils";
 
 interface Props {
   initialData: Session;
-  sessions: {
-    token: string;
-    expiresAt: Date;
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    userId: string;
-    ipAddress?: string | null | undefined | undefined;
-    userAgent?: string | null | undefined | undefined;
-  }[];
+  // sessions: {
+  //   token: string;
+  //   expiresAt: Date;
+  //   id: string;
+  //   createdAt: Date;
+  //   updatedAt: Date;
+  //   userId: string;
+  //   ipAddress?: string | null | undefined | undefined;
+  //   userAgent?: string | null | undefined | undefined;
+  // }[];
 }
 
-export function ProfileForm({ initialData, sessions }: Props) {
+export function ProfileForm({ initialData }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isRevokePending, startRevokeTransition] = useTransition();
   const [isRevokeOthersPending, startRevokeOthersTransition] = useTransition();
@@ -111,10 +108,10 @@ export function ProfileForm({ initialData, sessions }: Props) {
   };
 
   //   Ensure current device session is always first
-  const sortedSessions = [
-    ...(sessions ?? []).filter((s) => s.id === initialData.session.id),
-    ...(sessions ?? []).filter((s) => s.id !== initialData.session.id),
-  ];
+  // const sortedSessions = [
+  //   ...(sessions ?? []).filter((s) => s.id === initialData.session.id),
+  //   ...(sessions ?? []).filter((s) => s.id !== initialData.session.id),
+  // ];
 
   return (
     <Form {...form}>
@@ -302,7 +299,7 @@ export function ProfileForm({ initialData, sessions }: Props) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {sortedSessions.map((session) => (
+                {/* {sortedSessions.map((session) => (
                   <div className="flex items-center gap-2" key={session.id}>
                     {getSessionIcon(session.userAgent)}
                     <div>
@@ -336,7 +333,7 @@ export function ProfileForm({ initialData, sessions }: Props) {
                       </Button>
                     )}
                   </div>
-                ))}
+                ))} */}
               </div>
             </CardContent>
           </Card>
