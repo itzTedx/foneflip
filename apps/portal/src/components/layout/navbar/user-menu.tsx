@@ -44,7 +44,7 @@ export default function UserMenu() {
           </GlareHover>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="max-w-64" align="center">
+      <DropdownMenuContent className="max-w-72" align="center">
         <DropdownMenuLabel className="flex min-w-0 items-center gap-1.5">
           <Avatar className="size-11 rounded-sm">
             <AvatarImage
@@ -64,6 +64,7 @@ export default function UserMenu() {
             </span>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
 
         <ThemeSwitcher />
 

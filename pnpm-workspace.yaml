@@ -2,17 +2,20 @@ packages:
   - apps/*
   - packages/*
   - tooling/*
+
 catalog:
-  prettier: ^3.5.3
-  typescript: ^5.8.3
   eslint: ^9.20.1
+  next: ^15.3.5
+  prettier: ^3.6.2
+  typescript: ^5.8.3
   zod: 3.25.76
-  next: "^15.3.5"
+
 catalogs:
   react19:
+    '@types/react': ^19.1.6
+    '@types/react-dom': ^19.1.5
     react: 19.0.0
     react-dom: 19.0.0
-    "@types/react": ^19.1.6
-    "@types/react-dom": ^19.1.5
+
 onlyBuiltDependencies:
   - esbuild

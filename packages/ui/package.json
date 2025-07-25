@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
+    "@origin-space/image-cropper": "^0.1.9",
     "@radix-ui/react-dialog": "^1.1.14",
     "@ziron/utils": "workspace:*",
     "class-variance-authority": "^0.7.1",

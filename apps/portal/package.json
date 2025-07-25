@@ -24,6 +24,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@headless-tree/core": "^1.2.1",
     "@headless-tree/react": "^1.2.1",
+    "@origin-space/image-cropper": "^0.1.9",
     "@tabler/icons-react": "^3.34.0",
     "@tanstack/react-table": "^8.21.3",
     "@ziron/auth": "workspace:*",
@@ -47,6 +48,7 @@
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
     "@types/node": "^20",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",

@@ -1,4 +1,4 @@
-export async function getImageMetadata(file: File): Promise<{
+export async function getImageMetadata(file: File | Blob): Promise<{
   width: number;
   height: number;
   blurData: string;
