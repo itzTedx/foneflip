@@ -17,8 +17,8 @@
     "prettier-plugin-tailwindcss": "^0.6.12"
   },
   "devDependencies": {
+    "@ziron/tsconfig": "workspace:*",
     "@types/node": "^22.15.29",
-    "@ziron/typescript-config": "workspace:*",
     "typescript": "catalog:"
   },
   "prettier": "@ziron/prettier-config"

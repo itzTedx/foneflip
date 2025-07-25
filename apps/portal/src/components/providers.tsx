@@ -2,13 +2,12 @@
 
 import { ProgressProvider } from "@bprogress/next/app";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-import { Toaster } from "@ziron/ui/components/sonner";
+import { Toaster } from "@ziron/ui/sonner";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <NuqsAdapter>
+   
       <NextThemesProvider
         attribute="class"
         defaultTheme="system"
@@ -27,6 +26,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
         </ProgressProvider>
         <Toaster richColors closeButton position="top-center" />
       </NextThemesProvider>
-    </NuqsAdapter>
   );
 }

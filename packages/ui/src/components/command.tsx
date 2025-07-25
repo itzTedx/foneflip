@@ -1,16 +1,16 @@
 "use client";
 
-import * as React from "react";
 import { Command as CommandPrimitive } from "cmdk";
 import { SearchIcon } from "lucide-react";
+import * as React from "react";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@ziron/ui/components/dialog";
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@ziron/ui/dialog";
 import { cn } from "@ziron/utils";
 
 function Command({
@@ -172,13 +172,8 @@ function CommandShortcut({
 }
 
 export {
-  Command,
-  CommandDialog,
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandShortcut,
-  CommandSeparator,
+    Command,
+    CommandDialog, CommandEmpty,
+    CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut
 };
+

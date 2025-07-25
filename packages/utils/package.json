@@ -21,7 +21,7 @@
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "catalog:react19",
-    "@ziron/typescript-config": "workspace:*",
+    "@ziron/tsconfig": "workspace:*",
     "next": "catalog:",
     "react": "catalog:react19",
     "tsup": "^6.1.3",

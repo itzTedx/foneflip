@@ -1,25 +1,25 @@
 "use client";
 
-import type { z } from "zod/v4";
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import type { z } from "zod/v4";
 
 import { authClient } from "@ziron/auth/client";
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useForm,
-} from "@ziron/ui/components/form";
-import { Input } from "@ziron/ui/components/input";
-import { LoadingSwap } from "@ziron/ui/components/loading-swap";
-import { toast } from "@ziron/ui/components/sonner";
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+    useForm,
+} from "@ziron/ui/form";
+import { Input } from "@ziron/ui/input";
+import { LoadingSwap } from "@ziron/ui/loading-swap";
+import { toast } from "@ziron/ui/sonner";
 import { registerUserSchema } from "@ziron/validators";
 
 export const RegisterForm = () => {

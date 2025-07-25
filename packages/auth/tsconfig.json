@@ -1,5 +1,5 @@
 {
-  "extends": "@ziron/typescript-config/base.json",
+  "extends": "@ziron/tsconfig/base.json",
   "include": ["src", "*.ts"],
   "exclude": ["node_modules"]
 }

@@ -1,9 +1,9 @@
-import { useMemo } from "react";
 import { collectionTabs } from "@/features/collections/data/constants";
 import { IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react";
 import { useQueryState } from "nuqs";
+import { useMemo } from "react";
 
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 import { cn } from "@ziron/utils";
 
 const productTabs = [

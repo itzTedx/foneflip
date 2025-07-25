@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
 import { requireUser } from "@/features/auth/actions/data-access";
+import type { Metadata } from "next";
 
-import { TabsContent } from "@ziron/ui/components/tabs";
+import { TabsContent } from "@ziron/ui/tabs";
 
 import { ProfileForm } from "./profile-form";
 

@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { IconPlus } from "@tabler/icons-react";
+import Link from "next/link";
 
 import { IconEmpty } from "@ziron/ui/assets/empty";
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 
 // Empty state component
 export function CollectionsEmptyState() {

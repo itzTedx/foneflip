@@ -1,20 +1,20 @@
 "use client";
 
-import { memo, useCallback, useState } from "react";
-import Image from "next/image";
 import { MediaQueryResult } from "@/features/collections/types";
 import { IconDownload, IconTrash } from "@tabler/icons-react";
+import Image from "next/image";
+import { memo, useCallback, useState } from "react";
 
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@ziron/ui/components/sheet";
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@ziron/ui/sheet";
 import { formatDate, formatFileSize } from "@ziron/utils";
 
 const PLACEHOLDER_IMG = "/placeholder.svg";

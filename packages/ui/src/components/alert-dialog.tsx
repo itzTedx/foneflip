@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
+import * as React from "react";
 
-import { buttonVariants } from "@ziron/ui/components/button";
+import { buttonVariants } from "@ziron/ui/button";
 import { cn } from "@ziron/utils";
 
 function AlertDialog({
@@ -143,15 +143,16 @@ function AlertDialogCancel({
 }
 
 export {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  AlertDialogPortal,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogOverlay,
+    AlertDialogPortal,
+    AlertDialogTitle,
+    AlertDialogTrigger
 };
+

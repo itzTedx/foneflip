@@ -16,12 +16,13 @@
     }
   },
   "dependencies": {
+    "dotenv-cli": "^8.0.0",
     "ioredis": "^5.6.1"
   },
   "devDependencies": {
-    "@ziron/prettier-config": "workspace:*",
-    "@ziron/typescript-config": "workspace:*",
     "@ziron/eslint-config": "workspace:*",
+    "@ziron/prettier-config": "workspace:*",
+    "@ziron/tsconfig": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "catalog:"
   }

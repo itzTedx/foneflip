@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsup --clean",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev": "concurrently \"pnpm with-env drizzle-kit studio --config=drizzle.config.ts --port=8080 --verbose\" \"tsc --watch\"",
+    "dev": "concurrently \"pnpm with-env drizzle-kit studio --config=drizzle.config.ts --verbose\" \"tsc --watch\"",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "generate": "pnpm with-env drizzle-kit generate",
@@ -37,13 +37,14 @@
     "drizzle-orm": "^0.44.2",
     "drizzle-zod": "^0.8.2",
     "pg": "^8.16.3",
+    "tsup": "^8.5.0",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@types/pg": "^8.15.4",
     "@ziron/eslint-config": "workspace:*",
     "@ziron/prettier-config": "workspace:*",
-    "@ziron/typescript-config": "workspace:*",
+    "@ziron/tsconfig": "workspace:*",
     "concurrently": "^9.2.0",
     "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.31.1",

@@ -1,9 +1,8 @@
 "use client";
 
-import { memo } from "react";
 import { TabNavigation } from "@/components/layout/tab-navigation";
 import { SeoPreview } from "@/components/preview/seo";
-import { useFormContext } from "react-hook-form";
+import { memo } from "react";
 
 import {
   Card,
@@ -11,18 +10,18 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@ziron/ui/components/card";
+} from "@ziron/ui/card";
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from "@ziron/ui/components/form";
-import { Input } from "@ziron/ui/components/input";
-import { MultiInput } from "@ziron/ui/components/multi-input";
-import { Textarea } from "@ziron/ui/components/textarea";
+  FormMessage, useFormContext
+} from "@ziron/ui/form";
+import { Input } from "@ziron/ui/input";
+import { MultiInput } from "@ziron/ui/multi-input";
+import { Textarea } from "@ziron/ui/textarea";
 import { CollectionFormType } from "@ziron/validators";
 
 export const CollectionSEO = memo(function CollectionSEO() {

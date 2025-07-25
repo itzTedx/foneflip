@@ -1,11 +1,11 @@
-import { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { getSession } from "@/lib/auth/server";
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import { createMetadata } from "@ziron/seo";
 import { IconLogoMono } from "@ziron/ui/assets/logo";
-import { Card, CardContent } from "@ziron/ui/components/card";
+import { Card, CardContent } from "@ziron/ui/card";
 
 export const generateMetadata = (): Metadata => {
   return createMetadata({

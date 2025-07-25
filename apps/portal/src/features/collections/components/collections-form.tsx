@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useTransition } from "react";
 import { Header } from "@/components/layout/header";
 import {
   DraftButton,
@@ -9,14 +8,15 @@ import {
 } from "@/components/ui/action-buttons";
 import { useRouter } from "@bprogress/next";
 import { parseAsString, useQueryState } from "nuqs";
+import { useEffect, useTransition } from "react";
 
-import { Form, useForm, zodResolver } from "@ziron/ui/components/form";
-import { ScrollArea, ScrollBar } from "@ziron/ui/components/scroll-area";
-import { toast } from "@ziron/ui/components/sonner";
-import { Tabs, TabsContent } from "@ziron/ui/components/tabs";
+import { Form, useForm, zodResolver } from "@ziron/ui/form";
 import { useLocalStorage } from "@ziron/ui/hooks/use-local-storage";
+import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
+import { toast } from "@ziron/ui/sonner";
 import { CollectionFormType, collectionSchema } from "@ziron/validators";
 
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   saveCollectionDraft,
   setCollectionStatus,

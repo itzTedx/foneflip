@@ -11,10 +11,10 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@ziron/ui/components",
+    "components": "@ziron/ui",
     "utils": "@ziron/utils",
     "hooks": "@ziron/ui/hooks",
     "lib": "@ziron/ui/lib",
-    "ui": "@ziron/ui/components"
+    "ui": "@ziron/ui"
   }
 }

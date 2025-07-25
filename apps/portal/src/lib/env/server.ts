@@ -1,7 +1,7 @@
 import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod/v4";
 
 import { authEnv } from "@ziron/auth/env";
+import { z } from "@ziron/validators";
 
 export const env = createEnv({
   extends: [authEnv()],

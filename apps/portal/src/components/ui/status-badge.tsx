@@ -6,7 +6,8 @@ import {
 
 import { IconFileEditFilled } from "@ziron/ui/assets/icons";
 
-import { StatusBadge as Root, StatusBadgeIcon } from "./status-badge-align";
+import { StatusBadge as Root, StatusBadgeIcon } from "@ziron/ui/status-badge";
+
 
 interface Props {
   status?: "active" | "draft" | "archived" | null;

@@ -1,14 +1,14 @@
 "use client";
 
-import * as React from "react";
 import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
+    ChevronDownIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
 } from "lucide-react";
+import * as React from "react";
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 
-import { Button, buttonVariants } from "@ziron/ui/components/button";
+import { Button, buttonVariants } from "@ziron/ui/button";
 import { cn } from "@ziron/utils";
 
 function Calendar({
@@ -211,3 +211,4 @@ function CalendarDayButton({
 }
 
 export { Calendar, CalendarDayButton };
+

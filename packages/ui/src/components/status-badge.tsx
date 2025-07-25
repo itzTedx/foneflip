@@ -1,7 +1,7 @@
 // AlignUI StatusBadge v0.0.0
 
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
+import * as React from "react";
 
 import type { PolymorphicComponentProps, VariantProps } from "@ziron/utils";
 import { recursiveCloneChildren, tv } from "@ziron/utils";
@@ -165,3 +165,4 @@ function StatusBadgeDot({
 StatusBadgeDot.displayName = STATUS_BADGE_DOT_NAME;
 
 export { StatusBadgeRoot as StatusBadge, StatusBadgeDot, StatusBadgeIcon };
+

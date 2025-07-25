@@ -2,9 +2,9 @@
 
 import { Header } from "@/components/layout/header";
 
-import { Form, useForm, zodResolver } from "@ziron/ui/components/form";
-import { ScrollArea, ScrollBar } from "@ziron/ui/components/scroll-area";
-import { Tabs, TabsContent } from "@ziron/ui/components/tabs";
+import { Form, useForm, zodResolver } from "@ziron/ui/form";
+import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
+import { Tabs, TabsContent } from "@ziron/ui/tabs";
 import { ProductFormType, productSchema } from "@ziron/validators";
 
 interface Props {

@@ -1,14 +1,14 @@
 "use client";
 
-import * as React from "react";
 import { Slider as SliderPrimitive } from "radix-ui";
+import * as React from "react";
 
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@ziron/ui/components/tooltip";
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@ziron/ui/tooltip";
 import { cn } from "@ziron/utils";
 
 function Slider({
@@ -130,3 +130,4 @@ function Slider({
 }
 
 export { Slider };
+

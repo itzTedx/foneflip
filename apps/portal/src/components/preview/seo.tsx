@@ -5,14 +5,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@ziron/ui/components/card";
+} from "@ziron/ui/card";
 
 interface Props {
   metadata: {
     title?: string;
     description?: string;
   };
-  slug: string;
+  slug?: string;
 }
 
 export const SeoPreview = ({ metadata, slug }: Props) => {

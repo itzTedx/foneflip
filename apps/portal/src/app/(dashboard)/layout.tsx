@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import Navbar from "@/components/layout/navbar";
 import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
 import { getSession } from "@/lib/auth/server";
+import type { Metadata } from "next";
+import { cookies } from "next/headers";
 
-import { SidebarInset, SidebarProvider } from "@ziron/ui/components/sidebar";
+import { SidebarInset, SidebarProvider } from "@ziron/ui/sidebar";
 
 export const metadata: Metadata = {
   title: "Dashboard",

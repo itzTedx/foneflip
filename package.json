@@ -22,10 +22,9 @@
   },
   "devDependencies": {
     "@turbo/gen": "^2.5.5",
-    "@types/minimatch": "^6.0.0",
     "@ziron/eslint-config": "workspace:*",
     "@ziron/prettier-config": "workspace:*",
-    "@ziron/typescript-config": "workspace:*",
+    "@ziron/tsconfig": "workspace:*",
     "prettier": "catalog:",
     "turbo": "^2.5.5",
     "typescript": "catalog:"

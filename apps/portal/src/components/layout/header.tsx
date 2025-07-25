@@ -1,13 +1,13 @@
-import React from "react";
-import Link from "next/link";
 import { IconArrowLeft } from "@tabler/icons-react";
+import Link from "next/link";
+import React from "react";
 
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@ziron/ui/components/tooltip";
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@ziron/ui/tooltip";
 
 interface CollectionHeaderProps {
   title?: string;

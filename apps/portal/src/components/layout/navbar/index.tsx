@@ -2,7 +2,7 @@ import { getNotifications } from "@/features/notifications/actions/queries";
 import { IconLayoutSidebar } from "@tabler/icons-react";
 
 import { Session } from "@ziron/auth";
-import { SidebarTrigger } from "@ziron/ui/components/sidebar";
+import { SidebarTrigger } from "@ziron/ui/sidebar";
 
 import { NavBreadcrumb } from "./nav-breadcrumb";
 import Notifications from "./notifications";

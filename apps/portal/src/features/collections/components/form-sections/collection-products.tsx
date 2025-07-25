@@ -1,10 +1,11 @@
-import { memo } from "react";
 import { TabNavigation } from "@/components/layout/tab-navigation";
+import { memo } from "react";
 
 import { IconEmpty } from "@ziron/ui/assets/empty";
+import { ProductFormType } from "@ziron/validators";
 
 interface Props {
-  products?: ProductType[] | null;
+  products?: ProductFormType[] | null;
 }
 
 export const CollectionProducts = memo(function CollectionProducts({

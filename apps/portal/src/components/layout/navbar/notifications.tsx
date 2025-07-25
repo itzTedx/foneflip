@@ -1,25 +1,25 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
 import {
-  markAllNotificationsAsRead,
-  markNotificationAsRead,
+    markAllNotificationsAsRead,
+    markNotificationAsRead,
 } from "@/features/notifications/actions/mutation";
 import { getNotifications } from "@/features/notifications/actions/queries";
 import { BellIcon } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { io, Socket } from "socket.io-client";
 
 import { useSession } from "@ziron/auth/client";
-import { Badge } from "@ziron/ui/components/badge";
-import { Button } from "@ziron/ui/components/button";
-import { LoadingSwap } from "@ziron/ui/components/loading-swap";
+import { Badge } from "@ziron/ui/badge";
+import { Button } from "@ziron/ui/button";
+import { LoadingSwap } from "@ziron/ui/loading-swap";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@ziron/ui/components/popover";
-import { ScrollArea } from "@ziron/ui/components/scroll-area";
-import { toast } from "@ziron/ui/components/sonner";
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@ziron/ui/popover";
+import { ScrollArea } from "@ziron/ui/scroll-area";
+import { toast } from "@ziron/ui/sonner";
 import { cn, formatDate } from "@ziron/utils";
 
 interface NotificationProp {

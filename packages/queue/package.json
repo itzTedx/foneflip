@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@ziron/eslint-config": "workspace:*",
-    "@ziron/typescript-config": "workspace:*",
+    "@ziron/tsconfig": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "catalog:"
   },

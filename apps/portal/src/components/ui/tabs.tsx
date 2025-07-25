@@ -1,4 +1,7 @@
+"use client";
 
+import { usePathname } from "next/navigation";
+import { useQueryState } from "nuqs";
 import { Tabs as TabsPrimitive } from "radix-ui";
 import * as React from "react";
 
@@ -8,18 +11,38 @@ function Tabs({
   className,
   defaultValue,
   value,
+  query = true,
   onValueChange,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Root>) {
+}: React.ComponentProps<typeof TabsPrimitive.Root> & { query?: boolean }) {
+  const [tabValue, setTabValue] = useQueryState("tab", {
+    defaultValue: (defaultValue || value) as string,
+    parse: (value) => value || "",
+    serialize: (value) => value,
+  });
 
+  const pathname = usePathname();
+
+  const handleValueChange = React.useCallback(
+    (newValue: string) => {
+      setTabValue(newValue);
+      onValueChange?.(newValue);
+    },
+    [setTabValue, onValueChange],
+  );
+
+  const valueFromPath =
+    pathname === "/search"
+      ? "general"
+      : pathname.split("/").filter(Boolean).pop();
 
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
       className={cn("flex flex-col gap-2", className)}
-      value={value}
-      onValueChange={ onValueChange}
-      defaultValue={ defaultValue}
+      value={query ? tabValue : (value ?? valueFromPath)}
+      onValueChange={query ? handleValueChange : onValueChange}
+      defaultValue={query ? undefined : defaultValue}
       {...props}
     />
   );
@@ -71,3 +94,4 @@ function TabsContent({
 }
 
 export { Tabs, TabsContent, TabsList, TabsTrigger };
+

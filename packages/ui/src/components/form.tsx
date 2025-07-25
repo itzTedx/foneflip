@@ -1,18 +1,19 @@
 "use client";
 
-import type { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
-import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label as LabelPrimitive, Slot as SlotPrimitive } from "radix-ui";
+import * as React from "react";
+import type { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
 import {
   Controller,
   FormProvider,
+  SubmitHandler,
   useForm,
   useFormContext,
-  useFormState,
+  useFormState
 } from "react-hook-form";
 
-import { Label } from "@ziron/ui/components/label";
+import { Label } from "@ziron/ui/label";
 import { cn } from "@ziron/utils";
 
 const Form = FormProvider;
@@ -169,4 +170,6 @@ export {
   useFormContext,
   useFormField,
   zodResolver,
+  type SubmitHandler
 };
+

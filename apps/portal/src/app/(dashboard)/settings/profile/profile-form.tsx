@@ -1,23 +1,23 @@
 "use client";
 
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { APIError } from "better-auth/api";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+
 import { toast } from "sonner";
 
 import { Session } from "@ziron/auth";
 import { IconSaveFilled } from "@ziron/ui/assets/icons";
-import { Button } from "@ziron/ui/components/button";
+import { Button } from "@ziron/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@ziron/ui/components/card";
+} from "@ziron/ui/card";
 import {
   Form,
   FormControl,
@@ -25,9 +25,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@ziron/ui/components/form";
-import { Input } from "@ziron/ui/components/input";
-import { LoadingSwap } from "@ziron/ui/components/loading-swap";
+  SubmitHandler,
+  useForm,
+  zodResolver,
+} from "@ziron/ui/form";
+import { Input } from "@ziron/ui/input";
+import { LoadingSwap } from "@ziron/ui/loading-swap";
 
 import { AvatarUpload } from "./_components/avatar-upload";
 import { ProfileFormType, profileSchema } from "./profile-schema";
