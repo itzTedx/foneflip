@@ -93,6 +93,12 @@ export function initAuth(options: {
         generateId: false,
       },
     },
+    session: {
+      cookieCache: {
+          enabled: true,
+          maxAge: 5 * 60 // Cache duration in seconds
+      }
+  },
     trustedOrigins: [
       "expo://",
       "http://localhost:3000",
