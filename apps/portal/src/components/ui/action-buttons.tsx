@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import {
   IconAddCircleFilled,
+  IconExportFilled,
   IconFileEditFilled,
   IconSaveFilled,
   IconUnarchiveFilled,
@@ -106,6 +107,23 @@ export const AddButton = ({
           Add <span className="sr-only md:not-sr-only">{title}</span>
         </span>
       </Link>
+    </Button>
+  );
+};
+
+export const ExportButton = ({
+  isLoading,
+  ...props
+}: React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    isLoading: boolean;
+  }) => {
+  return (
+    <Button variant="outline" {...props}>
+      <LoadingSwap isLoading={isLoading} className="flex items-center gap-2">
+        <IconExportFilled />
+        Export
+      </LoadingSwap>
     </Button>
   );
 };

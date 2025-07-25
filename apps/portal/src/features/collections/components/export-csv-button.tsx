@@ -1,12 +1,9 @@
 "use client";
 
 import { useTransition } from "react";
+import { ExportButton } from "@/components/ui/action-buttons";
 import { downloadCsv } from "@/lib/utils";
-import { IconFileExport } from "@tabler/icons-react";
 import { toast } from "sonner";
-
-import { Button } from "@ziron/ui/components/button";
-import { LoadingSwap } from "@ziron/ui/components/loading-swap";
 
 import { exportCollectionsToCsv } from "../actions/mutations";
 
@@ -29,11 +26,10 @@ export const ExportCsvButton = () => {
   }
 
   return (
-    <Button variant="outline" onClick={handleExport} disabled={isPending}>
-      <LoadingSwap isLoading={isPending} className="flex items-center gap-2">
-        <IconFileExport />
-        Export
-      </LoadingSwap>
-    </Button>
+    <ExportButton
+      onClick={handleExport}
+      disabled={isPending}
+      isLoading={isPending}
+    />
   );
 };
