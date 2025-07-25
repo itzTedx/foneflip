@@ -1,3 +1,5 @@
+"use client";
+
 import { Header } from "@/components/layout/header";
 
 import { Form, useForm, zodResolver } from "@ziron/ui/components/form";

@@ -17,12 +17,12 @@
     "db:generate": "pnpm -F @ziron/db generate",
     "db:migrate": "turbo -F @ziron/db migrate",
     "db:studio": "turbo -F @ziron/db studio",
-    "db:reset": "pnpm docker-dev db:reset && pnpm db:migrate",
     "ui-add": "turbo run ui-add",
     "docker": "pnpm --filter @ziron/docker"
   },
   "devDependencies": {
     "@turbo/gen": "^2.5.5",
+    "@types/minimatch": "^6.0.0",
     "@ziron/eslint-config": "workspace:*",
     "@ziron/prettier-config": "workspace:*",
     "@ziron/typescript-config": "workspace:*",
