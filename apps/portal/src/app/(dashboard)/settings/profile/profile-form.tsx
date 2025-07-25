@@ -32,24 +32,27 @@ import {
 import { Input } from "@ziron/ui/input";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
 
+import { Badge } from "@ziron/ui/badge";
+import { formatDate, formatUserAgent } from "@ziron/utils";
 import { AvatarUpload } from "./_components/avatar-upload";
 import { ProfileFormType, profileSchema } from "./profile-schema";
+import { getSessionIcon } from "./utils";
 
 interface Props {
   initialData: Session;
-  // sessions: {
-  //   token: string;
-  //   expiresAt: Date;
-  //   id: string;
-  //   createdAt: Date;
-  //   updatedAt: Date;
-  //   userId: string;
-  //   ipAddress?: string | null | undefined | undefined;
-  //   userAgent?: string | null | undefined | undefined;
-  // }[];
+  sessions: {
+    token: string;
+    expiresAt: Date;
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+    ipAddress?: string | null | undefined | undefined;
+    userAgent?: string | null | undefined | undefined;
+  }[];
 }
 
-export function ProfileForm({ initialData }: Props) {
+export function ProfileForm({ initialData, sessions }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isRevokePending, startRevokeTransition] = useTransition();
   const [isRevokeOthersPending, startRevokeOthersTransition] = useTransition();
@@ -111,10 +114,10 @@ export function ProfileForm({ initialData }: Props) {
   };
 
   //   Ensure current device session is always first
-  // const sortedSessions = [
-  //   ...(sessions ?? []).filter((s) => s.id === initialData.session.id),
-  //   ...(sessions ?? []).filter((s) => s.id !== initialData.session.id),
-  // ];
+  const sortedSessions = [
+    ...(sessions).filter((s) => s.id === initialData.session.id),
+    ...(sessions).filter((s) => s.id !== initialData.session.id),
+  ];
 
   return (
     <Form {...form}>
@@ -234,28 +237,7 @@ export function ProfileForm({ initialData }: Props) {
             </CardContent>
           </Card>
 
-          {/* <Card className="break-inside-avoid">
-            <CardHeader>
-              <CardTitle>Profile Picture</CardTitle>
-              <CardDescription>
-                Upload a picture to make your profile stand out.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FormField
-                control={form.control}
-                name="avatarUrl"
-                render={() => (
-                  <FormItem>
-                    <FormControl>
-                      <AvatarUpload form={form} avatar={avatar ?? null} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card> */}
+       
 
           <Card className="break-inside-avoid">
             <CardHeader className="flex items-center justify-between">
@@ -279,8 +261,8 @@ export function ProfileForm({ initialData }: Props) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* {sortedSessions.map((session) => (
-                  <div className="flex items-center gap-2" key={session.id}>
+                {sortedSessions.map((session) => (
+                  <div className="flex items-center gap-2" key={session.token}>
                     {getSessionIcon(session.userAgent)}
                     <div>
                       <p className="flex items-center gap-1 text-sm">
@@ -313,7 +295,7 @@ export function ProfileForm({ initialData }: Props) {
                       </Button>
                     )}
                   </div>
-                ))} */}
+                ))}
               </div>
             </CardContent>
           </Card>

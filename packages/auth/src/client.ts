@@ -7,7 +7,7 @@ import {
 import { createAuthClient } from "better-auth/react";
 
 import { ac, admin, dev, user, vendor } from "./permission";
-import { Auth } from "./server";
+import type { Auth } from "./server";
 
 export const authClient = createAuthClient({
   plugins: [

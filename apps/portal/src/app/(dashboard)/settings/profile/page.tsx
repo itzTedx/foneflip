@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 
 import { TabsContent } from "@ziron/ui/tabs";
 
+import { auth } from "@/lib/auth/server";
+import { headers } from "next/headers";
 import { ProfileForm } from "./profile-form";
 
 export const metadata: Metadata = {
@@ -14,13 +16,16 @@ export default async function ProfileSettingsPage() {
   const session = await requireUser();
 
   // const sessions = await getUserSessions(session.user.id);
+  const header = await headers()
 
-  //   const sessions = await authClient.listSessions();
+  const sessions = await auth.api.listSessions({
+      headers:  header
+    });
   // console.log(sessions);
 
   return (
     <TabsContent value="profile">
-      <ProfileForm initialData={session} />
+      <ProfileForm initialData={session} sessions={sessions} />
     </TabsContent>
   );
 }

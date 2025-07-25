@@ -1,15 +1,17 @@
 import "server-only";
 
-import { cache } from "react";
-import { headers } from "next/headers";
 import { env } from "@/lib/env/server";
+import { headers } from "next/headers";
+import { cache } from "react";
 
 import { initAuth } from "@ziron/auth";
 
-const baseUrl =
-  env.NODE_ENV === "production"
-    ? `https://${env.PRODUCTION_URL}`
-    : "http://localhost:3000";
+// const baseUrl =
+//   env.NODE_ENV === "production"
+//     ? `https://${env.PRODUCTION_URL}`
+//     : "http://localhost:3000";
+
+const baseUrl = "http://172.25.208.1:3000"
 
 export const auth = initAuth({
   baseUrl,

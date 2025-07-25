@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "pnpm with-env next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
+    "build": "pnpm with-env next build",
+    "start": "pnpm with-env next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "format": "prettier --check . --ignore-path ../../.gitignore",
