@@ -11,7 +11,7 @@ import { useRouter } from "@bprogress/next";
 import { parseAsString, useQueryState } from "nuqs";
 
 import { Form, useForm, zodResolver } from "@ziron/ui/components/form";
-import { ScrollArea } from "@ziron/ui/components/scroll-area";
+import { ScrollArea, ScrollBar } from "@ziron/ui/components/scroll-area";
 import { toast } from "@ziron/ui/components/sonner";
 import { Tabs, TabsContent } from "@ziron/ui/components/tabs";
 import { useLocalStorage } from "@ziron/ui/hooks/use-local-storage";
@@ -209,6 +209,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         <Tabs defaultValue="details" className="w-full">
           <ScrollArea>
             <TabsTriggers tabTriggers={collectionTabs} disabled={isArchived} />
+            <ScrollBar orientation="horizontal" />
           </ScrollArea>
           <div className="px-6">
             <TabsContent value="details">

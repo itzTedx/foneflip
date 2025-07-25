@@ -11,6 +11,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Session } from "@ziron/auth";
+import { IconSaveFilled } from "@ziron/ui/assets/icons";
 import { Button } from "@ziron/ui/components/button";
 import {
   Card,
@@ -120,10 +121,16 @@ export function ProfileForm({ initialData }: Props) {
           <h2 className="px-2 text-lg font-medium">Profile Settings</h2>
 
           <Button type="submit">
-            <LoadingSwap isLoading={isPending}>Update profile</LoadingSwap>
+            <LoadingSwap
+              isLoading={isPending}
+              className="flex items-center justify-center gap-1"
+            >
+              <IconSaveFilled className="-ms-0.5" />
+              Update profile
+            </LoadingSwap>
           </Button>
         </div>
-        <div className="columns-2 gap-3 space-y-3">
+        <div className="gap-3 space-y-3 md:columns-2">
           <Card className="break-inside-avoid">
             <CardHeader>
               <CardTitle>Profile</CardTitle>
