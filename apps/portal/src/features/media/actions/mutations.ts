@@ -65,7 +65,10 @@ export async function getSignedURL({ file, checksum, collection }: Props) {
     /[^a-zA-Z0-9._-]/g,
     "_",
   );
-  const key = `${session.user.id}/${collection && `${collection}/`}${generateFileName()}-${safeFileName}`;
+
+  const key = collection
+    ? `${session.user.id}/${collection}/${generateFileName()}-${safeFileName}`
+    : `${session.user.id}/${generateFileName()}-${safeFileName}`;
 
   const putObjectCommand = new PutObjectCommand({
     Bucket: env.AWS_BUCKET_NAME,

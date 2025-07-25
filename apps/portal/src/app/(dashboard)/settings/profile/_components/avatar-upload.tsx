@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { getSignedURL } from "@/features/media/actions/mutations";
+import { computeSHA256 } from "@/features/media/utils/compute-sha256";
+import { deleteAvatar } from "@/features/users/actions/mutation";
 import { useFileUpload } from "@/hooks/use-file-upload";
-import {
-  ArrowLeftIcon,
-  CircleUserRoundIcon,
-  XIcon,
-  ZoomInIcon,
-  ZoomOutIcon,
-} from "lucide-react";
+import { ArrowLeftIcon, XIcon, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@ziron/ui/components/avatar";
 import { Button } from "@ziron/ui/components/button";
 import {
   Cropper,
@@ -23,11 +25,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@ziron/ui/components/dialog";
+import { useFormContext } from "@ziron/ui/components/form";
+import { LoadingSwap } from "@ziron/ui/components/loading-swap";
 import { Slider } from "@ziron/ui/components/slider";
 
-interface Props {
-  form: any;
-}
+import { ProfileFormType } from "../profile-schema";
 
 // Define type for pixel crop area
 type Area = { x: number; y: number; width: number; height: number };
@@ -76,9 +78,13 @@ async function getCroppedImg(
 
     // Convert canvas to blob
     return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        resolve(blob);
-      }, "image/jpeg"); // Specify format and quality if needed
+      canvas.toBlob(
+        (blob) => {
+          resolve(blob);
+        },
+        "image/jpeg",
+        0.7,
+      ); // Specify format and quality if needed
     });
   } catch (error) {
     console.error("Error in getCroppedImg:", error);
@@ -86,7 +92,13 @@ async function getCroppedImg(
   }
 }
 
-export const AvatarUpload = ({ form }: Props) => {
+interface Props {
+  form: ReturnType<typeof useFormContext<ProfileFormType>>;
+  avatar: string | null;
+}
+
+export const AvatarUpload = ({ form, avatar }: Props) => {
+  const [isPending, startTransition] = useTransition();
   const [
     { files, isDragging },
     {
@@ -101,13 +113,11 @@ export const AvatarUpload = ({ form }: Props) => {
   ] = useFileUpload({
     accept: "image/*",
   });
-  const maxSizeMB = 4;
-  const maxSize = maxSizeMB * 1024 * 1024; // 2MB default
 
   const previewUrl = files[0]?.preview || null;
   const fileId = files[0]?.id;
 
-  const [finalImageUrl, setFinalImageUrl] = useState<string | null>(null);
+  const [finalImageUrl, setFinalImageUrl] = useState<string | null>(avatar);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Ref to track the previous file ID to detect new uploads
@@ -124,7 +134,7 @@ export const AvatarUpload = ({ form }: Props) => {
     setCroppedAreaPixels(pixels);
   }, []);
 
-  const handleApply = async () => {
+  const handleApply = () => {
     // Check if we have the necessary data
     if (!previewUrl || !fileId || !croppedAreaPixels) {
       console.error("Missing data for apply:", {
@@ -139,40 +149,84 @@ export const AvatarUpload = ({ form }: Props) => {
       }
       return;
     }
+    startTransition(async () => {
+      try {
+        // 1. Get the cropped image blob using the helper
+        const croppedBlob = await getCroppedImg(previewUrl, croppedAreaPixels);
 
-    try {
-      // 1. Get the cropped image blob using the helper
-      const croppedBlob = await getCroppedImg(previewUrl, croppedAreaPixels);
+        if (!croppedBlob) {
+          throw new Error("Failed to generate cropped image blob.");
+        }
 
-      if (!croppedBlob) {
-        throw new Error("Failed to generate cropped image blob.");
+        const checksum = await computeSHA256(croppedBlob);
+
+        const signedUrl = await getSignedURL({
+          file: {
+            type: "image/jpeg",
+            size: croppedBlob.size,
+            fileName: "avatar.jpg",
+          },
+          collection: "avatar",
+          checksum: checksum,
+        });
+
+        if (signedUrl.error !== undefined) {
+          form.setError("avatarUrl", new Error(signedUrl.message));
+        }
+
+        if (signedUrl.success) {
+          const url = signedUrl.success.url;
+
+          const xhr = new XMLHttpRequest();
+          xhr.open("PUT", url, true);
+          xhr.setRequestHeader("Content-Type", "image/jpeg");
+          xhr.setRequestHeader("Content-Language", croppedBlob.size.toString());
+
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              form.clearErrors("avatarUrl");
+              form.setValue("avatarUrl", url.split("?")[0] ?? "");
+            } else {
+              form.setError("avatarUrl", new Error("Upload failed"));
+            }
+          };
+
+          xhr.onerror = (error) => {
+            form.setError("avatarUrl", new Error("Upload error"));
+            console.error(error);
+          };
+
+          xhr.send(croppedBlob);
+        }
+
+        // 2. Create a NEW object URL from the cropped blob
+        const newFinalUrl = URL.createObjectURL(croppedBlob);
+
+        // 3. Revoke the OLD finalImageUrl if it exists
+        if (finalImageUrl) {
+          URL.revokeObjectURL(finalImageUrl);
+        }
+
+        // 4. Set the final avatar state to the NEW URL
+        setFinalImageUrl(newFinalUrl);
+
+        // 5. Close the dialog (don't remove the file yet)
+        setIsDialogOpen(false);
+      } catch (error) {
+        console.error("Error during apply:", error);
+        // Close the dialog even if cropping fails
+        setIsDialogOpen(false);
       }
-
-      // 2. Create a NEW object URL from the cropped blob
-      const newFinalUrl = URL.createObjectURL(croppedBlob);
-
-      // 3. Revoke the OLD finalImageUrl if it exists
-      if (finalImageUrl) {
-        URL.revokeObjectURL(finalImageUrl);
-      }
-
-      // 4. Set the final avatar state to the NEW URL
-      setFinalImageUrl(newFinalUrl);
-
-      // 5. Close the dialog (don't remove the file yet)
-      setIsDialogOpen(false);
-    } catch (error) {
-      console.error("Error during apply:", error);
-      // Close the dialog even if cropping fails
-      setIsDialogOpen(false);
-    }
+    });
   };
 
-  const handleRemoveFinalImage = () => {
+  const handleRemoveFinalImage = async () => {
     if (finalImageUrl) {
       URL.revokeObjectURL(finalImageUrl);
     }
     setFinalImageUrl(null);
+    form.setValue("avatarUrl", undefined);
+    await deleteAvatar();
   };
 
   useEffect(() => {
@@ -202,7 +256,7 @@ export const AvatarUpload = ({ form }: Props) => {
       <div className="relative inline-flex">
         {/* Drop area - uses finalImageUrl */}
         <button
-          className="border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50 focus-visible:border-ring focus-visible:ring-ring/50 relative flex size-16 items-center justify-center overflow-hidden rounded-full border border-dashed transition-colors outline-none focus-visible:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-50 has-[img]:border-none"
+          className="border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50 focus-visible:border-ring focus-visible:ring-ring/50 relative flex size-32 items-center justify-center overflow-hidden rounded-full border-2 border-dashed transition-colors outline-none focus-visible:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-50"
           type="button"
           onClick={openFileDialog}
           onDragEnter={handleDragEnter}
@@ -212,27 +266,20 @@ export const AvatarUpload = ({ form }: Props) => {
           data-dragging={isDragging || undefined}
           aria-label={finalImageUrl ? "Change image" : "Upload image"}
         >
-          {finalImageUrl ? (
-            <img
-              className="size-full object-cover"
-              src={finalImageUrl}
-              alt="User avatar"
-              width={64}
-              height={64}
-              style={{ objectFit: "cover" }}
-            />
-          ) : (
-            <div aria-hidden="true">
-              <CircleUserRoundIcon className="size-4 opacity-60" />
-            </div>
-          )}
+          <Avatar className="bg-accent/30 size-full p-2">
+            <AvatarImage src={finalImageUrl ?? undefined} alt="User avatar" />
+            <AvatarFallback className="text-sm font-medium">
+              Upload
+            </AvatarFallback>
+          </Avatar>
         </button>
         {/* Remove button - depends on finalImageUrl */}
         {finalImageUrl && (
           <Button
             onClick={handleRemoveFinalImage}
-            size="icon"
-            className="border-background focus-visible:border-background absolute -top-1 -right-1 size-6 rounded-full border-2 shadow-none"
+            size="btn"
+            variant="destructive"
+            className="absolute top-2 right-2 size-6 rounded-full border-2 shadow-none"
             aria-label="Remove image"
           >
             <XIcon className="size-3.5" />
@@ -270,10 +317,10 @@ export const AvatarUpload = ({ form }: Props) => {
               <Button
                 className="-my-1"
                 onClick={handleApply}
-                disabled={!previewUrl}
+                disabled={!previewUrl || isPending}
                 autoFocus
               >
-                Apply
+                <LoadingSwap isLoading={isPending}>Apply</LoadingSwap>
               </Button>
             </DialogTitle>
           </DialogHeader>
@@ -293,11 +340,12 @@ export const AvatarUpload = ({ form }: Props) => {
           <DialogFooter className="border-t px-4 py-6">
             <div className="mx-auto flex w-full max-w-80 items-center gap-4">
               <ZoomOutIcon
-                className="shrink-0 opacity-60"
-                size={16}
+                className="size-3.5 shrink-0 opacity-60"
                 aria-hidden="true"
               />
               <Slider
+                showTooltip
+                tooltipContent={(value) => `${value}x`}
                 defaultValue={[1]}
                 value={[zoom]}
                 min={1}
@@ -307,8 +355,7 @@ export const AvatarUpload = ({ form }: Props) => {
                 aria-label="Zoom slider"
               />
               <ZoomInIcon
-                className="shrink-0 opacity-60"
-                size={16}
+                className="size-3.5 shrink-0 opacity-60"
                 aria-hidden="true"
               />
             </div>

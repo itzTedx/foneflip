@@ -70,7 +70,7 @@ function Slider({
     const thumb = (
       <SliderPrimitive.Thumb
         data-slot="slider-thumb"
-        className="border-primary bg-background ring-ring/50 block size-4 shrink-0 rounded-full border shadow-sm transition-[color,box-shadow] outline-none hover:ring-4 focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50"
+        className="border-foreground bg-primary ring-ring/50 box-content block size-2 shrink-0 rounded-full border-4 shadow-[0_6px_10px_0_#0e121b0f,_0_2px_4px_0_#0e121b08] transition-[color,box-shadow] outline-none hover:ring-4 focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50"
         onPointerDown={handlePointerDown}
       />
     );

@@ -1,11 +1,9 @@
 "use client";
 
 import { useTransition } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IconX } from "@tabler/icons-react";
 import { APIError } from "better-auth/api";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -139,28 +137,42 @@ export function ProfileForm({ initialData }: Props) {
                 This is how others will see you on the site.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="grid grid-cols-3 items-center justify-center gap-3">
+              <div className="col-span-2 space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your Email" {...field} disabled />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
-                name="name"
-                render={({ field }) => (
+                name="avatarUrl"
+                render={() => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your Email" {...field} disabled />
+                      <AvatarUpload form={form} avatar={avatar ?? null} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -219,7 +231,7 @@ export function ProfileForm({ initialData }: Props) {
             </CardContent>
           </Card>
 
-          <Card className="break-inside-avoid">
+          {/* <Card className="break-inside-avoid">
             <CardHeader>
               <CardTitle>Profile Picture</CardTitle>
               <CardDescription>
@@ -233,37 +245,14 @@ export function ProfileForm({ initialData }: Props) {
                 render={() => (
                   <FormItem>
                     <FormControl>
-                      {avatar ? (
-                        <div className="relative aspect-square size-40 shrink-0 overflow-hidden rounded-lg border">
-                          <Image
-                            fill
-                            src={avatar}
-                            alt={""}
-                            className="h-full w-full object-cover"
-                          />
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-1 right-1 size-5 rounded-full border backdrop-blur-xl"
-                            onClick={() =>
-                              form.setValue("avatarUrl", undefined)
-                            }
-                            aria-label="Remove picture"
-                          >
-                            <IconX className="size-3" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <AvatarUpload form={form} />
-                      )}
+                      <AvatarUpload form={form} avatar={avatar ?? null} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card className="break-inside-avoid">
             <CardHeader className="flex items-center justify-between">
