@@ -1,39 +1,41 @@
+import {
+  StatusBadge,
+  StatusBadgeDot,
+  StatusBadgeIcon,
+} from "@/components/ui/status-badge-align";
 import { User } from "@/features/collections/types";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import {
+  IconAlertHexagonFilled,
+  IconCircleCheckFilled,
+} from "@tabler/icons-react";
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 
-import { Badge } from "@ziron/ui/components/badge";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@ziron/ui/components/avatar";
 import { Checkbox } from "@ziron/ui/components/checkbox";
-import { cn } from "@ziron/utils";
+import { formatDate } from "@ziron/utils";
 
 import { RowActions } from "./row-actions";
 
-// export type Item = {
-//   id: string;
-//   name: string;
-//   email: string;
-//   location: string;
-//   flag: string;
-//   status: "Active" | "Inactive" | "Pending";
-//   balance: number;
-// };
-
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<User> = (row, columnId, filterValue) => {
+export const multiColumnFilterFn: FilterFn<User> = (
+  row,
+  columnId,
+  filterValue,
+) => {
   const searchableRowContent =
     `${row.original.name} ${row.original.email}`.toLowerCase();
   const searchTerm = (filterValue ?? "").toLowerCase();
   return searchableRowContent.includes(searchTerm);
 };
 
-const statusFilterFn: FilterFn<User> = (
-  row,
-  columnId,
-  filterValue: string[],
-) => {
+const roleFilterFn: FilterFn<User> = (row, columnId, filterValue: string[]) => {
   if (!filterValue?.length) return true;
-  const status = row.getValue(columnId) as string;
-  return filterValue.includes(status);
+  const role = row.getValue(columnId) as string;
+  return filterValue.includes(role);
 };
 
 export const columns: ColumnDef<User>[] = [
@@ -56,20 +58,33 @@ export const columns: ColumnDef<User>[] = [
         aria-label="Select row"
       />
     ),
-    size: 28,
+    size: 18,
     enableSorting: false,
     enableHiding: false,
   },
   {
     header: "Name",
     accessorKey: "name",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("name")}</div>
-    ),
+    cell: ({ row }) => {
+      const name = row.getValue("name") as string;
+      const avatar = row.original.image as string | undefined;
+      return (
+        <div className="flex items-center gap-2 font-medium">
+          <Avatar className="size-10 rounded-md">
+            <AvatarImage src={avatar} />
+            <AvatarFallback className="rounded-md">
+              {name.slice(0, 1)}
+            </AvatarFallback>
+          </Avatar>
+          {name}
+        </div>
+      );
+    },
     size: 180,
     filterFn: multiColumnFilterFn,
     enableHiding: false,
   },
+
   {
     header: "Email",
     accessorKey: "email",
@@ -81,49 +96,53 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const isVerified = row.getValue("emailVerified") === true;
       return (
-        <div
-          className={cn(
-            "flex size-6 items-center justify-center rounded-sm border [&_svg]:size-4",
-            isVerified
-              ? "border-success text-success"
-              : "border-destructive text-destructive",
-          )}
+        <StatusBadge
+          status={isVerified ? "success" : "warn"}
+          className="capitalize"
         >
-          {isVerified ? <IconCheck /> : <IconX />}
-        </div>
+          <StatusBadgeIcon
+            as={isVerified ? IconCircleCheckFilled : IconAlertHexagonFilled}
+          />
+          {isVerified ? "Verified" : "Pending"}
+        </StatusBadge>
       );
     },
-    size: 180,
+    size: 80,
   },
   {
-    header: "Status",
-    accessorKey: "status",
-    cell: ({ row }) => (
-      <Badge
-        className={cn(
-          row.getValue("status") === "Inactive" &&
-            "bg-muted-foreground/60 text-primary-foreground",
-        )}
-      >
-        {row.getValue("status")}
-      </Badge>
-    ),
-    size: 100,
-    filterFn: statusFilterFn,
-  },
-  {
-    header: "Performance",
-    accessorKey: "performance",
-  },
-  {
-    header: "Balance",
-    accessorKey: "balance",
+    header: "Role",
+    accessorKey: "role",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("balance"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
+      const role = row.getValue("role") as "user" | "vendor" | "admin" | "dev";
+      return (
+        <StatusBadge
+          status={
+            role === "admin"
+              ? "success"
+              : role === "vendor"
+                ? "info"
+                : role === "dev"
+                  ? "error"
+                  : "disabled"
+          }
+          variant="light"
+          className="capitalize"
+        >
+          <StatusBadgeDot />
+          {role}
+        </StatusBadge>
+      );
+    },
+    size: 80,
+    filterFn: roleFilterFn,
+  },
+
+  {
+    header: "Created At",
+    accessorKey: "createdAt",
+    cell: ({ row }) => {
+      const data = row.getValue("createdAt") as string;
+      const formatted = formatDate(data, { includeTime: true });
       return formatted;
     },
     size: 120,

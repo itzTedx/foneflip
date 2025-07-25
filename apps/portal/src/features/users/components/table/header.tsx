@@ -7,7 +7,6 @@ import {
   Columns3Icon,
   FilterIcon,
   ListFilterIcon,
-  PlusIcon,
   TrashIcon,
 } from "lucide-react";
 
@@ -59,31 +58,31 @@ export const DataTableHeader = ({ table, data }: Props) => {
     table.resetRowSelection();
   };
 
-  // Get unique status values
-  const uniqueStatusValues = useMemo(() => {
-    const statusColumn = table.getColumn("status");
+  // Get unique role values
+  const uniqueRoleValues = useMemo(() => {
+    const roleColumn = table.getColumn("role");
 
-    if (!statusColumn) return [];
+    if (!roleColumn) return [];
 
-    const values = Array.from(statusColumn.getFacetedUniqueValues().keys());
+    const values = Array.from(roleColumn.getFacetedUniqueValues().keys());
 
     return values.sort();
-  }, [table.getColumn("status")?.getFacetedUniqueValues()]);
+  }, [table.getColumn("role")?.getFacetedUniqueValues()]);
 
-  // Get counts for each status
-  const statusCounts = useMemo(() => {
-    const statusColumn = table.getColumn("status");
-    if (!statusColumn) return new Map();
-    return statusColumn.getFacetedUniqueValues();
-  }, [table.getColumn("status")?.getFacetedUniqueValues()]);
+  // Get counts for each role
+  const roleCounts = useMemo(() => {
+    const roleColumn = table.getColumn("role");
+    if (!roleColumn) return new Map();
+    return roleColumn.getFacetedUniqueValues();
+  }, [table.getColumn("role")?.getFacetedUniqueValues()]);
 
-  const selectedStatuses = useMemo(() => {
-    const filterValue = table.getColumn("status")?.getFilterValue() as string[];
+  const selectedRoles = useMemo(() => {
+    const filterValue = table.getColumn("role")?.getFilterValue() as string[];
     return filterValue ?? [];
-  }, [table.getColumn("status")?.getFilterValue()]);
+  }, [table.getColumn("role")?.getFilterValue()]);
 
-  const handleStatusChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn("status")?.getFilterValue() as string[];
+  const handleRoleChange = (checked: boolean, value: string) => {
+    const filterValue = table.getColumn("role")?.getFilterValue() as string[];
     const newFilterValue = filterValue ? [...filterValue] : [];
 
     if (checked) {
@@ -96,7 +95,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
     }
 
     table
-      .getColumn("status")
+      .getColumn("role")
       ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
   };
 
@@ -138,7 +137,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
             </button>
           )}
         </div>
-        {/* Filter by status */}
+        {/* Filter by role */}
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline">
@@ -147,10 +146,10 @@ export const DataTableHeader = ({ table, data }: Props) => {
                 size={16}
                 aria-hidden="true"
               />
-              Status
-              {selectedStatuses.length > 0 && (
+              Role
+              {selectedRoles.length > 0 && (
                 <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
-                  {selectedStatuses.length}
+                  {selectedRoles.length}
                 </span>
               )}
             </Button>
@@ -161,22 +160,22 @@ export const DataTableHeader = ({ table, data }: Props) => {
                 Filters
               </div>
               <div className="space-y-3">
-                {uniqueStatusValues.map((value, i) => (
+                {uniqueRoleValues.map((value, i) => (
                   <div key={value} className="flex items-center gap-2">
                     <Checkbox
                       id={`${id}-${i}`}
-                      checked={selectedStatuses.includes(value)}
+                      checked={selectedRoles.includes(value)}
                       onCheckedChange={(checked: boolean) =>
-                        handleStatusChange(checked, value)
+                        handleRoleChange(checked, value)
                       }
                     />
                     <Label
                       htmlFor={`${id}-${i}`}
-                      className="flex grow justify-between gap-2 font-normal"
+                      className="flex grow justify-between gap-2 font-normal capitalize"
                     >
                       {value}{" "}
                       <span className="text-muted-foreground ms-2 text-xs">
-                        {statusCounts.get(value)}
+                        {roleCounts.get(value)}
                       </span>
                     </Label>
                   </div>
@@ -266,11 +265,6 @@ export const DataTableHeader = ({ table, data }: Props) => {
             </AlertDialogContent>
           </AlertDialog>
         )}
-        {/* Add user button */}
-        <Button className="ml-auto" variant="outline">
-          <PlusIcon className="-ms-1 opacity-60" size={16} aria-hidden="true" />
-          Add user
-        </Button>
       </div>
     </div>
   );

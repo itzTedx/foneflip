@@ -5,10 +5,10 @@ export type UserRole = "user" | "vendor" | "admin" | "dev";
 // Define route access patterns
 export const ROUTE_ACCESS = {
   // Admin-only routes (not accessible by vendors)
-  adminOnly: ["/users", "/vendors", "/settings"],
+  adminOnly: ["/users", "/vendors", "/collections", "/settings"],
 
   // Vendor-accessible routes
-  vendorAllowed: ["/products", "/collections", "/orders", "/media"],
+  vendorAllowed: ["/products", "/orders", "/media"],
 
   // Public routes (no auth required)
   public: [

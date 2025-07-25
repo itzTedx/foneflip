@@ -1,9 +1,9 @@
 "use server";
 
 import { requireUser } from "@/features/auth/actions/data-access";
-import { createLog } from "@/lib/utils";
+import { convertToCsv, createLog } from "@/lib/utils";
 
-import { db, desc, eq, isNull } from "@ziron/db";
+import { asc, db, desc, eq, isNull } from "@ziron/db";
 import {
   collectionMediaTable,
   collectionSettingsTable,
@@ -773,6 +773,110 @@ export async function saveCollectionDraft(formData: unknown) {
     return {
       success: false,
       error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+}
+
+export async function exportCollectionsToCsv(
+  includeProducts: boolean = false,
+  includeSeo: boolean = false,
+) {
+  try {
+    log.info("Starting CSV export with options:", {
+      includeProducts,
+      includeSeo,
+    });
+    const collections = await db.query.collectionsTable.findMany({
+      where: isNull(collectionsTable.deletedAt),
+      with: {
+        ...(includeProducts && {
+          products: {
+            with: {
+              images: {
+                with: {
+                  media: true,
+                },
+              },
+              seo: true,
+              specifications: true,
+              delivery: true,
+            },
+          },
+        }),
+        collectionMedia: {
+          with: {
+            media: true,
+          },
+        },
+        ...(includeSeo && {
+          seo: true,
+        }),
+      },
+      orderBy: asc(collectionsTable.createdAt),
+    });
+    if (!collections || collections.length === 0) {
+      log.warn("No collections found for export");
+      return { error: "No collections found to export" };
+    }
+    const csvData = collections.map((collection) => {
+      const thumbnailMedia = collection.collectionMedia.find(
+        (m) => m.type === "thumbnail",
+      );
+      const bannerMedia = collection.collectionMedia.find(
+        (m) => m.type === "banner",
+      );
+      const baseData = {
+        id: collection.id,
+        title: collection.title,
+        description: collection.description || "",
+        label: collection.label || "",
+        slug: collection.slug,
+
+        sortOrder: collection.sortOrder,
+
+        createdAt: collection.createdAt?.toISOString(),
+        updatedAt: collection.updatedAt?.toISOString(),
+        thumbnailUrl: thumbnailMedia?.media?.url || "",
+        thumbnailAlt: thumbnailMedia?.media?.alt || "",
+        bannerUrl: bannerMedia?.media?.url || "",
+        bannerAlt: bannerMedia?.media?.alt || "",
+      };
+      if (includeSeo && collection.seo) {
+        Object.assign(baseData, {
+          metaTitle: collection.seo.metaTitle || "",
+          metaDescription: collection.seo.metaDescription || "",
+          keywords: collection.seo.keywords || "",
+        });
+      }
+      if (includeProducts) {
+        Object.assign(baseData, {
+          productCount: collection.products?.length || 0,
+          products: collection.products?.map((p) => p.title).join("; ") || "",
+        });
+      }
+      return baseData;
+    });
+    const csv = convertToCsv(csvData);
+    const timestamp = new Date().toISOString().split("T")[0];
+    const filename = `collections-export-${timestamp}.csv`;
+    log.success(
+      `CSV export completed successfully. Exported ${collections.length} collections`,
+    );
+    return {
+      success: true,
+      data: csv,
+      filename,
+      recordCount: collections.length,
+    };
+  } catch (err) {
+    log.error("Error in CSV export:", {
+      error: err,
+      message: err instanceof Error ? err.message : "Unknown error occurred",
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    return {
+      error:
+        err instanceof Error ? err.message : "Failed to export collections",
     };
   }
 }

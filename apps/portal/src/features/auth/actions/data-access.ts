@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/server";
+import { auth, getSession } from "@/lib/auth/server";
 
 import "server-only";
 
@@ -28,4 +28,19 @@ export async function requireAdmin() {
       message: "User not authorized",
     };
   }
+}
+
+export async function canCollectionCreate() {
+  const session = await requireUser();
+  const res = await auth.api.userHasPermission({
+    body: {
+      // userId: session?.user.id,
+      role: session?.user.role,
+      permissions: {
+        collections: ["create"], // This must match the structure in your access control
+      },
+    },
+  });
+
+  if (!res.success) redirect("/");
 }

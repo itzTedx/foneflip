@@ -28,9 +28,9 @@ export default async function Navbar({ session }: NavbarProps) {
         <div></div>
         {/* <SearchField /> */}
 
+        {!session && <ThemeToggle />}
         {session && (
           <div className="flex flex-1 items-center justify-end gap-3">
-            <ThemeToggle />
             <Notifications initialNotifications={notifications} />
             <UserMenu />
           </div>

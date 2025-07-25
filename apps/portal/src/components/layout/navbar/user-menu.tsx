@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { LogoutButton } from "@/components/ui/logout-button";
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import {
   IconBook,
   IconLogout,
@@ -45,7 +46,7 @@ export default function UserMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="max-w-64" align="center">
         <DropdownMenuLabel className="flex min-w-0 items-center gap-1.5">
-          <Avatar className="rounded-sm">
+          <Avatar className="size-11 rounded-sm">
             <AvatarImage
               src={data?.user.image ?? undefined}
               alt="Profile image"
@@ -63,6 +64,9 @@ export default function UserMenu() {
             </span>
           </div>
         </DropdownMenuLabel>
+
+        <ThemeSwitcher />
+
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
