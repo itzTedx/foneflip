@@ -25,15 +25,6 @@ export function CollectionsContent({
 
   return (
     <div className="px-4 py-2 sm:px-6">
-      {/* <div className="mb-2 grid grid-cols-5 gap-4">
-          <h2 className="text-muted-foreground col-span-2 px-4 text-sm font-semibold">
-            Details
-          </h2>
-          <h2 className="text-muted-foreground col-span-2 px-4 text-sm font-semibold">
-            Linked Products
-          </h2>
-        </div> */}
-
       <CollectionListSortable collections={collections} />
     </div>
   );

@@ -129,6 +129,7 @@ const CollectionCard = React.memo(function CollectionCard({
             <div className="py-1">
               <CardTitle className="flex items-center gap-2 text-lg font-medium">
                 {collection.title}
+
                 <StatusBadge status={collection.settings?.status} />
                 {collection.label && <Badge>{collection.label}</Badge>}
                 {collection.settings &&

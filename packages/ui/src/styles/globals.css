@@ -3,6 +3,7 @@
 @source "../../../components/**/*.{ts,tsx}";
 @source "../../../packages/**/*.{ts,tsx}";
 @source "../**/*.{ts,tsx}";
+@source "../components/*.{ts,tsx}";
 
 @import "tw-animate-css";
 
