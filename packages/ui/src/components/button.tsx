@@ -17,13 +17,13 @@ const buttonVariants = cva(
         outline:
           "bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 border shadow-xs",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-xs",
+          "from-secondary to-secondary/60 text-secondary-foreground hover:bg-secondary/80 inset-shadow-secondary-foreground/10 bg-gradient-to-t shadow-xs inset-shadow-[0_2px_4px_0]",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:pl-3",
+        default: "h-9 px-4 py-2 has-[>svg]:px-3",
         sm: "h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",

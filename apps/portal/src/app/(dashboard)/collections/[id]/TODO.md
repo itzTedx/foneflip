@@ -15,13 +15,13 @@
 ## 2. File Upload Enhancement
 
 - [ ] Implement file upload component similar to https://github.com/sadmann7/file-uploader/blob/main/src/app/components/file-upload-form-demo.tsx
-  - [ ] Create reusable file upload component with drag-and-drop functionality
-  - [ ] Support multiple file types and size validation
-  - [ ] Add progress indicators for file uploads
-  - [ ] Implement file preview functionality
+  - [x] Create reusable file upload component with drag-and-drop functionality
+  - [x] Support multiple file types and size validation
+  - [x] Add progress indicators for file uploads
+  - [x] Implement file preview functionality
   - [ ] Add error handling for failed uploads
-  - [ ] Integrate with existing form validation system
-  - [ ] Style component to match current design system 
+  - [x] Integrate with existing form validation system
+  - [ ] Style component to match current design system
 
 ## 3. UI/UX Improvements
 

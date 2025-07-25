@@ -1,5 +1,8 @@
 import React from "react";
+import Link from "next/link";
+import { IconArrowLeft } from "@tabler/icons-react";
 
+import { Button } from "@ziron/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
@@ -10,9 +13,15 @@ interface CollectionHeaderProps {
   title?: string;
   status?: "draft" | "active" | "archived";
   children?: React.ReactNode;
+  backLink?: string;
 }
 
-export function Header({ title, status, children }: CollectionHeaderProps) {
+export function Header({
+  title,
+  status,
+  children,
+  backLink,
+}: CollectionHeaderProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "draft":
@@ -42,6 +51,13 @@ export function Header({ title, status, children }: CollectionHeaderProps) {
   return (
     <div className="bg-background/80 sticky top-[calc(3rem)] z-50 flex items-center justify-between px-6 py-3 backdrop-blur-xl">
       <div className="flex items-center justify-center gap-2">
+        {backLink && (
+          <Button size="btn" variant="outline" asChild>
+            <Link href={backLink}>
+              <IconArrowLeft />
+            </Link>
+          </Button>
+        )}
         <h1 className="text-xl leading-none font-medium sm:text-2xl">
           {title}
         </h1>

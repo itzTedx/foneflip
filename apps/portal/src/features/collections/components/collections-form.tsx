@@ -2,14 +2,15 @@
 
 import { useEffect, useTransition } from "react";
 import { Header } from "@/components/layout/header";
+import {
+  DraftButton,
+  RestoreArchiveButton,
+  SaveButton,
+} from "@/components/ui/action-buttons";
 import { useRouter } from "@bprogress/next";
-import { IconRestore } from "@tabler/icons-react";
 import { parseAsString, useQueryState } from "nuqs";
 
-import { IconFileEditFilled, IconSaveFilled } from "@ziron/ui/assets/icons";
-import { Button } from "@ziron/ui/components/button";
 import { Form, useForm, zodResolver } from "@ziron/ui/components/form";
-import { LoadingSwap } from "@ziron/ui/components/loading-swap";
 import { ScrollArea } from "@ziron/ui/components/scroll-area";
 import { toast } from "@ziron/ui/components/sonner";
 import { Tabs, TabsContent } from "@ziron/ui/components/tabs";
@@ -174,67 +175,32 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="relative mx-auto max-w-7xl flex-1 pb-6"
       >
-        <Header title={isEditMode ? "Edit Collection" : "Add Collection"}>
+        <Header
+          title={isEditMode ? "Edit Collection" : "Add Collection"}
+          backLink="/collections"
+        >
           <div className="flex items-center gap-3">
             {isArchived ? (
-              <Button
-                variant="outline"
-                type="button"
+              <RestoreArchiveButton
                 onClick={handleRestore}
+                isLoading={isRestorePending}
                 disabled={form.formState.isSubmitting || isRestorePending}
-              >
-                <LoadingSwap
-                  isLoading={isRestorePending}
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
-                >
-                  <IconRestore className="text-muted-foreground -ml-1 size-4" />
-                  <div>
-                    Restore{" "}
-                    <span className="hidden sm:inline">from archive</span>
-                  </div>
-                </LoadingSwap>
-              </Button>
+              />
             ) : (
               <>
-                <Button
-                  variant="outline"
+                <DraftButton
                   type="button"
-                  onClick={onSaveDraft}
                   disabled={
                     form.formState.isSubmitting || isArchived || isDraftPending
                   }
-                >
-                  <LoadingSwap
-                    isLoading={isDraftPending}
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
-                  >
-                    <IconFileEditFilled className="text-muted-foreground -ml-1 size-4" />
-                    <div>
-                      <span className="hidden sm:inline">Save as </span>Draft
-                    </div>
-                  </LoadingSwap>
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={form.formState.isSubmitting || isArchived}
-                >
-                  <LoadingSwap
-                    isLoading={isPending}
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
-                  >
-                    <IconSaveFilled className="-ml-1 size-4" />
-                    {isEditMode ? (
-                      <span>
-                        Save <span className="hidden sm:inline">Changes</span>
-                      </span>
-                    ) : (
-                      <span>
-                        Create{" "}
-                        <span className="hidden sm:inline">Collection</span>
-                      </span>
-                    )}
-                  </LoadingSwap>
-                </Button>
+                  onClick={onSaveDraft}
+                  isLoading={isDraftPending}
+                />
+                <SaveButton
+                  disabled={isArchived || isPending}
+                  isEditMode={isEditMode}
+                  isLoading={isPending}
+                />
               </>
             )}
           </div>
