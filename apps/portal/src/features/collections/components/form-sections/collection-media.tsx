@@ -71,14 +71,11 @@ function MediaUploadPreview({
     async (files, { onProgress, onSuccess, onError }) => {
       try {
         // Process each file individually
-        console.log("Upload Started");
+
         const uploadPromises = files.map(async (file) => {
           try {
-            console.log("Processing checksum");
             const checksum = await computeSHA256(file);
-            console.log("Checksum processed: ", checksum);
 
-            console.log("Getting signedUrl");
             const signedUrl = await getSignedURL({
               file: {
                 type: file.type,
@@ -89,7 +86,6 @@ function MediaUploadPreview({
               checksum: checksum,
             });
 
-            console.log("signedUrl: ", signedUrl);
             if (signedUrl.error !== undefined) {
               form.setError(name, new Error(signedUrl.message));
             }

@@ -27,12 +27,10 @@ interface Props {
 export const ImagePreview = ({ value, onRemove, files, name }: Props) => {
   const form = useFormContext<CollectionFormType>();
   const [isPending, startTransition] = useTransition();
-  //   console.log(`value for ${name}: `, value);
 
   function handleOnRemove() {
     startTransition(async () => {
       if (value && value.file && value.file.key) {
-        // console.log(value.file.key);
         const res = await deleteMediaFromS3(value.file.key);
         if (res.success) toast.success(res.success);
       }

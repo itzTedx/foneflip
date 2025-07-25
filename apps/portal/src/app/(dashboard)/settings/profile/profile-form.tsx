@@ -31,6 +31,7 @@ import {
 import { Input } from "@ziron/ui/components/input";
 import { LoadingSwap } from "@ziron/ui/components/loading-swap";
 
+import { AvatarUpload } from "./_components/avatar-upload";
 import { ProfileFormType, profileSchema } from "./profile-schema";
 
 interface Props {
@@ -254,27 +255,7 @@ export function ProfileForm({ initialData }: Props) {
                           </Button>
                         </div>
                       ) : (
-                        // <UploadDropzone
-                        //   endpoint="avatarUploader"
-                        //   onClientUploadComplete={(res) => {
-                        //     if (res) {
-                        //       form.setValue("avatarUrl", res[0].ufsUrl);
-                        //       toast.success("Profile picture uploaded");
-                        //     }
-                        //   }}
-                        //   onUploadError={(error: Error) => {
-                        //     form.setError("avatarUrl", {
-                        //       message: error.message,
-                        //     });
-                        //     toast.error("Error uploading file", {
-                        //       description: error.message,
-                        //     });
-                        //   }}
-                        //   config={{
-                        //     mode: "auto",
-                        //   }}
-                        // />
-                        "Upload"
+                        <AvatarUpload form={form} />
                       )}
                     </FormControl>
                     <FormMessage />
