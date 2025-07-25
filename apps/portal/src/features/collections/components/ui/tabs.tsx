@@ -1,7 +1,9 @@
 import { useCallback } from "react";
-import { IconSettings } from "@tabler/icons-react";
 
+import { IconSettingsFilled } from "@ziron/ui/assets/icons";
 import { TabsList, TabsTrigger } from "@ziron/ui/components/tabs";
+
+import { TabTriggerType } from "../../data/constants";
 
 export type TabTrigger = {
   value: string;
@@ -10,7 +12,7 @@ export type TabTrigger = {
 
 export interface TabsTriggersProps
   extends Omit<React.ComponentProps<typeof TabsTrigger>, "value"> {
-  tabTriggers: readonly TabTrigger[];
+  tabTriggers: readonly TabTriggerType[];
   showSettings?: boolean;
   onSettingsClick?: () => void;
   children?: React.ReactNode;
@@ -35,13 +37,14 @@ export function TabsTriggers({
     <div className="bg-background/80 px-6 pt-2 backdrop-blur-xl">
       <TabsList className="flex h-auto w-full justify-between gap-2 rounded-none border-b bg-transparent p-0">
         <div className="flex gap-2">
-          {tabTriggers.map(({ value, label }) => (
+          {tabTriggers.map(({ value, label, Icon }) => (
             <TabsTrigger
               key={value}
               value={value}
               className={tabTriggerClass}
               {...props}
             >
+              <Icon />
               {label}
             </TabsTrigger>
           ))}
@@ -53,7 +56,7 @@ export function TabsTriggers({
               className={tabTriggerClass}
               onClick={handleSettingsClick}
             >
-              <IconSettings className="h-4 w-4" />
+              <IconSettingsFilled className="size-4" />
               Settings
             </TabsTrigger>
           </div>

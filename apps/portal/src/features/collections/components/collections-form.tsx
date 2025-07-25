@@ -3,9 +3,10 @@
 import { useEffect, useTransition } from "react";
 import { Header } from "@/components/layout/header";
 import { useRouter } from "@bprogress/next";
-import { IconCheck, IconDeviceFloppy, IconRestore } from "@tabler/icons-react";
+import { IconRestore } from "@tabler/icons-react";
 import { parseAsString, useQueryState } from "nuqs";
 
+import { IconFileEditFilled, IconSaveFilled } from "@ziron/ui/assets/icons";
 import { Button } from "@ziron/ui/components/button";
 import { Form, useForm, zodResolver } from "@ziron/ui/components/form";
 import { LoadingSwap } from "@ziron/ui/components/loading-swap";
@@ -207,7 +208,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
                     isLoading={isDraftPending}
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
                   >
-                    <IconDeviceFloppy className="text-muted-foreground -ml-1 size-4" />
+                    <IconFileEditFilled className="text-muted-foreground -ml-1 size-4" />
                     <div>
                       <span className="hidden sm:inline">Save as </span>Draft
                     </div>
@@ -221,7 +222,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
                     isLoading={isPending}
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
                   >
-                    <IconCheck className="-ml-1 size-4" />
+                    <IconSaveFilled className="-ml-1 size-4" />
                     {isEditMode ? (
                       <span>
                         Save <span className="hidden sm:inline">Changes</span>
