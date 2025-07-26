@@ -1,26 +1,26 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import type { z } from "zod/v4";
 
 import { authClient } from "@ziron/auth/client";
 import { Button } from "@ziron/ui/button";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-    useForm,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useForm,
+  zodResolver,
 } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
 import { toast } from "@ziron/ui/sonner";
-import { registerUserSchema } from "@ziron/validators";
+import { registerUserSchema, z } from "@ziron/validators";
 
 export const RegisterForm = () => {
   const router = useRouter();
@@ -69,7 +69,7 @@ export const RegisterForm = () => {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Username" {...field} />
+                    <Input placeholder="Username" type="text" id="username" autoFocus autoComplete="name webauthn" {...field} />
                   </FormControl>
 
                   <FormMessage />

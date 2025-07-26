@@ -69,7 +69,7 @@ export function initAuth(options: {
       nextCookies(),
       twoFactor(),
       emailOTP({
-        async sendVerificationOTP({ email, otp, type }) {
+        async sendVerificationOTP() {
           // Implement the sendVerificationOTP method to send the OTP to the user's email address
         },
       }),

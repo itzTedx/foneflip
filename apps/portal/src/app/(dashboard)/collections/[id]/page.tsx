@@ -1,5 +1,5 @@
 import { MainWrapper } from "@/components/layout/main-wrapper";
-import { canCollectionCreate } from "@/features/auth/actions/data-access";
+import { hasPermission } from "@/features/auth/actions/data-access";
 import { getCollectionById } from "@/features/collections/actions/queries";
 import { CollectionForm } from "@/features/collections/components/collections-form";
 import { CollectionQueryResult } from "@/features/collections/types";
@@ -57,7 +57,11 @@ function transformCollectionToFormType(
 }
 
 export default async function CollectionPage({ params }: { params: Params }) {
-  await canCollectionCreate();
+  await hasPermission({
+    permissions: {
+      collections: ["create", "delete", "update"]
+    }
+  });
   const { id } = await params;
   const isEditMode = id !== "new";
 

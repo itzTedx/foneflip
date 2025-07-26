@@ -1,36 +1,30 @@
 /**
  * Returns the plural form of a word based on the count.
- * Handles basic English pluralization rules and allows for a custom plural form.
+ * Applies basic English pluralization rules or uses a custom plural form if provided.
+ *
  * @param word - The word to pluralize
- * @param count - The count to determine singular or plural
+ * @param count - The number determining singular or plural form
  * @param pluralForm - Optional custom plural form
- * @returns The correct singular or plural form based on the count
+ * @returns The appropriate singular or plural form
  *
  * @example
  * pluralize('cat', 1) // 'cat'
  * pluralize('cat', 2) // 'cats'
  * pluralize('child', 2, 'children') // 'children'
  */
-export function pluralize(
-  word: string,
-  count: number,
-  pluralForm?: string,
-): string {
+export function pluralize(word: string, count: number, pluralForm?: string): string {
   if (count === 1) return word;
   if (pluralForm) return pluralForm;
 
-  // Basic English pluralization rules
-  if (word.endsWith("y") && !/[aeiou]y$/i.test(word)) {
-    return word.slice(0, -1) + "ies";
-  } else if (
-    word.endsWith("s") ||
-    word.endsWith("x") ||
-    word.endsWith("z") ||
-    word.endsWith("ch") ||
-    word.endsWith("sh")
-  ) {
-    return word + "es";
-  } else {
-    return word + "s";
+  const lowerWord = word.toLowerCase();
+
+  if (lowerWord.endsWith('y') && !/[aeiou]y$/.test(lowerWord)) {
+    return word.slice(0, -1) + 'ies';
   }
+
+  if (/(s|x|z|ch|sh)$/.test(lowerWord)) {
+    return word + 'es';
+  }
+
+  return word + 's';
 }

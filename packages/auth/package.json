@@ -5,9 +5,9 @@
   "type": "module",
   "exports": {
     ".": "./src/server.ts",
-    "./middleware": "./src/middleware.ts",
     "./client": "./src/client.ts",
-    "./env": "./env.ts"
+    "./env": "./env.ts",
+    "./permission": "./src/permission.ts"
   },
   "license": "MIT",
   "scripts": {
