@@ -1,41 +1,42 @@
-import { User } from "@/features/collections/types";
+
 import { Table } from "@tanstack/react-table";
 import {
-    CircleAlertIcon,
-    CircleXIcon,
-    Columns3Icon,
-    FilterIcon,
-    ListFilterIcon,
-    TrashIcon,
+  CircleAlertIcon,
+  CircleXIcon,
+  Columns3Icon,
+  FilterIcon,
+  ListFilterIcon,
+  TrashIcon,
 } from "lucide-react";
 import { useId, useMemo, useRef } from "react";
 
+import type { User } from "@ziron/auth";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@ziron/ui/alert-dialog";
 import { Button } from "@ziron/ui/button";
 import { Checkbox } from "@ziron/ui/checkbox";
 import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 import { Input } from "@ziron/ui/input";
 import { Label } from "@ziron/ui/label";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@ziron/ui/popover";
 import { cn } from "@ziron/utils";
 

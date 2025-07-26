@@ -24,7 +24,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         >
           {children}
         </ProgressProvider>
-        <Toaster richColors closeButton position="top-center" />
+        <Toaster richColors closeButton  />
       </NextThemesProvider>
   );
 }

@@ -38,6 +38,7 @@ export function initAuth(options: {
       window: 10, // time window in seconds
       max: 100, // max requests in the window
       storage: "secondary-storage",
+      modelName: "ratelimit"
     },
 
     user: {
@@ -94,11 +95,13 @@ export function initAuth(options: {
       },
     },
     session: {
-      cookieCache: {
-          enabled: true,
-          maxAge: 5 * 60 // Cache duration in seconds
-      }
-  },
+      storeSessionInDatabase: true,
+      // cookieCache: {
+      //     enabled: true,
+      //     maxAge: 5 * 60 // Cache duration in seconds
+      // }
+    },
+   
     trustedOrigins: [
       "expo://",
       "http://localhost:3000",
@@ -112,3 +115,5 @@ export function initAuth(options: {
 
 export type Auth = ReturnType<typeof initAuth>;
 export type Session = Auth["$Infer"]["Session"];
+export type User = Auth["$Infer"]["Session"]['user'];
+export type UserWithRole = Omit<User, "role" | "twoFactorEnabled" | "banned">;

@@ -1,5 +1,3 @@
-
-import { User } from "@/features/collections/types";
 import {
   IconAlertHexagonFilled,
   IconCircleCheckFilled,
@@ -14,6 +12,7 @@ import {
 import { Checkbox } from "@ziron/ui/checkbox";
 import { formatDate } from "@ziron/utils";
 
+import { User } from "@ziron/auth";
 import { StatusBadge, StatusBadgeDot, StatusBadgeIcon } from "@ziron/ui/status-badge";
 import { RowActions } from "./row-actions";
 

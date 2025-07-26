@@ -1,24 +1,51 @@
 import { Row } from "@tanstack/react-table";
 import { EllipsisIcon } from "lucide-react";
 
+
+import { User } from "@ziron/auth";
+import { authClient } from "@ziron/auth/client";
+import { IconAdminFilled, IconCrownFilled } from "@ziron/ui/assets/icons";
 import { Button } from "@ziron/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { toast } from "sonner";
 
-import { Item } from "./columns";
 
-export function RowActions({ row }: { row: Row<Item> }) {
+
+export function RowActions({ row }: { row: Row<User> }) {
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
+
+  function handleRole(role: 'user' | "vendor" | "admin" | "dev") {
+    startTransition(async () => {
+      const { data, error } = await authClient.admin.setRole({
+        userId: row.original.id,
+        role: role,
+      }); 
+
+      if (error) {
+        toast.error(error.message)
+      }
+      if (data) {
+        toast.success("Role updated successfully", { description: `User: ${data.user.name} role has been changed to "${data.user.role}"` })
+        router.refresh()
+      }
+    })
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -34,30 +61,18 @@ export function RowActions({ row }: { row: Row<Item> }) {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Edit</span>
-            <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span>Duplicate</span>
-            <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Archive</span>
-            <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
-          </DropdownMenuItem>
+        
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger>Set Role</DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
-                <DropdownMenuItem>Move to project</DropdownMenuItem>
-                <DropdownMenuItem>Move to folder</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleRole("user")}>User</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleRole("vendor")}>Vendor</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Advanced options</DropdownMenuItem>
+                <DropdownMenuItem  onClick={() => handleRole("admin")}><IconAdminFilled /> Admin</DropdownMenuItem>
+                <DropdownMenuItem  onClick={() => handleRole("dev")}><IconCrownFilled /> Dev</DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>

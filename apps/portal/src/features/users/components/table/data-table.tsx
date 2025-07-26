@@ -1,18 +1,18 @@
 "use client";
 
-import { User } from "@/features/collections/types";
+
 import {
-    ColumnFiltersState,
-    flexRender,
-    getCoreRowModel,
-    getFacetedUniqueValues,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    PaginationState,
-    SortingState,
-    useReactTable,
-    VisibilityState,
+  ColumnFiltersState,
+  flexRender,
+  getCoreRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
@@ -20,28 +20,29 @@ import React, { useId, useState } from "react";
 
 import { Label } from "@ziron/ui/label";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@ziron/ui/select";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@ziron/ui/table";
 import { cn } from "@ziron/utils";
 
+import { User } from "@ziron/auth";
 import { columns } from "./columns";
 import { DataTableHeader } from "./header";
 import { TablePagination } from "./pagination";
 
 interface Props {
-  data: User[];
+  data: User[] ;
   initialPageSize?: number;
 }
 

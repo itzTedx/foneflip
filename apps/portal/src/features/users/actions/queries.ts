@@ -1,12 +1,19 @@
 "use server";
 
-import { db, desc } from "@ziron/db";
-import { users } from "@ziron/db/schema";
+import { auth } from "@/lib/auth/server";
+import { headers } from "next/headers";
 
 export async function getUsers() {
-  const notifications = await db.query.users.findMany({
-    orderBy: desc(users.createdAt),
+  const users = await auth.api.listUsers({
+    query: {
+        sortBy: "createdAt",
+        sortDirection: "desc",
+       
+    },
+    // This endpoint requires session cookies.
+    headers: await headers(),
   });
-
-  return notifications;
+  console.log(users)
+  return users;
 }
+
