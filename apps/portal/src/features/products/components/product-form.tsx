@@ -55,7 +55,7 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
   
   const formdata = form.watch()
   const validation = validateForm(formdata, productSchema)
-console.log(validation)
+  console.log(validation.error)
 
   function onSubmit(values: ProductFormType) {
     console.log(values);

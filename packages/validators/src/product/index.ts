@@ -78,7 +78,7 @@ export const productSchema = z
           data.attributes &&
           data.attributes.length > 0 &&
           data.attributes.some(
-            (attr) => attr.name && attr.options && attr.options.length > 0,
+            (attr) => attr.name  && attr.options.length > 0,
           )
         );
       }

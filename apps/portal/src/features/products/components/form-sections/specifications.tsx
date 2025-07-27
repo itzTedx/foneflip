@@ -48,6 +48,8 @@ import {
 import { Input } from "@ziron/ui/input";
 import { cn } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
+import { PhysicalSpecsCard } from "./fields/physical-specs-card";
+import { ShippingHandlingCard } from "./fields/shipping-handling-card";
 
 
 
@@ -294,8 +296,8 @@ export const ProductSpecifications = memo(function ProductSpecifications({
           </CardContent>
         </Card>
         <div className="sticky top-[20vh] col-span-1 grid h-fit gap-3">
-          {/* <PhysicalSpecsCard />
-          <ShippingHandlingCard /> */}
+          <PhysicalSpecsCard />
+          <ShippingHandlingCard />
         </div>
       </div>
     </>
