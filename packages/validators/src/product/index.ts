@@ -8,7 +8,7 @@ import { variantSchema } from "./variants";
 export const productSchema = z
   .object({
     id: z.string().optional(),
-    title: z.string().min(1),
+    title: z.string("Please enter valid title").min(1, {message: "Title is Required"}),
     description: z.string().optional(),
     slug: z.string().min(1),
     condition: productConditionEnum.default("pristine").optional(),
@@ -99,3 +99,4 @@ export * from "./draft";
 export * from "./enum";
 export * from "./settings";
 export * from "./variants";
+
