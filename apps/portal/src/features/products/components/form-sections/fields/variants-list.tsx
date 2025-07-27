@@ -316,12 +316,24 @@ function VariantContent({
       );
       const currentSku = form.getValues(sku);
       const variantAttributes = form.getValues(`variants.${index}.attributes`);
-      const color =
-      variantAttributes.find((attr) => attr.name?.toLowerCase().includes("color") || attr.name?.toLowerCase().includes("colour"))
-          ?.value ?? "";
-      const storage =
-       variantAttributes.find((attr) => attr.name?.toLowerCase().includes("storage") || attr.name?.toLowerCase().includes("capacity"))
-          ?.value ?? "";
+     // Define attribute types enum or constants
+      const ATTRIBUTE_TYPES = {
+        COLOR: ['color', 'colour', 'shade', 'hue'],
+        STORAGE: ['storage', 'capacity', 'memory', 'size']
+      } as const;
+
+      // Use a helper function to find attributes
+      function findAttributeByType(attributes: Array<{ name?: string; value?: string }>, type: readonly string[]): string {
+        const attr = attributes.find(attr =>
+          type.some(keyword => attr.name?.toLowerCase().includes(keyword))
+        );
+        return attr?.value ?? "";
+      }
+      
+
+      const color = findAttributeByType(variantAttributes, ATTRIBUTE_TYPES.COLOR);
+      const storage = findAttributeByType(variantAttributes, ATTRIBUTE_TYPES.STORAGE);
+      
       if (!title?.trim()) {
         form.setError(sku, {
           message: "Please enter a title first to generate",

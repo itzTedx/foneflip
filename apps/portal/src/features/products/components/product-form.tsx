@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsTriggers } from "@/components/ui/tabs";
 
 import { DraftButton, RestoreArchiveButton, SaveButton } from "@/components/ui/action-buttons";
 import { CollectionMetadata } from "@/features/collections/types";
-import { validateForm } from "@/lib/utils";
 import { Form, useForm, zodResolver } from "@ziron/ui/form";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
 import { ProductFormType, productSchema } from "@ziron/validators";
@@ -51,11 +50,11 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-   }, [form, isArchived]);
+   }, [form, isArchived, onSubmit]);
   
-  const formdata = form.watch()
-  const validation = validateForm(formdata, productSchema)
-  console.log(validation.error)
+  // const formdata = form.watch()
+  // const validation = validateForm(formdata, productSchema)
+  // console.log(validation.error)
 
   function onSubmit(values: ProductFormType) {
     console.log(values);
