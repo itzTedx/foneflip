@@ -43,10 +43,10 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
               </div>
             </div>
             <span className="block w-full cursor-pointer overflow-hidden text-lg tracking-normal text-ellipsis text-[#1a0dab] group-hover:underline md:text-nowrap dark:text-[#99c3ff]">
-              {metadata.title}
+              {metadata?.title}
             </span>
             <p className="mt-0.5 line-clamp-2 text-sm leading-[22px] [word-break:break-word] text-[#545454] dark:text-[#bfbfbf]">
-              {metadata.description}
+              {metadata?.description}
             </p>
           </div>
         </div>
@@ -58,18 +58,18 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
             <div className="bg-primary-foreground relative aspect-[1.91/1]">
               <img
                 src={`http://localhost:3000/api/og?title=${encodeURIComponent(
-                  metadata.title ?? "Foneflip",
-                )}&description=${encodeURIComponent(metadata.description ?? "")}`}
+                  metadata?.title ?? "Foneflip",
+                )}&description=${encodeURIComponent(metadata?.description ?? "")}`}
                 alt=""
                 className="h-full w-full object-cover"
               />
             </div>
             <div className="p-3">
               <span className="block w-full overflow-hidden text-lg font-semibold tracking-normal text-nowrap text-ellipsis text-[#18283e]">
-                {metadata.title}
+                {metadata?.title}
               </span>
               <p className="mb-2 line-clamp-2 text-sm leading-[1.2] [word-break:break-word] text-[#18283e]">
-                {metadata.description}
+                {metadata?.description}
               </p>
               <span className="relative block text-sm leading-4 tracking-normal text-[#8899a6]">
                 foneflip.com
@@ -86,8 +86,8 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
               {" "}
               <img
                 src={`http://localhost:3000/api/og?title=${encodeURIComponent(
-                  metadata.title ?? "Foneflip",
-                )}&description=${encodeURIComponent(metadata.description ?? "")}`}
+                  metadata?.title ?? "Foneflip",
+                )}&description=${encodeURIComponent(metadata?.description ?? "")}`}
                 alt=""
                 className="h-full w-full object-cover"
               />
@@ -97,10 +97,10 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
                 foneflip.com
               </span>
               <span className="block w-full overflow-hidden text-lg font-semibold tracking-normal text-nowrap text-ellipsis text-[#1d2129]">
-                {metadata.title}
+                {metadata?.title}
               </span>
               <p className="line-clamp-1 text-sm leading-[1.2] [word-break:break-word] text-[#1d2129]">
-                {metadata.description}
+                {metadata?.description}
               </p>
             </div>
           </div>
@@ -113,15 +113,15 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
             <div className="bg-primary-foreground relative aspect-video">
               <img
                 src={`http://localhost:3000/api/og?title=${encodeURIComponent(
-                  metadata.title ?? "Foneflip",
-                )}&description=${encodeURIComponent(metadata.description ?? "")}`}
+                  metadata?.title ?? "Foneflip",
+                )}&description=${encodeURIComponent(metadata?.description ?? "")}`}
                 alt=""
                 className="h-full w-full object-cover"
               />
             </div>
             <div className="p-3">
               <span className="block w-full overflow-hidden font-semibold tracking-normal text-nowrap text-ellipsis text-[#1d2129]">
-                {metadata.title}
+                {metadata?.title}
               </span>
               <span className="relative block text-xs leading-4 tracking-normal text-[#8899a6]">
                 foneflip.com

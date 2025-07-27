@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { PRODUCTS_TABS } from "../data/constants";
 import { ProductInfo } from "./form-sections/info";
 import { ProductMedia } from "./form-sections/media";
+import { ProductSeo } from "./form-sections/seo";
 import { ProductSpecifications } from "./form-sections/specifications";
 import { ProductVariants } from "./form-sections/variants";
 
@@ -127,6 +128,10 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
 
             <TabsContent value="specifications">
               <ProductSpecifications isEditMode={isEditMode} />
+            </TabsContent>
+
+            <TabsContent value="seo">
+              <ProductSeo />
             </TabsContent>
 
             <TabsContent value="settings"></TabsContent>
