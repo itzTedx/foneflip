@@ -13,6 +13,7 @@ import { PRODUCTS_TABS } from "../data/constants";
 import { ProductInfo } from "./form-sections/info";
 import { ProductMedia } from "./form-sections/media";
 import { ProductSeo } from "./form-sections/seo";
+import { ProductSettings } from "./form-sections/settings";
 import { ProductSpecifications } from "./form-sections/specifications";
 import { ProductVariants } from "./form-sections/variants";
 
@@ -134,7 +135,9 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
               <ProductSeo />
             </TabsContent>
 
-            <TabsContent value="settings"></TabsContent>
+            <TabsContent value="settings">
+              <ProductSettings />
+            </TabsContent>
           </div>
         </Tabs>
       </form>

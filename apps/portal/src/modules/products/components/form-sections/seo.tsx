@@ -5,20 +5,20 @@ import { memo } from "react";
 import { SeoPreview } from "@/components/preview/seo";
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@ziron/ui/card";
 import {
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-    useFormContext,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormContext,
 } from "@ziron/ui/form";
 import { useCharacterCount } from "@ziron/ui/hooks/use-character";
 import { Input } from "@ziron/ui/input";
@@ -169,12 +169,7 @@ export const ProductSeo = memo(function ProductSeo() {
                       storageKey="keywords"
                       suggestions={["Apple", "Iphone", "Pro Max", "ultra"]}
                       value={
-                        field.value
-                          ? field.value
-                              .split(",")
-                              .map((k: string) => k.trim())
-                              .filter(Boolean)
-                          : []
+                        field.value?.split(",").map((k: string) => k.trim()).filter(Boolean) ?? []
                       }
                       onChange={(tags) => field.onChange(tags.join(","))}
                     />

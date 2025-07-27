@@ -547,7 +547,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
         });
       }
     });
-  }, [attributes, variantFields.length, hasVariant]);
+  }, [attributes, variantFields.length, hasVariant, form]);
 
   return (
     <Card className="h-fit md:col-span-2">
