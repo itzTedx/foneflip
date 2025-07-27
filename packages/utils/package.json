@@ -2,8 +2,9 @@
   "name": "@ziron/utils",
   "description": "Utility functions and constants for Ziron",
   "version": "0.1.0",
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist/**"
@@ -16,7 +17,8 @@
   },
   "peerDependencies": {
     "next": "catalog:",
-    "react": "catalog:react19"
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19"
   },
   "devDependencies": {
     "@types/node": "^20",
