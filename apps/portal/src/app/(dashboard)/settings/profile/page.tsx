@@ -1,4 +1,4 @@
-import { requireUser } from "@/features/auth/actions/data-access";
+import { requireUser } from "@/modules/auth/actions/data-access";
 import type { Metadata } from "next";
 
 import { TabsContent } from "@ziron/ui/tabs";

@@ -4,8 +4,8 @@ import { IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react";
 import { useQueryState } from "nuqs";
 
 
-import { COLLECTION_TABS } from "@/features/collections/data/constants";
-import { PRODUCTS_TABS } from "@/features/products/data/constants";
+import { COLLECTION_TABS } from "@/modules/collections/data/constants";
+import { PRODUCTS_TABS } from "@/modules/products/data/constants";
 import { Button } from "@ziron/ui/button";
 import { cn } from "@ziron/utils";
 

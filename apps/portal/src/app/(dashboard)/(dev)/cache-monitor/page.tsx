@@ -1,4 +1,4 @@
-import { hasPermission } from "@/features/auth/actions/data-access";
+import { hasPermission } from "@/modules/auth/actions/data-access";
 import CacheMonitorPage from "./cache-monitor";
 
 export default async function CachePage() {

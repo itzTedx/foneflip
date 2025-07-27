@@ -1,7 +1,7 @@
 import { MainWrapper } from "@/components/layout/main-wrapper";
-import { hasPermission } from "@/features/auth/actions/data-access";
-import { getCollectionsMetadata } from "@/features/collections/actions/queries";
-import { ProductForm } from "@/features/products/components/product-form";
+import { hasPermission } from "@/modules/auth/actions/data-access";
+import { getCollectionsMetadata } from "@/modules/collections/actions/queries";
+import { ProductForm } from "@/modules/products/components/product-form";
 
 type Params = Promise<{ id: string }>;
 

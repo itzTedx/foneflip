@@ -3,8 +3,8 @@
 import {
     markAllNotificationsAsRead,
     markNotificationAsRead,
-} from "@/features/notifications/actions/mutation";
-import { getNotifications } from "@/features/notifications/actions/queries";
+} from "@/modules/notifications/actions/mutation";
+import { getNotifications } from "@/modules/notifications/actions/queries";
 import { BellIcon } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { io, Socket } from "socket.io-client";

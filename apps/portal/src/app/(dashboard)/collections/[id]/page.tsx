@@ -1,8 +1,8 @@
 import { MainWrapper } from "@/components/layout/main-wrapper";
-import { hasPermission } from "@/features/auth/actions/data-access";
-import { getCollectionById } from "@/features/collections/actions/queries";
-import { CollectionForm } from "@/features/collections/components/collections-form";
-import { CollectionQueryResult } from "@/features/collections/types";
+import { hasPermission } from "@/modules/auth/actions/data-access";
+import { getCollectionById } from "@/modules/collections/actions/queries";
+import { CollectionForm } from "@/modules/collections/components/collections-form";
+import { CollectionQueryResult } from "@/modules/collections/types";
 
 import type { CollectionFormType, MediaFormType } from "@ziron/validators";
 

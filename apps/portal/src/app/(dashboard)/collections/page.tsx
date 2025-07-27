@@ -1,10 +1,10 @@
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { AddButton } from "@/components/ui/action-buttons";
-import { hasPermission } from "@/features/auth/actions/data-access";
-import { getCollections } from "@/features/collections/actions/queries";
-import { CollectionsContent } from "@/features/collections/components/collections-content";
-import { ExportCsvButton } from "@/features/collections/components/export-csv-button";
+import { hasPermission } from "@/modules/auth/actions/data-access";
+import { getCollections } from "@/modules/collections/actions/queries";
+import { CollectionsContent } from "@/modules/collections/components/collections-content";
+import { ExportCsvButton } from "@/modules/collections/components/export-csv-button";
 import { Suspense } from "react";
 
 export default async function CollectionsPage() {

@@ -1,7 +1,7 @@
-import { getSignedURL } from "@/features/media/actions/mutations";
-import { computeSHA256 } from "@/features/media/utils/compute-sha256";
-import { deleteAvatar } from "@/features/users/actions/mutation";
 import { useFileUpload } from "@/hooks/use-file-upload";
+import { getSignedURL } from "@/modules/media/actions/mutations";
+import { computeSHA256 } from "@/modules/media/utils/compute-sha256";
+import { deleteAvatar } from "@/modules/users/actions/mutation";
 import { ArrowLeftIcon, XIcon, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 

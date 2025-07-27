@@ -1,4 +1,4 @@
-import { getNotifications } from "@/features/notifications/actions/queries";
+import { getNotifications } from "@/modules/notifications/actions/queries";
 import { IconLayoutSidebar } from "@tabler/icons-react";
 
 import { Session } from "@ziron/auth";

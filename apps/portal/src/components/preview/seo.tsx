@@ -55,7 +55,7 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
             Twitter
           </h3>
           <div className="group w-full cursor-pointer overflow-hidden rounded-xl border transition-colors hover:border-[rgba(136,153,166,.5)] hover:bg-[#f5f8fa]">
-            <div className="bg-primary-foreground relative aspect-[1.91/1]">
+            <div className="bg-primary-foreground/20 relative aspect-[1.91/1]">
               <img
                 src={`http://localhost:3000/api/og?title=${encodeURIComponent(
                   metadata?.title ?? "Foneflip",
@@ -82,7 +82,7 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
             Facebook
           </h3>
           <div className="group w-full cursor-pointer overflow-hidden border bg-[#f5f8fa] transition-colors">
-            <div className="bg-primary-foreground relative aspect-video">
+            <div className="bg-primary-foreground/20 relative aspect-video">
               {" "}
               <img
                 src={`http://localhost:3000/api/og?title=${encodeURIComponent(
@@ -110,7 +110,7 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
             Linkedin
           </h3>
           <div className="group w-full cursor-pointer overflow-hidden border bg-[#f5f8fa] transition-colors">
-            <div className="bg-primary-foreground relative aspect-video">
+            <div className="bg-primary-foreground/20 relative aspect-video">
               <img
                 src={`http://localhost:3000/api/og?title=${encodeURIComponent(
                   metadata?.title ?? "Foneflip",
