@@ -1,6 +1,7 @@
 import { z } from "zod/v4";
 
 export const mediaSchema = z.object({
+  id: z.string().optional(),
   file: z
     .object({
       url: z.url({ message: "Please provide a valid URL." }),

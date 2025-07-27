@@ -9,7 +9,9 @@ import { Form, useForm, zodResolver } from "@ziron/ui/form";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
 import { ProductFormType, productSchema } from "@ziron/validators";
 import { PRODUCTS_TABS } from "../data/constants";
-import { ProductDetails } from "./form-sections/info";
+import { ProductInfo } from "./form-sections/info";
+import { ProductMedia } from "./form-sections/media";
+import { ProductVariants } from "./form-sections/variants";
 
 interface Props {
   isEditMode: boolean;
@@ -25,6 +27,8 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
     disabled: isArchived,
   });
 
+  const hasVariant = form.watch("hasVariant");
+  
   function onSubmit(values: ProductFormType) {
     console.log(values);
   }
@@ -77,18 +81,24 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
         </Header>
 
         <Tabs defaultValue="info" className="w-full">
-          <ScrollArea>
-            <TabsTriggers tabTriggers={PRODUCTS_TABS} disabled={false} />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+        <div className="sticky top-[calc(3.75rem+3rem+1px)] z-50">
+            <ScrollArea>
+              <TabsTriggers tabTriggers={PRODUCTS_TABS} showSettings={true} />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </div>
           <div className="px-6">
             <TabsContent value="info">
-              <ProductDetails collections={collections} />
+              <ProductInfo collections={collections} />
             </TabsContent>
 
-            <TabsContent value="media"></TabsContent>
+            <TabsContent value="media">
+              <ProductMedia />
+            </TabsContent>
 
-            <TabsContent value="products"></TabsContent>
+            <TabsContent value="variants">
+              <ProductVariants isEditMode={isEditMode} hasVariant={hasVariant} />
+            </TabsContent>
 
             <TabsContent value="seo"></TabsContent>
 

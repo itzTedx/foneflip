@@ -8,6 +8,7 @@ import {
   Controller,
   FormProvider,
   SubmitHandler,
+  useFieldArray,
   useForm,
   useFormContext,
   useFormState
@@ -170,11 +171,9 @@ export {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-  useForm,
+  FormMessage, useFieldArray, useForm,
   useFormContext,
   useFormField,
-  zodResolver,
-  type SubmitHandler
+  zodResolver, type SubmitHandler
 };
 

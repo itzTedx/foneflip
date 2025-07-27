@@ -21,7 +21,7 @@ interface Props {
   collections: CollectionMetadata[];
 }
 
-export const ProductDetails = memo(function ProductDetails({
+export const ProductInfo = memo(function ProductInfo({
   collections,
 }: Props) {
   const form = useFormContext<ProductFormType>();
