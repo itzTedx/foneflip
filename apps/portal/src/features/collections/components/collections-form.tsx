@@ -195,7 +195,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
                   onClick={onSaveDraft}
                   isLoading={isDraftPending}
                 />
-                <SaveButton
+                <SaveButton  title="Collection"
                   disabled={isArchived || isPending}
                   isEditMode={isEditMode}
                   isLoading={isPending}

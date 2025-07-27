@@ -2,15 +2,16 @@
 
 
 import { TabNavigation } from "@/components/ui/tab-navigation";
-import { Collection } from "@/features/collections/types";
+import { CollectionMetadata } from "@/features/collections/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
 import { useFormContext } from "@ziron/ui/form";
 import { ProductFormType } from "@ziron/validators";
 import { memo, useState } from "react";
+import { CollectionDropdown } from "./fields/collections-dropdown";
 import { ProductTitleInput } from "./fields/title-input";
 
 interface Props {
-  collections?: Collection[];
+  collections: CollectionMetadata[];
 }
 
 export const ProductDetails = memo(function ProductDetails({
@@ -51,12 +52,13 @@ export const ProductDetails = memo(function ProductDetails({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* <CollectionDropdown
+            <CollectionDropdown
                 collections={collections}
                 open={open}
                 setOpen={setOpen}
+            
               />
-              <BrandInput />
+               {/*  <BrandInput />
               <ConditionSelector />
               <SlugInput /> */}
             </CardContent>

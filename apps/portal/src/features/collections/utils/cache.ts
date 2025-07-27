@@ -26,6 +26,7 @@ export const CACHE_DURATIONS = {
 // Redis cache keys
 export const REDIS_KEYS = {
   COLLECTIONS: "collections:all",
+  COLLECTIONS_METADATA: "collections:all:metadata",
   COLLECTION_BY_SLUG: (slug: string) => `collection:${slug}`,
   COLLECTION_BY_ID: (id: string) => `collection:id:${id}`,
   COLLECTION_STATS: "collections:stats",

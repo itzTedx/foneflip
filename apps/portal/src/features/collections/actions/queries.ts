@@ -5,8 +5,9 @@ import { collectionsTable } from "@ziron/db/schema";
 
 import type {
   Collection,
+  CollectionMetadata,
   CollectionQueryResult,
-  CollectionsQueryResult,
+  CollectionsQueryResult
 } from "../types";
 import {
   CACHE_DURATIONS,
@@ -99,6 +100,7 @@ export const getCollections = cache(
     revalidate: CACHE_DURATIONS.LONG,
   },
 );
+
 export type CollectionsQueryResultType = Awaited<
   ReturnType<typeof getCollections>
 >;
@@ -209,3 +211,46 @@ export const getActiveCollections = cache(
     revalidate: CACHE_DURATIONS.MEDIUM,
   },
 );
+
+export const getCollectionsMetadata = cache(
+      async (): Promise<CollectionMetadata[]> => {
+        // Try Redis first
+        const cached = await redisCache.get<CollectionMetadata[]>(
+          REDIS_KEYS.COLLECTIONS_METADATA,
+        );
+        if (cached) {
+          return cached;
+        }
+
+        // Fallback to database
+        const collections = await db.query.collectionsTable.findMany({
+          where: isNull(collectionsTable.deletedAt),
+          columns: {
+            id: true,
+            title: true,
+            createdAt: true,
+          }
+        });
+
+        // Cache the result
+        if (collections) {
+          await redisCache.set(
+            REDIS_KEYS.COLLECTIONS_METADATA,
+            collections,
+            CACHE_DURATIONS.MEDIUM,
+          );
+        }
+
+        return collections;
+      },
+     
+
+  ["get-collections"],
+  {
+    tags: [CACHE_TAGS.COLLECTIONS],
+    revalidate: CACHE_DURATIONS.MEDIUM,
+  },
+);
+export type CollectionsMetadataQueryResultType = Awaited<
+  ReturnType<typeof getCollectionsMetadata>
+>;

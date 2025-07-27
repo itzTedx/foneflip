@@ -12,11 +12,13 @@ import { LoadingSwap } from "@ziron/ui/loading-swap";
 import { VariantProps } from "@ziron/utils";
 
 export const SaveButton = ({
+  title,
   isLoading,
   isEditMode,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
+    title: string
     isLoading: boolean;
     isEditMode: boolean;
   }) => {
@@ -33,7 +35,7 @@ export const SaveButton = ({
           </span>
         ) : (
           <span>
-            Create <span className="hidden sm:inline">Collection</span>
+            Create <span className="hidden sm:inline">{title}</span>
           </span>
         )}
       </LoadingSwap>

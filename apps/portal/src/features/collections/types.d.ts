@@ -36,12 +36,14 @@ export type Seo = InferSelectModel<typeof seoTable>;
 export type Media = InferSelectModel<typeof mediaTable>;
 export type User = InferSelectModel<typeof users>;
 
+
+export type NewCollection = InferInsertModel<typeof collectionsTable>;
+export type CollectionMetadata = Pick<Collection, "id" | "title" | "createdAt">;
 export type Collection = InferSelectModel<typeof collectionsTable>;
 export type CollectionSettings = InferSelectModel<
   typeof collectionSettingsTable
 >;
 export type CollectionMedia = InferSelectModel<typeof collectionMediaTable>;
-export type NewCollection = InferInsertModel<typeof collectionsTable>;
 
 // Query result types
 export type CollectionQueryResult =

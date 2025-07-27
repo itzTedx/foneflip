@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/header";
 import { Tabs, TabsContent, TabsTriggers } from "@/components/ui/tabs";
 
 import { DraftButton, RestoreArchiveButton, SaveButton } from "@/components/ui/action-buttons";
+import { CollectionMetadata } from "@/features/collections/types";
 import { Form, useForm, zodResolver } from "@ziron/ui/form";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
 import { ProductFormType, productSchema } from "@ziron/validators";
@@ -12,9 +13,10 @@ import { ProductDetails } from "./form-sections/info";
 
 interface Props {
   isEditMode: boolean;
+  collections:CollectionMetadata[]
 }
 
-export const ProductForm = ({ isEditMode }: Props) => {
+export const ProductForm = ({ isEditMode, collections }: Props) => {
   const isArchived = false
   const form = useForm<ProductFormType>({
     resolver: zodResolver(productSchema),
@@ -64,7 +66,7 @@ export const ProductForm = ({ isEditMode }: Props) => {
               onClick={onSaveDraft}
               isLoading={false}
             />
-            <SaveButton
+            <SaveButton title="Product"
               disabled={isArchived || false}
               isEditMode={isEditMode}
               isLoading={false}
@@ -81,7 +83,7 @@ export const ProductForm = ({ isEditMode }: Props) => {
           </ScrollArea>
           <div className="px-6">
             <TabsContent value="info">
-              <ProductDetails />
+              <ProductDetails collections={collections} />
             </TabsContent>
 
             <TabsContent value="media"></TabsContent>
