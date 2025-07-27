@@ -6,8 +6,11 @@ import { CollectionMetadata } from "@/features/collections/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
 import { useFormContext } from "@ziron/ui/form";
 import { ProductFormType } from "@ziron/validators";
-import { memo, useState } from "react";
+import { memo } from "react";
+import { BrandInput } from "./fields/brand-input";
 import { CollectionDropdown } from "./fields/collections-dropdown";
+import { ConditionSelector } from "./fields/condition-selector";
+import { SlugInput } from "./fields/slug-input";
 import { ProductTitleInput } from "./fields/title-input";
 
 interface Props {
@@ -17,7 +20,6 @@ interface Props {
 export const ProductDetails = memo(function ProductDetails({
   collections,
 }: Props) {
-  const [open, setOpen] = useState(false);
   const form = useFormContext<ProductFormType>();
 
   const hasVariant = form.watch("hasVariant");
@@ -42,6 +44,7 @@ export const ProductDetails = memo(function ProductDetails({
           </CardContent>
         </Card>
 
+        {/* Classification Section */}
         <div className="flex h-fit flex-col gap-3">
           <Card className="h-fit">
             <CardHeader>
@@ -52,15 +55,10 @@ export const ProductDetails = memo(function ProductDetails({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-            <CollectionDropdown
-                collections={collections}
-                open={open}
-                setOpen={setOpen}
-            
-              />
-               {/*  <BrandInput />
+              <CollectionDropdown collections={collections} />
+              <BrandInput />
               <ConditionSelector />
-              <SlugInput /> */}
+              <SlugInput />
             </CardContent>
           </Card>
           <Card>

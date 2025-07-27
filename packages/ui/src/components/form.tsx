@@ -13,7 +13,7 @@ import {
   useFormState
 } from "react-hook-form";
 
-import { Label } from "@ziron/ui/label";
+import { Label, LabelAsterisk } from "@ziron/ui/label";
 import { cn } from "@ziron/utils";
 
 const Form = FormProvider;
@@ -89,8 +89,10 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 
 function FormLabel({
   className,
+  children,
+  required,
   ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+}: React.ComponentProps<typeof LabelPrimitive.Root> & {required?: boolean}) {
   const { error, formItemId } = useFormField();
 
   return (
@@ -100,7 +102,10 @@ function FormLabel({
       className={cn("data-[error=true]:text-destructive", className)}
       htmlFor={formItemId}
       {...props}
-    />
+    >
+      {children}
+      {required && <LabelAsterisk />}
+    </Label>
   );
 }
 

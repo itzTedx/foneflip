@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, memo } from "react";
+import { memo } from "react";
 
 import { CollectionMetadata } from "@/features/collections/types";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage, useFormContext } from "@ziron/ui/form";
@@ -7,14 +7,11 @@ import { ProductFormType } from "@ziron/validators";
 
 interface CollectionSelectorProps {
   collections?: CollectionMetadata[];
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+
 }
 
 export const CollectionDropdown = memo(function CollectionDropdown({
   collections,
-  open,
-  setOpen,
 }: CollectionSelectorProps) {
   const form = useFormContext<ProductFormType>();
 

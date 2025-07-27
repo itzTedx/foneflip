@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { Label as LabelPrimitive } from "radix-ui";
+import * as React from "react";
 
 import { cn } from "@ziron/utils";
 
@@ -13,7 +13,7 @@ function Label({
     <LabelPrimitive.Root
       data-slot="label"
       className={cn(
-        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+        "flex items-center gap-1 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
         className,
       )}
       {...props}
@@ -21,4 +21,26 @@ function Label({
   );
 }
 
-export { Label };
+function LabelAsterisk({
+  className,
+  children,
+  ...rest
+}: React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cn(
+        'text-destructive',
+        // disabled
+        'group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
+        className,
+      )}
+      {...rest}
+    >
+      {children || '*'}
+    </span>
+  );
+}
+ 
+
+export { Label, LabelAsterisk };
+
