@@ -6,9 +6,9 @@ import { Tabs, TabsContent, TabsTriggers } from "@/components/ui/tabs";
 import { DraftButton, RestoreArchiveButton, SaveButton } from "@/components/ui/action-buttons";
 import { CollectionMetadata } from "@/modules/collections/types";
 import { Form, useForm, zodResolver } from "@ziron/ui/form";
+import { useHotkey } from "@ziron/ui/hooks/use-hotkey";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
 import { ProductFormType, productSchema } from "@ziron/validators";
-import { useEffect } from "react";
 import { PRODUCTS_TABS } from "../data/constants";
 import { ProductInfo } from "./form-sections/info";
 import { ProductMedia } from "./form-sections/media";
@@ -33,26 +33,18 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
 
   const hasVariant = form.watch("hasVariant");
 
-   // Handle Ctrl+S keyboard shortcut
-   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
-        event.preventDefault();
-
-        if (form.formState.isSubmitting || isArchived) {
-          return;
-        }
-
-        form.handleSubmit(onSubmit)();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-   }, [form, isArchived, onSubmit]);
+  // Handle Ctrl+S keyboard shortcut
+  useHotkey({
+    combos: [
+      { key: "s", ctrl: true },
+      { key: "s", meta: true },
+    ],
+    enabled: true,
+    condition: () => !form.formState.isSubmitting && !isArchived,
+    callback: form.handleSubmit(onSubmit),
+    throttleMs: 2000,
+  });
+   
   
   // const formdata = form.watch()
   // const validation = validateForm(formdata, productSchema)

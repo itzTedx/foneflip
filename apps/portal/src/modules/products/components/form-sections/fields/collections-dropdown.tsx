@@ -1,13 +1,15 @@
 import { memo } from "react";
 
 import { CollectionMetadata } from "@/modules/collections/types";
+import { IconPlus } from "@tabler/icons-react";
+import { Button } from "@ziron/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage, useFormContext } from "@ziron/ui/form";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@ziron/ui/select";
 import { ProductFormType } from "@ziron/validators";
+import Link from "next/link";
 
 interface CollectionSelectorProps {
   collections?: CollectionMetadata[];
-
 }
 
 export const CollectionDropdown = memo(function CollectionDropdown({
@@ -20,13 +22,23 @@ export const CollectionDropdown = memo(function CollectionDropdown({
       control={form.control}
       name="collectionId"
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="w-full">
           <FormLabel>Collection</FormLabel>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
+              <div className="flex items-center gap-2">
               <SelectTrigger className="ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0 w-full">
                 <SelectValue placeholder="Choose Collection" />
-              </SelectTrigger>
+                </SelectTrigger>
+               
+
+                <Button variant='outline' size='icon' asChild>
+                  <Link href='/collections/new' target="_blank">
+                    <IconPlus />
+                  </Link>
+                </Button>
+         
+              </div>
             </FormControl>
             <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2">
               <SelectGroup>
@@ -36,7 +48,13 @@ export const CollectionDropdown = memo(function CollectionDropdown({
                       <span className="truncate">{cat.title}</span>
                     </SelectItem>
                   ))}
-                </SelectGroup>
+              </SelectGroup>
+              {/* <SelectGroup>
+                <SelectLabel className="ps-2">Couldn't found the collections?</SelectLabel>
+                <SelectItem value="add-new">
+                  <span className="truncate">Request for new Collection</span>
+                </SelectItem>
+              </SelectGroup> */}
             </SelectContent>
           </Select>
           <FormMessage />

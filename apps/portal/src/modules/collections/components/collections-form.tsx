@@ -17,6 +17,7 @@ import { toast } from "@ziron/ui/sonner";
 import { CollectionFormType, collectionSchema } from "@ziron/validators";
 
 import { Tabs, TabsContent, TabsTriggers } from "@/components/ui/tabs";
+import { useHotkey } from "@ziron/ui/hooks/use-hotkey";
 import {
   saveCollectionDraft,
   setCollectionStatus,
@@ -163,6 +164,19 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
       }
     });
   }
+
+  // Handle Ctrl+S keyboard shortcut
+  useHotkey({
+    combos: [
+      { key: "s", ctrl: true },
+      { key: "s", meta: true },
+    ],
+    enabled: true,
+    condition: () => !form.formState.isSubmitting && !isArchived,
+    callback: form.handleSubmit(onSubmit),
+    throttleMs: 2000,
+  });
+     
 
   // const data = form.watch();
   // const validation = validateForm(data, collectionSchema);
