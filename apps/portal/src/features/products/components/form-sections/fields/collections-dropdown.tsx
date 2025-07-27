@@ -21,26 +21,26 @@ export const CollectionDropdown = memo(function CollectionDropdown({
       name="collectionId"
       render={({ field }) => (
         <FormItem>
-        <FormLabel>Collection</FormLabel>
-        <Select onValueChange={field.onChange} defaultValue={field.value}>
-          <FormControl>
-            <SelectTrigger className="ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0 w-full">
-              <SelectValue placeholder="Choose Collection" />
-            </SelectTrigger>
-          </FormControl>
-          <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2">
-            <SelectGroup>
+          <FormLabel>Collection</FormLabel>
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <FormControl>
+              <SelectTrigger className="ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0 w-full">
+                <SelectValue placeholder="Choose Collection" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2">
+              <SelectGroup>
                 <SelectLabel className="ps-2">Collections</SelectLabel>
                   {collections?.map((cat) => (
                     <SelectItem value={cat.id} key={cat.id}>
                       <span className="truncate">{cat.title}</span>
                     </SelectItem>
                   ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <FormMessage />
-      </FormItem>
+                </SelectGroup>
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
       )}
     />
   );

@@ -1,6 +1,7 @@
 import { z } from "zod/v4";
 
 import { mediaSchema } from "../media";
+import { metaSchema } from "../seo";
 import { productConditionEnum } from "./enum";
 import { productSettingsSchema } from "./settings";
 import { variantSchema } from "./variants";
@@ -62,11 +63,7 @@ export const productDraftSchema = z
       .optional(),
     variants: z.array(variantSchema.partial()).optional(),
 
-    meta: z.object({
-      title: z.string().optional(),
-      description: z.string().optional(),
-      keywords: z.string().optional(),
-    }),
+    meta: metaSchema,
     images: z.array(mediaSchema).optional(),
 
     settings: productSettingsSchema.optional(),

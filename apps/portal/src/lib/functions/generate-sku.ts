@@ -50,8 +50,9 @@ export const generateSKU = (
       if (numberMatch && words.length > 1) {
         // Get first two letters of the first word
         const firstWord = words[0];
-        
-        const firstTwo = cleanString(firstWord!).slice(0, 2);
+        if (!firstWord) return getCode(model, 4);
+
+        const firstTwo = cleanString(firstWord).slice(0, 2);
         // Get the number
         const number = numberMatch[0];
         // Get the first letter of each remaining word (excluding the number)

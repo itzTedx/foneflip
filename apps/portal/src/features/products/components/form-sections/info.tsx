@@ -1,10 +1,10 @@
 "use client";
 
-
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import { CollectionMetadata } from "@/features/collections/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
 import { useFormContext } from "@ziron/ui/form";
+import { LabelAsterisk } from "@ziron/ui/label";
 import { ProductFormType } from "@ziron/validators";
 import { memo } from "react";
 import { BrandInput } from "./fields/brand-input";
@@ -67,7 +67,7 @@ export const ProductDetails = memo(function ProductDetails({
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Pricing Mode</CardTitle>
+              <CardTitle>Pricing Mode <LabelAsterisk /></CardTitle>
               <CardDescription>
                 Choose how this product is priced and configured.
               </CardDescription>

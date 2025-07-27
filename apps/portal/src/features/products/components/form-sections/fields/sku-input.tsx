@@ -39,7 +39,7 @@ export const SkuInput = memo(function SkuInput() {
     }
     if (!condition?.trim()) {
       form.setError("sku", {
-        message: "Please condition first",
+        message: "Please enter a condition first",
       });
       return;
     }
