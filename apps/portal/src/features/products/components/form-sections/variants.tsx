@@ -42,7 +42,7 @@ function VariantsDisabledOverlay() {
     const form = useFormContext<ProductFormType>();
   
     return (
-      <div className="absolute inset-0 grid place-content-center h-[calc(100dvh-8rem)]">
+      <div className="absolute inset-0 grid place-content-center min-h-[20rem] h-[calc(100dvh-8rem)]">
         <div className="bg-background z-20 max-w-sm rounded-lg border p-6 shadow-lg">
           <h3 className="text-foreground text-center text-xl font-medium">
             Variants Disabled

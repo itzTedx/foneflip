@@ -5,12 +5,15 @@ import { Tabs, TabsContent, TabsTriggers } from "@/components/ui/tabs";
 
 import { DraftButton, RestoreArchiveButton, SaveButton } from "@/components/ui/action-buttons";
 import { CollectionMetadata } from "@/features/collections/types";
+import { validateForm } from "@/lib/utils";
 import { Form, useForm, zodResolver } from "@ziron/ui/form";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
 import { ProductFormType, productSchema } from "@ziron/validators";
+import { useEffect } from "react";
 import { PRODUCTS_TABS } from "../data/constants";
 import { ProductInfo } from "./form-sections/info";
 import { ProductMedia } from "./form-sections/media";
+import { ProductSpecifications } from "./form-sections/specifications";
 import { ProductVariants } from "./form-sections/variants";
 
 interface Props {
@@ -28,7 +31,32 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
   });
 
   const hasVariant = form.watch("hasVariant");
+
+   // Handle Ctrl+S keyboard shortcut
+   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+        event.preventDefault();
+
+        if (form.formState.isSubmitting || isArchived) {
+          return;
+        }
+
+        form.handleSubmit(onSubmit)();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+   }, [form, isArchived]);
   
+  const formdata = form.watch()
+  const validation = validateForm(formdata, productSchema)
+console.log(validation)
+
   function onSubmit(values: ProductFormType) {
     console.log(values);
   }
@@ -40,8 +68,6 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
   function onSaveDraft() {
     console.log("restore");
   }
-
-
 
   return (
     <Form {...form}>
@@ -100,7 +126,9 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
               <ProductVariants isEditMode={isEditMode} hasVariant={hasVariant} />
             </TabsContent>
 
-            <TabsContent value="seo"></TabsContent>
+            <TabsContent value="specifications">
+              <ProductSpecifications isEditMode={isEditMode} />
+            </TabsContent>
 
             <TabsContent value="settings"></TabsContent>
           </div>

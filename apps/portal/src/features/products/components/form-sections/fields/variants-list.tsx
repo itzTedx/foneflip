@@ -75,6 +75,9 @@ function PriceInput({
               <Input
                 {...field}
                 id={field.name}
+                type="number"
+                step="0.01"
+                min="0"
                 className="peer ps-6"
                 placeholder={placeholder}
               />
@@ -162,13 +165,14 @@ function SkuInput({
                 className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
                 placeholder="APP-16-PM-BL"
               />
-              <button
-                className="border-input bg-background dark:bg-input/30 text-foreground hover:bg-accent hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex items-center rounded-e-md border px-3 text-sm font-medium transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+               <Button
+                variant="outline"
                 type="button"
+                className="rounded-s-none -ms-px border-l-0"
                 onClick={() => onGenerateSku(variantIndex)}
               >
                 <IconSparkles className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
           </FormControl>
           <FormMessage />
@@ -313,10 +317,10 @@ function VariantContent({
       const currentSku = form.getValues(sku);
       const variantAttributes = form.getValues(`variants.${index}.attributes`);
       const color =
-        variantAttributes.find((attr) => attr.name?.toLowerCase() === "color")
+      variantAttributes.find((attr) => attr.name?.toLowerCase().includes("color") || attr.name?.toLowerCase().includes("colour"))
           ?.value ?? "";
       const storage =
-        variantAttributes.find((attr) => attr.name?.toLowerCase() === "storage")
+       variantAttributes.find((attr) => attr.name?.toLowerCase().includes("storage") || attr.name?.toLowerCase().includes("capacity"))
           ?.value ?? "";
       if (!title?.trim()) {
         form.setError(sku, {
@@ -413,7 +417,7 @@ function VariantContent({
           </div>
         </div>
       </div>
-      <DefaultVariantSwitch variantIndex={variantIndex} />
+      {/* <DefaultVariantSwitch variantIndex={variantIndex} /> */}
     </CollapsibleContent>
   );
 }

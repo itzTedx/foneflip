@@ -11,7 +11,7 @@ export const productSchema = z
     id: z.string().optional(),
     title: z.string("Please enter valid title").min(1, {message: "Title is Required"}),
     description: z.string().optional(),
-    slug: z.string().min(1),
+    slug: z.string().min(1).optional(),
     condition: productConditionEnum.default("pristine").optional(),
     brand: z.string().optional(),
     collectionId: z.string().optional(),

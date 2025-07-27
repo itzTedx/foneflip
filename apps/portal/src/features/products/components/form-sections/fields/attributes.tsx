@@ -7,23 +7,23 @@ import { ChevronsUpDown } from "lucide-react";
 
 import { Button } from "@ziron/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@ziron/ui/card";
 import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from "@ziron/ui/collapsible";
 import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage, useFieldArray, useFormContext
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage, useFieldArray, useFormContext
 } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { MultiInput } from "@ziron/ui/multi-input";
@@ -121,7 +121,7 @@ const AttributeItem = memo(function AttributeItem({
           name={`attributes.${index}.name`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Label</FormLabel>
+              <FormLabel required>Label</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Attribute Name (Color, Storage, etc.)"
@@ -138,7 +138,7 @@ const AttributeItem = memo(function AttributeItem({
           name={`attributes.${index}.options`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Options</FormLabel>
+              <FormLabel required>Options</FormLabel>
               <FormControl>
                 <MultiInput
                   placeholder="Attribute Options"

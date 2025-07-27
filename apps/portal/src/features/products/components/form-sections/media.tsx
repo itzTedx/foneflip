@@ -5,41 +5,42 @@ import { useState } from "react";
 
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import {
-    closestCenter,
-    DndContext,
-    DragOverlay,
-    PointerSensor,
-    useSensor,
-    useSensors,
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import {
-    SortableContext,
-    useSortable,
-    verticalListSortingStrategy,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { IconGripVertical, IconTrash } from "@tabler/icons-react";
+import { IconGripVertical, IconStar, IconTrash } from "@tabler/icons-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { toast } from "sonner";
 
+import { IconButton } from "@/components/ui/icon-button";
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import { TooltipBadge } from "@/components/ui/tooltip";
 import { Media } from "@/features/collections/types";
 import { Button } from "@ziron/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@ziron/ui/card";
 import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage, useFieldArray, useFormContext
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage, useFieldArray, useFormContext
 } from "@ziron/ui/form";
 import { cn, formatFileSize, pluralize } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
@@ -97,16 +98,15 @@ function ProductImagePreviewCard({
       </div>
       {showActions && (
         <div className="flex items-center gap-2">
-                  <TooltipBadge tooltip="Mark as featured" asChild>
-                      H
-            {/* <IconButton
+          <TooltipBadge tooltip="Mark as featured" asChild>
+            <IconButton
               size="sm"
               type="button"
               icon={IconStar}
               onClick={onMarkFeatured}
-              active={isFeatured}
+              active={isPrimary}
               aria-label={`Mark as featured`}
-            /> */}
+            />
           </TooltipBadge>
           <Button
             type="button"

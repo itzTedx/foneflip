@@ -47,7 +47,7 @@ export function TabNavigation({
         variant="outline"
         type="button"
         onClick={() => {
-          if (!isFirst) setTab(tabs[currentIdx - 1]?.value);
+          if (!isFirst) setTab(tabs[currentIdx - 1]?.value ?? "");
         }}
         disabled={isFirst}
         aria-label={prevLabel}
@@ -59,7 +59,7 @@ export function TabNavigation({
         variant="outline"
         type="button"
         onClick={() => {
-          if (!isLast) setTab(tabs[currentIdx + 1]?.value);
+          if (!isLast) setTab(tabs[currentIdx + 1]?.value ?? "");
         }}
         disabled={isLast}
         aria-label={nextLabel}
