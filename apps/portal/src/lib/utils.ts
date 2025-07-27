@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "@ziron/validators";
 
 /**
  * Generic form validation utility that accepts any Zod schema

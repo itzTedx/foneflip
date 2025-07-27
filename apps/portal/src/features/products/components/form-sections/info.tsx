@@ -10,8 +10,12 @@ import { memo } from "react";
 import { BrandInput } from "./fields/brand-input";
 import { CollectionDropdown } from "./fields/collections-dropdown";
 import { ConditionSelector } from "./fields/condition-selector";
+import { PriceInput } from "./fields/price-input";
+import { SkuInput } from "./fields/sku-input";
 import { SlugInput } from "./fields/slug-input";
+import { StockInput } from "./fields/stock-input";
 import { ProductTitleInput } from "./fields/title-input";
+import { VariantSwitch } from "./fields/variant-switch";
 
 interface Props {
   collections: CollectionMetadata[];
@@ -69,7 +73,7 @@ export const ProductDetails = memo(function ProductDetails({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {/* <VariantSwitch /> */}
+              <VariantSwitch />
             </CardContent>
           </Card>
           {!hasVariant && (
@@ -82,13 +86,12 @@ export const ProductDetails = memo(function ProductDetails({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
-                  {/* <SellingPriceInput />
-                  <OriginalPriceInput /> */}
+                   <PriceInput name="selling" label="Selling Price"  />
+                   <PriceInput name="original" label="Original Price"  />
                 </div>
-
-                {/* <SkuInput />
-
-                <StockInput /> */}
+                
+                <SkuInput />             
+                <StockInput /> 
               </CardContent>
             </Card>
           )}

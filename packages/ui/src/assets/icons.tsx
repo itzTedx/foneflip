@@ -1,5 +1,7 @@
 import { JSX, SVGProps } from "react";
 
+export * from "./currency";
+
 export const IconMenu = (
   props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ) => {
