@@ -1,20 +1,19 @@
+import type { CollectionFormType, MediaFormType } from "@ziron/validators";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { hasPermission } from "@/modules/auth/actions/data-access";
 import { getCollectionById } from "@/modules/collections/actions/queries";
 import { CollectionForm } from "@/modules/collections/components/collections-form";
-import { CollectionQueryResult } from "@/modules/collections/types";
-
-import type { CollectionFormType, MediaFormType } from "@ziron/validators";
+import { CollectionQueryResult, Media } from "@/modules/collections/types";
 
 type Params = Promise<{ id: string }>;
 
 // Transform database collection to form type
 function transformCollectionToFormType(
-  collection: false | CollectionQueryResult,
+  collection: false | CollectionQueryResult
 ): (CollectionFormType & { updatedAt: Date }) | null {
   if (!collection) return null;
 
-  function toFormMedia(media: any): MediaFormType | undefined {
+  function toFormMedia(media?: Media): MediaFormType | undefined {
     if (!media || !media.url) return undefined; // url is required
     return {
       file: {
@@ -44,10 +43,10 @@ function transformCollectionToFormType(
       keywords: collection.seo?.keywords || undefined,
     },
     banner: toFormMedia(
-      collection.collectionMedia.find((c) => c.type === "banner")?.media,
+      collection.collectionMedia.find((c) => c.type === "banner")?.media
     ),
     thumbnail: toFormMedia(
-      collection.collectionMedia.find((c) => c.type === "thumbnail")?.media,
+      collection.collectionMedia.find((c) => c.type === "thumbnail")?.media
     ),
     settings: {
       ...collection.settings,
@@ -59,8 +58,8 @@ function transformCollectionToFormType(
 export default async function CollectionPage({ params }: { params: Params }) {
   await hasPermission({
     permissions: {
-      collections: ["create", "delete", "update"]
-    }
+      collections: ["create", "delete", "update"],
+    },
   });
   const { id } = await params;
   const isEditMode = id !== "new";

@@ -58,7 +58,7 @@ export const ProductInfo = memo(function ProductInfo({
               <FormMessage />
             </FormItem>
           )}
-            />
+          />
             
             
           </CardContent>
