@@ -494,8 +494,8 @@ export function ProductVariantsList({ isEditMode }: Props) {
   // Sync variants' attributes with attributes array
   useEffect(() => {
     if (!hasVariant) return;
-    const attributes = form.getValues("attributes") ?? [];
-    variantFields.forEach((variant, variantIndex) => {
+    const attributes = form.watch("attributes") ?? [];
+    variantFields.forEach((_, variantIndex) => {
       const variantAttributes =
         form.getValues(`variants.${variantIndex}.attributes`) ?? [];
       // If the number of attributes has changed, update the variant's attributes
@@ -510,7 +510,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
         });
       }
     });
-  }, [attributes, variantFields.length, hasVariant, form]);
+  }, [hasVariant, form, variantFields.length])
 
   return (
     <Card className="h-fit md:col-span-2">

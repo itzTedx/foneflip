@@ -39,11 +39,11 @@ export const productSchema = z
 
     delivery: z
       .object({
-        packageSize: z.string().optional(),
-        weight: z.string().optional(),
+        packageSize: z.string().nullish(),
+        weight: z.string().nullish(),
         cod: z.boolean().optional(),
         returnable: z.boolean().optional(),
-        returnPeriod: z.string().optional(),
+        returnPeriod: z.string().nullish(),
         type: z
           .object({
             express: z.boolean().optional(),

@@ -17,22 +17,7 @@ export const getDefaultValues = (): ProductFormType => {
         sku: "",
         stock: 0,
    
-        images: [{
-            file: {
-                url: "",
-                key: "",
-                name: "",
-                size: 0
-            },
-            metadata: {
-                blurData: "",
-                height: 0,
-                width: 0
-            },
-            alt: "",
-            id: "",
-            isPrimary: false,
-        }],
+        images: [],
 
         attributes: [],
 
@@ -41,14 +26,14 @@ export const getDefaultValues = (): ProductFormType => {
         specifications: [],
 
         delivery: {
-            weight: undefined,
-            packageSize: undefined,
+            weight: null,
+            packageSize: null,
             cod: false,
-            returnPeriod: undefined,
+            returnPeriod: null,
             returnable: false,   
             type: {
                 express: false,
-                fees:"30"
+                fees: "30"
             }
         },
 

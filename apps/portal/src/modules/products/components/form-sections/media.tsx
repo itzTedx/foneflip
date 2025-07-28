@@ -466,7 +466,7 @@ export function ProductMedia() {
                   </div>
                 </SortableContext>
                 <DragOverlay>
-                  {activeImage ? (
+                {activeImage ? (
                     <ProductImagePreviewCard
                       url={activeImage.file?.url}
                       fileName={activeImage.file?.name ?? ''}
