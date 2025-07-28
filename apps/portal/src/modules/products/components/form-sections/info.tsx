@@ -1,9 +1,10 @@
 "use client";
 
+import { MarkdownEditor } from "@/components/markdown";
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import { CollectionMetadata } from "@/modules/collections/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
-import { useFormContext } from "@ziron/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage, useFormContext } from "@ziron/ui/form";
 import { LabelAsterisk } from "@ziron/ui/label";
 import { ProductFormType } from "@ziron/validators";
 import { memo } from "react";
@@ -44,7 +45,22 @@ export const ProductInfo = memo(function ProductInfo({
           </CardHeader>
           <CardContent className="space-y-4">
           <ProductTitleInput />
-            {/*   <ProductDescriptionEditor /> */}
+          <FormField
+          name="description"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <MarkdownEditor {...field} markdown={field.value ?? ""}  />
+              </FormControl>
+          
+              <FormMessage />
+            </FormItem>
+          )}
+            />
+            
+            
           </CardContent>
         </Card>
 
