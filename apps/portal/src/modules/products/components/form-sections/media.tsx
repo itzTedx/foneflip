@@ -5,18 +5,18 @@ import { useState } from "react";
 
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import {
-    closestCenter,
-    DndContext,
-    DragOverlay,
-    PointerSensor,
-    useSensor,
-    useSensors,
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import {
-    SortableContext,
-    useSortable,
-    verticalListSortingStrategy,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IconGripVertical, IconStar, IconTrash } from "@tabler/icons-react";
@@ -29,18 +29,18 @@ import { TooltipBadge } from "@/components/ui/tooltip";
 import { Media } from "@/modules/collections/types";
 import { Button } from "@ziron/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@ziron/ui/card";
 import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage, useFieldArray, useFormContext
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage, useFieldArray, useFormContext
 } from "@ziron/ui/form";
 import { cn, formatFileSize, pluralize } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
@@ -426,7 +426,7 @@ export function ProductMedia() {
                 <h4 className="text-muted-foreground text-sm">
                   Uploaded:{" "}
                   <span className="font-medium">
-                    {fields.length} {pluralize("Image", fields.length + 1)}
+                    {fields.length} {pluralize("Image", fields.length)}
                   </span>
                 </h4>
                 {fields.length > 1 && (

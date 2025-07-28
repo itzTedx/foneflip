@@ -23,6 +23,7 @@ import {
 
 import RadioGroupSelector from "@/components/ui/radio-group";
 import { generateSKU } from "@/lib/functions/generate-sku";
+import { ATTRIBUTE_TYPES } from "@/modules/products/data/constants";
 import { IconAed } from "@ziron/ui/assets/currency";
 import {
   FormControl,
@@ -34,11 +35,8 @@ import {
   useFormContext,
 } from "@ziron/ui/form";
 import { Input, NumberInput } from "@ziron/ui/input";
-import { Switch } from "@ziron/ui/switch";
 import { cn } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
-
-
 
 type Variant = NonNullable<ProductFormType["variants"]>[number];
 
@@ -207,37 +205,6 @@ function StockInput({ variantIndex }: { variantIndex: number }) {
   );
 }
 
-// DefaultVariantSwitch component
-function DefaultVariantSwitch({ variantIndex }: { variantIndex: number }) {
-  const form = useFormContext<ProductFormType>();
-  return (
-    <FormField
-      control={form.control}
-      name={`variants.${variantIndex}.isDefault`}
-      render={({ field }) => (
-        <FormItem>
-          <FormControl>
-            <div className="border-input has-data-[state=checked]:border-primary/50 relative flex w-fit items-start gap-4 rounded-md border p-3 shadow-xs outline-none">
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-                id={field.name}
-                disabled={field.disabled}
-                className="order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2 data-[state=checked]:[&_span]:rtl:-translate-x-2"
-                aria-describedby={`has-variant-description`}
-              />
-              <div className="grow">
-                <FormLabel>Use image for this variant</FormLabel>
-              </div>
-            </div>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
 // VariantHeader component
 function VariantHeader({
   index,
@@ -316,11 +283,8 @@ function VariantContent({
       );
       const currentSku = form.getValues(sku);
       const variantAttributes = form.getValues(`variants.${index}.attributes`);
-     // Define attribute types enum or constants
-      const ATTRIBUTE_TYPES = {
-        COLOR: ['color', 'colour', 'shade', 'hue'],
-        STORAGE: ['storage', 'capacity', 'memory', 'size']
-      } as const;
+      // Define attribute types enum or constants
+      
 
       // Use a helper function to find attributes
       function findAttributeByType(attributes: Array<{ name?: string; value?: string }>, type: readonly string[]): string {
@@ -330,7 +294,6 @@ function VariantContent({
         return attr?.value ?? "";
       }
       
-
       const color = findAttributeByType(variantAttributes, ATTRIBUTE_TYPES.COLOR);
       const storage = findAttributeByType(variantAttributes, ATTRIBUTE_TYPES.STORAGE);
       
@@ -368,9 +331,9 @@ function VariantContent({
         });
       } catch (error) {
         form.setError(sku, {
-          message: "Failed to generate sku. Please try again.",
+         message: error instanceof Error ? error.message : "Failed to generate SKU. Please try again."
         });
-        console.log(error);
+        console.error('SKU generation error:', error);
       }
     },
     [form]

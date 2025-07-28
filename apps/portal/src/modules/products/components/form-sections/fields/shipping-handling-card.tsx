@@ -109,7 +109,7 @@ export const ShippingHandlingCard = memo(function ShippingHandlingCard() {
                 <div
                   role="region"
                   id="delivery.type.fees"
-                  aria-labelledby={field.name}
+                  aria-label="Additional delivery charges"
                   className="grid transition-all ease-in-out data-[state=collapsed]:grid-rows-[0fr] data-[state=collapsed]:opacity-0 data-[state=expanded]:grid-rows-[1fr] data-[state=expanded]:opacity-100"
                   data-state={isExpress ? "expanded" : "collapsed"}
                 >

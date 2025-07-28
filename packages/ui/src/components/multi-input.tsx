@@ -141,7 +141,7 @@ export function MultiInput({
 
       <div
         className={cn(
-          "min-h-[3rem] px-1 py-1 sm:min-h-[2.5rem]",
+          "min-h-[3rem] px-2 py-1 sm:min-h-[2.5rem]",
           "rounded-lg border",
           "border-zinc-300 dark:border-zinc-700",
           "bg-white dark:bg-zinc-900",

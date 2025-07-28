@@ -31,18 +31,11 @@ export const SlugInput = memo(function SlugInput() {
       return;
     }
 
-    try {
-      const slug = slugify(title);
-      form.setValue("slug", slug, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-    } catch (error) {
-      form.setError("slug", {
-        message: "Failed to generate slug. Please try again.",
-      });
-      console.log(error);
-    }
+    const slug = slugify(title);
+    form.setValue("slug", slug, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   return (

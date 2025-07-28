@@ -5,6 +5,7 @@ import { memo, useCallback, useState } from "react";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { ChevronsUpDown } from "lucide-react";
 
+import { ATTRIBUTE_SUGGESTIONS } from "@/modules/products/data/constants";
 import { Button } from "@ziron/ui/button";
 import {
   Card,
@@ -29,17 +30,6 @@ import { Input } from "@ziron/ui/input";
 import { MultiInput } from "@ziron/ui/multi-input";
 import { cn } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
-
-
-
-// Attribute name to default suggestions mapping
-const ATTRIBUTE_SUGGESTIONS: Record<string, string[]> = {
-  color: ["Black", "White", "Blue", "Red", "Green", "Gold", "Silver", "Gray"],
-  storage: ["32GB", "64GB", "128GB", "256GB", "512GB", "1TB", "2TB"],
-  size: ["Small", "Medium", "Large", "XL", "XXL"],
-  material: ["Plastic", "Metal", "Glass", "Ceramic", "Leather"],
-  // Add more as needed
-};
 
 interface AttributeItemProps {
   index: number;
@@ -80,7 +70,7 @@ const AttributeItem = memo(function AttributeItem({
                   {index + 1 < 10 ? `0${index + 1}` : index + 1}
                 </span>{" "}
                 {name}
-                {options.length > 0 && <>: {options.join(", ")}</>}
+                {options?.length > 0 && <>: {options.join(", ")}</>}
               </span>
             ) : (
               `Attribute ${index + 1 < 10 ? `0${index + 1}` : index + 1}`

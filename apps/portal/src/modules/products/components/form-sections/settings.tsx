@@ -7,29 +7,29 @@ import { IconSpeakerphone } from "@tabler/icons-react";
 import { ActionButton } from "@/components/ui/action-buttons";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@ziron/ui/card";
 import {
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-    useFormContext,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormContext,
 } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { MultiInput } from "@ziron/ui/multi-input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@ziron/ui/select";
 import { Switch } from "@ziron/ui/switch";
 import { Textarea } from "@ziron/ui/textarea";
@@ -87,7 +87,7 @@ export const ProductSettings = memo(function ProductSettings() {
                       </SelectTrigger>
                       <SelectContent
                         position="item-aligned"
-                        className="[&_*[role=option]>span>svg]:text-muted-foreground/80 [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]>span>svg]:shrink-0"
+                       
                       >
                         {productStatusEnum.options.map((status) => (
                           <SelectItem value={status} key={status}>
@@ -147,8 +147,7 @@ export const ProductSettings = memo(function ProductSettings() {
           <CardHeader>
             <CardTitle>Customer Interactions</CardTitle>
             <CardDescription>
-              Manage whether the product is publicly visible, in draft, or
-              archived.
+            Configure how customers can interact with this product.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -343,17 +342,27 @@ export const ProductSettings = memo(function ProductSettings() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <MultiInput label="Tags" />
-              <p
-                className="text-muted-foreground mt-2 text-xs"
-                role="region"
-                aria-live="polite"
-              >
-                Add keywords for internal search/sorting (e.g., trending,
-                clearance)
-              </p>
-            </div>
+          <FormField
+              control={form.control}
+              name="settings.tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <MultiInput
+                      label="Tags"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Add keywords for internal search/sorting (e.g., trending,
+                    clearance)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
             <FormField
               control={form.control}
               name="settings.internalNotes"
