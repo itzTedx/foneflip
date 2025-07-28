@@ -7,9 +7,16 @@ import { DraftButton, RestoreArchiveButton, SaveButton } from "@/components/ui/a
 import { CollectionMetadata } from "@/modules/collections/types";
 import { Form, useForm, zodResolver } from "@ziron/ui/form";
 import { useHotkey } from "@ziron/ui/hooks/use-hotkey";
+import { useLocalStorage } from "@ziron/ui/hooks/use-local-storage";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
-import { ProductFormType, productSchema } from "@ziron/validators";
+import { CollectionFormType, ProductFormType, productSchema } from "@ziron/validators";
+
+
+import { parseAsString, useQueryState } from "nuqs";
+import { useEffect } from "react";
 import { PRODUCTS_TABS } from "../data/constants";
+import { Product } from "../types";
+import { getDefaultValues } from "../utils/helper";
 import { ProductInfo } from "./form-sections/info";
 import { ProductMedia } from "./form-sections/media";
 import { ProductSeo } from "./form-sections/seo";
@@ -19,14 +26,32 @@ import { ProductVariants } from "./form-sections/variants";
 
 interface Props {
   isEditMode: boolean;
-  collections:CollectionMetadata[]
+  collections: CollectionMetadata[]
+  initialData?: Product
 }
 
-export const ProductForm = ({ isEditMode, collections }: Props) => {
+const LOCAL_STORAGE_KEY = "product-form-draft";
+
+export const ProductForm = ({ isEditMode, collections, initialData }: Props) => {
+  const [, setTitle] = useQueryState("title", parseAsString.withDefault(""));
+
+  useEffect(() => {
+    setTitle(initialData?.title ?? null);
+  }, []);
+
+  const [draft, setDraft, removeDraft] =
+  useLocalStorage<Partial<CollectionFormType> | null>(
+    LOCAL_STORAGE_KEY,
+    null,
+  );
+
   const isArchived = false
   const form = useForm<ProductFormType>({
     resolver: zodResolver(productSchema),
-
+    defaultValues: {
+      ...getDefaultValues(),
+      ...draft
+    },
     mode: "onTouched",
     disabled: isArchived,
   });
@@ -46,9 +71,21 @@ export const ProductForm = ({ isEditMode, collections }: Props) => {
   });
    
   
-  // const formdata = form.watch()
+  // const formdata = form.watch(() => {})
+ 
   // const validation = validateForm(formdata, productSchema)
   // console.log(validation.error)
+
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      if (!isEditMode) {
+      
+        setDraft(values as Partial<CollectionFormType>);
+      }
+    });
+    if (isEditMode) removeDraft();
+    return () => subscription.unsubscribe();
+  }, [form, isEditMode, setDraft]);
 
   function onSubmit(values: ProductFormType) {
     console.log(values);
