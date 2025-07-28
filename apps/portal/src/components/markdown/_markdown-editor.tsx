@@ -45,14 +45,16 @@ export default function InternalMarkdownEditor({
         tablePlugin(),
         toolbarPlugin({
           toolbarContents: () => (
-            <div className="flex items-center  divide-x">
-              <BlockTypeSelect />
-              <BoldItalicUnderlineToggles />
+            <div className="flex items-center divide-x">
+              <BlockTypeSelect  />
+              <BoldItalicUnderlineToggles  />
               <ListsToggle />
+              
               <InsertThematicBreak />
               <InsertTable />
             </div>
           ),
+          
         }),
       ]}
     />
