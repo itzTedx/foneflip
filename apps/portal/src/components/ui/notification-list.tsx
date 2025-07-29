@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { IconCheck } from "@tabler/icons-react";
+import { IconCheck, IconCode, IconInputX } from "@tabler/icons-react";
 import { useAtomValue } from "jotai";
 import { parseAsBoolean, useQueryState } from "nuqs";
 
@@ -19,7 +19,10 @@ export const Console = () => {
 
   return (
     <Collapsible
-      className="group fixed right-2 bottom-2 z-999 w-60 rounded-sm border border-border/40 bg-popover/70 backdrop-blur-lg"
+      className={cn(
+        "group fixed right-2 bottom-2 z-999 w-64 rounded-sm border bg-popover/70 backdrop-blur-lg",
+        validationErrors.length ? "border-destructive/25" : "border-border/40"
+      )}
       onOpenChange={setCollapsibleOpen}
       open={collapsibleOpen}
     >
@@ -59,17 +62,27 @@ export const Console = () => {
         </div>
       </div>
 
-      <CollapsibleContent className="space-y-2">
+      <CollapsibleContent className="space-y-1 divide-y border-t">
         {validationErrors.map((error, index) => (
-          <div className="flex flex-col gap-1 p-3" key={index}>
-            <div className="flex flex-row items-center justify-between gap-1">
-              <span className="font-mono text-[10px] text-muted-foreground">CODE: {error.code}</span>
-              <span className="font-mono text-[10px] text-destructive">
+          <div className="flex flex-col gap-1.5 p-3" key={index}>
+            <div className="flex items-center gap-1 font-mono text-[10px] text-muted-foreground">
+              <div className="flex size-4 items-center justify-center rounded bg-destructive text-foreground">
+                <IconCode className="size-2.5" />
+              </div>
+              {error.code}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1">
+              <span className="rounded bg-muted/80 px-1 py-0.5 font-mono text-[10px] text-destructive">
                 {"origin" in error ? (error.origin as string) : "unknown"}
               </span>
+              <p className="flex items-center gap-1 rounded bg-muted/80 px-1 py-0.5 font-mono text-[10px] text-muted-foreground">
+                <IconInputX className="size-3" /> {error.path.join("/")}
+              </p>
             </div>
-            <p className="font-medium text-destructive text-xs">{error.message}</p>
-            <div className="font-mono text-[10px] text-muted-foreground">{error.path.join("/")}</div>
+            <div className="rounded-sm bg-muted/80 p-2">
+              <p className="font-medium text-muted-foreground text-xs">{error.message}</p>
+            </div>
           </div>
         ))}
       </CollapsibleContent>
