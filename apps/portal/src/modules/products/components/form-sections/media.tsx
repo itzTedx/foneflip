@@ -4,8 +4,7 @@ import { useCallback, useState } from "react";
 
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { closestCenter, DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
-import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { toast } from "sonner";
 
@@ -20,52 +19,16 @@ import {
   useFieldArray,
   useFormContext,
 } from "@ziron/ui/form";
-import { cn, pluralize } from "@ziron/utils";
-import { MediaFormType, ProductFormType } from "@ziron/validators";
+import { pluralize } from "@ziron/utils";
+import { ProductFormType } from "@ziron/validators";
 
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import { Media } from "@/modules/collections/types";
 import { MediaPickerModal } from "@/modules/media/components/media-picker";
 
-import { ImagePreviewCard } from "./fields/image-preview-card";
-
-type SortableImageItemProps = {
-  f: MediaFormType;
-  i: number;
-  remove: (index: number) => void;
-  toggleFeaturedImage: (index: number) => void;
-};
-
-/**
- * Renders a sortable product image item with drag-and-drop, featuring, and removal controls.
- *
- * Wraps a product image preview card with sortable behavior, applying drag styles and passing handlers for marking as featured and removing the image.
- */
-function SortableImageItem({ f, i, remove, toggleFeaturedImage }: SortableImageItemProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: f.id ?? "" });
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 50 : 1,
-  };
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      className={cn(f.file?.url.search("blob:") === 0 ? "animate-pulse transition-all" : "", "space-y-2")}
-    >
-      <ImagePreviewCard
-        dragListeners={listeners}
-        media={f}
-        onMarkFeatured={() => toggleFeaturedImage(i)}
-        onRemove={() => remove(i)}
-        showActions={true}
-      />
-    </div>
-  );
-}
+import { ImagePreviewCard } from "./fields/media/image-preview-card";
+import { MediaUpload } from "./fields/media/media-upload";
+import { SortableImageItem } from "./fields/media/sortable-image";
 
 /**
  * Renders the product image gallery section within a product form, providing upload, selection, preview, drag-and-drop reordering, featuring, and removal of images.
@@ -76,7 +39,7 @@ export function ProductMedia() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const form = useFormContext<ProductFormType>();
 
-  const { fields, remove, append, move, replace } = useFieldArray({
+  const { fields, remove, append, move } = useFieldArray({
     control: form.control,
     name: "images",
   });
@@ -180,7 +143,7 @@ export function ProductMedia() {
               name={"images"}
               render={() => (
                 <FormItem>
-                  <div className="-mb-3 flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                     <FormLabel>Upload Images</FormLabel>
                     <Button
                       className="text-muted-foreground text-xs"
@@ -192,18 +155,8 @@ export function ProductMedia() {
                       Choose from existing
                     </Button>
                   </div>
-                  <FormControl>
-                    {/* <UploadDropzone
-                      className="ut-allowed-content:text-muted-foreground ut-button:h-9 ut-button:w-32 ut-label:text-primary ut-upload-icon:text-primary/70 hover:bg-primary/5 ut-button:bg-primary ut-upload-icon:size-10 ut-label:mt-1 cursor-pointer border border-dashed transition-all duration-500 ease-in-out"
-                      endpoint={"productImagesUploader"}
-                      onBeforeUploadBegin={onBeforeUploadBegin}
-                      onClientUploadComplete={onClientUploadComplete}
-                      onUploadError={onUploadError}
-                      config={{
-                        mode: "auto",
-                      }}
-                    /> */}
-                  </FormControl>
+                  <MediaUpload />
+                  <FormControl />
                   <FormMessage />
                 </FormItem>
               )}
@@ -212,7 +165,7 @@ export function ProductMedia() {
         </Card>
 
         {fields && fields.length > 0 && (
-          <Card>
+          <Card className="h-fit">
             <CardHeader>
               <CardTitle>Images Preview</CardTitle>
               <div className="mb-2 flex items-center justify-between">

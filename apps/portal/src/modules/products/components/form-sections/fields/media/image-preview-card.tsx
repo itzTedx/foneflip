@@ -53,9 +53,12 @@ export const ImagePreviewCard = ({
           <p className="truncate font-medium text-xs">{media.file?.name ?? ""}</p>
           <div className="mt-0.5 flex items-center divide-x text-muted-foreground text-xs">
             <p className="pr-1">{formatFileSize(media.file?.size ?? 0)}</p>
-            <p className="pl-1">
-              {media.metadata?.width} x {media.metadata?.height}
-            </p>
+
+            {media.metadata && (
+              <p className="pl-1">
+                {media.metadata?.width} x {media.metadata?.height}
+              </p>
+            )}
           </div>
         </div>
       </div>
