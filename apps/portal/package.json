@@ -38,6 +38,8 @@
     "bullmq": "^5.56.3",
     "dotenv-cli": "^8.0.0",
     "drizzle-orm": "^0.44.2",
+    "jotai": "^2.12.5",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.475.0",
     "motion": "^12.23.3",
     "next": "^15.3.5",
@@ -54,14 +56,12 @@
     "sonner": "^2.0.6"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.20",
     "@types/node": "^20",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
-    "@ziron/eslint-config": "workspace:^",
-    "@ziron/prettier-config": "workspace:*",
     "@ziron/tsconfig": "workspace:*",
     "typescript": "catalog:",
     "typescript-eslint": "^8.36.0"
-  },
-  "prettier": "@ziron/prettier-config"
+  }
 }

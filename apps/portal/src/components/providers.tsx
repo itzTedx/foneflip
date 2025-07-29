@@ -10,20 +10,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <NextThemesProvider
       attribute="class"
       defaultTheme="system"
-      enableSystem
       disableTransitionOnChange
       enableColorScheme
+      enableSystem
     >
-      <ProgressProvider
-        height="3px"
-        color="#962DFF"
-        options={{ showSpinner: false }}
-        shallowRouting
-        memo
-      >
+      <ProgressProvider color="#962DFF" height="3px" memo options={{ showSpinner: false }} shallowRouting>
         {children}
       </ProgressProvider>
-      <Toaster richColors closeButton position="top-center" />
+      <Toaster closeButton position="top-center" richColors />
     </NextThemesProvider>
   );
 }

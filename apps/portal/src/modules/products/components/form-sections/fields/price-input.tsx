@@ -1,14 +1,7 @@
 import { memo } from "react";
 
 import { IconAed } from "@ziron/ui/assets/currency";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useFormContext,
-} from "@ziron/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, useFormContext } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { ProductFormType } from "@ziron/validators";
 
@@ -30,18 +23,18 @@ export const PriceInput = memo(function PriceInput({ name, label }: Props) {
             <div className="relative">
               <Input
                 {...field}
-                id={field.name}
                 className="peer ps-6"
-                placeholder="0.00"
+                id={field.name}
                 inputMode="numeric"
                 pattern="[0-9]*"
+                placeholder="0.00"
               />
-              <span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm peer-disabled:opacity-50">
-                <IconAed className="fill-muted-foreground size-3" />
+              <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground text-sm peer-disabled:opacity-50">
+                <IconAed className="size-3 fill-muted-foreground" />
               </span>
             </div>
           </FormControl>
-          <FormMessage />
+          {/* <FormMessage /> */}
         </FormItem>
       )}
     />

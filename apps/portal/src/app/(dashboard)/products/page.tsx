@@ -12,7 +12,7 @@ export default async function ProductsPage() {
   return (
     <MainWrapper>
       <PageHeader title="Products">
-        <AddButton title="Product" href="/products/new" />
+        <AddButton href="/products/new" title="Product" />
       </PageHeader>
     </MainWrapper>
   );

@@ -2,27 +2,14 @@
 
 import { memo } from "react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@ziron/ui/card";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useFormContext,
-} from "@ziron/ui/form";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
+import { useFormContext } from "@ziron/ui/form";
 import { LabelAsterisk } from "@ziron/ui/label";
 import { ProductFormType } from "@ziron/validators";
 
-import { MarkdownEditor } from "@/components/markdown";
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import { CollectionMetadata } from "@/modules/collections/types";
+
 import { BrandInput } from "./fields/brand-input";
 import { CollectionDropdown } from "./fields/collections-dropdown";
 import { ConditionSelector } from "./fields/condition-selector";
@@ -42,6 +29,8 @@ export const ProductInfo = memo(function ProductInfo({ collections }: Props) {
 
   const hasVariant = form.watch("hasVariant");
 
+  const priceError = form.getFieldState("price.selling").error;
+
   return (
     <>
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -53,15 +42,13 @@ export const ProductInfo = memo(function ProductInfo({ collections }: Props) {
         <Card className="col-span-2 h-fit">
           <CardHeader>
             <CardTitle>Product Details</CardTitle>
-            <CardDescription>
-              Title and basic product description for storefront
-            </CardDescription>
+            <CardDescription>Title and basic product description for storefront</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <ProductTitleInput />
-            <FormField
-              name="description"
+            {/* <FormField
               control={form.control}
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
@@ -72,7 +59,7 @@ export const ProductInfo = memo(function ProductInfo({ collections }: Props) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </CardContent>
         </Card>
 
@@ -81,10 +68,7 @@ export const ProductInfo = memo(function ProductInfo({ collections }: Props) {
           <Card className="h-fit">
             <CardHeader>
               <CardTitle>Classification</CardTitle>
-              <CardDescription>
-                Organize the product under brand and category, and assign
-                identifiers.
-              </CardDescription>
+              <CardDescription>Organize the product under brand and category, and assign identifiers.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <CollectionDropdown collections={collections} />
@@ -98,9 +82,7 @@ export const ProductInfo = memo(function ProductInfo({ collections }: Props) {
               <CardTitle>
                 Pricing Mode <LabelAsterisk />
               </CardTitle>
-              <CardDescription>
-                Choose how this product is priced and configured.
-              </CardDescription>
+              <CardDescription>Choose how this product is priced and configured.</CardDescription>
             </CardHeader>
             <CardContent>
               <VariantSwitch />
@@ -110,14 +92,13 @@ export const ProductInfo = memo(function ProductInfo({ collections }: Props) {
             <Card>
               <CardHeader>
                 <CardTitle>Default Pricing & Stock</CardTitle>
-                <CardDescription>
-                  Basic pricing for simple products.
-                </CardDescription>
+                <CardDescription>Basic pricing for simple products.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
-                  <PriceInput name="selling" label="Selling Price" />
-                  <PriceInput name="original" label="Original Price" />
+                  <PriceInput label="Selling Price" name="selling" />
+                  <PriceInput label="Original Price" name="original" />
+                  {priceError && <p className="col-span-2 text-destructive text-sm">{priceError.message}</p>}
                 </div>
 
                 <SkuInput />

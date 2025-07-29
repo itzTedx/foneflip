@@ -54,6 +54,11 @@
         "useArrowFunction": "error"
       },
       "correctness": {
+        "recommended": true,
+        "noUnusedImports": {
+          "level": "warn",
+          "fix": "safe"
+        },
         "noUnusedVariables": "warn",
         "useExhaustiveDependencies": "info",
         "useHookAtTopLevel": "error",

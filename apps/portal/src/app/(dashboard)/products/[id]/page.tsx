@@ -19,7 +19,7 @@ export default async function ProductPage({ params }: { params: Params }) {
   return (
     <MainWrapper>
       {/* <pre>{JSON.stringify(collections, null, 2)}</pre> */}
-      <ProductForm isEditMode={editMode} collections={collections} />
+      <ProductForm collections={collections} isEditMode={editMode} />
     </MainWrapper>
   );
 }
