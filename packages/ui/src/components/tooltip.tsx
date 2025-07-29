@@ -34,6 +34,13 @@ function TooltipTrigger({
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
 }
 
+/**
+ * Renders the content of a tooltip with custom styling and an arrow indicator.
+ *
+ * @param className - Additional CSS classes to apply to the tooltip content container
+ * @param sideOffset - Distance in pixels between the tooltip and its trigger (defaults to 0)
+ * @param children - Elements to display inside the tooltip
+ */
 function TooltipContent({
   className,
   sideOffset = 0,

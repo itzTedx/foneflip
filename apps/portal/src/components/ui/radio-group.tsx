@@ -17,6 +17,16 @@ type SelectorProps = {
   onValueChange?: (value: string) => void;
 };
 
+/**
+ * Renders a customizable radio button group with optional title and selection display.
+ *
+ * Displays a list of selectable items as radio buttons, allowing users to choose one option. If a title is provided, it is shown above the group along with the currently selected item's label. Supports disabling individual items and notifies changes via a callback.
+ *
+ * @param title - Optional title displayed as the group legend
+ * @param items - Array of selectable items, each with a value, label, and optional disabled state
+ * @param value - The currently selected item's value
+ * @param onValueChange - Callback invoked when the selected value changes
+ */
 export default function RadioGroupSelector({
   title,
   items,

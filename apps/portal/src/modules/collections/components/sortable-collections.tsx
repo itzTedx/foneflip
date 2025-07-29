@@ -58,6 +58,13 @@ const SortableCollectionCard = React.memo(function SortableCollectionCard({
   );
 });
 
+/**
+ * Renders a sortable list of collection cards with drag-and-drop reordering.
+ *
+ * Allows users to reorder collections via drag-and-drop. Updates the backend with the new order and provides user feedback during the process.
+ *
+ * @param collections - The initial array of collections to display and sort
+ */
 export function CollectionListSortable({
   collections: initialCollections,
 }: {

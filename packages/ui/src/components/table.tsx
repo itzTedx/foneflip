@@ -39,6 +39,11 @@ function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   );
 }
 
+/**
+ * Renders a styled table footer (`<tfoot>`) with a muted background, top border, and medium font weight.
+ *
+ * Additional class names and props are merged into the element. The footer removes the bottom border from its last row.
+ */
 function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
   return (
     <tfoot
@@ -52,6 +57,11 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
   );
 }
 
+/**
+ * Renders a table row with hover and selected state styling.
+ *
+ * Applies background color changes on hover and when selected, along with a bottom border and transition effects. Additional props are spread onto the `<tr>` element.
+ */
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
@@ -65,6 +75,11 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   );
 }
 
+/**
+ * Renders a styled table header cell (`<th>`) with support for custom class names and slot identification.
+ *
+ * Applies alignment, padding, font, and whitespace styles, and adjusts layout if containing a checkbox element.
+ */
 function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   return (
     <th
@@ -78,6 +93,11 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   );
 }
 
+/**
+ * Renders a styled table cell (`<td>`) element with customizable class names and support for checkbox alignment.
+ *
+ * Additional props are spread onto the `<td>` element.
+ */
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
     <td

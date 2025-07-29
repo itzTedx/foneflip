@@ -83,7 +83,16 @@ export class CacheMonitor {
   }
 }
 
-// Enhanced wrapper function to monitor cache operations with proper hit/miss detection
+/**
+ * Executes an asynchronous operation while recording cache hit or miss metrics.
+ *
+ * Measures the operation's execution time and updates cache monitoring statistics based on whether the cache was hit. Records a miss and rethrows the error if the operation fails.
+ *
+ * @param operation - The asynchronous function to execute
+ * @param cacheKey - The cache key associated with the operation
+ * @param isCacheHit - Indicates if the cache was hit for this operation
+ * @returns The result of the asynchronous operation
+ */
 export async function withCacheMonitoring<T>(
   operation: () => Promise<T>,
   cacheKey: string,
@@ -110,7 +119,15 @@ export async function withCacheMonitoring<T>(
   }
 }
 
-// Enhanced cache operation wrapper that automatically detects hits/misses
+/**
+ * Executes an asynchronous operation while automatically monitoring cache hit or miss status based on the presence of the cache key.
+ *
+ * Measures execution time, records cache metrics, and rethrows any errors encountered during the operation.
+ *
+ * @param operation - The asynchronous function to execute
+ * @param cacheKey - The cache key to check for a hit or miss
+ * @returns The result of the executed operation
+ */
 export async function withSmartCacheMonitoring<T>(
   operation: () => Promise<T>,
   cacheKey: string
@@ -140,7 +157,11 @@ export async function withSmartCacheMonitoring<T>(
   }
 }
 
-// Utility to get cache performance insights
+/**
+ * Retrieves current cache metrics and generates performance insights and recommendations.
+ *
+ * @returns An object containing cache metrics and actionable insights based on hit rate, response time, and cache size.
+ */
 export async function getCacheInsights(): Promise<{
   metrics: CacheMetrics;
   insights: CacheInsights;

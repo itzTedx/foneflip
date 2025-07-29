@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   description: "Browse and manage your media assets.",
 };
 
+/**
+ * Renders the profile settings page for an authenticated user.
+ *
+ * Ensures the user is authenticated, retrieves their active sessions, and displays the profile form within the profile tab.
+ */
 export default async function ProfileSettingsPage() {
   const session = await requireUser();
 

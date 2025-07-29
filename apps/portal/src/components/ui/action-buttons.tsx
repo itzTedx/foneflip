@@ -148,6 +148,16 @@ export const ExportButton = ({
   );
 };
 
+/**
+ * Renders a button that executes an asynchronous action, optionally requiring user confirmation before proceeding.
+ *
+ * If `requireAreYouSure` is true, the button displays a confirmation dialog with a customizable description before running the action. While the action is in progress, the button shows a loading indicator and is disabled. If the action returns an error, an error toast is displayed.
+ *
+ * @param action - An asynchronous function to execute when the button is activated. Should return an object with an `error` flag and optional `message`.
+ * @param requireAreYouSure - If true, prompts the user for confirmation before executing the action.
+ * @param areYouSureDescription - Optional description text shown in the confirmation dialog.
+ * @returns A React element rendering the action button with optional confirmation and loading state.
+ */
 export function ActionButton({
   action,
   requireAreYouSure = false,

@@ -13,6 +13,13 @@ import {
   SidebarMenuItem,
 } from "@ziron/ui/sidebar";
 
+/**
+ * Renders a sidebar navigation menu with items that display icons, animated icons, and titles.
+ *
+ * Each menu item navigates to the specified URL and highlights as active when the current path matches the item's URL.
+ *
+ * @param items - An array of navigation items, each with a title, URL, and optional icon or animated icon
+ */
 export function NavMain({
   items,
 }: {

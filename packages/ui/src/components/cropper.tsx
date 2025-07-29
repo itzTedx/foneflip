@@ -4,6 +4,11 @@ import { Cropper as CropperPrimitive } from "./package/Cropper";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * A React component that provides a styled container for cropper functionality.
+ *
+ * Wraps the CropperPrimitive.Root component, applying default layout and interaction styles for cropping interfaces. Additional classes and props can be passed to customize appearance and behavior.
+ */
 function Cropper({
   className,
   ...props
@@ -33,6 +38,11 @@ function CropperDescription({
   );
 }
 
+/**
+ * Renders an image within the cropper, applying object-cover styling and disabling pointer events.
+ *
+ * Combines default image styles with any additional classes and passes through all props to the underlying primitive.
+ */
 function CropperImage({
   className,
   ...props
@@ -49,6 +59,11 @@ function CropperImage({
   );
 }
 
+/**
+ * Renders the crop area overlay within the cropper, applying visual styles for selection and focus.
+ *
+ * Combines default overlay, border, and focus ring styles with any additional classes provided.
+ */
 function CropperCropArea({
   className,
   ...props

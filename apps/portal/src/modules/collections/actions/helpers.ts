@@ -77,9 +77,10 @@ export function prepareCollectionData({
 }
 
 /**
- * Validates collection data
- * @param data - Collection data to validate
- * @returns Validation result with boolean and error messages
+ * Validates the fields of a collection data object for required presence, length limits, and sort order integrity.
+ *
+ * @param data - The collection data to validate
+ * @returns An object indicating whether the data is valid and an array of error messages if invalid
  */
 export function validateCollectionData(
   data: CollectionData
@@ -120,10 +121,11 @@ export function validateCollectionData(
 }
 
 /**
- * Upserts collection settings
- * @param settingsData - Collection settings data
- * @param transaction - Database transaction (optional)
- * @returns Promise resolving to upserted settings
+ * Inserts or updates collection settings for a given collection.
+ *
+ * If settings for the specified collection ID exist, updates them; otherwise, inserts new settings. Returns the upserted settings or null if the operation fails.
+ *
+ * @returns The upserted collection settings, or null if the operation did not succeed.
  */
 export async function upsertCollectionSettings(
   settingsData: CollectionSettingsData,
@@ -158,11 +160,12 @@ export async function upsertCollectionSettings(
 }
 
 /**
- * Creates duplicate collection data
- * @param originalCollection - The original collection to duplicate
- * @param newSlug - The new slug for the duplicate
- * @param newSeoId - The new SEO ID for the duplicate
- * @returns Prepared collection data for the duplicate
+ * Prepares data for a duplicated collection, appending " (Copy)" to the title, incrementing sort order, and applying a new slug and optional SEO ID.
+ *
+ * @param originalCollection - The collection to duplicate
+ * @param newSlug - The slug to assign to the duplicate
+ * @param newSeoId - Optional SEO ID for the duplicate
+ * @returns Collection data suitable for creating a duplicate collection
  */
 export function prepareDuplicateCollectionData(
   originalCollection: Collection,
@@ -180,10 +183,13 @@ export function prepareDuplicateCollectionData(
 }
 
 /**
- * Creates duplicate settings data
- * @param originalSettings - The original settings to duplicate
- * @param newCollectionId - The new collection ID
- * @returns Prepared settings data for the duplicate
+ * Prepares duplicated collection settings data for a new collection.
+ *
+ * Sets the status to "draft" and copies all other settings from the original collection settings.
+ *
+ * @param originalSettings - The settings to duplicate
+ * @param newCollectionId - The ID for the new collection
+ * @returns The duplicated settings data for the new collection
  */
 export function prepareDuplicateSettingsData(
   originalSettings: CollectionSettings,
@@ -281,9 +287,9 @@ export async function upsertSeoMeta({
 }
 
 /**
- * Soft deletes SEO metadata
- * @param seoId - The SEO ID to delete
- * @param transaction - Database transaction (optional)
+ * Marks the specified SEO metadata as deleted by setting its deletedAt and updatedAt timestamps.
+ *
+ * @param seoId - The ID of the SEO metadata to soft delete
  */
 export async function softDeleteSeo(
   seoId: string,
@@ -308,10 +314,14 @@ export interface SlugValidationResult {
 }
 
 /**
- * Generates a unique slug for a collection
- * @param baseSlug - The base slug to start with
- * @param maxAttempts - Maximum number of attempts to find a unique slug (default: 100)
- * @returns Promise resolving to a unique slug
+ * Generates a unique slug by appending an incrementing counter to the base slug if needed.
+ *
+ * Attempts to find a unique slug by checking for existing collections with the same slug, up to a maximum number of attempts.
+ *
+ * @param baseSlug - The initial slug to use as a base
+ * @param maxAttempts - The maximum number of attempts to find a unique slug (default is 100)
+ * @returns A unique slug string
+ * @throws If a unique slug cannot be generated within the allowed number of attempts
  */
 export async function generateUniqueSlug(
   baseSlug: string,
@@ -380,9 +390,10 @@ export function validateSlug(slug: string): SlugValidationResult {
 }
 
 /**
- * Generates a duplicate slug for collection duplication
- * @param originalSlug - The original collection slug
- * @returns Promise resolving to a unique duplicate slug
+ * Generates a unique slug for a duplicated collection by appending "-copy" to the original slug.
+ *
+ * @param originalSlug - The slug of the collection being duplicated
+ * @returns A promise that resolves to a unique slug for the duplicate collection
  */
 export async function generateDuplicateSlug(
   originalSlug: string

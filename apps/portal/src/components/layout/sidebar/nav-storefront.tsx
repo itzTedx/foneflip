@@ -27,6 +27,13 @@ import {
   useSidebar,
 } from "@ziron/ui/sidebar";
 
+/**
+ * Renders a sidebar navigation group labeled "Storefront" with a list of navigable items and action menus.
+ *
+ * Each item displays an icon, name, and a dropdown menu with additional actions such as "Open," "Share," and "Delete."
+ *
+ * @param items - The list of storefront navigation items to display, each with a name, URL, and icon.
+ */
 export function NavStorefront({
   items,
 }: {

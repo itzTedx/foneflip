@@ -40,6 +40,15 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
     image.src = url;
   });
 
+/**
+ * Crops an image from a given source URL to the specified pixel area and returns the result as a JPEG blob.
+ *
+ * @param imageSrc - The source URL of the image to crop.
+ * @param pixelCrop - The pixel coordinates and dimensions of the crop area.
+ * @param outputWidth - The width of the output image in pixels. Defaults to the crop area's width.
+ * @param outputHeight - The height of the output image in pixels. Defaults to the crop area's height.
+ * @returns A Promise that resolves to a JPEG Blob of the cropped image, or `null` if cropping fails.
+ */
 async function getCroppedImg(
   imageSrc: string,
   pixelCrop: Area,

@@ -49,8 +49,14 @@ interface HasPermissionOptions {
 }
 
 /**
- * Checks if the current user has the required permissions.
- * Redirects or throws based on the result.
+ * Verifies that the current user has the specified permissions, redirecting or throwing an error if not.
+ *
+ * If the user lacks the required permissions, either throws an "Unauthorized" error or redirects to a specified URL, depending on options.
+ *
+ * @param permissions - The required permissions to check for the user
+ * @param redirectTo - Optional URL to redirect to if permission is denied (defaults to "/")
+ * @param throwOnFail - If true, throws an error instead of redirecting on failure (defaults to false)
+ * @returns An object containing the user session and the permission check response if access is granted
  */
 export async function hasPermission({
   permissions,

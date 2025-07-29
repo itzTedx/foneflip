@@ -5,6 +5,11 @@ import { Progress as ProgressPrimitive } from "radix-ui";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * Renders a styled progress bar that visually represents a completion percentage.
+ *
+ * Accepts all properties of the underlying Radix UI Progress primitive. The `value` prop determines the filled portion of the bar, defaulting to 0 if not provided.
+ */
 function Progress({
   className,
   value,

@@ -21,6 +21,13 @@ export const generateMetadata = (): Metadata => {
   });
 };
 
+/**
+ * Defines the root layout for the Next.js application, applying global styles, font, and context providers.
+ *
+ * Wraps all page content with necessary providers and sets up the HTML structure and language attributes.
+ *
+ * @param children - The content to be rendered within the layout
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

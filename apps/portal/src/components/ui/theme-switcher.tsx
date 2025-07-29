@@ -13,6 +13,11 @@ import {
   SegmentedControlTrigger,
 } from "@ziron/ui/segmented-control";
 
+/**
+ * Renders a segmented control for switching between light, dark, and system themes.
+ *
+ * Allows users to select their preferred theme, updating the application's appearance accordingly.
+ */
 export function ThemeSwitcher() {
   const { setTheme, theme } = useTheme();
   return (

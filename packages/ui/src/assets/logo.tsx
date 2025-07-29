@@ -1,5 +1,10 @@
 import { JSX } from "react/jsx-runtime";
 
+/**
+ * Renders the full-color SVG logo graphic.
+ *
+ * The component outputs a detailed, multi-colored SVG logo with gradients and multiple paths. All standard SVG and React SVG props are supported and spread onto the root `<svg>` element for customization.
+ */
 export function Logo(
   props: JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
 ) {
@@ -156,6 +161,11 @@ export function Logo(
   );
 }
 
+/**
+ * Renders a colored SVG icon version of the logo.
+ *
+ * The icon uses purple and blue gradients and solid fills, and spreads all received props onto the root SVG element for customization.
+ */
 export function IconLogo(
   props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
 ) {
@@ -212,6 +222,11 @@ export function IconLogo(
   );
 }
 
+/**
+ * Renders a monochrome SVG icon version of the logo, inheriting color from the current text color.
+ *
+ * All SVG paths use `currentColor` for fill, allowing the icon to adapt to surrounding text or CSS color.
+ */
 export function IconLogoMono(
   props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
 ) {
@@ -244,6 +259,11 @@ export function IconLogoMono(
   );
 }
 
+/**
+ * Renders the SVG wordmark version of the logo.
+ *
+ * The component outputs a stylized wordmark graphic using purple, blue, and currentColor fills. All standard SVG and React SVG props are supported for customization.
+ */
 export function LogoWordMark(
   props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
 ) {

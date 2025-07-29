@@ -393,6 +393,12 @@ export const ProductSettings = memo(function ProductSettings() {
   );
 });
 
+/**
+ * Renders a small circular SVG icon, typically used to indicate status with color.
+ *
+ * @param className - Optional CSS class for custom styling
+ * @returns An SVG element representing a colored status dot
+ */
 export function StatusDot({ className }: { className?: string }) {
   return (
     <svg

@@ -11,6 +11,15 @@ import {
 } from "@ziron/ui/tooltip";
 import { cn } from "@ziron/utils";
 
+/**
+ * A customizable slider component with optional tooltip support.
+ *
+ * Extends the Radix UI SliderPrimitive, allowing for single or range selection, and can display tooltips on thumbs with custom content.
+ *
+ * @param showTooltip - If true, displays a tooltip on the slider thumb(s).
+ * @param tooltipContent - Optional function to render custom tooltip content for each thumb value.
+ * @returns A slider UI component supporting controlled and uncontrolled usage, with optional tooltips.
+ */
 function Slider({
   className,
   defaultValue,

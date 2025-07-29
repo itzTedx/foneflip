@@ -5,6 +5,11 @@ import { Separator as SeparatorPrimitive } from "radix-ui";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * Renders a styled separator line, either horizontal or vertical, for visually dividing content.
+ *
+ * Accepts all props of `SeparatorPrimitive.Root`. The `orientation` prop defaults to `"horizontal"`, and the separator is decorative by default.
+ */
 function Separator({
   className,
   orientation = "horizontal",

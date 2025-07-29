@@ -111,14 +111,27 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
     };
   }, [form]);
 
+  /**
+   * Handles form submission for the product form.
+   *
+   * @param values - The submitted product form data
+   */
   function onSubmit(values: ProductFormType) {
     console.log(values);
   }
 
+  /**
+   * Handles the restore action for an archived product.
+   *
+   * Currently logs the restore action to the console.
+   */
   function handleRestore() {
     console.log("restore");
   }
 
+  /**
+   * Placeholder handler for saving the current form as a draft.
+   */
   function onSaveDraft() {
     console.log("restore");
   }
