@@ -6,7 +6,7 @@ import { SidebarInset, SidebarProvider } from "@ziron/ui/sidebar";
 import Navbar from "@/components/layout/navbar";
 import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
 import { getSession } from "@/lib/auth/server";
-import { ExistingMediaDialog } from "@/modules/media/components/existing-media-dialog";
+import { getMedia } from "@/modules/media/actions/queries";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -14,13 +14,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/**
- * Server component that renders the dashboard layout with sidebar, navbar, and content area.
- *
- * Retrieves the sidebar open state from cookies and the user session server-side, then provides these to layout components.
- *
- * @param children - The content to display within the dashboard layout
- */
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -31,6 +24,8 @@ export default async function RootLayout({
 
   // Get session server-side
   const session = await getSession();
+
+  const data = await getMedia();
 
   return (
     <SidebarProvider
@@ -49,7 +44,6 @@ export default async function RootLayout({
           {children}
         </div>
       </SidebarInset>
-      <ExistingMediaDialog />
     </SidebarProvider>
   );
 }

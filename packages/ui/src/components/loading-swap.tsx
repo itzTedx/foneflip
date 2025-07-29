@@ -1,7 +1,8 @@
 import type { JSX, ReactNode } from "react";
-import { Loader } from "lucide-react";
 
 import { cn } from "@ziron/utils";
+
+import { IconLoader } from "../assets/icons";
 
 /**
  * Displays either a loading indicator or its children based on the loading state.
@@ -36,13 +37,9 @@ export function LoadingSwap({
         {children}
       </div>
       <div
-        className={cn(
-          "col-start-1 col-end-2 row-start-1 row-end-2",
-          isLoading ? "visible" : "invisible",
-          className
-        )}
+        className={cn("col-start-1 col-end-2 row-start-1 row-end-2", isLoading ? "visible" : "invisible", className)}
       >
-        {icon ? icon : <Loader className="animate-spin" />}
+        {icon ? icon : <IconLoader className="animate-spin" />}
       </div>
     </div>
   );

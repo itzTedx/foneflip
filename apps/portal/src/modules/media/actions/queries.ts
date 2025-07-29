@@ -1,8 +1,11 @@
+"use server";
+
 import { unstable_cache as cache } from "next/cache";
-import { getSession } from "@/lib/auth/server";
 
 import { db, desc, eq, sql } from "@ziron/db";
 import { mediaTable } from "@ziron/db/schema";
+
+import { getSession } from "@/lib/auth/server";
 
 import { CACHE_DURATIONS, CACHE_TAGS } from "./cache";
 
@@ -24,15 +27,9 @@ const getMediaInternal = cache(
       where,
     });
 
-    const countPromise = db
-      .select({ count: sql<number>`count(*)` })
-      .from(mediaTable)
-      .where(where);
+    const countPromise = db.select({ count: sql<number>`count(*)` }).from(mediaTable).where(where);
 
-    const [media, countResult] = await Promise.all([
-      mediaPromise,
-      countPromise,
-    ]);
+    const [media, countResult] = await Promise.all([mediaPromise, countPromise]);
 
     const total = Number(countResult[0]?.count ?? 0);
     return { media, total };
@@ -44,10 +41,7 @@ const getMediaInternal = cache(
   }
 );
 
-export const getMedia = async (
-  page = 1,
-  pageSize = DEFAULT_MEDIA_PAGE_SIZE
-) => {
+export const getMedia = async (page = 1, pageSize = DEFAULT_MEDIA_PAGE_SIZE) => {
   const session = await getSession();
 
   if (!session?.user?.id) {

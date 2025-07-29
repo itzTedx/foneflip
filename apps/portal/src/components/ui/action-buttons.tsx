@@ -1,6 +1,9 @@
 "use client";
 
+import { ComponentProps, ReactNode, useTransition } from "react";
 import Link from "next/link";
+
+import { toast } from "sonner";
 
 import {
   AlertDialog,
@@ -15,7 +18,7 @@ import {
 } from "@ziron/ui/alert-dialog";
 import {
   IconAddCircleFilled,
-  IconExportFilled,
+  IconExportDuo,
   IconFileEditFilled,
   IconSaveFilled,
   IconUnarchiveFilled,
@@ -23,8 +26,6 @@ import {
 import { Button, buttonVariants } from "@ziron/ui/button";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
 import { VariantProps } from "@ziron/utils";
-import { ComponentProps, ReactNode, useTransition } from "react";
-import { toast } from "sonner";
 
 export const SaveButton = ({
   title,
@@ -39,10 +40,7 @@ export const SaveButton = ({
   }) => {
   return (
     <Button type="submit" {...props}>
-      <LoadingSwap
-        isLoading={isLoading}
-        className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
-      >
+      <LoadingSwap className="inline-flex items-center justify-center gap-2 whitespace-nowrap" isLoading={isLoading}>
         <IconSaveFilled className="-ml-1 size-4" />
         {isEditMode ? (
           <span>
@@ -69,11 +67,8 @@ export const DraftButton = ({
   }) => {
   return (
     <Button variant="outline" {...props}>
-      <LoadingSwap
-        isLoading={isLoading}
-        className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
-      >
-        <IconFileEditFilled className="text-muted-foreground -ml-1 size-4" />
+      <LoadingSwap className="inline-flex items-center justify-center gap-2 whitespace-nowrap" isLoading={isLoading}>
+        <IconFileEditFilled className="-ml-1 size-4 text-muted-foreground" />
         <div>
           <span className="hidden sm:inline">Save as </span>Draft
         </div>
@@ -91,15 +86,8 @@ export const RestoreArchiveButton = ({
     isLoading: boolean;
   }) => {
   return (
-    <Button
-      type="button"
-      className="from-success shadow-success/20 text-success-foreground to-emerald-500"
-      {...props}
-    >
-      <LoadingSwap
-        isLoading={isLoading}
-        className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
-      >
+    <Button className="from-success to-emerald-500 text-success-foreground shadow-success/20" type="button" {...props}>
+      <LoadingSwap className="inline-flex items-center justify-center gap-2 whitespace-nowrap" isLoading={isLoading}>
         <IconUnarchiveFilled className="-ml-1 size-4" />
         <div>Unarchive</div>
       </LoadingSwap>
@@ -137,11 +125,8 @@ export const ExportButton = ({
   }) => {
   return (
     <Button variant="outline" {...props}>
-      <LoadingSwap
-        isLoading={isLoading ?? false}
-        className="flex items-center gap-2"
-      >
-        <IconExportFilled />
+      <LoadingSwap className="flex items-center gap-2" isLoading={isLoading ?? false}>
+        <IconExportDuo />
         Export
       </LoadingSwap>
     </Button>
@@ -186,9 +171,7 @@ export function ActionButton({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {areYouSureDescription}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{areYouSureDescription}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -210,10 +193,7 @@ export function ActionButton({
         props.onClick?.(e);
       }}
     >
-      <LoadingSwap
-        isLoading={isLoading}
-        className="inline-flex items-center gap-2"
-      >
+      <LoadingSwap className="inline-flex items-center gap-2" isLoading={isLoading}>
         {props.children}
       </LoadingSwap>
     </Button>
