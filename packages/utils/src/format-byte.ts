@@ -4,7 +4,7 @@
  * @param decimals - Number of decimal places to show (default: 2)
  * @returns Formatted string with appropriate unit (B, KB, MB, GB)
  */
-export function formatFileSize(bytes: number, decimals: number = 2): string {
+export function formatFileSize(bytes: number, decimals = 2): string {
   if (bytes === 0) return "0 B";
 
   const k = 1024;
