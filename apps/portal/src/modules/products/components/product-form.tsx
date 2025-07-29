@@ -45,7 +45,7 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
 
   useEffect(() => {
     setTitle(initialData?.title ?? null);
-  }, [setTitle]);
+  }, []);
 
   const [draft, setDraft, removeDraft] = useLocalStorage<Partial<ProductFormType> | null>(LOCAL_STORAGE_KEY, null);
 

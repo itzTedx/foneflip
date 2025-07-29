@@ -33,10 +33,7 @@ function Tabs({
     [setTabValue, onValueChange]
   );
 
-  const valueFromPath =
-    pathname === "/search"
-      ? "general"
-      : pathname.split("/").filter(Boolean).pop();
+  const valueFromPath = pathname === "/search" ? "general" : pathname.split("/").filter(Boolean).pop();
 
   return (
     <TabsPrimitive.Root
@@ -50,10 +47,7 @@ function Tabs({
   );
 }
 
-function TabsList({
-  className,
-  ...props
-}: React.ComponentProps<typeof TabsPrimitive.List>) {
+function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
       className={cn(
@@ -66,10 +60,7 @@ function TabsList({
   );
 }
 
-function TabsTrigger({
-  className,
-  ...props
-}: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
+function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
       className={cn(
@@ -82,17 +73,8 @@ function TabsTrigger({
   );
 }
 
-function TabsContent({
-  className,
-  ...props
-}: React.ComponentProps<typeof TabsPrimitive.Content>) {
-  return (
-    <TabsPrimitive.Content
-      className={cn("flex-1 outline-none", className)}
-      data-slot="tabs-content"
-      {...props}
-    />
-  );
+function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) {
+  return <TabsPrimitive.Content className={cn("flex-1 outline-none", className)} data-slot="tabs-content" {...props} />;
 }
 
 export { Tabs, TabsContent, TabsList, TabsTrigger };
@@ -105,13 +87,10 @@ export type TabTrigger = {
 export type TabTriggerType = {
   value: string;
   label: string;
-  Icon?: (
-    props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-  ) => JSX.Element;
+  Icon?: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => JSX.Element;
 };
 
-export interface TabsTriggersProps
-  extends Omit<React.ComponentProps<typeof TabsTrigger>, "value"> {
+export interface TabsTriggersProps extends Omit<React.ComponentProps<typeof TabsTrigger>, "value"> {
   tabTriggers: readonly TabTriggerType[];
   showSettings?: boolean;
   onSettingsClick?: () => void;
@@ -121,12 +100,7 @@ export interface TabsTriggersProps
 const tabTriggerClass =
   "data-[state=active]:after:bg-primary relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none";
 
-export function TabsTriggers({
-  tabTriggers,
-  showSettings = true,
-  onSettingsClick,
-  ...props
-}: TabsTriggersProps) {
+export function TabsTriggers({ tabTriggers, showSettings = true, onSettingsClick, ...props }: TabsTriggersProps) {
   const handleSettingsClick = React.useCallback(() => {
     onSettingsClick?.();
   }, [onSettingsClick]);
@@ -134,16 +108,11 @@ export function TabsTriggers({
   if (tabTriggers.length === 0 && !showSettings) return null;
 
   return (
-    <div className="bg-background/80 px-6 pt-2 backdrop-blur-xl">
+    <div className="px-6 pt-1">
       <TabsList className="flex h-auto w-full justify-between gap-2 rounded-none border-b bg-transparent p-0">
         <div className="flex gap-2">
           {tabTriggers.map(({ value, label, Icon }) => (
-            <TabsTrigger
-              className={tabTriggerClass}
-              key={value}
-              value={value}
-              {...props}
-            >
+            <TabsTrigger className={tabTriggerClass} key={value} value={value} {...props}>
               {Icon && <Icon />}
               {label}
             </TabsTrigger>
@@ -151,11 +120,7 @@ export function TabsTriggers({
         </div>
         {showSettings && (
           <div>
-            <TabsTrigger
-              className={tabTriggerClass}
-              onClick={handleSettingsClick}
-              value="settings"
-            >
+            <TabsTrigger className={tabTriggerClass} onClick={handleSettingsClick} value="settings">
               <IconSettingsFilled className="size-4" />
               Settings
             </TabsTrigger>

@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from "@ziron/ui/dialog";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
-import { pluralize } from "@ziron/utils";
+import { cn, pluralize } from "@ziron/utils";
 
 import { productErrorAtom } from "../../atom";
 
@@ -31,7 +31,7 @@ export const ErrorDialog = () => {
           type="button"
           variant={validationErrors.length ? "destructive" : "ghost"}
         >
-          <IconFileAlertFilled /> Errors
+          <IconFileAlertFilled /> <span className={cn(validationErrors.length ? "" : "opacity-50")}>Console</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

@@ -1,28 +1,22 @@
 "use client";
 
-import { Header } from "@/components/layout/header";
-import {
-  DraftButton,
-  RestoreArchiveButton,
-  SaveButton,
-} from "@/components/ui/action-buttons";
-import { useRouter } from "@bprogress/next";
-import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useTransition } from "react";
 
+import { useRouter } from "@bprogress/next";
+import { parseAsString, useQueryState } from "nuqs";
+
 import { Form, useForm, zodResolver } from "@ziron/ui/form";
+import { useHotkey } from "@ziron/ui/hooks/use-hotkey";
 import { useLocalStorage } from "@ziron/ui/hooks/use-local-storage";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
 import { toast } from "@ziron/ui/sonner";
 import { CollectionFormType, collectionSchema } from "@ziron/validators";
 
+import { Header } from "@/components/layout/header";
+import { DraftButton, RestoreArchiveButton, SaveButton } from "@/components/ui/action-buttons";
 import { Tabs, TabsContent, TabsTriggers } from "@/components/ui/tabs";
-import { useHotkey } from "@ziron/ui/hooks/use-hotkey";
-import {
-  saveCollectionDraft,
-  setCollectionStatus,
-  upsertCollection,
-} from "../actions/mutations";
+
+import { saveCollectionDraft, setCollectionStatus, upsertCollection } from "../actions/mutations";
 import { COLLECTION_TABS } from "../data/constants";
 import { getDefaultValues } from "../utils/helper";
 import { CollectionDetails } from "./form-sections/collection-details";
@@ -47,11 +41,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
   const [isDraftPending, startDraftTransition] = useTransition();
   const [isRestorePending, startRestoreTransition] = useTransition();
 
-  const [draft, setDraft, removeDraft] =
-    useLocalStorage<Partial<CollectionFormType> | null>(
-      LOCAL_STORAGE_KEY,
-      null
-    );
+  const [draft, setDraft, removeDraft] = useLocalStorage<Partial<CollectionFormType> | null>(LOCAL_STORAGE_KEY, null);
   const isArchived = initialData?.settings?.status === "archived";
 
   const form = useForm<CollectionFormType>({
@@ -95,17 +85,11 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
       if (result.success) {
         const message = (result as { message?: string }).message;
 
-        toast.success(
-          typeof message === "string"
-            ? message
-            : "Collection status changed successfully"
-        );
+        toast.success(typeof message === "string" ? message : "Collection status changed successfully");
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
-        toast.error(
-          typeof message === "string" ? message : "An error occurred"
-        );
+        toast.error(typeof message === "string" ? message : "An error occurred");
       }
     });
   }
@@ -122,18 +106,12 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
       if (result.success) {
         const message = (result as { message?: string }).message;
         removeDraft();
-        toast.success(
-          typeof message === "string"
-            ? message
-            : "Collection Updated successfully"
-        );
+        toast.success(typeof message === "string" ? message : "Collection Updated successfully");
         router.push("/collections");
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
-        toast.error(
-          typeof message === "string" ? message : "An error occurred"
-        );
+        toast.error(typeof message === "string" ? message : "An error occurred");
       }
     });
   }
@@ -151,16 +129,12 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
       if (result.success) {
         const message = (result as { message?: string }).message;
         removeDraft();
-        toast.success(
-          typeof message === "string" ? message : "Collection Saved on draft"
-        );
+        toast.success(typeof message === "string" ? message : "Collection Saved on draft");
         router.push("/collections");
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
-        toast.error(
-          typeof message === "string" ? message : "An error occurred"
-        );
+        toast.error(typeof message === "string" ? message : "An error occurred");
       }
     });
   }
@@ -183,47 +157,40 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
   // console.info("validate form data: ", validation);
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="relative mx-auto max-w-7xl flex-1 pb-6"
-      >
-        <Header
-          title={isEditMode ? "Edit Collection" : "Add Collection"}
-          backLink="/collections"
-        >
-          <div className="flex items-center gap-3">
-            {isArchived ? (
-              <RestoreArchiveButton
-                onClick={handleRestore}
-                isLoading={isRestorePending}
-                disabled={form.formState.isSubmitting || isRestorePending}
-              />
-            ) : (
-              <>
-                <DraftButton
-                  type="button"
-                  disabled={
-                    form.formState.isSubmitting || isArchived || isDraftPending
-                  }
-                  onClick={onSaveDraft}
-                  isLoading={isDraftPending}
-                />
-                <SaveButton
-                  title="Collection"
-                  disabled={isArchived || isPending}
-                  isEditMode={isEditMode}
-                  isLoading={isPending}
-                />
-              </>
-            )}
+      <form className="relative mx-auto max-w-7xl flex-1 pb-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <Tabs className="w-full" defaultValue="details">
+          <div className="sticky top-[calc(3rem+1px)] z-99 bg-background/80 backdrop-blur-xl">
+            <Header backLink="/collections" title={isEditMode ? "Edit Collection" : "Add Collection"}>
+              <div className="flex items-center gap-3">
+                {isArchived ? (
+                  <RestoreArchiveButton
+                    disabled={form.formState.isSubmitting || isRestorePending}
+                    isLoading={isRestorePending}
+                    onClick={handleRestore}
+                  />
+                ) : (
+                  <>
+                    <DraftButton
+                      disabled={form.formState.isSubmitting || isArchived || isDraftPending}
+                      isLoading={isDraftPending}
+                      onClick={onSaveDraft}
+                      type="button"
+                    />
+                    <SaveButton
+                      disabled={isArchived || isPending}
+                      isEditMode={isEditMode}
+                      isLoading={isPending}
+                      title="Collection"
+                    />
+                  </>
+                )}
+              </div>
+            </Header>
+            <ScrollArea>
+              <TabsTriggers disabled={isArchived} tabTriggers={COLLECTION_TABS} />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </div>
-        </Header>
-
-        <Tabs defaultValue="details" className="w-full">
-          <ScrollArea>
-            <TabsTriggers tabTriggers={COLLECTION_TABS} disabled={isArchived} />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
           <div className="px-6">
             <TabsContent value="details">
               <CollectionDetails />
@@ -233,19 +200,14 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
               <CollectionMedia />
             </TabsContent>
 
-            <TabsContent value="products">
-              {/* <CollectionProducts products={initialData?.products} /> */}
-            </TabsContent>
+            <TabsContent value="products">{/* <CollectionProducts products={initialData?.products} /> */}</TabsContent>
 
             <TabsContent value="seo">
               <CollectionSEO />
             </TabsContent>
 
             <TabsContent value="settings">
-              <CollectionSettings
-                updatedAt={initialData?.updatedAt}
-                isEditMode={isEditMode}
-              />
+              <CollectionSettings isEditMode={isEditMode} updatedAt={initialData?.updatedAt} />
             </TabsContent>
           </div>
         </Tabs>
