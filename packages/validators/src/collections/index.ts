@@ -13,7 +13,12 @@ export const collectionSchema = z.object({
   label: z.string().optional(),
   sortOrder: z.number().optional(),
 
-  slug: z.string().optional(),
+  slug: z
+    .string()
+    .regex(/^[a-z0-9-]+$/, {
+      message: "Slug must be lowercase and contain only letters, numbers, and dashes.",
+    })
+    .optional(),
 
   thumbnail: mediaSchema.optional(),
   banner: mediaSchema.optional(),

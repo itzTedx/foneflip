@@ -12,7 +12,12 @@ export const productSchema = z
     id: z.string().optional(),
     title: z.string("Product title is required.").min(1, { message: "Please enter a product title." }),
     description: z.string().optional(),
-    slug: z.string("Slug must be a text value.").optional(),
+    slug: z
+      .string("Slug must be a text value.")
+      .regex(/^[a-z0-9-]+$/, {
+        message: "Slug must be lowercase and contain only letters, numbers, and dashes.",
+      })
+      .optional(),
     condition: productConditionEnum.default("pristine").optional(),
     brand: z.string("Please enter a valid brand.").optional(),
     collectionId: z.string("Please select a valid collection.").optional(),
