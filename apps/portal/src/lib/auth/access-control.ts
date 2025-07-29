@@ -26,7 +26,7 @@ export const ROUTE_ACCESS = {
  */
 export function hasRouteAccess(
   session: Session | null,
-  pathname: string,
+  pathname: string
 ): boolean {
   if (!session) {
     return ROUTE_ACCESS.public.some((route) => pathname.startsWith(route));
@@ -41,7 +41,7 @@ export function hasRouteAccess(
 
   // Check if route is admin-only
   const isAdminOnlyRoute = ROUTE_ACCESS.adminOnly.some((route) =>
-    pathname.startsWith(route),
+    pathname.startsWith(route)
   );
 
   if (isAdminOnlyRoute && userRole === "vendor") {

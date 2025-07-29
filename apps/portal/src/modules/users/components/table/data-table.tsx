@@ -2,17 +2,17 @@
 
 import { User } from "@/modules/collections/types";
 import {
-    ColumnFiltersState,
-    flexRender,
-    getCoreRowModel,
-    getFacetedUniqueValues,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    PaginationState,
-    SortingState,
-    useReactTable,
-    VisibilityState,
+  ColumnFiltersState,
+  flexRender,
+  getCoreRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
@@ -20,19 +20,19 @@ import React, { useId, useState } from "react";
 
 import { Label } from "@ziron/ui/label";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@ziron/ui/select";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@ziron/ui/table";
 import { cn } from "@ziron/utils";
 
@@ -60,13 +60,13 @@ export default function UsersTable({ data, initialPageSize }: Props) {
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [pageSize, setPageSize] = useQueryState(
     "pageSize",
-    parseAsInteger.withDefault(10),
+    parseAsInteger.withDefault(10)
   );
 
   // On mount, if no pageSize in URL, use initialPageSize from cookie
   React.useEffect(() => {
     const urlPageSize = new URLSearchParams(window.location.search).get(
-      "pageSize",
+      "pageSize"
     );
     if (!urlPageSize && initialPageSize) {
       setPageSize(initialPageSize);
@@ -143,7 +143,7 @@ export default function UsersTable({ data, initialPageSize }: Props) {
                         <div
                           className={cn(
                             header.column.getCanSort() &&
-                              "flex h-full cursor-pointer items-center justify-between gap-2 select-none",
+                              "flex h-full cursor-pointer items-center justify-between gap-2 select-none"
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                           onKeyDown={(e) => {
@@ -160,7 +160,7 @@ export default function UsersTable({ data, initialPageSize }: Props) {
                         >
                           {flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                           {{
                             asc: (
@@ -182,7 +182,7 @@ export default function UsersTable({ data, initialPageSize }: Props) {
                       ) : (
                         flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )
                       )}
                     </TableHead>
@@ -202,7 +202,7 @@ export default function UsersTable({ data, initialPageSize }: Props) {
                     <TableCell key={cell.id} className="last:py-0">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}
@@ -263,9 +263,9 @@ export default function UsersTable({ data, initialPageSize }: Props) {
                   table.getState().pagination.pageIndex *
                     table.getState().pagination.pageSize +
                     table.getState().pagination.pageSize,
-                  0,
+                  0
                 ),
-                table.getRowCount(),
+                table.getRowCount()
               )}
             </span>{" "}
             of{" "}

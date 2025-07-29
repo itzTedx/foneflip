@@ -6,20 +6,20 @@ import { ProductForm } from "@/modules/products/components/product-form";
 type Params = Promise<{ id: string }>;
 
 export default async function ProductPage({ params }: { params: Params }) {
- await hasPermission({
+  await hasPermission({
     permissions: {
-      products: ["create", "delete", "update"]
-    }
+      products: ["create", "delete", "update"],
+    },
   });
 
-  const collections = await getCollectionsMetadata()
+  const collections = await getCollectionsMetadata();
 
   const { id } = await params;
   const editMode = id !== "new";
   return (
     <MainWrapper>
       {/* <pre>{JSON.stringify(collections, null, 2)}</pre> */}
-      <ProductForm isEditMode={editMode} collections={collections}  />
+      <ProductForm isEditMode={editMode} collections={collections} />
     </MainWrapper>
   );
 }

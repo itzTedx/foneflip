@@ -87,7 +87,7 @@ export class CacheMonitor {
 export async function withCacheMonitoring<T>(
   operation: () => Promise<T>,
   cacheKey: string,
-  isCacheHit: boolean,
+  isCacheHit: boolean
 ): Promise<T> {
   const monitor = CacheMonitor.getInstance();
   const startTime = Date.now();
@@ -113,7 +113,7 @@ export async function withCacheMonitoring<T>(
 // Enhanced cache operation wrapper that automatically detects hits/misses
 export async function withSmartCacheMonitoring<T>(
   operation: () => Promise<T>,
-  cacheKey: string,
+  cacheKey: string
 ): Promise<T> {
   const monitor = CacheMonitor.getInstance();
   const startTime = Date.now();
@@ -160,7 +160,7 @@ export async function getCacheInsights(): Promise<{
 
   if (metrics.hitRate < 60) {
     insights.recommendations.push(
-      "Consider increasing cache TTL for frequently accessed data",
+      "Consider increasing cache TTL for frequently accessed data"
     );
     insights.recommendations.push("Review cache invalidation strategy");
   }
@@ -172,7 +172,7 @@ export async function getCacheInsights(): Promise<{
 
   if (metrics.cacheSize > 1000) {
     insights.recommendations.push(
-      "Consider implementing cache eviction policies",
+      "Consider implementing cache eviction policies"
     );
   }
 

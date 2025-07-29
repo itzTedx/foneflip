@@ -41,12 +41,12 @@ const getMediaInternal = cache(
   {
     revalidate: CACHE_DURATIONS.MEDIUM,
     tags: [CACHE_TAGS.MEDIA],
-  },
+  }
 );
 
 export const getMedia = async (
   page = 1,
-  pageSize = DEFAULT_MEDIA_PAGE_SIZE,
+  pageSize = DEFAULT_MEDIA_PAGE_SIZE
 ) => {
   const session = await getSession();
 

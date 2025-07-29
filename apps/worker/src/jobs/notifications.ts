@@ -23,7 +23,7 @@ export const runNotification = async (data: JobData[JobType.Notification]) => {
       type,
       message,
       createdAt: new Date().toISOString(),
-    }),
+    })
   );
 };
 
@@ -37,11 +37,11 @@ export const deleteOldNotifications = async () => {
       and(
         lt(notificationsTable.createdAt, THIRTY_DAYS_AGO),
         eq(notificationsTable.read, true),
-        isNull(notificationsTable.deletedAt),
-      ),
+        isNull(notificationsTable.deletedAt)
+      )
     )
     .returning();
-  console.log(`Soft-deleted notifications older than 30 days:`, result);
+  console.log("Soft-deleted notifications older than 30 days:", result);
 };
 
 export const deleteSoftDeletedNotifications = async () => {
@@ -51,7 +51,7 @@ export const deleteSoftDeletedNotifications = async () => {
     .where(lt(notificationsTable.deletedAt, SIXTY_DAYS_AGO))
     .returning();
   console.log(
-    `Hard-deleted notifications soft-deleted over 2 months ago:`,
-    result,
+    "Hard-deleted notifications soft-deleted over 2 months ago:",
+    result
   );
 };

@@ -115,8 +115,8 @@ export function ProfileForm({ initialData, sessions }: Props) {
 
   //   Ensure current device session is always first
   const sortedSessions = [
-    ...(sessions).filter((s) => s.id === initialData.session.id),
-    ...(sessions).filter((s) => s.id !== initialData.session.id),
+    ...sessions.filter((s) => s.id === initialData.session.id),
+    ...sessions.filter((s) => s.id !== initialData.session.id),
   ];
 
   return (
@@ -236,8 +236,6 @@ export function ProfileForm({ initialData, sessions }: Props) {
               />
             </CardContent>
           </Card>
-
-       
 
           <Card className="break-inside-avoid">
             <CardHeader className="flex items-center justify-between">

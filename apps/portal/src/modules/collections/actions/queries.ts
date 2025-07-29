@@ -7,7 +7,7 @@ import type {
   Collection,
   CollectionMetadata,
   CollectionQueryResult,
-  CollectionsQueryResult
+  CollectionsQueryResult,
 } from "../types";
 import {
   CACHE_DURATIONS,
@@ -23,7 +23,7 @@ export const existingCollection = cache(
       async () => {
         // Try Redis first
         const cached = await redisCache.get<Collection>(
-          REDIS_KEYS.COLLECTION_BY_SLUG(slug),
+          REDIS_KEYS.COLLECTION_BY_SLUG(slug)
         );
         if (cached) {
           return cached;
@@ -39,21 +39,21 @@ export const existingCollection = cache(
           await redisCache.set(
             REDIS_KEYS.COLLECTION_BY_SLUG(slug),
             collection,
-            CACHE_DURATIONS.MEDIUM,
+            CACHE_DURATIONS.MEDIUM
           );
         }
 
         return collection;
       },
       REDIS_KEYS.COLLECTION_BY_SLUG(slug),
-      false, // This is a miss since we're checking existence
+      false // This is a miss since we're checking existence
     );
   },
   ["existing-collection"],
   {
     tags: [CACHE_TAGS.COLLECTION_BY_SLUG],
     revalidate: CACHE_DURATIONS.MEDIUM,
-  },
+  }
 );
 
 export const getCollections = cache(
@@ -62,7 +62,7 @@ export const getCollections = cache(
       async () => {
         // Try Redis first
         const cached = await redisCache.get<CollectionsQueryResult>(
-          REDIS_KEYS.COLLECTIONS,
+          REDIS_KEYS.COLLECTIONS
         );
         if (cached) {
           return cached;
@@ -85,20 +85,20 @@ export const getCollections = cache(
         await redisCache.set(
           REDIS_KEYS.COLLECTIONS,
           collections,
-          CACHE_DURATIONS.LONG,
+          CACHE_DURATIONS.LONG
         );
 
         return collections;
       },
       REDIS_KEYS.COLLECTIONS,
-      false, // This is a miss since we're fetching fresh data
+      false // This is a miss since we're fetching fresh data
     );
   },
   ["get-collections"],
   {
     tags: [CACHE_TAGS.COLLECTIONS],
     revalidate: CACHE_DURATIONS.LONG,
-  },
+  }
 );
 
 export type CollectionsQueryResultType = Awaited<
@@ -109,7 +109,7 @@ export const getCollectionBySlug = cache(
   async (slug: string) => {
     // Try Redis first
     const cached = await redisCache.get<Collection>(
-      REDIS_KEYS.COLLECTION_BY_SLUG(slug),
+      REDIS_KEYS.COLLECTION_BY_SLUG(slug)
     );
     if (cached) {
       return cached;
@@ -125,7 +125,7 @@ export const getCollectionBySlug = cache(
       await redisCache.set(
         REDIS_KEYS.COLLECTION_BY_SLUG(slug),
         collection,
-        CACHE_DURATIONS.MEDIUM,
+        CACHE_DURATIONS.MEDIUM
       );
     }
 
@@ -141,7 +141,7 @@ export const getCollectionBySlug = cache(
       CACHE_TAGS.MEDIA,
     ],
     revalidate: CACHE_DURATIONS.MEDIUM,
-  },
+  }
 );
 
 export const getCollectionById = cache(
@@ -150,7 +150,7 @@ export const getCollectionById = cache(
       async () => {
         // Try Redis first
         const cached = await redisCache.get<CollectionQueryResult>(
-          REDIS_KEYS.COLLECTION_BY_ID(id),
+          REDIS_KEYS.COLLECTION_BY_ID(id)
         );
         if (cached) {
           return cached;
@@ -171,14 +171,14 @@ export const getCollectionById = cache(
           await redisCache.set(
             REDIS_KEYS.COLLECTION_BY_ID(id),
             collection,
-            CACHE_DURATIONS.MEDIUM,
+            CACHE_DURATIONS.MEDIUM
           );
         }
 
         return collection;
       },
       REDIS_KEYS.COLLECTION_BY_ID(id),
-      false, // This is a miss since we're fetching fresh data
+      false // This is a miss since we're fetching fresh data
     );
   },
   [CACHE_TAGS.COLLECTION_BY_ID, "id"],
@@ -190,7 +190,7 @@ export const getCollectionById = cache(
       CACHE_TAGS.MEDIA,
     ],
     revalidate: CACHE_DURATIONS.MEDIUM,
-  },
+  }
 );
 
 export const getActiveCollections = cache(
@@ -202,54 +202,53 @@ export const getActiveCollections = cache(
         return collections.filter((collection) => !collection?.deletedAt);
       },
       `${REDIS_KEYS.COLLECTIONS}:active`,
-      false,
+      false
     );
   },
   ["get-active-collections"],
   {
     tags: [CACHE_TAGS.COLLECTION_ACTIVE],
     revalidate: CACHE_DURATIONS.MEDIUM,
-  },
+  }
 );
 
 export const getCollectionsMetadata = cache(
-      async (): Promise<CollectionMetadata[]> => {
-        // Try Redis first
-        const cached = await redisCache.get<CollectionMetadata[]>(
-          REDIS_KEYS.COLLECTIONS_METADATA,
-        );
-        if (cached) {
-          return cached;
-        }
+  async (): Promise<CollectionMetadata[]> => {
+    // Try Redis first
+    const cached = await redisCache.get<CollectionMetadata[]>(
+      REDIS_KEYS.COLLECTIONS_METADATA
+    );
+    if (cached) {
+      return cached;
+    }
 
-        // Fallback to database
-        const collections = await db.query.collectionsTable.findMany({
-          where: isNull(collectionsTable.deletedAt),
-          columns: {
-            id: true,
-            title: true,
-            createdAt: true,
-          }
-        });
-
-        // Cache the result
-        if (collections) {
-          await redisCache.set(
-            REDIS_KEYS.COLLECTIONS_METADATA,
-            collections,
-            CACHE_DURATIONS.MEDIUM,
-          );
-        }
-
-        return collections;
+    // Fallback to database
+    const collections = await db.query.collectionsTable.findMany({
+      where: isNull(collectionsTable.deletedAt),
+      columns: {
+        id: true,
+        title: true,
+        createdAt: true,
       },
-     
+    });
+
+    // Cache the result
+    if (collections) {
+      await redisCache.set(
+        REDIS_KEYS.COLLECTIONS_METADATA,
+        collections,
+        CACHE_DURATIONS.MEDIUM
+      );
+    }
+
+    return collections;
+  },
 
   ["get-collections"],
   {
     tags: [CACHE_TAGS.COLLECTIONS],
     revalidate: CACHE_DURATIONS.MEDIUM,
-  },
+  }
 );
 export type CollectionsMetadataQueryResultType = Awaited<
   ReturnType<typeof getCollectionsMetadata>

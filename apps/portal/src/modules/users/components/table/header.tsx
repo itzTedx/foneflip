@@ -1,42 +1,38 @@
 import { User } from "@/modules/collections/types";
 import { Table } from "@tanstack/react-table";
 import {
-    CircleAlertIcon,
-    CircleXIcon,
-    Columns3Icon,
-    FilterIcon,
-    ListFilterIcon,
-    TrashIcon,
+  CircleAlertIcon,
+  CircleXIcon,
+  Columns3Icon,
+  FilterIcon,
+  ListFilterIcon,
+  TrashIcon,
 } from "lucide-react";
 import { useId, useMemo, useRef } from "react";
 
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@ziron/ui/alert-dialog";
 import { Button } from "@ziron/ui/button";
 import { Checkbox } from "@ziron/ui/checkbox";
 import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 import { Input } from "@ziron/ui/input";
 import { Label } from "@ziron/ui/label";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@ziron/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@ziron/ui/popover";
 import { cn } from "@ziron/utils";
 
 // import { Item } from "./columns";
@@ -52,7 +48,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows;
     const updatedData = data.filter(
-      (item) => !selectedRows.some((row) => row.original.id === item.id),
+      (item) => !selectedRows.some((row) => row.original.id === item.id)
     );
     // setData(updatedData);
     table.resetRowSelection();
@@ -109,7 +105,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
             ref={inputRef}
             className={cn(
               "peer min-w-60 ps-9",
-              Boolean(table.getColumn("name")?.getFilterValue()) && "pe-9",
+              Boolean(table.getColumn("name")?.getFilterValue()) && "pe-9"
             )}
             value={(table.getColumn("name")?.getFilterValue() ?? "") as string}
             onChange={(e) =>

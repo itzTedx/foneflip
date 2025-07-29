@@ -5,7 +5,6 @@ import { memo, useCallback, useState } from "react";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { ChevronsUpDown } from "lucide-react";
 
-import { ATTRIBUTE_SUGGESTIONS } from "@/modules/products/data/constants";
 import { Button } from "@ziron/ui/button";
 import {
   Card,
@@ -24,12 +23,16 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, useFieldArray, useFormContext
+  FormMessage,
+  useFieldArray,
+  useFormContext,
 } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { MultiInput } from "@ziron/ui/multi-input";
 import { cn } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
+
+import { ATTRIBUTE_SUGGESTIONS } from "@/modules/products/data/constants";
 
 interface AttributeItemProps {
   index: number;
@@ -47,8 +50,8 @@ const AttributeItem = memo(function AttributeItem({
   hasVariant,
 }: AttributeItemProps) {
   const { control, watch } = useFormContext<ProductFormType>();
-  const name = watch( `attributes.${index}.name` );
-  const options = watch( `attributes.${index}.options` );
+  const name = watch(`attributes.${index}.name`);
+  const options = watch(`attributes.${index}.options`);
 
   const [isOpen, setIsOpen] = useState(() =>
     isEditMode ? totalFields < 3 : true
@@ -63,10 +66,10 @@ const AttributeItem = memo(function AttributeItem({
     >
       <div className="flex items-center justify-between px-3 py-1">
         <CollapsibleTrigger disabled={!hasVariant}>
-          <h2 className={cn("w-full cursor-pointer text-sm font-medium")}>
+          <h2 className={cn("w-full cursor-pointer font-medium text-sm")}>
             {name || options?.length ? (
               <span>
-                <span className="text-muted-foreground pr-1 font-light">
+                <span className="pr-1 font-light text-muted-foreground">
                   {index + 1 < 10 ? `0${index + 1}` : index + 1}
                 </span>{" "}
                 {name}
@@ -98,7 +101,7 @@ const AttributeItem = memo(function AttributeItem({
               className="-mr-2 shrink-0 p-0"
               disabled={!hasVariant}
             >
-              <ChevronsUpDown className="text-muted-foreground/80 h-4 w-4" />
+              <ChevronsUpDown className="h-4 w-4 text-muted-foreground/80" />
               <span className="sr-only">Toggle</span>
             </Button>
           </CollapsibleTrigger>

@@ -3,10 +3,10 @@
 import * as React from "react";
 
 import {
-    AnimatePresence,
-    type HTMLMotionProps,
-    type Transition,
-    motion,
+  AnimatePresence,
+  type HTMLMotionProps,
+  type Transition,
+  motion,
 } from "motion/react";
 
 import { cn } from "@ziron/utils";
@@ -124,4 +124,3 @@ function IconButton({
 }
 
 export { IconButton, sizes, type IconButtonProps };
-

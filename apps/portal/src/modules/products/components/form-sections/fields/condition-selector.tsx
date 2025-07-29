@@ -2,15 +2,13 @@ import { memo } from "react";
 
 import RadioGroupSelector from "@/components/ui/radio-group";
 import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormMessage,
-    useFormContext
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+  useFormContext,
 } from "@ziron/ui/form";
 import { productConditionEnum, ProductFormType } from "@ziron/validators";
-
-
 
 export const ConditionSelector = memo(function ConditionSelector() {
   const form = useFormContext<ProductFormType>();

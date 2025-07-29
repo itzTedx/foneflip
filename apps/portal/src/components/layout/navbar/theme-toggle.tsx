@@ -5,10 +5,10 @@ import { useTheme } from "next-themes";
 
 import { Button } from "@ziron/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 
 export function ThemeToggle() {

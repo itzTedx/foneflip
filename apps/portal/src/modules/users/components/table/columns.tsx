@@ -1,27 +1,26 @@
-
 import { User } from "@/modules/collections/types";
 import {
-    IconAlertHexagonFilled,
-    IconCircleCheckFilled,
+  IconAlertHexagonFilled,
+  IconCircleCheckFilled,
 } from "@tabler/icons-react";
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@ziron/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@ziron/ui/avatar";
 import { Checkbox } from "@ziron/ui/checkbox";
 import { formatDate } from "@ziron/utils";
 
-import { StatusBadge, StatusBadgeDot, StatusBadgeIcon } from "@ziron/ui/status-badge";
+import {
+  StatusBadge,
+  StatusBadgeDot,
+  StatusBadgeIcon,
+} from "@ziron/ui/status-badge";
 import { RowActions } from "./row-actions";
 
 // Custom filter function for multi-column searching
 export const multiColumnFilterFn: FilterFn<User> = (
   row,
   columnId,
-  filterValue,
+  filterValue
 ) => {
   const searchableRowContent =
     `${row.original.name} ${row.original.email}`.toLowerCase();

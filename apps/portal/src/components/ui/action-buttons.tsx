@@ -1,8 +1,18 @@
-'use client'
+"use client";
 
 import Link from "next/link";
 
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@ziron/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@ziron/ui/alert-dialog";
 import {
   IconAddCircleFilled,
   IconExportFilled,
@@ -23,7 +33,7 @@ export const SaveButton = ({
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
-    title: string
+    title: string;
     isLoading: boolean;
     isEditMode: boolean;
   }) => {

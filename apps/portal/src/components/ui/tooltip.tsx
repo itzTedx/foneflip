@@ -1,11 +1,7 @@
 import { IconInfoCircle } from "@tabler/icons-react";
 
 import { Badge } from "@ziron/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@ziron/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@ziron/ui/tooltip";
 
 export const InfoTooltip = ({ info }: { info: React.ReactNode }) => {
   return (

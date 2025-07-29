@@ -6,8 +6,7 @@ import { cache } from "react";
 
 import { initAuth } from "@ziron/auth";
 
-
-const baseUrl = "http://localhost:3000"
+const baseUrl = "http://localhost:3000";
 
 export const auth = initAuth({
   baseUrl,
@@ -16,6 +15,5 @@ export const auth = initAuth({
 });
 
 export const getSession = cache(async () =>
-  auth.api.getSession({ headers: await headers() }),
+  auth.api.getSession({ headers: await headers() })
 );
-

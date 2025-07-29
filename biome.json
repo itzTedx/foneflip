@@ -1,67 +1,145 @@
 {
-        "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
-        "vcs": {
-                "enabled": false,
-                "clientKind": "git",
-                "useIgnoreFile": false
-        },
-        "files": { "ignoreUnknown": false },
-        "formatter": {
-                "enabled": true,
-                "formatWithErrors": false,
-                "indentStyle": "space",
-                "indentWidth": 2,
-                "lineEnding": "lf",
-                "lineWidth": 80,
-                "attributePosition": "auto",
-                "bracketSameLine": false,
-                "bracketSpacing": true,
-                "expand": "auto",
-                "useEditorconfig": true
-        },
-        "linter": {
-                "enabled": true,
-                "rules": {
-                        "recommended": false,
-                        "complexity": {
-                                "noUselessThisAlias": "error",
-                                "noUselessTypeConstraint": "error",
-                                "useArrowFunction": "error"
-                        },
-                        "correctness": { "noUnusedVariables": "warn" },
-                        "style": {
-                                "noCommonJs": "error",
-                                "noNamespace": "error",
-                                "useArrayLiterals": "error",
-                                "useAsConstAssertion": "error",
-                                "useBlockStatements": "off",
-                                "useTemplate": "error"
-                        },
-                        "suspicious": {
-                                "noExplicitAny": "error",
-                                "noExtraNonNullAssertion": "error",
-                                "noMisleadingInstantiator": "error",
-                                "noUnsafeDeclarationMerging": "error",
-                                "useNamespaceKeyword": "error"
-                        }
-                }
-        },
-        "javascript": {
-                "formatter": {
-                        "jsxQuoteStyle": "double",
-                        "quoteProperties": "asNeeded",
-                        "trailingCommas": "es5",
-                        "semicolons": "always",
-                        "arrowParentheses": "always",
-                        "bracketSameLine": false,
-                        "quoteStyle": "double",
-                        "attributePosition": "auto",
-                        "bracketSpacing": true
-                }
-        },
-        "html": { "formatter": { "selfCloseVoidElements": "always" } },
-        "assist": {
-                "enabled": true,
-                "actions": { "source": { "organizeImports": "on" } }
+  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+  "vcs": {
+    "enabled": false,
+    "clientKind": "git",
+    "useIgnoreFile": false
+  },
+
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!**/.next",
+      "!**/dist",
+      "!**/.turbo",
+      "!**/dev-dist",
+      "!**/.zed",
+      "!**/.vscode",
+      "!**/routeTree.gen.ts",
+      "!**/src-tauri",
+      "!**/.nuxt",
+      "!bts.jsonc",
+      "!**/.expo",
+      "!**/.wrangler"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 80,
+    "attributePosition": "auto",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "expand": "auto",
+    "useEditorconfig": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false,
+      "a11y": {
+        "noAriaUnsupportedElements": "warn",
+        "useAltText": "warn",
+        "useAriaPropsForRole": "warn",
+        "useValidAriaProps": "warn",
+        "useValidAriaValues": "warn"
+      },
+      "complexity": {
+        "noUselessThisAlias": "error",
+        "noUselessTypeConstraint": "error",
+        "useArrowFunction": "error"
+      },
+      "correctness": {
+        "noUnusedVariables": "warn",
+        "useExhaustiveDependencies": "info",
+        "useHookAtTopLevel": "error",
+        "useJsxKeyInIterable": "error"
+      },
+      "nursery": {
+        "useSortedClasses": {
+          "level": "warn",
+          "fix": "safe",
+          "options": {
+            "functions": ["clsx", "cva", "cn"]
+          }
         }
+      },
+      "style": {
+        "noParameterAssign": "error",
+        "noCommonJs": "error",
+        "noNamespace": "error",
+        "useArrayLiterals": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useBlockStatements": "off",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error",
+        "useTemplate": "error",
+        "noProcessEnv": {
+          "level": "error"
+        }
+      },
+      "suspicious": {
+        "noExplicitAny": "error",
+        "noExtraNonNullAssertion": "error",
+        "noMisleadingInstantiator": "error",
+        "noUnsafeDeclarationMerging": "error",
+        "useNamespaceKeyword": "error",
+        "noDuplicateJsxProps": "error"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "es5",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "double",
+      "attributePosition": "auto",
+      "bracketSpacing": true
+    }
+  },
+
+  "html": { "formatter": { "selfCloseVoidElements": "always" } },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "useSortedAttributes": "on",
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              ":TYPES:",
+              ["react", "react/**"],
+              ["next", "next/**"],
+              ":BLANK_LINE:",
+
+              [":PACKAGE:", "!@ziron", "!@ziron/**"],
+              ":BLANK_LINE:",
+
+              ["@ziron", "@ziron/**"],
+              ":BLANK_LINE:",
+
+              ":ALIAS:",
+              ":BLANK_LINE:",
+              ":PATH:"
+            ]
+          }
+        }
+      }
+    }
+  }
 }

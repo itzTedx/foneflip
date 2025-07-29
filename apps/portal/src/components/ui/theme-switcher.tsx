@@ -1,16 +1,16 @@
 "use client";
 
 import {
-    IconAdjustmentsHorizontal,
-    IconMoon,
-    IconSun,
+  IconAdjustmentsHorizontal,
+  IconMoon,
+  IconSun,
 } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
 
 import {
-    SegmentedControl,
-    SegmentedControlList,
-    SegmentedControlTrigger,
+  SegmentedControl,
+  SegmentedControlList,
+  SegmentedControlTrigger,
 } from "@ziron/ui/segmented-control";
 
 export function ThemeSwitcher() {

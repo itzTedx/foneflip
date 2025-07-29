@@ -87,7 +87,7 @@ export async function revertOptimisticCache({
  */
 export async function updateCacheWithResult(
   collection: Collection,
-  operation: CacheOperationType,
+  operation: CacheOperationType
 ): Promise<CacheOperationResult> {
   try {
     await updateCollectionCache(collection, operation);
@@ -145,7 +145,7 @@ export async function invalidateAndRevalidateCaches({
  * @returns Promise resolving to cache operation result
  */
 export async function handleDeletionCacheOperations(
-  collection: Collection,
+  collection: Collection
 ): Promise<CacheOperationResult> {
   try {
     // Optimistic cache removal

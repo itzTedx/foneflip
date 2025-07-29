@@ -58,7 +58,7 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
             <div className="bg-primary-foreground/20 relative aspect-[1.91/1]">
               <img
                 src={`http://localhost:3000/api/og?title=${encodeURIComponent(
-                  metadata?.title ?? "Foneflip",
+                  metadata?.title ?? "Foneflip"
                 )}&description=${encodeURIComponent(metadata?.description ?? "")}`}
                 alt=""
                 className="h-full w-full object-cover"
@@ -86,7 +86,7 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
               {" "}
               <img
                 src={`http://localhost:3000/api/og?title=${encodeURIComponent(
-                  metadata?.title ?? "Foneflip",
+                  metadata?.title ?? "Foneflip"
                 )}&description=${encodeURIComponent(metadata?.description ?? "")}`}
                 alt=""
                 className="h-full w-full object-cover"
@@ -113,7 +113,7 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
             <div className="bg-primary-foreground/20 relative aspect-video">
               <img
                 src={`http://localhost:3000/api/og?title=${encodeURIComponent(
-                  metadata?.title ?? "Foneflip",
+                  metadata?.title ?? "Foneflip"
                 )}&description=${encodeURIComponent(metadata?.description ?? "")}`}
                 alt=""
                 className="h-full w-full object-cover"

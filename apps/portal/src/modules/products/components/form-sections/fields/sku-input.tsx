@@ -9,11 +9,11 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, useFormContext
+  FormMessage,
+  useFormContext,
 } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { ProductFormType } from "@ziron/validators";
-
 
 export const SkuInput = memo(function SkuInput() {
   const form = useFormContext<ProductFormType>();
@@ -73,7 +73,7 @@ export const SkuInput = memo(function SkuInput() {
                 className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
                 placeholder="APP-16-PM-BL"
               />
-               <Button
+              <Button
                 type="button"
                 variant="outline"
                 className="rounded-s-none"

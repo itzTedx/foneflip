@@ -1,17 +1,17 @@
 import { User } from "@/modules/collections/types";
 import { Table } from "@tanstack/react-table";
 import {
-    ChevronFirstIcon,
-    ChevronLastIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
+  ChevronFirstIcon,
+  ChevronLastIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "lucide-react";
 
 import { Button } from "@ziron/ui/button";
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
+  Pagination,
+  PaginationContent,
+  PaginationItem,
 } from "@ziron/ui/pagination";
 
 // import { Item } from "./columns";

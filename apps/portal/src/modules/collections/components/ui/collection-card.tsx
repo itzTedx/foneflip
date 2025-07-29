@@ -10,24 +10,24 @@ import { IconEmpty } from "@ziron/ui/assets/empty";
 import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@ziron/ui/card";
 import {
-    HoverCard,
-    HoverCardContent,
-    HoverCardTrigger,
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
 } from "@ziron/ui/hover-card";
 
 import { CollectionQueryResult } from "../../types";
 import { ActionDropdown } from "../action-dropdown";
 
 function normalizeStatus(
-  status: unknown,
+  status: unknown
 ): "draft" | "active" | "archived" | null {
   if (status === "draft" || status === "active" || status === "archived") {
     return status as "draft" | "active" | "archived";
@@ -38,7 +38,7 @@ function normalizeStatus(
 // Subcomponent for product badge with hover card
 function withCollectionShape(
   product: ProductQueryResult,
-  collection: CollectionQueryResult,
+  collection: CollectionQueryResult
 ): ProductQueryResult {
   return {
     ...product,
@@ -97,7 +97,7 @@ const CollectionCard = React.memo(function CollectionCard({
   const thumbnail = useMemo(
     () =>
       collection?.collectionMedia.find((t) => t.type === "thumbnail")?.media,
-    [collection?.collectionMedia],
+    [collection?.collectionMedia]
   );
 
   if (collection)
@@ -196,4 +196,3 @@ const CollectionCard = React.memo(function CollectionCard({
 });
 
 export { CollectionCard };
-

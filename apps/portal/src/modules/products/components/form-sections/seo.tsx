@@ -2,8 +2,6 @@
 
 import { memo } from "react";
 
-import { SeoPreview } from "@/components/preview/seo";
-import { TabNavigation } from "@/components/ui/tab-navigation";
 import {
   Card,
   CardContent,
@@ -27,6 +25,9 @@ import { Textarea } from "@ziron/ui/textarea";
 import { cn } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
 
+import { SeoPreview } from "@/components/preview/seo";
+import { TabNavigation } from "@/components/ui/tab-navigation";
+
 export const ProductSeo = memo(function ProductSeo() {
   const form = useFormContext<ProductFormType>();
 
@@ -48,7 +49,7 @@ export const ProductSeo = memo(function ProductSeo() {
   return (
     <>
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="px-2 text-lg font-medium">SEO & Meta tags</h2>
+        <h2 className="px-2 font-medium text-lg">SEO & Meta tags</h2>
         <TabNavigation currentTab="seo" />
       </div>
 
@@ -169,7 +170,10 @@ export const ProductSeo = memo(function ProductSeo() {
                       storageKey="keywords"
                       suggestions={["Apple", "Iphone", "Pro Max", "ultra"]}
                       value={
-                        field.value?.split(",").map((k: string) => k.trim()).filter(Boolean) ?? []
+                        field.value
+                          ?.split(",")
+                          .map((k: string) => k.trim())
+                          .filter(Boolean) ?? []
                       }
                       onChange={(tags) => field.onChange(tags.join(","))}
                     />

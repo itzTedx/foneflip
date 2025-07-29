@@ -11,7 +11,7 @@ export type TabTriggerType = {
   value: string;
   label: string;
   Icon: (
-    props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+    props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
   ) => JSX.Element;
 };
 

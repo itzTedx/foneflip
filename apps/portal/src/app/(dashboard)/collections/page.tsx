@@ -10,8 +10,8 @@ import { Suspense } from "react";
 export default async function CollectionsPage() {
   await hasPermission({
     permissions: {
-      collections: ["create", "delete", "update"]
-    }
+      collections: ["create", "delete", "update"],
+    },
   });
 
   const collections = await getCollections();

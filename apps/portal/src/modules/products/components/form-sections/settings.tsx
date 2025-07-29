@@ -4,8 +4,6 @@ import { memo } from "react";
 
 import { IconSpeakerphone } from "@tabler/icons-react";
 
-import { ActionButton } from "@/components/ui/action-buttons";
-import { InfoTooltip } from "@/components/ui/tooltip";
 import {
   Card,
   CardContent,
@@ -36,7 +34,8 @@ import { Textarea } from "@ziron/ui/textarea";
 import { cn } from "@ziron/utils";
 import { ProductFormType, productStatusEnum } from "@ziron/validators";
 
-
+import { ActionButton } from "@/components/ui/action-buttons";
+import { InfoTooltip } from "@/components/ui/tooltip";
 
 const serverAction = async () => {
   // Simulate a server action
@@ -50,7 +49,7 @@ export const ProductSettings = memo(function ProductSettings() {
   return (
     <>
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="px-2 text-lg font-medium">Product Settings</h2>
+        <h2 className="px-2 font-medium text-lg">Product Settings</h2>
         <ActionButton action={serverAction}>Save Settings</ActionButton>
       </div>
 
@@ -85,10 +84,7 @@ export const ProductSettings = memo(function ProductSettings() {
                       >
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
-                      <SelectContent
-                        position="item-aligned"
-                       
-                      >
+                      <SelectContent position="item-aligned">
                         {productStatusEnum.options.map((status) => (
                           <SelectItem value={status} key={status}>
                             <span className="flex items-center gap-2">
@@ -120,13 +116,13 @@ export const ProductSettings = memo(function ProductSettings() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="border-input has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none">
+                    <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         onBlur={field.onBlur}
                         disabled={field.disabled}
-                        className="order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2 data-[state=checked]:[&_span]:rtl:-translate-x-2"
+                        className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
                       />
                       <div className="grid grow gap-2">
                         <FormLabel htmlFor={field.name}>Visibility</FormLabel>
@@ -147,7 +143,7 @@ export const ProductSettings = memo(function ProductSettings() {
           <CardHeader>
             <CardTitle>Customer Interactions</CardTitle>
             <CardDescription>
-            Configure how customers can interact with this product.
+              Configure how customers can interact with this product.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -157,13 +153,13 @@ export const ProductSettings = memo(function ProductSettings() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="border-input has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none">
+                    <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         onBlur={field.onBlur}
                         disabled={field.disabled}
-                        className="order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2 data-[state=checked]:[&_span]:rtl:-translate-x-2"
+                        className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
                       />
                       <div className="grid grow gap-2">
                         <FormLabel htmlFor={field.name}>
@@ -186,13 +182,13 @@ export const ProductSettings = memo(function ProductSettings() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="border-input has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none">
+                    <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         onBlur={field.onBlur}
                         disabled={field.disabled}
-                        className="order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2 data-[state=checked]:[&_span]:rtl:-translate-x-2"
+                        className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
                       />
                       <div className="grid grow gap-2">
                         <FormLabel htmlFor={field.name}>
@@ -215,13 +211,13 @@ export const ProductSettings = memo(function ProductSettings() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="border-input has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none">
+                    <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         onBlur={field.onBlur}
                         disabled={field.disabled}
-                        className="order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2 data-[state=checked]:[&_span]:rtl:-translate-x-2"
+                        className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
                       />
                       <div className="grid grow gap-2">
                         <FormLabel htmlFor={field.name}>
@@ -254,13 +250,13 @@ export const ProductSettings = memo(function ProductSettings() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="border-input has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none">
+                    <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         onBlur={field.onBlur}
                         disabled={field.disabled}
-                        className="order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2 data-[state=checked]:[&_span]:rtl:-translate-x-2"
+                        className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
                       />
                       <div className="grid grow gap-2">
                         <FormLabel htmlFor={field.name}>
@@ -283,13 +279,13 @@ export const ProductSettings = memo(function ProductSettings() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="border-input has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none">
+                    <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         onBlur={field.onBlur}
                         disabled={field.disabled}
-                        className="order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2 data-[state=checked]:[&_span]:rtl:-translate-x-2"
+                        className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
                       />
                       <div className="grid grow gap-2">
                         <FormLabel htmlFor={field.name}>Hide price</FormLabel>
@@ -322,7 +318,7 @@ export const ProductSettings = memo(function ProductSettings() {
                         placeholder="Buy Now"
                         type="text"
                       />
-                      <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 peer-disabled:opacity-50">
+                      <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground/80 peer-disabled:opacity-50">
                         <IconSpeakerphone size={16} aria-hidden="true" />
                       </div>
                     </div>
@@ -342,7 +338,7 @@ export const ProductSettings = memo(function ProductSettings() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-          <FormField
+            <FormField
               control={form.control}
               name="settings.tags"
               render={({ field }) => (
@@ -362,7 +358,7 @@ export const ProductSettings = memo(function ProductSettings() {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="settings.internalNotes"
@@ -377,7 +373,7 @@ export const ProductSettings = memo(function ProductSettings() {
                         className="peer pe-9"
                         placeholder="e.g., Imported on June batch, supplier: TechSource Ltd."
                       />
-                      <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 peer-disabled:opacity-50">
+                      <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground/80 peer-disabled:opacity-50">
                         <IconSpeakerphone size={16} aria-hidden="true" />
                       </div>
                     </div>

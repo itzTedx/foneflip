@@ -16,11 +16,11 @@ export default async function ProfileSettingsPage() {
   const session = await requireUser();
 
   // const sessions = await getUserSessions(session.user.id);
-  const header = await headers()
+  const header = await headers();
 
   const sessions = await auth.api.listSessions({
-      headers:  header
-    });
+    headers: header,
+  });
   // console.log(sessions);
 
   return (

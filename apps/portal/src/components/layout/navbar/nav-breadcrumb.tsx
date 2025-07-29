@@ -6,13 +6,13 @@ import React, { useMemo } from "react";
 
 import { IconLogoMono } from "@ziron/ui/assets/logo";
 import {
-    Breadcrumb,
-    BreadcrumbEllipsis,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@ziron/ui/breadcrumb";
 import { useIsMobile } from "@ziron/ui/hooks/use-mobile";
 

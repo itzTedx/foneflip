@@ -3,13 +3,18 @@
 import { IconAed } from "@ziron/ui/assets/currency";
 import { Card, CardContent, CardHeader, CardTitle } from "@ziron/ui/card";
 import { Checkbox } from "@ziron/ui/checkbox";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, useFormContext } from "@ziron/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormContext,
+} from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { ProductFormType } from "@ziron/validators";
 import { memo } from "react";
 import { ShippingOption } from "./shipping-option";
-
-
 
 export const ShippingHandlingCard = memo(function ShippingHandlingCard() {
   const { control, watch } = useFormContext<ProductFormType>();

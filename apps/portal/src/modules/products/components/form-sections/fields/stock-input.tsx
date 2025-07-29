@@ -8,7 +8,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  useFormContext
+  useFormContext,
 } from "@ziron/ui/form";
 import { NumberInput } from "@ziron/ui/input";
 import { ProductFormType } from "@ziron/validators";

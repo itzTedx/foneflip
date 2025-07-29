@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
+import Image from "next/image";
 
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import {
@@ -23,10 +23,6 @@ import { IconGripVertical, IconStar, IconTrash } from "@tabler/icons-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { toast } from "sonner";
 
-import { IconButton } from "@/components/ui/icon-button";
-import { TabNavigation } from "@/components/ui/tab-navigation";
-import { TooltipBadge } from "@/components/ui/tooltip";
-import { Media } from "@/modules/collections/types";
 import { Button } from "@ziron/ui/button";
 import {
   Card,
@@ -40,12 +36,17 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, useFieldArray, useFormContext
+  FormMessage,
+  useFieldArray,
+  useFormContext,
 } from "@ziron/ui/form";
 import { cn, formatFileSize, pluralize } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
 
-
+import { IconButton } from "@/components/ui/icon-button";
+import { TabNavigation } from "@/components/ui/tab-navigation";
+import { TooltipBadge } from "@/components/ui/tooltip";
+import { Media } from "@/modules/collections/types";
 
 type ProductImagePreviewCardProps = {
   url?: string;
@@ -75,9 +76,9 @@ function ProductImagePreviewCard({
   dragListeners,
 }: ProductImagePreviewCardProps) {
   return (
-    <div className="bg-background flex items-center justify-between gap-2 rounded-lg border p-1.5 pe-3">
+    <div className="flex items-center justify-between gap-2 rounded-lg border bg-background p-1.5 pe-3">
       <div className="flex items-center gap-2">
-        <div className="bg-card relative aspect-square size-16 shrink-0 overflow-hidden rounded-sm border">
+        <div className="relative aspect-square size-16 shrink-0 overflow-hidden rounded-sm border bg-card">
           <Image
             fill
             src={url ?? "/images/product-placeholder.webp"}
@@ -87,8 +88,8 @@ function ProductImagePreviewCard({
           />
         </div>
         <div className="flex min-w-0 flex-col gap-0.5">
-          <p className="truncate text-xs font-medium">{fileName}</p>
-          <div className="text-muted-foreground mt-0.5 flex items-center divide-x text-xs">
+          <p className="truncate font-medium text-xs">{fileName}</p>
+          <div className="mt-0.5 flex items-center divide-x text-muted-foreground text-xs">
             <p className="pr-1">{formatFileSize(fileSize ?? 0)}</p>
             <p className="pl-1">
               {width} x {height}
@@ -105,14 +106,14 @@ function ProductImagePreviewCard({
               icon={IconStar}
               onClick={onMarkFeatured}
               active={isPrimary}
-              aria-label={`Mark as featured`}
+              aria-label={"Mark as featured"}
             />
           </TooltipBadge>
           <Button
             type="button"
             size="icon"
             variant="ghost"
-            className="text-muted-foreground/80 hover:text-foreground -me-2 size-8 hover:bg-transparent"
+            className="-me-2 size-8 text-muted-foreground/80 hover:bg-transparent hover:text-foreground"
             onClick={onRemove}
             aria-label={`Remove ${fileName}`}
           >
@@ -123,7 +124,7 @@ function ProductImagePreviewCard({
             size="btn"
             type="button"
             {...dragListeners}
-            className="text-muted-foreground/60 ml-2 w-auto cursor-grab"
+            className="ml-2 w-auto cursor-grab text-muted-foreground/60"
             style={{ touchAction: "none" }}
             aria-label="Drag to reorder"
             onClick={onDrag}
@@ -225,7 +226,7 @@ export function ProductMedia() {
 
   // Dialog state for selecting existing media
   const [mediaDialog, setMediaDialog] = useQueryState(
-    `media`,
+    "media",
     parseAsString.withDefault("")
   );
 
@@ -245,17 +246,17 @@ export function ProductMedia() {
   function handleSelectMedia(media: Media | Media[]) {
     const mediaArray = Array.isArray(media) ? media : [media];
     mediaArray.forEach((m) => {
-        append({
+      append({
         file: {
-            name: m.fileName ?? undefined,
-            url: m.url ?? undefined,
-            size: m.fileSize ?? undefined,
+          name: m.fileName ?? undefined,
+          url: m.url ?? undefined,
+          size: m.fileSize ?? undefined,
         },
         metadata: {
-            height: m.height ?? undefined,
-            width: m.width ?? undefined,
-            blurData: m.blurData ?? undefined,
-        }
+          height: m.height ?? undefined,
+          width: m.width ?? undefined,
+          blurData: m.blurData ?? undefined,
+        },
       });
     });
     setMediaDialog("");
@@ -263,16 +264,16 @@ export function ProductMedia() {
   }
 
   // Memoized onBeforeUploadBegin
-//   function onBeforeUploadBegin(res: File[]) {
-//     res.map((image) =>
-//       append({
-//         fileName: image.name,
-//         fileSize: image.size,
-//         url: URL.createObjectURL(image),
-//       })
-//     );
-//     return res;
-//   }
+  //   function onBeforeUploadBegin(res: File[]) {
+  //     res.map((image) =>
+  //       append({
+  //         fileName: image.name,
+  //         fileSize: image.size,
+  //         url: URL.createObjectURL(image),
+  //       })
+  //     );
+  //     return res;
+  //   }
 
   // Memoized onClientUploadComplete
   type UploadThingResult = {
@@ -282,51 +283,51 @@ export function ProductMedia() {
     ufsUrl: string;
     serverData?: unknown;
   };
-//   function onClientUploadComplete(res: UploadThingResult[]) {
-//     // Get the latest images from the form
-//     const images = form.getValues("images") || [];
-//     const updatedImages = images.map((img) => {
-//       // If the url is a blob, try to find the uploaded image by fileName
-//       if (img.url && img.url.startsWith("blob:")) {
-//         const image = res.find((imgRes) => imgRes.name === img.fileName);
-//         if (image) {
-//           let metadata: Metadata | undefined = undefined;
-//           if (
-//             image.serverData &&
-//             typeof image.serverData === "object" &&
-//             "metadata" in image.serverData
-//           ) {
-//             metadata = (image.serverData as { metadata?: Metadata }).metadata;
-//           }
-//           return {
-//             ...img,
-//             url: image.ufsUrl,
-//             fileName: image.name,
-//             fileSize: image.size,
-//             height: metadata?.height,
-//             width: metadata?.width,
-//             blurData: metadata?.blurData,
-//             key: image.key,
-//           };
-//         }
-//       }
-//       return img;
-//     });
-//     replace(updatedImages);
-//     toast.dismiss();
-//     toast.success(`Images Uploaded`);
-//   }
+  //   function onClientUploadComplete(res: UploadThingResult[]) {
+  //     // Get the latest images from the form
+  //     const images = form.getValues("images") || [];
+  //     const updatedImages = images.map((img) => {
+  //       // If the url is a blob, try to find the uploaded image by fileName
+  //       if (img.url && img.url.startsWith("blob:")) {
+  //         const image = res.find((imgRes) => imgRes.name === img.fileName);
+  //         if (image) {
+  //           let metadata: Metadata | undefined = undefined;
+  //           if (
+  //             image.serverData &&
+  //             typeof image.serverData === "object" &&
+  //             "metadata" in image.serverData
+  //           ) {
+  //             metadata = (image.serverData as { metadata?: Metadata }).metadata;
+  //           }
+  //           return {
+  //             ...img,
+  //             url: image.ufsUrl,
+  //             fileName: image.name,
+  //             fileSize: image.size,
+  //             height: metadata?.height,
+  //             width: metadata?.width,
+  //             blurData: metadata?.blurData,
+  //             key: image.key,
+  //           };
+  //         }
+  //       }
+  //       return img;
+  //     });
+  //     replace(updatedImages);
+  //     toast.dismiss();
+  //     toast.success(`Images Uploaded`);
+  //   }
 
   // Memoized onUploadError
-//   function onUploadError(error: Error) {
-//     toast.error("Something went wrong while uploading image");
-//     console.error(`ERROR! ${error.message}`);
-//     form.setError("images", {
-//       type: "validate",
-//       message: error.message,
-//     });
-//     return;
-//   }
+  //   function onUploadError(error: Error) {
+  //     toast.error("Something went wrong while uploading image");
+  //     console.error(`ERROR! ${error.message}`);
+  //     form.setError("images", {
+  //       type: "validate",
+  //       message: error.message,
+  //     });
+  //     return;
+  //   }
 
   // Memoized onDragStart
   function onDragStart(event: DragStartEvent) {
@@ -364,7 +365,7 @@ export function ProductMedia() {
   return (
     <>
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="px-2 text-lg font-medium">Product Image Gallery</h2>
+        <h2 className="px-2 font-medium text-lg">Product Image Gallery</h2>
         <TabNavigation currentTab="media" />
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -456,7 +457,11 @@ export function ProductMedia() {
                     {watchedImages.map((img, i) => (
                       <SortableImageItem
                         key={img.id || i}
-                        f={{ ...img, id: img.id || String(i), url: img.file?.url ?? "" }}
+                        f={{
+                          ...img,
+                          id: img.id || String(i),
+                          url: img.file?.url ?? "",
+                        }}
                         i={i}
                         isFeatured={featuredStatus[i]}
                         remove={remove}
@@ -466,10 +471,10 @@ export function ProductMedia() {
                   </div>
                 </SortableContext>
                 <DragOverlay>
-                {activeImage ? (
+                  {activeImage ? (
                     <ProductImagePreviewCard
                       url={activeImage.file?.url}
-                      fileName={activeImage.file?.name ?? ''}
+                      fileName={activeImage.file?.name ?? ""}
                       fileSize={activeImage.file?.size ?? undefined}
                       width={activeImage.metadata?.width ?? undefined}
                       height={activeImage.metadata?.height ?? undefined}

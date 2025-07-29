@@ -6,8 +6,8 @@ import { hasPermission } from "@/modules/auth/actions/data-access";
 export default async function ProductsPage() {
   await hasPermission({
     permissions: {
-      products: ["create", "delete", "update"]
-    }
+      products: ["create", "delete", "update"],
+    },
   });
   return (
     <MainWrapper>

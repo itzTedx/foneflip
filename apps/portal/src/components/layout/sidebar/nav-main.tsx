@@ -6,11 +6,11 @@ import { usePathname } from "next/navigation";
 import React, { ElementType } from "react";
 
 import {
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@ziron/ui/sidebar";
 
 export function NavMain({

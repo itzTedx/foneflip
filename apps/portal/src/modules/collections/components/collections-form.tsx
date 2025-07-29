@@ -50,7 +50,7 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
   const [draft, setDraft, removeDraft] =
     useLocalStorage<Partial<CollectionFormType> | null>(
       LOCAL_STORAGE_KEY,
-      null,
+      null
     );
   const isArchived = initialData?.settings?.status === "archived";
 
@@ -98,13 +98,13 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         toast.success(
           typeof message === "string"
             ? message
-            : "Collection status changed successfully",
+            : "Collection status changed successfully"
         );
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
         toast.error(
-          typeof message === "string" ? message : "An error occurred",
+          typeof message === "string" ? message : "An error occurred"
         );
       }
     });
@@ -125,14 +125,14 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         toast.success(
           typeof message === "string"
             ? message
-            : "Collection Updated successfully",
+            : "Collection Updated successfully"
         );
         router.push("/collections");
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
         toast.error(
-          typeof message === "string" ? message : "An error occurred",
+          typeof message === "string" ? message : "An error occurred"
         );
       }
     });
@@ -152,14 +152,14 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
         const message = (result as { message?: string }).message;
         removeDraft();
         toast.success(
-          typeof message === "string" ? message : "Collection Saved on draft",
+          typeof message === "string" ? message : "Collection Saved on draft"
         );
         router.push("/collections");
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
         toast.error(
-          typeof message === "string" ? message : "An error occurred",
+          typeof message === "string" ? message : "An error occurred"
         );
       }
     });
@@ -176,7 +176,6 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
     callback: form.handleSubmit(onSubmit),
     throttleMs: 2000,
   });
-     
 
   // const data = form.watch();
   // const validation = validateForm(data, collectionSchema);
@@ -209,7 +208,8 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
                   onClick={onSaveDraft}
                   isLoading={isDraftPending}
                 />
-                <SaveButton  title="Collection"
+                <SaveButton
+                  title="Collection"
                   disabled={isArchived || isPending}
                   isEditMode={isEditMode}
                   isLoading={isPending}

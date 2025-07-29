@@ -1,12 +1,12 @@
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@ziron/ui/alert-dialog";
 import { cn } from "@ziron/utils";
 
@@ -41,7 +41,7 @@ export const ActionConfirmDialog = ({
             onClick={onConfirm}
             className={cn(
               "hover:from-destructive shadow-destructive/20 hover:to-destructive from-red-600 to-red-400 text-red-50 transition-colors ease-out",
-              className,
+              className
             )}
           >
             Confirm

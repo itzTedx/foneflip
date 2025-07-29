@@ -37,7 +37,7 @@ export const PERMISSIONS = {
 } as const;
 
 export type Resource = keyof typeof PERMISSIONS;
-export type ActionFor<R extends Resource> = typeof PERMISSIONS[R][number];
+export type ActionFor<R extends Resource> = (typeof PERMISSIONS)[R][number];
 export type PermissionMap = {
   [R in Resource]?: ActionFor<R>[];
 };
@@ -45,7 +45,7 @@ export type PermissionMap = {
 interface HasPermissionOptions {
   permissions: PermissionMap;
   redirectTo?: string;
-  throwOnFail?: boolean; 
+  throwOnFail?: boolean;
 }
 
 /**

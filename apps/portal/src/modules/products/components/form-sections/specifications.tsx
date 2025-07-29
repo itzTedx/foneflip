@@ -3,55 +3,54 @@
 import { memo, useCallback, useState } from "react";
 
 import {
-    DndContext,
-    DragEndEvent,
-    DragOverlay,
-    DragStartEvent,
-    PointerSensor,
-    closestCenter,
-    useSensor,
-    useSensors,
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import {
-    SortableContext,
-    useSortable,
-    verticalListSortingStrategy,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IconGripVertical, IconPlus, IconTrash } from "@tabler/icons-react";
 import { ChevronsUpDown } from "lucide-react";
 
-
-import { TabNavigation } from "@/components/ui/tab-navigation";
 import { Button } from "@ziron/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@ziron/ui/card";
 import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from "@ziron/ui/collapsible";
 import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-    useFieldArray,
-    useFormContext,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFieldArray,
+  useFormContext,
 } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { cn } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
+
+import { TabNavigation } from "@/components/ui/tab-navigation";
+
 import { PhysicalSpecsCard } from "./fields/physical-specs-card";
 import { ShippingHandlingCard } from "./fields/shipping-handling-card";
-
-
 
 interface SpecificationItemProps {
   index: number;
@@ -100,22 +99,22 @@ const SpecificationItem = memo(function SpecificationItem({
         onOpenChange={setIsOpen}
         className="overflow-hidden rounded-md border"
       >
-        <div className="bg-input/30 flex items-center justify-between pr-3 pl-1">
+        <div className="flex items-center justify-between bg-input/30 pr-3 pl-1">
           <div className="flex w-full items-center gap-2">
             <Button
               type="button"
               size="icon"
               variant="ghost"
-              className="text-muted-foreground/60 w-fit cursor-grab"
+              className="w-fit cursor-grab text-muted-foreground/60"
               {...listeners}
             >
               <IconGripVertical />
             </Button>
             <CollapsibleTrigger asChild>
-              <h2 className="w-full cursor-pointer text-sm font-medium">
+              <h2 className="w-full cursor-pointer font-medium text-sm">
                 {name || value ? (
                   <span>
-                    <span className="text-muted-foreground pr-1 font-light">
+                    <span className="pr-1 font-light text-muted-foreground">
                       {index + 1 < 10 ? `0${index + 1}` : index + 1}
                     </span>{" "}
                     {name}
@@ -142,7 +141,7 @@ const SpecificationItem = memo(function SpecificationItem({
             </Button>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="btn" className="-mr-2 shrink-0 p-0">
-                <ChevronsUpDown className="text-muted-foreground/80 h-4 w-4" />
+                <ChevronsUpDown className="h-4 w-4 text-muted-foreground/80" />
                 <span className="sr-only">Toggle</span>
               </Button>
             </CollapsibleTrigger>
@@ -237,7 +236,7 @@ export const ProductSpecifications = memo(function ProductSpecifications({
   return (
     <>
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="px-2 text-lg font-medium">
+        <h2 className="px-2 font-medium text-lg">
           Informational and technical specifications
         </h2>
 
@@ -277,8 +276,8 @@ export const ProductSpecifications = memo(function ProductSpecifications({
               </SortableContext>
               <DragOverlay>
                 {activeField ? (
-                  <div className="bg-input min-w-[200px] rounded-md border p-3 shadow-lg">
-                    <span className="text-muted-foreground pr-1 font-light">
+                  <div className="min-w-[200px] rounded-md border bg-input p-3 shadow-lg">
+                    <span className="pr-1 font-light text-muted-foreground">
                       {activeIndex + 1 < 10
                         ? `0${activeIndex + 1}`
                         : activeIndex + 1}

@@ -7,24 +7,23 @@ import { Toaster } from "@ziron/ui/sonner";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-   
-      <NextThemesProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-        enableColorScheme
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+      enableColorScheme
+    >
+      <ProgressProvider
+        height="3px"
+        color="#962DFF"
+        options={{ showSpinner: false }}
+        shallowRouting
+        memo
       >
-        <ProgressProvider
-          height="3px"
-          color="#962DFF"
-          options={{ showSpinner: false }}
-          shallowRouting
-          memo
-        >
-          {children}
-        </ProgressProvider>
-        <Toaster richColors closeButton position="top-center" />
-      </NextThemesProvider>
+        {children}
+      </ProgressProvider>
+      <Toaster richColors closeButton position="top-center" />
+    </NextThemesProvider>
   );
 }

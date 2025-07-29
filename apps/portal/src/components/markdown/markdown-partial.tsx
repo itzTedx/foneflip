@@ -1,46 +1,51 @@
-"use client"
+"use client";
 
-import { Button } from "@ziron/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@ziron/ui/dialog"
-import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react"
-
+import { Button } from "@ziron/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@ziron/ui/dialog";
+import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export function MarkdownPartial({
   mainMarkdown,
   dialogMarkdown,
   dialogTitle,
 }: {
-  mainMarkdown: ReactNode
-  dialogMarkdown: ReactNode
-  dialogTitle: string
+  mainMarkdown: ReactNode;
+  dialogMarkdown: ReactNode;
+  dialogTitle: string;
 }) {
-  const [isOverflowing, setIsOverflowing] = useState(false)
+  const [isOverflowing, setIsOverflowing] = useState(false);
 
-  const markdownRef = useRef<HTMLDivElement>(null)
+  const markdownRef = useRef<HTMLDivElement>(null);
   function checkOverflow(node: HTMLDivElement) {
-    setIsOverflowing(node.scrollHeight > node.clientHeight)
+    setIsOverflowing(node.scrollHeight > node.clientHeight);
   }
 
   useEffect(() => {
-    const controller = new AbortController()
+    const controller = new AbortController();
     window.addEventListener(
       "resize",
       () => {
-        if (markdownRef.current == null) return
-        checkOverflow(markdownRef.current)
+        if (markdownRef.current == null) return;
+        checkOverflow(markdownRef.current);
       },
       { signal: controller.signal }
-    )
+    );
 
     return () => {
-      controller.abort()
-    }
-  }, [])
+      controller.abort();
+    };
+  }, []);
 
   useLayoutEffect(() => {
-    if (markdownRef.current == null) return
-    checkOverflow(markdownRef.current)
-  }, [])
+    if (markdownRef.current == null) return;
+    checkOverflow(markdownRef.current);
+  }, []);
 
   return (
     <>
@@ -67,5 +72,5 @@ export function MarkdownPartial({
         </Dialog>
       )}
     </>
-  )
+  );
 }

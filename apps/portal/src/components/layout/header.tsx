@@ -3,11 +3,7 @@ import Link from "next/link";
 import React from "react";
 
 import { Button } from "@ziron/ui/button";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@ziron/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@ziron/ui/tooltip";
 
 interface CollectionHeaderProps {
   title?: string;

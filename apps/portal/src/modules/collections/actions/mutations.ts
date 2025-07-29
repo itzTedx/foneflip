@@ -5,30 +5,30 @@ import { requireUser } from "@/modules/auth/actions/data-access";
 
 import { asc, db, desc, eq, isNull } from "@ziron/db";
 import {
-    collectionMediaTable,
-    collectionSettingsTable,
-    collectionsTable,
-    collectionStatusEnum,
-    seoTable,
+  collectionMediaTable,
+  collectionSettingsTable,
+  collectionsTable,
+  collectionStatusEnum,
+  seoTable,
 } from "@ziron/db/schema";
 import { slugify } from "@ziron/utils";
 import { collectionSchema, z } from "@ziron/validators";
 
 import { invalidateCollectionCaches } from "../utils/cache";
 import {
-    invalidateAndRevalidateCaches,
-    performOptimisticCacheUpdate,
-    revertOptimisticCache,
-    updateCacheWithResult,
+  invalidateAndRevalidateCaches,
+  performOptimisticCacheUpdate,
+  revertOptimisticCache,
+  updateCacheWithResult,
 } from "../utils/cache-helpers";
 import { updateCollectionCache } from "./cache";
 import {
-    createCollectionSlug,
-    prepareCollectionData,
-    prepareDuplicateCollectionData,
-    prepareDuplicateSettingsData,
-    upsertCollectionSettings,
-    upsertSeoMeta,
+  createCollectionSlug,
+  prepareCollectionData,
+  prepareDuplicateCollectionData,
+  prepareDuplicateSettingsData,
+  upsertCollectionSettings,
+  upsertSeoMeta,
 } from "./helpers";
 
 const log = createLog("Collection");
@@ -114,7 +114,7 @@ export async function upsertCollection(formData: unknown) {
 
       log.info(
         "Performing upsert (insert on conflict do update) for collection",
-        { slug: collectionData.slug },
+        { slug: collectionData.slug }
       );
       const [collection] = await tx
         .insert(collectionsTable)
@@ -144,7 +144,7 @@ export async function upsertCollection(formData: unknown) {
             collectionId: collection.id,
             ...data.settings,
           },
-          tx,
+          tx
         );
       }
 
@@ -174,7 +174,7 @@ export async function upsertCollection(formData: unknown) {
             key: thumbnail.file.key ?? undefined,
             userId: session.user.id,
           },
-          tx,
+          tx
         );
         const [mediaRow] = await tx
           .insert(collectionMediaTable)
@@ -204,7 +204,7 @@ export async function upsertCollection(formData: unknown) {
             alt: banner.alt,
             userId: session.user.id,
           },
-          tx,
+          tx
         );
         const [mediaRow] = await tx
           .insert(collectionMediaTable)
@@ -335,7 +335,7 @@ export async function deleteCollection(id: string) {
       });
       await invalidateCollectionCaches(
         deletedCollection.id,
-        deletedCollection.slug,
+        deletedCollection.slug
       );
 
       log.info("deleteCollection succeeded", { deletedCollection });
@@ -370,7 +370,7 @@ export async function deleteCollection(id: string) {
  */
 export async function setCollectionStatus(
   id?: string,
-  status?: (typeof collectionStatusEnum)["enumValues"][number],
+  status?: (typeof collectionStatusEnum)["enumValues"][number]
 ) {
   try {
     if (!id) {
@@ -403,7 +403,7 @@ export async function setCollectionStatus(
     // Invalidate both Next.js and Redis caches
     await invalidateCollectionCaches(collection.id, collection.slug);
     log.info(
-      `Successfully set collection status to ${status} for: "${collection.title}" (ID: ${id})`,
+      `Successfully set collection status to ${status} for: "${collection.title}" (ID: ${id})`
     );
     return {
       success: `Collection (${collection.title}) has been set to ${status}`,
@@ -501,7 +501,7 @@ export async function duplicateCollection(id: string) {
       const collectionData = prepareDuplicateCollectionData(
         originalCollection,
         uniqueSlug,
-        newSeoId,
+        newSeoId
       );
 
       const [newCollection] = await trx
@@ -521,7 +521,7 @@ export async function duplicateCollection(id: string) {
       if (originalCollection.settings) {
         const settingsData = prepareDuplicateSettingsData(
           originalCollection.settings,
-          newCollection.id,
+          newCollection.id
         );
         await upsertCollectionSettings(settingsData, trx);
       }
@@ -549,7 +549,7 @@ export async function duplicateCollection(id: string) {
 
     if (!duplicatedCollection) {
       throw new Error(
-        "Failed to duplicate collection - transaction returned no data",
+        "Failed to duplicate collection - transaction returned no data"
       );
     }
 
@@ -680,7 +680,7 @@ export async function saveCollectionDraft(formData: unknown) {
           ...settings,
           status: "draft",
         },
-        trx,
+        trx
       );
 
       // --- Upsert media (thumbnail, banner) ---
@@ -708,7 +708,7 @@ export async function saveCollectionDraft(formData: unknown) {
             alt: thumbnail.alt,
             userId: session.user.id,
           },
-          trx,
+          trx
         );
         const [mediaRow] = await trx
           .insert(collectionMediaTable)
@@ -738,7 +738,7 @@ export async function saveCollectionDraft(formData: unknown) {
             alt: banner.alt,
             userId: session.user.id,
           },
-          trx,
+          trx
         );
         const [mediaRow] = await trx
           .insert(collectionMediaTable)
@@ -756,7 +756,7 @@ export async function saveCollectionDraft(formData: unknown) {
 
       log.success(
         "Transaction completed for draft collection",
-        savedCollection.id,
+        savedCollection.id
       );
       return savedCollection;
     });
@@ -779,7 +779,7 @@ export async function saveCollectionDraft(formData: unknown) {
 
 export async function exportCollectionsToCsv(
   includeProducts: boolean = false,
-  includeSeo: boolean = false,
+  includeSeo: boolean = false
 ) {
   try {
     log.info("Starting CSV export with options:", {
@@ -820,10 +820,10 @@ export async function exportCollectionsToCsv(
     }
     const csvData = collections.map((collection) => {
       const thumbnailMedia = collection.collectionMedia.find(
-        (m) => m.type === "thumbnail",
+        (m) => m.type === "thumbnail"
       );
       const bannerMedia = collection.collectionMedia.find(
-        (m) => m.type === "banner",
+        (m) => m.type === "banner"
       );
       const baseData = {
         id: collection.id,
@@ -860,7 +860,7 @@ export async function exportCollectionsToCsv(
     const timestamp = new Date().toISOString().split("T")[0];
     const filename = `collections-export-${timestamp}.csv`;
     log.success(
-      `CSV export completed successfully. Exported ${collections.length} collections`,
+      `CSV export completed successfully. Exported ${collections.length} collections`
     );
     return {
       success: true,

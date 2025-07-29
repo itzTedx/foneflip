@@ -63,7 +63,7 @@ export async function getSignedURL({ file, checksum, collection }: Props) {
   // Generate a unique key: userId/checksum-fileName
   const safeFileName = (file.fileName || "file").replace(
     /[^a-zA-Z0-9._-]/g,
-    "_",
+    "_"
   );
 
   const key = collection
@@ -103,7 +103,7 @@ export async function getSignedURL({ file, checksum, collection }: Props) {
  */
 export async function upsertMedia(
   media: MediaToInsert,
-  transaction?: any,
+  transaction?: any
 ): Promise<string> {
   const dbOrTx = transaction || (await import("@ziron/db")).db;
   log.info("Performing upsert for Media", {

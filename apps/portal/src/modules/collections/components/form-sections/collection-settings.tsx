@@ -24,7 +24,8 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, useFormContext
+  FormMessage,
+  useFormContext,
 } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { MultiInput } from "@ziron/ui/multi-input";
@@ -115,7 +116,7 @@ export const CollectionSettings = memo(function CollectionSettings({
                                   "size-2",
                                   status === "active" && "text-emerald-600",
                                   status === "draft" && "text-muted-foreground",
-                                  status === "archived" && "text-destructive",
+                                  status === "archived" && "text-destructive"
                                 )}
                               />
                               <span className="truncate capitalize">

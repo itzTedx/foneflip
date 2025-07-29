@@ -8,9 +8,9 @@ import { CollectionsEmptyState } from "./empty-state";
 const CollectionListSortable = dynamic(
   () =>
     import("@/modules/collections/components/sortable-collections").then(
-      (mod) => mod.CollectionListSortable,
+      (mod) => mod.CollectionListSortable
     ),
-  { ssr: false },
+  { ssr: false }
 );
 
 // Main collections content component

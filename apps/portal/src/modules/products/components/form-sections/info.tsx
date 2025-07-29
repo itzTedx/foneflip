@@ -1,13 +1,28 @@
 "use client";
 
+import { memo } from "react";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@ziron/ui/card";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormContext,
+} from "@ziron/ui/form";
+import { LabelAsterisk } from "@ziron/ui/label";
+import { ProductFormType } from "@ziron/validators";
+
 import { MarkdownEditor } from "@/components/markdown";
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import { CollectionMetadata } from "@/modules/collections/types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, useFormContext } from "@ziron/ui/form";
-import { LabelAsterisk } from "@ziron/ui/label";
-import { ProductFormType } from "@ziron/validators";
-import { memo } from "react";
 import { BrandInput } from "./fields/brand-input";
 import { CollectionDropdown } from "./fields/collections-dropdown";
 import { ConditionSelector } from "./fields/condition-selector";
@@ -22,9 +37,7 @@ interface Props {
   collections: CollectionMetadata[];
 }
 
-export const ProductInfo = memo(function ProductInfo({
-  collections,
-}: Props) {
+export const ProductInfo = memo(function ProductInfo({ collections }: Props) {
   const form = useFormContext<ProductFormType>();
 
   const hasVariant = form.watch("hasVariant");
@@ -32,9 +45,10 @@ export const ProductInfo = memo(function ProductInfo({
   return (
     <>
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="px-2 text-lg font-medium">General Info</h2>
+        <h2 className="px-2 font-medium text-lg">General Info</h2>
         <TabNavigation currentTab="info" />
       </div>
+
       <div className="relative grid grid-cols-1 gap-3 md:grid-cols-3">
         <Card className="col-span-2 h-fit">
           <CardHeader>
@@ -44,23 +58,21 @@ export const ProductInfo = memo(function ProductInfo({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-          <ProductTitleInput />
-          <FormField
-          name="description"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <MarkdownEditor {...field} markdown={field.value ?? ""}  />
-              </FormControl>
-          
-              <FormMessage />
-            </FormItem>
-          )}
-          />
-            
-            
+            <ProductTitleInput />
+            <FormField
+              name="description"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <MarkdownEditor {...field} markdown={field.value ?? ""} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
 
@@ -83,7 +95,9 @@ export const ProductInfo = memo(function ProductInfo({
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Pricing Mode <LabelAsterisk /></CardTitle>
+              <CardTitle>
+                Pricing Mode <LabelAsterisk />
+              </CardTitle>
               <CardDescription>
                 Choose how this product is priced and configured.
               </CardDescription>
@@ -102,12 +116,12 @@ export const ProductInfo = memo(function ProductInfo({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
-                   <PriceInput name="selling" label="Selling Price"  />
-                   <PriceInput name="original" label="Original Price"  />
+                  <PriceInput name="selling" label="Selling Price" />
+                  <PriceInput name="original" label="Original Price" />
                 </div>
-                
-                <SkuInput />             
-                <StockInput /> 
+
+                <SkuInput />
+                <StockInput />
               </CardContent>
             </Card>
           )}

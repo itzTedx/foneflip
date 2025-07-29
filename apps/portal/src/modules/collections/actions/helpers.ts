@@ -2,9 +2,9 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@ziron/db";
 import {
-    collectionSettingsTable,
-    collectionsTable,
-    seoTable,
+  collectionSettingsTable,
+  collectionsTable,
+  seoTable,
 } from "@ziron/db/schema";
 import redis from "@ziron/redis";
 import { slugify } from "@ziron/utils";
@@ -82,7 +82,7 @@ export function prepareCollectionData({
  * @returns Validation result with boolean and error messages
  */
 export function validateCollectionData(
-  data: CollectionData,
+  data: CollectionData
 ): CollectionValidationResult {
   const errors: string[] = [];
 
@@ -127,7 +127,7 @@ export function validateCollectionData(
  */
 export async function upsertCollectionSettings(
   settingsData: CollectionSettingsData,
-  transaction: any = db,
+  transaction: any = db
 ): Promise<CollectionSettings | null> {
   const data = {
     ...settingsData,
@@ -167,7 +167,7 @@ export async function upsertCollectionSettings(
 export function prepareDuplicateCollectionData(
   originalCollection: Collection,
   newSlug: string,
-  newSeoId?: string,
+  newSeoId?: string
 ): CollectionData {
   return {
     title: `${originalCollection.title} (Copy)`,
@@ -187,7 +187,7 @@ export function prepareDuplicateCollectionData(
  */
 export function prepareDuplicateSettingsData(
   originalSettings: CollectionSettings,
-  newCollectionId: string,
+  newCollectionId: string
 ): CollectionSettingsData {
   return {
     collectionId: newCollectionId,
@@ -287,7 +287,7 @@ export async function upsertSeoMeta({
  */
 export async function softDeleteSeo(
   seoId: string,
-  transaction: any = db,
+  transaction: any = db
 ): Promise<void> {
   await transaction
     .update(seoTable)
@@ -315,7 +315,7 @@ export interface SlugValidationResult {
  */
 export async function generateUniqueSlug(
   baseSlug: string,
-  maxAttempts = 100,
+  maxAttempts = 100
 ): Promise<string> {
   let slug = baseSlug;
   let counter = 1;
@@ -323,7 +323,7 @@ export async function generateUniqueSlug(
   while (await existingCollection(slug)) {
     if (counter > maxAttempts) {
       throw new Error(
-        `Unable to generate unique slug after ${maxAttempts} attempts`,
+        `Unable to generate unique slug after ${maxAttempts} attempts`
       );
     }
     slug = `${baseSlug}-${counter}`;
@@ -385,7 +385,7 @@ export function validateSlug(slug: string): SlugValidationResult {
  * @returns Promise resolving to a unique duplicate slug
  */
 export async function generateDuplicateSlug(
-  originalSlug: string,
+  originalSlug: string
 ): Promise<string> {
   const baseSlug = `${originalSlug}-copy`;
   return generateUniqueSlug(baseSlug);

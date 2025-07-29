@@ -8,7 +8,7 @@ import { z } from "@ziron/validators";
  */
 export const validateForm = <T extends z.ZodTypeAny>(
   data: z.infer<T>,
-  schema: T,
+  schema: T
 ) => {
   return schema.safeParse(data);
 };
@@ -19,25 +19,25 @@ export function createLog(label: string = "App") {
       console.log(
         `%c[ℹ️] [${label}]`,
         "color: #1976d2; font-weight: bold;",
-        ...args,
+        ...args
       ),
     success: (...args: unknown[]) =>
       console.log(
         `%c[✅] [${label}]`,
         "color: #388e3c; font-weight: bold;",
-        ...args,
+        ...args
       ),
     warn: (...args: unknown[]) =>
       console.log(
         `%c[⚠️] [${label}]`,
         "color: #fbc02d; font-weight: bold;",
-        ...args,
+        ...args
       ),
     error: (...args: unknown[]) =>
       console.error(
         `%c[❌] [${label}]`,
         "color: #d32f2f; font-weight: bold;",
-        ...args,
+        ...args
       ),
   };
 }
@@ -66,7 +66,7 @@ export function convertToCsv(data: Record<string, unknown>[]): string {
   const headers = Object.keys(data[0]!);
   const headerRow = headers.map((header) => escapeCsvValue(header)).join(",");
   const dataRows = data.map((row) =>
-    headers.map((header) => escapeCsvValue(row[header])).join(","),
+    headers.map((header) => escapeCsvValue(row[header])).join(",")
   );
   return [headerRow, ...dataRows].join("\n");
 }
@@ -74,7 +74,7 @@ export function convertToCsv(data: Record<string, unknown>[]): string {
 // Utility function to handle CSV file download
 export function downloadCsv(
   data: string,
-  filename: string = "collections-export.csv",
+  filename: string = "collections-export.csv"
 ) {
   const blob = new Blob([data], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");

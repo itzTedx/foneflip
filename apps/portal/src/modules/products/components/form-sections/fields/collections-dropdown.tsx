@@ -1,12 +1,29 @@
 import { memo } from "react";
+import Link from "next/link";
+
+import { IconPlus } from "@tabler/icons-react";
+
+import { Button } from "@ziron/ui/button";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormContext,
+} from "@ziron/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@ziron/ui/select";
+import { ProductFormType } from "@ziron/validators";
 
 import { CollectionMetadata } from "@/modules/collections/types";
-import { IconPlus } from "@tabler/icons-react";
-import { Button } from "@ziron/ui/button";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, useFormContext } from "@ziron/ui/form";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@ziron/ui/select";
-import { ProductFormType } from "@ziron/validators";
-import Link from "next/link";
 
 interface CollectionSelectorProps {
   collections?: CollectionMetadata[];
@@ -27,27 +44,25 @@ export const CollectionDropdown = memo(function CollectionDropdown({
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
               <div className="flex items-center gap-2">
-              <SelectTrigger className="ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0 w-full">
-                <SelectValue placeholder="Choose Collection" />
+                <SelectTrigger className="w-full ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0">
+                  <SelectValue placeholder="Choose Collection" />
                 </SelectTrigger>
-               
 
-                <Button variant='outline' size='icon' asChild>
-                  <Link href='/collections/new' target="_blank">
+                <Button variant="outline" size="icon" asChild>
+                  <Link href="/collections/new" target="_blank">
                     <IconPlus />
                   </Link>
                 </Button>
-         
               </div>
             </FormControl>
-            <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2">
+            <SelectContent className="[&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8">
               <SelectGroup>
                 <SelectLabel className="ps-2">Collections</SelectLabel>
-                  {collections?.map((cat) => (
-                    <SelectItem value={cat.id} key={cat.id}>
-                      <span className="truncate">{cat.title}</span>
-                    </SelectItem>
-                  ))}
+                {collections?.map((cat) => (
+                  <SelectItem value={cat.id} key={cat.id}>
+                    <span className="truncate">{cat.title}</span>
+                  </SelectItem>
+                ))}
               </SelectGroup>
               {/* <SelectGroup>
                 <SelectLabel className="ps-2">Couldn't found the collections?</SelectLabel>

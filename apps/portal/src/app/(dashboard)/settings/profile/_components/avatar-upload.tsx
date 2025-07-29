@@ -5,25 +5,21 @@ import { deleteAvatar } from "@/modules/users/actions/mutation";
 import { ArrowLeftIcon, XIcon, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@ziron/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@ziron/ui/avatar";
 import { Button } from "@ziron/ui/button";
 import {
-    Cropper,
-    CropperCropArea,
-    CropperDescription,
-    CropperImage,
+  Cropper,
+  CropperCropArea,
+  CropperDescription,
+  CropperImage,
 } from "@ziron/ui/cropper";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@ziron/ui/dialog";
 import { useFormContext } from "@ziron/ui/form";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
@@ -48,7 +44,7 @@ async function getCroppedImg(
   imageSrc: string,
   pixelCrop: Area,
   outputWidth: number = pixelCrop.width, // Optional: specify output size
-  outputHeight: number = pixelCrop.height,
+  outputHeight: number = pixelCrop.height
 ): Promise<Blob | null> {
   try {
     const image = await createImage(imageSrc);
@@ -73,7 +69,7 @@ async function getCroppedImg(
       0,
       0,
       outputWidth, // Draw onto the output size
-      outputHeight,
+      outputHeight
     );
 
     // Convert canvas to blob
@@ -83,7 +79,7 @@ async function getCroppedImg(
           resolve(blob);
         },
         "image/jpeg",
-        0.7,
+        0.7
       ); // Specify format and quality if needed
     });
   } catch (error) {

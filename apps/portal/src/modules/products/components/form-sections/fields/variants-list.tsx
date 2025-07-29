@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { IconPlus, IconSparkles, IconTrash } from "@tabler/icons-react";
 import { AlertCircleIcon, ChevronsUpDown } from "lucide-react";
 
-
 import { Alert, AlertDescription, AlertTitle } from "@ziron/ui/alert";
 import { Button } from "@ziron/ui/button";
 import {
@@ -163,7 +162,7 @@ function SkuInput({
                 className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
                 placeholder="APP-16-PM-BL"
               />
-               <Button
+              <Button
                 variant="outline"
                 type="button"
                 className="rounded-s-none -ms-px border-l-0"
@@ -284,19 +283,27 @@ function VariantContent({
       const currentSku = form.getValues(sku);
       const variantAttributes = form.getValues(`variants.${index}.attributes`);
       // Define attribute types enum or constants
-      
 
       // Use a helper function to find attributes
-      function findAttributeByType(attributes: Array<{ name?: string; value?: string }>, type: readonly string[]): string {
-        const attr = attributes.find(attr =>
-          type.some(keyword => attr.name?.toLowerCase().includes(keyword))
+      function findAttributeByType(
+        attributes: Array<{ name?: string; value?: string }>,
+        type: readonly string[]
+      ): string {
+        const attr = attributes.find((attr) =>
+          type.some((keyword) => attr.name?.toLowerCase().includes(keyword))
         );
         return attr?.value ?? "";
       }
-      
-      const color = findAttributeByType(variantAttributes, ATTRIBUTE_TYPES.COLOR);
-      const storage = findAttributeByType(variantAttributes, ATTRIBUTE_TYPES.STORAGE);
-      
+
+      const color = findAttributeByType(
+        variantAttributes,
+        ATTRIBUTE_TYPES.COLOR
+      );
+      const storage = findAttributeByType(
+        variantAttributes,
+        ATTRIBUTE_TYPES.STORAGE
+      );
+
       if (!title?.trim()) {
         form.setError(sku, {
           message: "Please enter a title first to generate",
@@ -331,9 +338,12 @@ function VariantContent({
         });
       } catch (error) {
         form.setError(sku, {
-         message: error instanceof Error ? error.message : "Failed to generate SKU. Please try again."
+          message:
+            error instanceof Error
+              ? error.message
+              : "Failed to generate SKU. Please try again.",
         });
-        console.error('SKU generation error:', error);
+        console.error("SKU generation error:", error);
       }
     },
     [form]
@@ -510,7 +520,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
         });
       }
     });
-  }, [hasVariant, form, variantFields.length])
+  }, [hasVariant, form, variantFields.length]);
 
   return (
     <Card className="h-fit md:col-span-2">
@@ -543,7 +553,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
           >
             <VariantHeader
               index={index}
-              variantLabel={variantLabels[index] ?? ''}
+              variantLabel={variantLabels[index] ?? ""}
               hasVariant={Boolean(hasVariant)}
               canRemove={variantFields.length > 1}
               onRemove={handleVariantRemove(index)}

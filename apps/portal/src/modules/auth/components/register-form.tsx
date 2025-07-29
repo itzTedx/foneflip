@@ -1,6 +1,5 @@
 "use client";
 
-
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -69,7 +68,14 @@ export const RegisterForm = () => {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Username" type="text" id="username" autoFocus autoComplete="name webauthn" {...field} />
+                    <Input
+                      placeholder="Username"
+                      type="text"
+                      id="username"
+                      autoFocus
+                      autoComplete="name webauthn"
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />

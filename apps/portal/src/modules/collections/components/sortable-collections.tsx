@@ -45,7 +45,7 @@ const SortableCollectionCard = React.memo(function SortableCollectionCard({
       transition,
       opacity: isDragging ? 0.3 : 1,
     }),
-    [transform, transition, isDragging],
+    [transform, transition, isDragging]
   );
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
@@ -70,7 +70,7 @@ export function CollectionListSortable({
   // Memoize ids array
   const ids = useMemo(
     () => collections.map((c) => c?.id as string),
-    [collections],
+    [collections]
   );
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -97,12 +97,12 @@ export function CollectionListSortable({
         toast.success("Order saved!", { id: toastId });
       }
     },
-    [collections],
+    [collections]
   );
 
   const activeCollection = useMemo(
     () => collections.find((c) => c?.id === activeId),
-    [collections, activeId],
+    [collections, activeId]
   );
 
   return (

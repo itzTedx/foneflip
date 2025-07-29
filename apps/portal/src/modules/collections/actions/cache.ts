@@ -50,7 +50,7 @@ export const redisCache = {
   async set<T>(
     key: string,
     data: T,
-    ttl: number = CACHE_DURATIONS.MEDIUM,
+    ttl: number = CACHE_DURATIONS.MEDIUM
   ): Promise<void> {
     try {
       await redis.setex(key, ttl, JSON.stringify(data));
@@ -105,7 +105,7 @@ export const redisCache = {
         (infoMemory ?? "").match(/used_memory_peak_human:(\S+)/);
       const peakMemoryUsage = peakMemoryMatch?.[1] || "unknown";
       const maxMemoryPolicyMatch = (infoMemory ?? "").match(
-        /maxmemory_policy:(\S+)/,
+        /maxmemory_policy:(\S+)/
       );
       const maxMemoryPolicy = maxMemoryPolicyMatch?.[1] || "unknown";
 
@@ -147,13 +147,13 @@ export const redisCache = {
         if (i === retries - 1) {
           console.error(
             `Redis get failed after ${retries} retries for key ${key}:`,
-            error,
+            error
           );
           return null;
         }
         // Wait before retry (exponential backoff)
         await new Promise((resolve) =>
-          setTimeout(resolve, Math.pow(2, i) * 100),
+          setTimeout(resolve, Math.pow(2, i) * 100)
         );
       }
     }
@@ -164,7 +164,7 @@ export const redisCache = {
     key: string,
     data: T,
     ttl: number = CACHE_DURATIONS.MEDIUM,
-    retries = 3,
+    retries = 3
   ): Promise<void> {
     for (let i = 0; i < retries; i++) {
       try {
@@ -174,13 +174,13 @@ export const redisCache = {
         if (i === retries - 1) {
           console.error(
             `Redis set failed after ${retries} retries for key ${key}:`,
-            error,
+            error
           );
           return;
         }
         // Wait before retry (exponential backoff)
         await new Promise((resolve) =>
-          setTimeout(resolve, Math.pow(2, i) * 100),
+          setTimeout(resolve, Math.pow(2, i) * 100)
         );
       }
     }
@@ -190,7 +190,7 @@ export const redisCache = {
   async warmCache<T>(
     key: string,
     dataFetcher: () => Promise<T>,
-    ttl?: number,
+    ttl?: number
   ): Promise<void> {
     try {
       const data = await dataFetcher();
@@ -213,7 +213,7 @@ export const redisCache = {
   },
 
   async mset<T>(
-    entries: Array<{ key: string; value: T; ttl?: number }>,
+    entries: Array<{ key: string; value: T; ttl?: number }>
   ): Promise<void> {
     try {
       const pipeline = redis.pipeline();
@@ -236,7 +236,7 @@ export const redisCache = {
 // Helper function to revalidate all collection-related caches
 export const revalidateCollectionCaches = (
   collectionId?: string,
-  slug?: string,
+  slug?: string
 ) => {
   revalidateTag(CACHE_TAGS.COLLECTION);
   revalidateTag(CACHE_TAGS.COLLECTIONS);
@@ -263,7 +263,7 @@ export const revalidateCollectionCaches = (
 // Enhanced cache invalidation with Redis
 export const invalidateCollectionCaches = async (
   collectionId?: string,
-  slug?: string,
+  slug?: string
 ) => {
   // Invalidate Next.js caches
   revalidateCollectionCaches(collectionId, slug);
@@ -351,14 +351,14 @@ export const cleanupExpiredCaches = async (): Promise<void> => {
 // Optimistic cache updates
 export const updateCollectionCache = async (
   collection: Collection,
-  operation: "create" | "update" | "delete" = "update",
+  operation: "create" | "update" | "delete" = "update"
 ) => {
   try {
     if (operation === "delete") {
       // Remove from cache
       await redisCache.del(
         REDIS_KEYS.COLLECTION_BY_SLUG(collection.slug),
-        REDIS_KEYS.COLLECTION_BY_ID(collection.id),
+        REDIS_KEYS.COLLECTION_BY_ID(collection.id)
       );
     } else {
       // Update cache optimistically
@@ -366,12 +366,12 @@ export const updateCollectionCache = async (
         redisCache.set(
           REDIS_KEYS.COLLECTION_BY_SLUG(collection.slug),
           collection,
-          CACHE_DURATIONS.MEDIUM,
+          CACHE_DURATIONS.MEDIUM
         ),
         redisCache.set(
           REDIS_KEYS.COLLECTION_BY_ID(collection.id),
           collection,
-          CACHE_DURATIONS.MEDIUM,
+          CACHE_DURATIONS.MEDIUM
         ),
       ]);
     }

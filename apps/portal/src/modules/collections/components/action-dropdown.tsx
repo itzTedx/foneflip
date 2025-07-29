@@ -2,10 +2,10 @@
 
 import { IconCopy, IconEdit, IconRestore } from "@tabler/icons-react";
 import {
-    ArchiveRestoreIcon,
-    Ellipsis,
-    Share2Icon,
-    TrashIcon,
+  ArchiveRestoreIcon,
+  Ellipsis,
+  Share2Icon,
+  TrashIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,18 +15,18 @@ import { toast } from "sonner";
 import { collectionStatusEnum } from "@ziron/db/schema";
 import { Button } from "@ziron/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 
 import {
-    deleteCollection,
-    duplicateCollection,
-    setCollectionStatus,
+  deleteCollection,
+  duplicateCollection,
+  setCollectionStatus,
 } from "../actions/mutations";
 import { ActionConfirmDialog } from "./ui/action-confirm-dialog";
 
@@ -54,13 +54,13 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
         toast.success(
           typeof message === "string"
             ? message
-            : "Collection Duplicated successfully",
+            : "Collection Duplicated successfully"
         );
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
         toast.error(
-          typeof message === "string" ? message : "An error occurred",
+          typeof message === "string" ? message : "An error occurred"
         );
       }
     });
@@ -76,13 +76,13 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
         toast.success(
           typeof message === "string"
             ? message
-            : "Collection Deleted successfully",
+            : "Collection Deleted successfully"
         );
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
         toast.error(
-          typeof message === "string" ? message : "An error occurred",
+          typeof message === "string" ? message : "An error occurred"
         );
       }
     });
@@ -102,13 +102,13 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
         toast.success(
           typeof message === "string"
             ? message
-            : "Collection status changed successfully",
+            : "Collection status changed successfully"
         );
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
         toast.error(
-          typeof message === "string" ? message : "An error occurred",
+          typeof message === "string" ? message : "An error occurred"
         );
       }
     });

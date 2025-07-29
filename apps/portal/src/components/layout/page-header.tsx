@@ -18,7 +18,7 @@ export function PageHeader({
     <div
       className={cn(
         "bg-background/80 sticky top-[calc(3rem+1px)] z-50 flex items-center justify-between px-4 py-3 backdrop-blur-2xl md:px-6",
-        className,
+        className
       )}
     >
       <div className="flex items-center justify-center gap-2">

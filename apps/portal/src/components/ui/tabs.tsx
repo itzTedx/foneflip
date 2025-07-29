@@ -1,10 +1,10 @@
 "use client";
 import type { JSX, SVGProps } from "react";
-
+import * as React from "react";
 import { usePathname } from "next/navigation";
+
 import { useQueryState } from "nuqs";
 import { Tabs as TabsPrimitive } from "radix-ui";
-import * as React from "react";
 
 import { IconSettingsFilled } from "@ziron/ui/assets/icons";
 import { cn } from "@ziron/utils";
@@ -30,7 +30,7 @@ function Tabs({
       setTabValue(newValue);
       onValueChange?.(newValue);
     },
-    [setTabValue, onValueChange],
+    [setTabValue, onValueChange]
   );
 
   const valueFromPath =
@@ -40,11 +40,11 @@ function Tabs({
 
   return (
     <TabsPrimitive.Root
-      data-slot="tabs"
       className={cn("flex flex-col gap-2", className)}
-      value={query ? tabValue : (value ?? valueFromPath)}
-      onValueChange={query ? handleValueChange : onValueChange}
+      data-slot="tabs"
       defaultValue={query ? undefined : defaultValue}
+      onValueChange={query ? handleValueChange : onValueChange}
+      value={query ? tabValue : (value ?? valueFromPath)}
       {...props}
     />
   );
@@ -56,11 +56,11 @@ function TabsList({
 }: React.ComponentProps<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
-      data-slot="tabs-list"
       className={cn(
-        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
-        className,
+        "inline-flex h-9 w-fit items-center justify-center rounded-lg bg-muted p-[3px] text-muted-foreground",
+        className
       )}
+      data-slot="tabs-list"
       {...props}
     />
   );
@@ -72,11 +72,11 @@ function TabsTrigger({
 }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
-      data-slot="tabs-trigger"
       className={cn(
-        "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className,
+        "inline-flex h-[calc(100%-1px)] flex-1 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-transparent px-2 py-1 font-medium text-foreground text-sm transition-[color,box-shadow] focus-visible:border-ring focus-visible:outline-1 focus-visible:outline-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:shadow-sm dark:text-muted-foreground dark:data-[state=active]:text-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        className
       )}
+      data-slot="tabs-trigger"
       {...props}
     />
   );
@@ -88,8 +88,8 @@ function TabsContent({
 }: React.ComponentProps<typeof TabsPrimitive.Content>) {
   return (
     <TabsPrimitive.Content
-      data-slot="tabs-content"
       className={cn("flex-1 outline-none", className)}
+      data-slot="tabs-content"
       {...props}
     />
   );
@@ -106,7 +106,7 @@ export type TabTriggerType = {
   value: string;
   label: string;
   Icon?: (
-    props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+    props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
   ) => JSX.Element;
 };
 
@@ -139,15 +139,12 @@ export function TabsTriggers({
         <div className="flex gap-2">
           {tabTriggers.map(({ value, label, Icon }) => (
             <TabsTrigger
+              className={tabTriggerClass}
               key={value}
               value={value}
-              className={tabTriggerClass}
               {...props}
             >
-              {Icon && (
-
-                <Icon />
-              )}
+              {Icon && <Icon />}
               {label}
             </TabsTrigger>
           ))}
@@ -155,9 +152,9 @@ export function TabsTriggers({
         {showSettings && (
           <div>
             <TabsTrigger
-              value="settings"
               className={tabTriggerClass}
               onClick={handleSettingsClick}
+              value="settings"
             >
               <IconSettingsFilled className="size-4" />
               Settings

@@ -13,11 +13,11 @@ import { Input } from "@ziron/ui/input";
 import { ProductFormType } from "@ziron/validators";
 
 interface Props {
-  name: "original" | "selling"
-  label: string
+  name: "original" | "selling";
+  label: string;
 }
 
-export const PriceInput = memo(function PriceInput({name, label}: Props) {
+export const PriceInput = memo(function PriceInput({ name, label }: Props) {
   const form = useFormContext<ProductFormType>();
   return (
     <FormField

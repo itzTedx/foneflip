@@ -3,17 +3,17 @@
 import { canAccessSettings, UserRole } from "@/lib/auth/access-control";
 import type { Icon } from "@tabler/icons-react";
 import {
-    IconCategory,
-    IconCirclePlusFilled,
-    IconDeviceMobileRotated,
-    IconFolder,
-    IconPackage,
-    IconPhoto,
-    IconPuzzle,
-    IconReport,
-    IconSettings,
-    IconUsersGroup,
-    IconWorld,
+  IconCategory,
+  IconCirclePlusFilled,
+  IconDeviceMobileRotated,
+  IconFolder,
+  IconPackage,
+  IconPhoto,
+  IconPuzzle,
+  IconReport,
+  IconSettings,
+  IconUsersGroup,
+  IconWorld,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import * as React from "react";
@@ -23,28 +23,28 @@ import { IconProducts, IconVendors } from "@ziron/ui/assets/icons";
 import { LayoutDashboardIcon } from "@ziron/ui/assets/icons/layout-dashboard";
 import { IconLogo, LogoWordMark } from "@ziron/ui/assets/logo";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarRail,
-    SidebarSeparator,
-    SidebarTrigger,
-    useSidebar,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
 } from "@ziron/ui/sidebar";
 
 import { NavDocuments } from "./nav-documents";

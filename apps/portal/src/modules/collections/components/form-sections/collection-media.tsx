@@ -12,31 +12,31 @@ import { memo, useCallback, useState } from "react";
 
 import { Button } from "@ziron/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@ziron/ui/card";
 import {
-    FileUpload,
-    FileUploadDropzone,
-    FileUploadItem,
-    FileUploadItemDelete,
-    FileUploadItemMetadata,
-    FileUploadItemPreview,
-    FileUploadItemProgress,
-    FileUploadList,
-    FileUploadProps,
-    FileUploadTrigger,
+  FileUpload,
+  FileUploadDropzone,
+  FileUploadItem,
+  FileUploadItemDelete,
+  FileUploadItemMetadata,
+  FileUploadItemPreview,
+  FileUploadItemProgress,
+  FileUploadList,
+  FileUploadProps,
+  FileUploadTrigger,
 } from "@ziron/ui/file-upload";
 import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-    useFormContext,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormContext,
 } from "@ziron/ui/form";
 import { CollectionFormType } from "@ziron/validators";
 
@@ -62,7 +62,7 @@ function MediaUploadPreview({
   // Dialog state for selecting existing media
   const [mediaDialog, setMediaDialog] = useQueryState(
     `${name}-media-dialog`,
-    parseAsBoolean.withDefault(false),
+    parseAsBoolean.withDefault(false)
   );
   const maxSizeMB = 4;
   const maxSize = maxSizeMB * 1024 * 1024; // 2MB default
@@ -131,7 +131,7 @@ function MediaUploadPreview({
                 form.setError(name, new Error("Upload error"));
                 onError(
                   file,
-                  error instanceof Error ? error : new Error("Upload failed"),
+                  error instanceof Error ? error : new Error("Upload failed")
                 );
               };
 
@@ -141,7 +141,7 @@ function MediaUploadPreview({
           } catch (error) {
             onError(
               file,
-              error instanceof Error ? error : new Error("Upload failed"),
+              error instanceof Error ? error : new Error("Upload failed")
             );
           }
         });
@@ -152,7 +152,7 @@ function MediaUploadPreview({
         console.error("Unexpected error during upload:", error);
       }
     },
-    [],
+    []
   );
 
   // const formValue = form.watch();
