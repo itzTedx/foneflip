@@ -1,73 +1,59 @@
 "use client";
 
-import { MediaQueryResult } from "@/modules/collections/types";
-import { IconDownload, IconTrash } from "@tabler/icons-react";
-import Image from "next/image";
 import { memo, useCallback, useState } from "react";
+import Image from "next/image";
+
+import { IconDownload, IconTrash } from "@tabler/icons-react";
 
 import { Button } from "@ziron/ui/button";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@ziron/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@ziron/ui/sheet";
 import { formatDate, formatFileSize } from "@ziron/utils";
+
+import { MediaQueryResult } from "@/modules/collections/types";
 
 const PLACEHOLDER_IMG = "/placeholder.svg";
 
-export const MediaCard = memo(function MediaCard({
-  media,
-  index,
-}: {
-  media: MediaQueryResult;
-  index: number;
-}) {
+export const MediaCard = memo(function MediaCard({ media, index }: { media: MediaQueryResult; index: number }) {
   const [open, setOpen] = useState(false);
   const handleOpenChange = useCallback((val: boolean) => setOpen(val), []);
   const src = media.url || PLACEHOLDER_IMG;
   return (
-    <Sheet open={open} onOpenChange={handleOpenChange}>
+    <Sheet onOpenChange={handleOpenChange} open={open}>
       <SheetTrigger
-        className="group cursor-pointer"
-        asChild
         aria-label={media.alt || media.fileName || "Open image details"}
+        asChild
+        className="group cursor-pointer"
       >
-        <div className="bg-muted relative grid aspect-square place-content-center overflow-hidden rounded-md border">
+        <div className="relative grid aspect-square place-content-center overflow-hidden rounded-md border bg-muted">
           <Image
-            src={src}
-            width={300}
             height={300}
             quality={30}
+            src={src}
+            width={300}
             {...(index < 2 ? { priority: true } : { loading: "lazy" })}
-            className="animate-fade-in object-contain object-center transition-[filter_transform] ease-out group-hover:scale-105 group-hover:brightness-110"
             alt={media.alt ?? ""}
-            placeholder={media.blurData ? "blur" : "empty"}
             blurDataURL={media.blurData ?? ""}
+            className="animate-fade-in object-contain object-center transition-[filter_transform] ease-out group-hover:scale-105 group-hover:brightness-110"
+            placeholder={media.blurData ? "blur" : "empty"}
           />
         </div>
       </SheetTrigger>
 
-      <SheetContent
-        transition={{ type: "spring", stiffness: 250, damping: 25 }}
-      >
+      <SheetContent transition={{ type: "spring", stiffness: 250, damping: 25 }}>
         <SheetHeader className="flex-row items-center justify-between border-b px-4 py-3">
           <SheetTitle>About the image</SheetTitle>
         </SheetHeader>
         <div className="grid w-full flex-1 auto-rows-min p-4">
           <div className="relative">
             <Image
+              alt={media.alt ?? ""}
+              blurDataURL={media.blurData ?? ""}
+              className="max-h-96 rounded-md border object-contain"
+              height={media.height! || 300}
+              placeholder={media.blurData ? "blur" : "empty"}
+              quality={50}
               src={src}
               width={media.width! || 300}
-              height={media.height! || 300}
-              quality={50}
-              className="max-h-96 rounded-md border object-contain"
-              alt={media.alt ?? ""}
-              placeholder={media.blurData ? "blur" : "empty"}
-              blurDataURL={media.blurData ?? ""}
             />
           </div>
           <div className="mt-4 overflow-hidden rounded-sm border p-3">
@@ -80,7 +66,7 @@ export const MediaCard = memo(function MediaCard({
             <h4 className="text-muted-foreground text-sm">{media.fileName}</h4>
             <div className="mt-4 text-sm">
               <h5 className="font-medium">Image info</h5>
-              <div className="text-muted-foreground flex divide-x">
+              <div className="flex divide-x text-muted-foreground">
                 <p className="pr-2">{formatFileSize(media.fileSize ?? 0)}</p>
                 <p className="px-2">
                   {media.width} x {media.height}

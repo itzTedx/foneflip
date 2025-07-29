@@ -6,24 +6,10 @@ import { IconPlus, IconSparkles, IconTrash } from "@tabler/icons-react";
 import { AlertCircleIcon, ChevronsUpDown } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@ziron/ui/alert";
-import { Button } from "@ziron/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@ziron/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@ziron/ui/collapsible";
-
-import RadioGroupSelector from "@/components/ui/radio-group";
-import { generateSKU } from "@/lib/functions/generate-sku";
-import { ATTRIBUTE_TYPES } from "@/modules/products/data/constants";
 import { IconAed } from "@ziron/ui/assets/currency";
+import { Button } from "@ziron/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@ziron/ui/collapsible";
 import {
   FormControl,
   FormField,
@@ -36,6 +22,10 @@ import {
 import { Input, NumberInput } from "@ziron/ui/input";
 import { cn } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
+
+import RadioGroupSelector from "@/components/ui/radio-group";
+import { generateSKU } from "@/lib/functions/generate-sku";
+import { ATTRIBUTE_TYPES } from "@/modules/products/data/constants";
 
 type Variant = NonNullable<ProductFormType["variants"]>[number];
 
@@ -85,15 +75,15 @@ function PriceInput({
             <div className="relative">
               <Input
                 {...field}
-                id={field.name}
-                type="number"
-                step="0.01"
-                min="0"
                 className="peer ps-6"
+                id={field.name}
+                min="0"
                 placeholder={placeholder}
+                step="0.01"
+                type="number"
               />
-              <span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-sm peer-disabled:opacity-50">
-                <IconAed className="fill-muted-foreground size-3" />
+              <span className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground text-sm peer-disabled:opacity-50">
+                <IconAed className="size-3 fill-muted-foreground" />
               </span>
             </div>
           </FormControl>
@@ -123,8 +113,8 @@ const VariantAttribute = ({
 
   return (
     <FormField
-      key={`${fieldId}-${attrId}`}
       control={form.control}
+      key={`${fieldId}-${attrId}`}
       name={`variants.${variantIndex}.attributes.${attrIndex}.value`}
       render={({ field }) => (
         <FormItem className="flex flex-col items-start p-2 md:flex-row">
@@ -137,10 +127,7 @@ const VariantAttribute = ({
               }))}
               onValueChange={(value) => {
                 field.onChange(value);
-                form.setValue(
-                  `variants.${variantIndex}.attributes.${attrIndex}.name`,
-                  attributeName
-                );
+                form.setValue(`variants.${variantIndex}.attributes.${attrIndex}.name`, attributeName);
               }}
               value={field.value}
             />
@@ -158,13 +145,7 @@ const VariantAttribute = ({
  * @param variantIndex - The index of the variant in the variants array
  * @param onGenerateSku - Callback invoked when the generate SKU button is clicked, receiving the variant index
  */
-function SkuInput({
-  variantIndex,
-  onGenerateSku,
-}: {
-  variantIndex: number;
-  onGenerateSku: (index: number) => void;
-}) {
+function SkuInput({ variantIndex, onGenerateSku }: { variantIndex: number; onGenerateSku: (index: number) => void }) {
   const form = useFormContext<ProductFormType>();
   return (
     <FormField
@@ -177,15 +158,15 @@ function SkuInput({
             <div className="flex rounded-md shadow-xs">
               <Input
                 {...field}
-                id={field.name}
                 className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
+                id={field.name}
                 placeholder="APP-16-PM-BL"
               />
               <Button
-                variant="outline"
-                type="button"
-                className="rounded-s-none -ms-px border-l-0"
+                className="-ms-px rounded-s-none border-l-0"
                 onClick={() => onGenerateSku(variantIndex)}
+                type="button"
+                variant="outline"
               >
                 <IconSparkles className="h-4 w-4" />
               </Button>
@@ -213,12 +194,7 @@ function StockInput({ variantIndex }: { variantIndex: number }) {
         <FormItem>
           <FormLabel>Stock</FormLabel>
           <FormControl>
-            <NumberInput
-              {...field}
-              defaultValue={field.value}
-              onChange={field.onChange}
-              minValue={0}
-            />
+            <NumberInput {...field} defaultValue={field.value} minValue={0} onChange={field.onChange} />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -252,38 +228,24 @@ function VariantHeader({
   return (
     <div className="flex items-center justify-between px-3 py-1">
       <CollapsibleTrigger disabled={!hasVariant}>
-        <h2
-          className={cn(
-            "flex w-full cursor-pointer items-center gap-2 text-sm font-medium"
-          )}
-        >
-          <span className="text-muted-foreground font-light">
-            {index + 1 < 10 ? `0${index + 1}` : index + 1}
-          </span>
+        <h2 className={cn("flex w-full cursor-pointer items-center gap-2 font-medium text-sm")}>
+          <span className="font-light text-muted-foreground">{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>
           {variantLabel}
         </h2>
       </CollapsibleTrigger>
       <div className="flex shrink-0 items-center gap-1">
         <Button
-          size="btn"
-          variant="ghost"
-          type="button"
+          className={cn(canRemove ? "" : "hidden", "text-muted-foreground hover:text-destructive")}
           onClick={onRemove}
-          className={cn(
-            canRemove ? "" : "hidden",
-            "text-muted-foreground hover:text-destructive"
-          )}
+          size="btn"
+          type="button"
+          variant="ghost"
         >
           <IconTrash className="size-3" />
         </Button>
         <CollapsibleTrigger asChild>
-          <Button
-            variant="ghost"
-            size="btn"
-            className="-mr-2 shrink-0 p-0"
-            disabled={!hasVariant}
-          >
-            <ChevronsUpDown className="text-muted-foreground/80 h-4 w-4" />
+          <Button className="-mr-2 shrink-0 p-0" disabled={!hasVariant} size="btn" variant="ghost">
+            <ChevronsUpDown className="h-4 w-4 text-muted-foreground/80" />
             <span className="sr-only">Toggle</span>
           </Button>
         </CollapsibleTrigger>
@@ -313,9 +275,7 @@ function VariantContent({
       const title = form.getValues("title");
       const brand = form.getValues("brand");
       const condition = form.getValues("condition");
-      const variants = (form.getValues("variants") ?? []).filter(
-        isValidVariant
-      );
+      const variants = (form.getValues("variants") ?? []).filter(isValidVariant);
       const currentSku = form.getValues(sku);
       const variantAttributes = form.getValues(`variants.${index}.attributes`);
       // Define attribute types enum or constants
@@ -331,20 +291,12 @@ function VariantContent({
         attributes: Array<{ name?: string; value?: string }>,
         type: readonly string[]
       ): string {
-        const attr = attributes.find((attr) =>
-          type.some((keyword) => attr.name?.toLowerCase().includes(keyword))
-        );
+        const attr = attributes.find((attr) => type.some((keyword) => attr.name?.toLowerCase().includes(keyword)));
         return attr?.value ?? "";
       }
 
-      const color = findAttributeByType(
-        variantAttributes,
-        ATTRIBUTE_TYPES.COLOR
-      );
-      const storage = findAttributeByType(
-        variantAttributes,
-        ATTRIBUTE_TYPES.STORAGE
-      );
+      const color = findAttributeByType(variantAttributes, ATTRIBUTE_TYPES.COLOR);
+      const storage = findAttributeByType(variantAttributes, ATTRIBUTE_TYPES.STORAGE);
 
       if (!title?.trim()) {
         form.setError(sku, {
@@ -365,25 +317,14 @@ function VariantContent({
         return;
       }
       try {
-        const generatedSku = generateSKU(
-          brand,
-          title,
-          condition,
-          storage,
-          color,
-          variants,
-          currentSku
-        );
+        const generatedSku = generateSKU(brand, title, condition, storage, color, variants, currentSku);
         form.setValue(sku, generatedSku, {
           shouldValidate: true,
           shouldDirty: true,
         });
       } catch (error) {
         form.setError(sku, {
-          message:
-            error instanceof Error
-              ? error.message
-              : "Failed to generate SKU. Please try again.",
+          message: error instanceof Error ? error.message : "Failed to generate SKU. Please try again.",
         });
         console.error("SKU generation error:", error);
       }
@@ -391,23 +332,21 @@ function VariantContent({
     [form]
   );
   return (
-    <CollapsibleContent className="grid gap-3 border-t p-3 !pt-0">
+    <CollapsibleContent className="!pt-0 grid gap-3 border-t p-3">
       <div>
         <div className="flex items-center justify-between">
-          <h3 className="text-muted-foreground mb-1 text-xs leading-none font-medium">
-            Variant Options
-          </h3>
-          <Button size="sm" variant="link" type="button">
+          <h3 className="mb-1 font-medium text-muted-foreground text-xs leading-none">Variant Options</h3>
+          <Button size="sm" type="button" variant="link">
             Mark as Default
           </Button>
         </div>
         <div className="grid divide-y rounded-md border md:grid-cols-2 md:gap-3 md:divide-x">
           {attrFields.map((attr, attrIndex) => (
             <VariantAttribute
-              key={`${attr.id}-${variantIndex}`}
-              fieldId={attr.id}
               attrId={attr.id}
               attrIndex={attrIndex}
+              fieldId={attr.id}
+              key={`${attr.id}-${variantIndex}`}
               variantIndex={variantIndex}
             />
           ))}
@@ -415,36 +354,20 @@ function VariantContent({
       </div>
       <div className="grid gap-3 md:grid-cols-2">
         <div className="rounded-md border p-2">
-          <h3 className="text-muted-foreground mb-2 text-xs font-medium">
-            Pricing
-          </h3>
+          <h3 className="mb-2 font-medium text-muted-foreground text-xs">Pricing</h3>
           <div className="grid grid-cols-2 gap-3">
-            <PriceInput
-              variantIndex={variantIndex}
-              priceType="selling"
-              label="Selling Price"
-            />
-            <PriceInput
-              variantIndex={variantIndex}
-              priceType="original"
-              label="Original Price"
-            />
+            <PriceInput label="Selling Price" priceType="selling" variantIndex={variantIndex} />
+            <PriceInput label="Original Price" priceType="original" variantIndex={variantIndex} />
           </div>
         </div>
         <div className="rounded-md border p-2">
-          <h3 className="text-muted-foreground mb-2 text-xs font-medium">
-            Inventory
-          </h3>
+          <h3 className="mb-2 font-medium text-muted-foreground text-xs">Inventory</h3>
           <div className="grid grid-cols-3 gap-3">
             <StockInput variantIndex={variantIndex} />
-            <SkuInput
-              variantIndex={variantIndex}
-              onGenerateSku={handleGenerateSku}
-            />
+            <SkuInput onGenerateSku={handleGenerateSku} variantIndex={variantIndex} />
           </div>
         </div>
       </div>
-      {/* <DefaultVariantSwitch variantIndex={variantIndex} /> */}
     </CollapsibleContent>
   );
 }
@@ -484,7 +407,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
         return attr?.name && attr?.options && attr.options.length > 0;
       }) ?? false;
 
-    const fromFields = attrFields.some((field, index) => {
+    const fromFields = attrFields.some((_field, index) => {
       const attr = form.getValues(`attributes.${index}`);
       return attr?.name && attr?.options && attr.options.length > 0;
     });
@@ -555,8 +478,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
     if (!hasVariant) return;
     const attributes = form.watch("attributes") ?? [];
     variantFields.forEach((_, variantIndex) => {
-      const variantAttributes =
-        form.getValues(`variants.${variantIndex}.attributes`) ?? [];
+      const variantAttributes = form.getValues(`variants.${variantIndex}.attributes`) ?? [];
       // If the number of attributes has changed, update the variant's attributes
       if (variantAttributes.length !== attributes.length) {
         const newAttributes = attributes.map((attr, attrIndex) => ({
@@ -575,9 +497,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
     <Card className="h-fit md:col-span-2">
       <CardHeader>
         <CardTitle>Variants</CardTitle>
-        <CardDescription>
-          Configure each combination with its own details.
-        </CardDescription>
+        <CardDescription>Configure each combination with its own details.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {!hasValidAttributes && hasVariant && (
@@ -585,37 +505,34 @@ export function ProductVariantsList({ isEditMode }: Props) {
             <AlertCircleIcon />
             <AlertTitle>No attributes defined.</AlertTitle>
             <AlertDescription>
-              <p>
-                Please add at least one attribute with options before creating
-                variants.
-              </p>
+              <p>Please add at least one attribute with options before creating variants.</p>
             </AlertDescription>
           </Alert>
         )}
         {variantFields?.map((field, index) => (
           <Collapsible
-            key={field.id}
-            open={openStates[index]}
-            onOpenChange={handleOpenChange(index)}
-            disabled={!hasVariant}
             className="rounded-md border"
+            disabled={!hasVariant}
+            key={field.id}
+            onOpenChange={handleOpenChange(index)}
+            open={openStates[index]}
           >
             <VariantHeader
-              index={index}
-              variantLabel={variantLabels[index] ?? ""}
-              hasVariant={Boolean(hasVariant)}
               canRemove={variantFields.length > 1}
+              hasVariant={Boolean(hasVariant)}
+              index={index}
               onRemove={handleVariantRemove(index)}
+              variantLabel={variantLabels[index] ?? ""}
             />
-            <VariantContent variantIndex={index} attrFields={attrFields} />
+            <VariantContent attrFields={attrFields} variantIndex={index} />
           </Collapsible>
         ))}
 
         <Button
-          variant="outline"
-          type="button"
-          onClick={handleVariantAppend}
           disabled={!hasVariant || !hasValidAttributes}
+          onClick={handleVariantAppend}
+          type="button"
+          variant="outline"
         >
           <IconPlus className="size-4" />
           <span className="block">Add New Variant</span>
