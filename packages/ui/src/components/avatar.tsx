@@ -5,6 +5,11 @@ import { Avatar as AvatarPrimitive } from "radix-ui";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * Renders a styled avatar container component.
+ *
+ * Wraps the Radix UI Avatar root element, applying default styling and a `data-slot="avatar"` attribute. Additional props and class names are supported for further customization.
+ */
 function Avatar({
   className,
   ...props
@@ -34,6 +39,11 @@ function AvatarImage({
   );
 }
 
+/**
+ * Renders a styled fallback element for an avatar when the image cannot be displayed.
+ *
+ * Applies default styling and a data attribute for identification. Additional props and class names are supported.
+ */
 function AvatarFallback({
   className,
   ...props

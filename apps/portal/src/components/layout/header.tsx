@@ -13,6 +13,16 @@ interface CollectionHeaderProps {
   backLink?: string;
 }
 
+/**
+ * Renders a header section with an optional title, status indicator, back button, and additional content.
+ *
+ * Displays a colored status indicator with a tooltip if a status is provided. The back button appears if a back link is specified. Any child elements are rendered on the right side of the header.
+ *
+ * @param title - The main heading text to display
+ * @param status - The current status, which determines the indicator color and label ("draft", "active", or "archived")
+ * @param backLink - URL for the optional back navigation button
+ * @param children - Additional elements to display on the right side of the header
+ */
 export function Header({ title, status, children, backLink }: CollectionHeaderProps) {
   const getStatusColor = (status: string) => {
     switch (status) {

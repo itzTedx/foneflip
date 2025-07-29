@@ -9,6 +9,14 @@ import {
   useState,
 } from "react";
 
+/**
+ * Restricts a numeric value to be within the specified minimum and maximum bounds.
+ *
+ * @param value - The number to clamp
+ * @param min - The lower bound
+ * @param max - The upper bound
+ * @returns The clamped value within the range [`min`, `max`]
+ */
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }

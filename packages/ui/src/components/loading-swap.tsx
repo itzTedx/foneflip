@@ -3,6 +3,16 @@ import { Loader } from "lucide-react";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * Displays either a loading indicator or its children based on the loading state.
+ *
+ * Renders its children when `isLoading` is false, or a loading icon (custom or default) when `isLoading` is true. Both are positioned to overlap, with visibility toggled according to the loading state.
+ *
+ * @param isLoading - Whether to show the loading indicator instead of the children
+ * @param children - The content to display when not loading
+ * @param className - Optional additional CSS classes for both content and loader containers
+ * @param icon - Optional custom loading icon to display when loading
+ */
 export function LoadingSwap({
   isLoading,
   children,

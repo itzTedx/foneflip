@@ -6,6 +6,11 @@ import * as ResizablePrimitive from "react-resizable-panels";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * A wrapper for `PanelGroup` that applies default flex layout and styling for resizable panel groups.
+ *
+ * Adds a `data-slot="resizable-panel-group"` attribute and merges custom class names with default styles.
+ */
 function ResizablePanelGroup({
   className,
   ...props
@@ -28,6 +33,11 @@ function ResizablePanel({
   return <ResizablePrimitive.Panel data-slot="resizable-panel" {...props} />;
 }
 
+/**
+ * A styled resize handle for resizable panels, optionally displaying a grip icon.
+ *
+ * @param withHandle - If true, displays a grip icon inside the handle for visual indication.
+ */
 function ResizableHandle({
   withHandle,
   className,

@@ -62,6 +62,21 @@ type ProductImagePreviewCardProps = {
   dragListeners?: SyntheticListenerMap;
 };
 
+/**
+ * Displays a preview card for a product image with thumbnail, file information, and optional action buttons for marking as featured, removing, or dragging.
+ *
+ * @param url - The image URL to display; falls back to a placeholder if not provided.
+ * @param fileName - The name of the image file.
+ * @param fileSize - The size of the image file in bytes.
+ * @param width - The width of the image in pixels.
+ * @param height - The height of the image in pixels.
+ * @param onMarkFeatured - Callback invoked when marking the image as featured.
+ * @param onRemove - Callback invoked when removing the image.
+ * @param onDrag - Callback invoked when initiating a drag action.
+ * @param isPrimary - Indicates if the image is currently marked as featured.
+ * @param showActions - Whether to display action buttons for feature, remove, and drag.
+ * @param dragListeners - Drag event listeners for drag-and-drop functionality.
+ */
 function ProductImagePreviewCard({
   url,
   fileName,
@@ -153,6 +168,11 @@ type SortableImageItemProps = {
   toggleFeaturedImage: (index: number) => void;
 };
 
+/**
+ * Renders a sortable product image item with drag-and-drop, featuring, and removal controls.
+ *
+ * Wraps a product image preview card with sortable behavior, applying drag styles and passing handlers for marking as featured and removing the image.
+ */
 function SortableImageItem({
   f,
   i,
@@ -206,6 +226,11 @@ type Metadata = {
   blurData?: string;
 };
 
+/**
+ * Renders the product image gallery section within a product form, providing upload, selection, preview, drag-and-drop reordering, featuring, and removal of images.
+ *
+ * Integrates with form state to manage a dynamic array of images, allowing users to upload new images, select from existing media, mark one image as featured, remove individual or all images, and reorder images via drag-and-drop. Displays image previews with metadata and provides a drag overlay during reordering.
+ */
 export function ProductMedia() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const form = useFormContext<ProductFormType>();

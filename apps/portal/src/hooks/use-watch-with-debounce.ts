@@ -3,13 +3,13 @@ import { useDebounce } from "@ziron/ui/hooks/use-debounce";
 import { useEffect, useState } from "react";
 
 /**
- * Debounced watcher for react-hook-form's watch method.
+ * Invokes a callback with debounced form values whenever they change.
  *
- * @template T - The type of the form values being watched.
- * @param form - The form instance returned from useForm().
- * @param delay - Milliseconds to debounce.
- * @param callback - Callback function to run when debounced values change.
- * @param deps - Optional dependencies for form re-subscription.
+ * Watches values from a `react-hook-form` form instance, applies a debounce delay, and calls the provided callback with the latest debounced values. Re-subscribes to form changes when dependencies update.
+ *
+ * @param delay - The debounce delay in milliseconds
+ * @param callback - Function called with the debounced form values when they change
+ * @param deps - Optional dependencies that trigger re-subscription to form value changes
  */
 export function useWatchWithDebounce<T extends FieldValues>(
   form: UseFormReturn<T>,

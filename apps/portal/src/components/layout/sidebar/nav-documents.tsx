@@ -27,6 +27,11 @@ import {
   useSidebar,
 } from "@ziron/ui/sidebar";
 
+/**
+ * Renders a sidebar group labeled "Documents" with a list of document items, each displaying an icon, name, and a dropdown menu for actions.
+ *
+ * @param items - The list of documents to display, each with a name, URL, and icon.
+ */
 export function NavDocuments({
   items,
 }: {

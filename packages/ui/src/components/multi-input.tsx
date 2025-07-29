@@ -38,6 +38,13 @@ const tagStyles = {
   },
 };
 
+/**
+ * A React component for entering multiple tags with autocomplete suggestions, creation, and removal capabilities.
+ *
+ * Displays selected tags, allows users to add new tags from suggestions or by typing, and supports keyboard navigation. Suggestions are persisted in local storage and deduplicated. The component can be controlled via props and supports a maximum tag limit, custom placeholder, and error display.
+ *
+ * @returns The rendered multi-tag input component.
+ */
 export function MultiInput({
   value,
   onChange,

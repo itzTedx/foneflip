@@ -7,22 +7,43 @@ import { Dialog as DialogPrimitive } from "radix-ui";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * Provides the root container for a dialog, wrapping the Radix UI Dialog primitive.
+ */
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
 
+/**
+ * Renders a trigger element that opens the dialog when activated.
+ *
+ * Accepts all props supported by the underlying dialog trigger primitive.
+ */
 function DialogTrigger({ ...props }: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
+/**
+ * Renders dialog content in a React portal, enabling the dialog to appear outside the DOM hierarchy of its parent.
+ */
 function DialogPortal({ ...props }: React.ComponentProps<typeof DialogPrimitive.Portal>) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
+/**
+ * Renders a button or element that closes the dialog when activated.
+ *
+ * Wraps the Radix UI DialogPrimitive.Close component and adds a data attribute for identification.
+ */
 function DialogClose({ ...props }: React.ComponentProps<typeof DialogPrimitive.Close>) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
+/**
+ * Renders a full-screen overlay behind the dialog with fade and blur effects, applying animation classes based on the dialog's open or closed state.
+ *
+ * Accepts additional class names and props for customization.
+ */
 function DialogOverlay({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
   return (
     <DialogPrimitive.Overlay
@@ -36,6 +57,11 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
   );
 }
 
+/**
+ * Renders the main dialog content centered on the screen with overlay, animations, and optional close button.
+ *
+ * @param showCloseButton - If true, displays a close button in the top-right corner (default: true)
+ */
 function DialogContent({
   className,
   children,
@@ -70,6 +96,11 @@ function DialogContent({
   );
 }
 
+/**
+ * Renders a styled container for dialog header content.
+ *
+ * Applies a vertical flex layout with spacing and responsive text alignment for use at the top of a dialog.
+ */
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -80,6 +111,11 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/**
+ * Renders a dialog footer container with responsive layout for action buttons or footer content.
+ *
+ * Arranges children in a column-reverse layout on small screens and a row aligned to the end on larger screens.
+ */
 function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -90,14 +126,29 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/**
+ * Renders a flex row container for dialog content with spacing, border, and padding.
+ *
+ * Intended for structuring header or grouped elements within a dialog.
+ */
 function DialogContainer({ className, ...props }: React.ComponentProps<"div">) {
   return <div className={cn("flex flex-row items-center gap-2 border-b p-3", className)} {...props} />;
 }
 
+/**
+ * Renders a container for dialog content with vertical layout, spacing, and padding.
+ *
+ * Additional class names and div props can be provided for further customization.
+ */
 function DialogContentContainer({ className, ...props }: React.ComponentProps<"div">) {
   return <div className={cn("flex flex-col gap-4 p-3", className)} {...props} />;
 }
 
+/**
+ * Renders a styled container for displaying an icon within a dialog.
+ *
+ * The container is centered, has fixed dimensions, rounded corners, and a muted background.
+ */
 function DialogIcon({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
@@ -107,6 +158,11 @@ function DialogIcon({ className, ...props }: React.HTMLAttributes<HTMLDivElement
   );
 }
 
+/**
+ * Renders the dialog's title with emphasized font styling.
+ *
+ * Accepts additional class names and props for customization.
+ */
 function DialogTitle({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Title>) {
   return (
     <DialogPrimitive.Title
@@ -117,6 +173,11 @@ function DialogTitle({ className, ...props }: React.ComponentProps<typeof Dialog
   );
 }
 
+/**
+ * Renders styled description text for a dialog, typically used to provide additional context below the dialog title.
+ *
+ * Accepts additional class names and props for customization.
+ */
 function DialogDescription({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Description>) {
   return (
     <DialogPrimitive.Description

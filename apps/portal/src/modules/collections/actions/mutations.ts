@@ -33,6 +33,11 @@ import {
 
 const log = createLog("Collection");
 
+/**
+ * Creates or updates a collection with associated metadata, settings, and media.
+ *
+ * Validates input, generates a unique slug, manages related SEO and settings, handles media (thumbnail and banner), updates caches, and ensures atomicity via a database transaction. Returns a success or error object with a descriptive message.
+ */
 export async function upsertCollection(formData: unknown) {
   const session = await requireUser();
 
@@ -274,6 +279,14 @@ export async function upsertCollection(formData: unknown) {
   }
 }
 
+/**
+ * Soft deletes a collection and its related settings and SEO metadata by marking them as deleted.
+ *
+ * Also removes the collection from cache, invalidates related caches, and returns the deleted collection data on success. Returns an error object if the collection is not found or if a database error occurs.
+ *
+ * @param id - The unique identifier of the collection to delete
+ * @returns An object indicating success and the deleted collection data, or an error message if deletion fails
+ */
 export async function deleteCollection(id: string) {
   log.info("Received deleteCollection request", { id });
 
@@ -364,9 +377,13 @@ export async function deleteCollection(id: string) {
 }
 
 /**
- * Set the status of a collection by updating its settings.
- * @param id - The collection ID
- * @param status - The new status to set
+ * Updates the status of a collection by modifying its settings.
+ *
+ * Returns a success message and collection data if the update is successful, or an error message if the collection is not found or the operation fails.
+ *
+ * @param id - The unique identifier of the collection
+ * @param status - The status value to assign to the collection
+ * @returns An object containing either a success message with collection data or an error message
  */
 export async function setCollectionStatus(
   id?: string,
@@ -449,8 +466,10 @@ export async function updateCollectionsOrder({
 }
 
 /**
- * Duplicate a collection, including its SEO, settings, and media, with a new slug and title.
- * @param id - The collection ID to duplicate
+ * Creates a duplicate of an existing collection, including its SEO metadata, settings, and media, assigning a new unique slug and title.
+ *
+ * @param id - The ID of the collection to duplicate
+ * @returns An object containing either the duplicated collection data and a success message, or an error message if duplication fails
  */
 export async function duplicateCollection(id: string) {
   log.info(`Duplicating collection with ID: ${id}`);
@@ -576,9 +595,12 @@ export async function duplicateCollection(id: string) {
 }
 
 /**
- * Save a collection as draft. This always sets settings.status to 'draft'.
- * @param formData - The collection data (partial or full)
- * @param user - The user object (must contain userId)
+ * Saves a collection as a draft, ensuring its status is set to "draft" and handling related metadata, settings, and media.
+ *
+ * Validates the provided collection data, determines sort order for new drafts, upserts SEO metadata and settings, manages associated media, and updates caches. Returns a success object with the saved draft or an error object on failure.
+ *
+ * @param formData - The collection data to save as a draft
+ * @returns An object indicating success or failure, with a message and the saved draft data if successful
  */
 export async function saveCollectionDraft(formData: unknown) {
   const session = await requireUser();
@@ -777,6 +799,13 @@ export async function saveCollectionDraft(formData: unknown) {
   }
 }
 
+/**
+ * Exports all non-deleted collections to a CSV file, optionally including related products and SEO metadata.
+ *
+ * @param includeProducts - Whether to include product information for each collection
+ * @param includeSeo - Whether to include SEO metadata for each collection
+ * @returns An object containing the CSV data, filename, and record count on success, or an error message if export fails or no collections are found
+ */
 export async function exportCollectionsToCsv(
   includeProducts: boolean = false,
   includeSeo: boolean = false

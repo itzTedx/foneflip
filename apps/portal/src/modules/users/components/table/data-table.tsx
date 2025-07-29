@@ -45,6 +45,15 @@ interface Props {
   initialPageSize?: number;
 }
 
+/**
+ * Renders a paginated, sortable, filterable, and column-configurable table of users with persistent pagination state.
+ *
+ * Displays user data in a table with support for sorting, filtering, column visibility toggling, and pagination. Pagination state is synchronized with URL query parameters and persisted in a cookie for consistent user experience across sessions and shared URLs.
+ *
+ * @param data - The array of user objects to display in the table.
+ * @param initialPageSize - Optional initial number of rows per page if not specified in the URL.
+ * @returns The rendered user table component.
+ */
 export default function UsersTable({ data, initialPageSize }: Props) {
   const id = useId();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);

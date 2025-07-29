@@ -39,6 +39,11 @@ import { ProductFormType } from "@ziron/validators";
 
 type Variant = NonNullable<ProductFormType["variants"]>[number];
 
+/**
+ * Type guard that checks whether a variant is not null or undefined.
+ *
+ * @returns `true` if the variant is defined; otherwise, `false`.
+ */
 function isValidVariant(variant: Variant): variant is NonNullable<Variant> {
   return variant != null;
 }
@@ -47,7 +52,16 @@ interface Props {
   isEditMode: boolean;
 }
 
-// PriceInput component
+/**
+ * Renders a numeric input field for entering the selling or original price of a product variant.
+ *
+ * Displays a currency icon and supports validation messages. The input is bound to the form field for the specified variant and price type.
+ *
+ * @param variantIndex - Index of the variant in the variants array
+ * @param priceType - Type of price to edit ("selling" or "original")
+ * @param label - Label for the input field
+ * @param placeholder - Placeholder text for the input field (defaults to "0.00")
+ */
 function PriceInput({
   variantIndex,
   priceType,
@@ -138,7 +152,12 @@ const VariantAttribute = ({
   );
 };
 
-// SkuInput component
+/**
+ * Renders an input field for a variant's SKU with a button to trigger SKU generation.
+ *
+ * @param variantIndex - The index of the variant in the variants array
+ * @param onGenerateSku - Callback invoked when the generate SKU button is clicked, receiving the variant index
+ */
 function SkuInput({
   variantIndex,
   onGenerateSku,
@@ -179,7 +198,11 @@ function SkuInput({
   );
 }
 
-// StockInput component
+/**
+ * Renders a numeric input field for the stock quantity of a specific product variant within the form.
+ *
+ * @param variantIndex - The index of the variant in the variants array
+ */
 function StockInput({ variantIndex }: { variantIndex: number }) {
   const form = useFormContext<ProductFormType>();
   return (
@@ -204,7 +227,15 @@ function StockInput({ variantIndex }: { variantIndex: number }) {
   );
 }
 
-// VariantHeader component
+/**
+ * Renders the header section for a product variant panel, displaying the variant's index, label, and controls for removing or toggling the panel.
+ *
+ * @param index - The zero-based index of the variant in the list.
+ * @param variantLabel - The display label for the variant.
+ * @param hasVariant - Whether the variant exists and is enabled.
+ * @param canRemove - Whether the remove button should be shown.
+ * @param onRemove - Callback invoked when the remove button is clicked.
+ */
 function VariantHeader({
   index,
   variantLabel,
@@ -261,7 +292,12 @@ function VariantHeader({
   );
 }
 
-// VariantContent component
+/**
+ * Renders the collapsible content for a product variant, including attribute selectors, pricing inputs, inventory controls, and SKU generation logic.
+ *
+ * @param variantIndex - The index of the variant in the variants array
+ * @param attrFields - The list of attribute fields available for this variant
+ */
 function VariantContent({
   variantIndex,
   attrFields,
@@ -284,7 +320,13 @@ function VariantContent({
       const variantAttributes = form.getValues(`variants.${index}.attributes`);
       // Define attribute types enum or constants
 
-      // Use a helper function to find attributes
+      /**
+       * Returns the value of the first attribute whose name includes any of the specified keywords.
+       *
+       * @param attributes - Array of attribute objects with optional `name` and `value` fields
+       * @param type - Array of keyword strings to match against attribute names
+       * @returns The value of the matching attribute, or an empty string if none is found
+       */
       function findAttributeByType(
         attributes: Array<{ name?: string; value?: string }>,
         type: readonly string[]
@@ -407,6 +449,13 @@ function VariantContent({
   );
 }
 
+/**
+ * Renders a form section for managing product variants, allowing users to add, remove, and edit variants with their own attributes, pricing, stock, and SKU.
+ *
+ * Displays a list of collapsible panels for each variant, synchronizes variant attributes with the main attributes array, and validates that at least one attribute with options exists before enabling variant creation.
+ *
+ * @param isEditMode - Whether the form is in edit mode, affecting initial open state of variant panels
+ */
 export function ProductVariantsList({ isEditMode }: Props) {
   const form = useFormContext<ProductFormType>();
   const hasVariant = form.watch("hasVariant");

@@ -29,6 +29,11 @@ function AlertDialogPortal({
   );
 }
 
+/**
+ * Renders a styled overlay for the alert dialog, dimming the background and handling open/close animations.
+ *
+ * Combines custom and default class names for transitions, positioning, and background styling.
+ */
 function AlertDialogOverlay({
   className,
   ...props
@@ -45,6 +50,11 @@ function AlertDialogOverlay({
   );
 }
 
+/**
+ * Renders the main content area of the alert dialog, centered on the screen with overlay and styled container.
+ *
+ * Combines Radix UI's AlertDialog content primitive with custom portal and overlay components, applying consistent styling and layout for the dialog's content.
+ */
 function AlertDialogContent({
   className,
   ...props
@@ -64,6 +74,11 @@ function AlertDialogContent({
   );
 }
 
+/**
+ * Renders the header section of an alert dialog with vertical layout and responsive text alignment.
+ *
+ * Additional class names and div props can be provided for customization.
+ */
 function AlertDialogHeader({
   className,
   ...props
@@ -77,6 +92,11 @@ function AlertDialogHeader({
   );
 }
 
+/**
+ * Renders the footer section of an alert dialog with responsive layout for action buttons.
+ *
+ * Arranges child elements in a column-reverse layout on small screens and switches to a row with right alignment on larger screens.
+ */
 function AlertDialogFooter({
   className,
   ...props
@@ -93,6 +113,11 @@ function AlertDialogFooter({
   );
 }
 
+/**
+ * Renders the alert dialog title with consistent font styling.
+ *
+ * Applies predefined font weight and size classes, and forwards additional props to the underlying primitive.
+ */
 function AlertDialogTitle({
   className,
   ...props
@@ -106,6 +131,11 @@ function AlertDialogTitle({
   );
 }
 
+/**
+ * Renders the description text for an alert dialog with muted styling.
+ *
+ * Combines custom class names with default muted foreground and small text size for consistent appearance.
+ */
 function AlertDialogDescription({
   className,
   ...props
@@ -131,6 +161,11 @@ function AlertDialogAction({
   );
 }
 
+/**
+ * Renders a styled cancel button for the alert dialog, using the outlined button variant.
+ *
+ * Forwards all props to the underlying Radix UI Cancel primitive and merges any additional class names.
+ */
 function AlertDialogCancel({
   className,
   ...props

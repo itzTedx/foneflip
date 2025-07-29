@@ -29,6 +29,11 @@ function DrawerClose({
   return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />;
 }
 
+/**
+ * Renders a styled overlay for the Drawer component, providing a semi-transparent background and transition animations based on the drawer's open or closed state.
+ *
+ * Additional class names can be provided to customize the overlay's appearance.
+ */
 function DrawerOverlay({
   className,
   ...props
@@ -45,6 +50,11 @@ function DrawerOverlay({
   );
 }
 
+/**
+ * Renders the main content area of the Drawer, applying styling and layout based on the drawer's direction.
+ *
+ * Wraps the content in a portal and overlay, and conditionally displays a decorative top bar when the drawer opens from the bottom. Children elements are rendered inside the styled content area.
+ */
 function DrawerContent({
   className,
   children,
@@ -72,6 +82,11 @@ function DrawerContent({
   );
 }
 
+/**
+ * Renders the header section of the drawer with appropriate styling and alignment based on drawer direction.
+ *
+ * Applies flex layout, padding, and conditional text alignment for top or bottom drawers.
+ */
 function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div

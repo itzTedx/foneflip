@@ -24,6 +24,11 @@ function SelectValue({
   return <SelectPrimitive.Value data-slot="select-value" {...props} />;
 }
 
+/**
+ * Renders a styled trigger button for the select dropdown, displaying the selected value and a dropdown indicator.
+ *
+ * @param size - Optional size of the trigger button; can be "sm" or "default"
+ */
 function SelectTrigger({
   className,
   size = "default",
@@ -50,6 +55,11 @@ function SelectTrigger({
   );
 }
 
+/**
+ * Renders the dropdown content for the Select component with custom styling, scroll buttons, and positioning.
+ *
+ * @param position - Determines the dropdown positioning strategy; defaults to "popper"
+ */
 function SelectContent({
   className,
   children,
@@ -98,6 +108,11 @@ function SelectLabel({
   );
 }
 
+/**
+ * Renders a styled selectable item for use within a custom select dropdown.
+ *
+ * Displays the provided content and shows a checkmark icon when selected. Handles disabled and focused states with appropriate styling.
+ */
 function SelectItem({
   className,
   children,
@@ -135,6 +150,11 @@ function SelectSeparator({
   );
 }
 
+/**
+ * Renders a styled scroll-up button for the select dropdown, displaying an upward chevron icon.
+ *
+ * This button appears when the select content is scrollable and allows users to scroll up through the options.
+ */
 function SelectScrollUpButton({
   className,
   ...props
@@ -153,6 +173,11 @@ function SelectScrollUpButton({
   );
 }
 
+/**
+ * Renders a styled scroll-down button for the select dropdown, displaying a downward chevron icon.
+ *
+ * Forwards all props to the underlying Radix UI ScrollDownButton component.
+ */
 function SelectScrollDownButton({
   className,
   ...props

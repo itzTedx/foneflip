@@ -68,6 +68,13 @@ type StoreAction =
   | { type: "SET_INVALID"; invalid: boolean }
   | { type: "CLEAR" };
 
+/**
+ * Creates a store for managing file upload state, including files, upload progress, drag-and-drop status, and invalid state.
+ *
+ * The store provides methods to get the current state, dispatch actions to update state, and subscribe to state changes. It also manages object URLs for file previews and notifies when the file list changes.
+ *
+ * @returns An object with `getState`, `dispatch`, and `subscribe` methods for interacting with the file upload state.
+ */
 function createStore(
   listeners: Set<() => void>,
   files: Map<File, FileState>,
@@ -232,6 +239,12 @@ const StoreContext = React.createContext<ReturnType<typeof createStore> | null>(
   null
 );
 
+/**
+ * Retrieves the file upload store context, throwing an error if accessed outside the root provider.
+ *
+ * @param consumerName - The name of the consuming component, used in the error message if the context is missing.
+ * @returns The store context object for file upload state management.
+ */
 function useStoreContext(consumerName: string) {
   const context = React.useContext(StoreContext);
   if (!context) {
@@ -240,6 +253,14 @@ function useStoreContext(consumerName: string) {
   return context;
 }
 
+/**
+ * Subscribes to a selected slice of the file upload store state and returns its current value.
+ *
+ * The selector function determines which part of the store state to observe. The component will re-render when the selected value changes.
+ *
+ * @param selector - Function that selects a portion of the store state to subscribe to
+ * @returns The current value returned by the selector
+ */
 function useStore<T>(selector: (state: StoreState) => T): T {
   const store = useStoreContext(ROOT_NAME);
 
@@ -278,6 +299,13 @@ const FileUploadContext = React.createContext<FileUploadContextValue | null>(
   null
 );
 
+/**
+ * Retrieves the file upload context for child components.
+ *
+ * @param consumerName - The name of the consuming component, used in error messages if the context is missing.
+ * @returns The current file upload context object.
+ * @throws If called outside of a `FileUploadRoot` provider.
+ */
 function useFileUploadContext(consumerName: string) {
   const context = React.useContext(FileUploadContext);
   if (!context) {
@@ -319,6 +347,13 @@ interface FileUploadRootProps
   required?: boolean;
 }
 
+/**
+ * Root component for the file upload system, managing file selection, validation, upload progress, and state.
+ *
+ * Provides context and state management for all file upload subcomponents, handling both controlled and uncontrolled usage. Supports drag-and-drop, file type and size validation, custom validation, upload progress tracking, and error handling. Triggers relevant callbacks for file acceptance, rejection, and upload events.
+ *
+ * @returns The file upload root element with context providers and a hidden file input.
+ */
 function FileUploadRoot(props: FileUploadRootProps) {
   const {
     value,
@@ -643,6 +678,11 @@ interface FileUploadDropzoneProps
   asChild?: boolean;
 }
 
+/**
+ * Provides a drag-and-drop area for uploading files, supporting click, drag, drop, paste, and keyboard interactions.
+ *
+ * Handles file selection via drag-and-drop, clipboard paste, or keyboard activation, and forwards selected files to the underlying file input. Applies ARIA attributes and state indicators for accessibility and visual feedback.
+ */
 function FileUploadDropzone(props: FileUploadDropzoneProps) {
   const {
     asChild,
@@ -840,6 +880,11 @@ interface FileUploadTriggerProps
   asChild?: boolean;
 }
 
+/**
+ * Renders a button or custom element that triggers the file input dialog when clicked.
+ *
+ * Supports rendering as a child component or a native button. Disables interaction if the file upload is disabled.
+ */
 function FileUploadTrigger(props: FileUploadTriggerProps) {
   const { asChild, onClick: onClickProp, ...triggerProps } = props;
   const context = useFileUploadContext(TRIGGER_NAME);
@@ -876,6 +921,14 @@ interface FileUploadListProps extends React.ComponentPropsWithoutRef<"div"> {
   forceMount?: boolean;
 }
 
+/**
+ * Renders a container for the list of uploaded files, supporting vertical or horizontal orientation.
+ *
+ * The list is only rendered if there are files present or if `forceMount` is set to true.
+ *
+ * @param forceMount - If true, the list is rendered even when there are no files.
+ * @param orientation - Layout direction of the list, either "vertical" or "horizontal". Defaults to "vertical".
+ */
 function FileUploadList(props: FileUploadListProps) {
   const {
     className,
@@ -937,6 +990,14 @@ interface FileUploadItemProps extends React.ComponentPropsWithoutRef<"div"> {
   asChild?: boolean;
 }
 
+/**
+ * Renders a file item within the file upload list, providing accessibility attributes and context for child components.
+ *
+ * Displays the file's status for assistive technologies and supplies contextual information such as file state, index, and IDs to descendants.
+ *
+ * @param props - Props including the file value, optional custom element rendering, and additional attributes.
+ * @returns The rendered file item or `null` if the file state is not found.
+ */
 function FileUploadItem(props: FileUploadItemProps) {
   const { value, asChild, className, ...itemProps } = props;
 
@@ -1074,6 +1135,13 @@ interface FileUploadItemPreviewProps
   asChild?: boolean;
 }
 
+/**
+ * Renders a preview for a file in the upload list, displaying either a custom preview, an image thumbnail, or a file-type icon.
+ *
+ * If a `render` function is provided, it is used to render the preview. For image files, a thumbnail is shown using an object URL. For other file types, an appropriate icon is displayed.
+ *
+ * @returns The file preview element or `null` if no file state is available.
+ */
 function FileUploadItemPreview(props: FileUploadItemPreviewProps) {
   const { render, asChild, children, className, ...previewProps } = props;
 
@@ -1127,6 +1195,11 @@ interface FileUploadItemMetadataProps
   size?: "default" | "sm";
 }
 
+/**
+ * Displays metadata for a file upload item, including file name, size, and error message if present.
+ *
+ * Renders custom children if provided; otherwise, shows the file's name, formatted size, and any error message.
+ */
 function FileUploadItemMetadata(props: FileUploadItemMetadataProps) {
   const {
     asChild,
@@ -1191,6 +1264,16 @@ interface FileUploadItemProgressProps
   forceMount?: boolean;
 }
 
+/**
+ * Renders the upload progress indicator for a file item in one of three visual variants: linear, circular, or fill.
+ *
+ * Displays the progress bar only if the file is not fully uploaded, unless forced by the `forceMount` prop.
+ *
+ * @param variant - The visual style of the progress indicator ("linear", "circular", or "fill").
+ * @param size - The size of the progress indicator (applies to the circular variant).
+ * @param forceMount - If true, always renders the progress indicator regardless of progress.
+ * @returns The progress indicator element, or null if not applicable.
+ */
 function FileUploadItemProgress(props: FileUploadItemProgressProps) {
   const {
     variant = "linear",
@@ -1319,6 +1402,11 @@ interface FileUploadItemDeleteProps
   asChild?: boolean;
 }
 
+/**
+ * Renders a button or custom element to remove a file from the upload list.
+ *
+ * Triggers removal of the associated file when clicked. If `asChild` is true, renders a custom component via slotting; otherwise, renders a native button.
+ */
 function FileUploadItemDelete(props: FileUploadItemDeleteProps) {
   const { asChild, onClick: onClickProp, ...deleteProps } = props;
 
@@ -1361,6 +1449,15 @@ interface FileUploadClearProps
   asChild?: boolean;
 }
 
+/**
+ * Renders a button that clears all files from the file upload list.
+ *
+ * The button is disabled if the upload component or this button is disabled. It is only rendered if there are files present or if `forceMount` is true. When clicked, it dispatches a clear action to remove all files.
+ *
+ * @param forceMount - If true, the button is rendered even when there are no files.
+ * @param asChild - If true, renders the button as a child component using a slot.
+ * @param disabled - If true, disables the button.
+ */
 function FileUploadClear(props: FileUploadClearProps) {
   const {
     asChild,

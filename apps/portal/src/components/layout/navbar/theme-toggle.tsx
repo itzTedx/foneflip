@@ -11,6 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 
+/**
+ * Renders a dropdown menu for toggling between light, dark, and system themes.
+ *
+ * Displays a button that visually indicates the current theme and provides menu options to switch themes.
+ */
 export function ThemeToggle() {
   const { setTheme } = useTheme();
 

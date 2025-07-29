@@ -11,6 +11,11 @@ import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 import { Button, buttonVariants } from "@ziron/ui/button";
 import { cn } from "@ziron/utils";
 
+/**
+ * Renders a customizable calendar component based on `react-day-picker` with extended styling and UI overrides.
+ *
+ * Supports custom class names, button variants, caption layouts, and component overrides for advanced calendar presentation and interaction.
+ */
 function Calendar({
   className,
   classNames,
@@ -172,6 +177,11 @@ function Calendar({
   );
 }
 
+/**
+ * Renders a custom calendar day button with styling and data attributes for selection and range states.
+ *
+ * Applies conditional styles and accessibility features based on the day's selection and range modifiers. Forwards all additional props to the underlying button component.
+ */
 function CalendarDayButton({
   className,
   day,

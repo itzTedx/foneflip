@@ -1,6 +1,13 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod/v4";
 
+/**
+ * Creates and returns an environment configuration object for authentication, validating required server environment variables.
+ *
+ * The configuration enforces that `BETTER_AUTH_SECRET` is a non-empty string and optionally accepts `NODE_ENV` as either "development" or "production". Validation is skipped when running in CI or during linting.
+ *
+ * @returns The environment configuration object with validation rules applied.
+ */
 export function authEnv() {
   return createEnv({
     server: {

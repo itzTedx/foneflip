@@ -24,6 +24,13 @@ import { Ref } from "react";
 
 import { markdownClassNames } from "./markdown-renderer";
 
+/**
+ * Renders a markdown editor with a customized toolbar and plugin configuration.
+ *
+ * This component wraps the `MDXEditor` and provides a preconfigured set of plugins for headings, lists, quotes, tables, and markdown shortcuts. It applies markdown-specific styling and supports dark mode automatically.
+ *
+ * @returns The configured markdown editor component.
+ */
 export default function InternalMarkdownEditor({
   ref,
   className,

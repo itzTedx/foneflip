@@ -20,6 +20,11 @@ const alertVariants = cva(
   }
 );
 
+/**
+ * Renders a styled alert container with support for visual variants.
+ *
+ * Applies appropriate ARIA roles and styling based on the selected variant.
+ */
 function Alert({
   className,
   variant,
@@ -35,6 +40,11 @@ function Alert({
   );
 }
 
+/**
+ * Renders the title section of an alert with appropriate styling and layout.
+ *
+ * Accepts all standard div properties.
+ */
 function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -48,6 +58,11 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/**
+ * Renders the description section of an alert with muted styling and layout.
+ *
+ * Additional class names can be merged via the `className` prop.
+ */
 function AlertDescription({
   className,
   ...props

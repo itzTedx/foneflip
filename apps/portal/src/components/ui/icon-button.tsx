@@ -28,6 +28,20 @@ type IconButtonProps = Omit<HTMLMotionProps<"button">, "color"> & {
   transition?: Transition;
 };
 
+/**
+ * Renders an animated icon button with customizable size, color, and active state visual effects.
+ *
+ * Displays a button containing a specified icon, with optional scaling and color animations on hover, tap, and active states. When active, the button shows additional animated effects such as a glowing pulse and orbiting dots. The appearance and animation behavior can be configured via props.
+ *
+ * @param icon - The icon component to display inside the button.
+ * @param active - Whether the button is in the active state, triggering additional visual effects.
+ * @param animate - Enables or disables the active state animation effects.
+ * @param size - The size preset for the button and icon.
+ * @param color - The RGB color tuple used for the icon and active effects.
+ * @param transition - Motion transition configuration for active state animations.
+ * @param className - Additional CSS classes for the button.
+ * @returns The rendered animated icon button component.
+ */
 function IconButton({
   icon: Icon,
   className,

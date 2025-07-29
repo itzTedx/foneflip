@@ -6,6 +6,14 @@ import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * Provides a styled scrollable container with custom scrollbars and viewport, wrapping content for enhanced scrolling experience.
+ *
+ * Renders a scroll area with a customizable appearance, including a styled viewport, custom scrollbar, and corner element. All additional props are forwarded to the root element.
+ *
+ * @param className - Additional class names to apply to the scroll area root
+ * @param children - Content to be rendered inside the scrollable viewport
+ */
 function ScrollArea({ className, children, ...props }: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
   return (
     <ScrollAreaPrimitive.Root className={cn("relative", className)} data-slot="scroll-area" {...props}>
@@ -21,6 +29,11 @@ function ScrollArea({ className, children, ...props }: React.ComponentProps<type
   );
 }
 
+/**
+ * Renders a styled scrollbar for use within a scroll area, supporting vertical or horizontal orientation.
+ *
+ * @param orientation - The scrollbar's orientation; either "vertical" (default) or "horizontal"
+ */
 function ScrollBar({
   className,
   orientation = "vertical",

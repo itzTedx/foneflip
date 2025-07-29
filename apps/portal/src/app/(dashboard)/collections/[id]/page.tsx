@@ -7,12 +7,27 @@ import { CollectionQueryResult, Media } from "@/modules/collections/types";
 
 type Params = Promise<{ id: string }>;
 
-// Transform database collection to form type
+/**
+ * Converts a collection database object into a structure suitable for form initialization.
+ *
+ * Returns `null` if the input is `false`. Maps collection fields and associated media into the form type, including metadata and settings.
+ *
+ * @param collection - The collection object to transform, or `false` if not available
+ * @returns The form-compatible collection data with `updatedAt`, or `null` if input is `false`
+ */
 function transformCollectionToFormType(
   collection: false | CollectionQueryResult
 ): (CollectionFormType & { updatedAt: Date }) | null {
   if (!collection) return null;
 
+  /**
+   * Converts a Media object to a MediaFormType suitable for form usage, or returns undefined if the media or its URL is missing.
+   *
+   * Maps media properties such as URL, file name, size, dimensions, blur data, and alt text to the form structure.
+   *
+   * @param media - The media object to convert
+   * @returns The converted MediaFormType, or undefined if input is invalid
+   */
   function toFormMedia(media?: Media): MediaFormType | undefined {
     if (!media || !media.url) return undefined; // url is required
     return {
@@ -55,6 +70,11 @@ function transformCollectionToFormType(
   };
 }
 
+/**
+ * Renders the collection form page, handling both creation and editing modes based on the route parameter.
+ *
+ * Checks user permissions for collection management, fetches and transforms collection data if editing, and displays the form with appropriate initial values.
+ */
 export default async function CollectionPage({ params }: { params: Params }) {
   await hasPermission({
     permissions: {

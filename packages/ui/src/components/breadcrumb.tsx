@@ -8,6 +8,11 @@ function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
   return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />;
 }
 
+/**
+ * Renders an ordered list element for breadcrumb items with default styling and layout.
+ *
+ * Merges custom class names with default styles and passes through all standard `<ol>` props.
+ */
 function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
   return (
     <ol

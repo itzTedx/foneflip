@@ -12,6 +12,14 @@ import {
   Text,
 } from "@react-email/components";
 
+/**
+ * Renders a personalized HTML welcome email for new Dub users.
+ *
+ * Generates a styled email template that greets the user by name, provides onboarding steps, and includes links to relevant resources and the user dashboard.
+ *
+ * @param name - The recipient's name to personalize the greeting; defaults to "Brendon Urie" if not provided
+ * @returns A React element representing the complete welcome email template
+ */
 export default function WelcomeEmail({
   name = "Brendon Urie",
 }: {

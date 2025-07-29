@@ -24,6 +24,11 @@ const animations = {
   } satisfies Record<string, Variants>,
 } as const;
 
+/**
+ * Renders an animated SVG icon representing a left panel using motion variants and context-based animation controls.
+ *
+ * @param size - The width and height of the icon in pixels
+ */
 function IconComponent({ size, ...props }: PanelLeftProps) {
   const { controls } = useAnimateIconContext();
   const variants = getVariants(animations);

@@ -28,6 +28,11 @@ const useSheet = (): SheetContextType => {
 
 type SheetProps = React.ComponentProps<typeof SheetPrimitive.Root>;
 
+/**
+ * Provides a controlled or uncontrolled Sheet component for displaying modal content, managing open state and context for descendant components.
+ *
+ * Synchronizes open state with controlled props and notifies via `onOpenChange` when the open state changes. Supplies the current open state to child components through context.
+ */
 function Sheet({ children, ...props }: SheetProps) {
   const [isOpen, setIsOpen] = React.useState(
     props?.open ?? props?.defaultOpen ?? false
@@ -78,6 +83,11 @@ function SheetPortal(props: SheetPortalProps) {
 
 type SheetOverlayProps = React.ComponentProps<typeof SheetPrimitive.Overlay>;
 
+/**
+ * Renders the overlay background for the Sheet component with blur and opacity effects.
+ *
+ * Applies fixed positioning and styling to cover the viewport behind the sheet. Additional class names can be provided for further customization.
+ */
 function SheetOverlay({ className, ...props }: SheetOverlayProps) {
   return (
     <SheetPrimitive.Overlay
@@ -113,6 +123,14 @@ type SheetContentProps = React.ComponentProps<typeof SheetPrimitive.Content> &
     overlay?: boolean;
   };
 
+/**
+ * Renders the animated content area of the sheet, sliding in from the specified side with optional overlay and close button.
+ *
+ * @param side - The edge of the viewport from which the sheet appears (`top`, `bottom`, `left`, or `right`)
+ * @param transition - Animation transition settings for the sheet's entrance and exit
+ * @param overlay - Whether to display a blurred, fading overlay behind the sheet
+ * @param children - Content to display inside the sheet
+ */
 function SheetContent({
   side = "right",
   className,
@@ -188,6 +206,11 @@ function SheetContent({
 
 type SheetHeaderProps = React.ComponentProps<"div">;
 
+/**
+ * Renders the header section of a sheet with vertical layout and spacing.
+ *
+ * Applies appropriate styling for header content and supports additional class names and props.
+ */
 function SheetHeader({ className, ...props }: SheetHeaderProps) {
   return (
     <div
@@ -203,6 +226,11 @@ function SheetHeader({ className, ...props }: SheetHeaderProps) {
 
 type SheetFooterProps = React.ComponentProps<"div">;
 
+/**
+ * Renders the footer section of a sheet with responsive layout and spacing.
+ *
+ * Accepts additional class names and props for customization.
+ */
 function SheetFooter({ className, ...props }: SheetFooterProps) {
   return (
     <div

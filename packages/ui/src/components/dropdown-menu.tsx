@@ -31,6 +31,12 @@ function DropdownMenuTrigger({
   );
 }
 
+/**
+ * Renders the dropdown menu content inside a portal with default styling, animation, and positioning.
+ *
+ * @param className - Additional class names to apply to the content container
+ * @param sideOffset - The offset distance from the trigger element (default: 4)
+ */
 function DropdownMenuContent({
   className,
   sideOffset = 4,
@@ -59,6 +65,12 @@ function DropdownMenuGroup({
   );
 }
 
+/**
+ * Renders a selectable item within a dropdown menu, supporting optional inset padding and a "destructive" visual variant.
+ *
+ * @param inset - If true, applies additional left padding to visually align the item as inset.
+ * @param variant - Controls the item's color scheme; use "destructive" for actions with negative consequences.
+ */
 function DropdownMenuItem({
   className,
   inset,
@@ -82,6 +94,13 @@ function DropdownMenuItem({
   );
 }
 
+/**
+ * Renders a styled checkbox item for use within a dropdown menu, supporting checked state and custom content.
+ *
+ * Displays a check icon indicator when selected and applies focus, disabled, and custom class styles.
+ *
+ * @param checked - Whether the checkbox item is selected
+ */
 function DropdownMenuCheckboxItem({
   className,
   children,
@@ -119,6 +138,11 @@ function DropdownMenuRadioGroup({
   );
 }
 
+/**
+ * Renders a styled radio item for use within a dropdown menu radio group.
+ *
+ * Displays a selectable radio option with a circular indicator when selected. Applies focus, disabled, and layout styles for consistent appearance within dropdown menus.
+ */
 function DropdownMenuRadioItem({
   className,
   children,
@@ -143,6 +167,11 @@ function DropdownMenuRadioItem({
   );
 }
 
+/**
+ * Renders a styled label within a dropdown menu, with optional inset padding.
+ *
+ * @param inset - If true, applies additional left padding to the label
+ */
 function DropdownMenuLabel({
   className,
   inset,
@@ -176,6 +205,11 @@ function DropdownMenuSeparator({
   );
 }
 
+/**
+ * Renders a styled span for displaying a keyboard shortcut within a dropdown menu item.
+ *
+ * The shortcut is right-aligned and uses muted text styling for visual distinction.
+ */
 function DropdownMenuShortcut({
   className,
   ...props
@@ -198,6 +232,11 @@ function DropdownMenuSub({
   return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />;
 }
 
+/**
+ * Renders a styled submenu trigger for a dropdown menu, optionally with inset padding and a chevron icon.
+ *
+ * @param inset - If true, applies additional left padding to visually align with inset items.
+ */
 function DropdownMenuSubTrigger({
   className,
   inset,
@@ -222,6 +261,11 @@ function DropdownMenuSubTrigger({
   );
 }
 
+/**
+ * Renders the content of a dropdown submenu with styling and animation.
+ *
+ * Wraps the Radix UI SubContent primitive, applying custom styles and data attributes for consistent appearance and transitions within dropdown submenus.
+ */
 function DropdownMenuSubContent({
   className,
   ...props

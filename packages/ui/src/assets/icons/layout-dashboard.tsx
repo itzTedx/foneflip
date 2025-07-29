@@ -103,6 +103,14 @@ const animations = {
   } satisfies Record<string, Variants>,
 } as const;
 
+/**
+ * Renders an animated dashboard icon as an SVG with four rectangles, each animated using motion variants from context.
+ *
+ * The icon's appearance and animation are determined by the current animation context and the provided size.
+ *
+ * @param size - The width and height of the SVG icon in pixels
+ * @returns A React element representing the animated dashboard icon
+ */
 function IconComponent({ size, ...props }: LayoutDashboardProps) {
   const { controls } = useAnimateIconContext();
   const variants = getVariants(animations);
