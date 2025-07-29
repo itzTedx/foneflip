@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
-import { getMedia } from "@/features/media/actions/queries";
-import { MediaCard } from "@/features/media/components/media-card";
-import { UploadButton } from "@/features/media/components/upload-button";
+import { getMedia } from "@/modules/media/actions/queries";
+import { MediaCard } from "@/modules/media/components/media-card";
+import { UploadButton } from "@/modules/media/components/upload-button";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Media Library | Foneflip",

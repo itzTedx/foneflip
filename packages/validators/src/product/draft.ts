@@ -1,6 +1,7 @@
 import { z } from "zod/v4";
 
 import { mediaSchema } from "../media";
+import { metaSchema } from "../seo";
 import { productConditionEnum } from "./enum";
 import { productSettingsSchema } from "./settings";
 import { variantSchema } from "./variants";
@@ -33,7 +34,7 @@ export const productDraftSchema = z
           order: z.number().optional(),
           name: z.string().optional(),
           value: z.string().optional(),
-        }),
+        })
       )
       .optional(),
 
@@ -57,16 +58,12 @@ export const productDraftSchema = z
         z.object({
           name: z.string().optional(),
           options: z.array(z.string()).optional(),
-        }),
+        })
       )
       .optional(),
     variants: z.array(variantSchema.partial()).optional(),
 
-    meta: z.object({
-      title: z.string().optional(),
-      description: z.string().optional(),
-      keywords: z.string().optional(),
-    }),
+    meta: metaSchema,
     images: z.array(mediaSchema).optional(),
 
     settings: productSettingsSchema.optional(),
@@ -82,7 +79,7 @@ export const productDraftSchema = z
           data.attributes &&
           data.attributes.length > 0 &&
           data.attributes.some(
-            (attr) => attr.name && attr.options && attr.options.length > 0,
+            (attr) => attr.name && attr.options && attr.options.length > 0
           )
         );
       }
@@ -91,7 +88,7 @@ export const productDraftSchema = z
     {
       message: "Variants can only be added when attributes are defined",
       path: ["variants"],
-    },
+    }
   );
 
 export type ProductDraftFormType = z.infer<typeof productDraftSchema>;

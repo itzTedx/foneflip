@@ -1,21 +1,24 @@
 import { z } from "zod/v4";
 
 import { mediaSchema } from "../media";
-import { collectionDraftSchema } from "./draft";
+import type { collectionDraftSchema } from "./draft";
 import { collectionsSettingsSchema } from "./settings";
 
 export const collectionMediaTypeEnum = z.enum(["thumbnail", "banner"]);
 
 export const collectionSchema = z.object({
   id: z.string().optional(),
-  title: z
-    .string()
-    .min(1, { message: "Title is required and cannot be empty" }),
+  title: z.string().min(1, { message: "Title is required and cannot be empty" }),
   description: z.string().optional(),
   label: z.string().optional(),
   sortOrder: z.number().optional(),
 
-  slug: z.string().optional(),
+  slug: z
+    .string()
+    .regex(/^[a-z0-9-]+$/, {
+      message: "Slug must be lowercase and contain only letters, numbers, and dashes.",
+    })
+    .optional(),
 
   thumbnail: mediaSchema.optional(),
   banner: mediaSchema.optional(),

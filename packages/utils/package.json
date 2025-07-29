@@ -6,13 +6,12 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
+  "files": ["dist/**"],
   "scripts": {
     "build": "tsup",
     "lint": "eslint src/",
     "dev": "tsup --watch",
+    "format": "biome format --write ./src",
     "check-types": "tsc --noEmit"
   },
   "peerDependencies": {

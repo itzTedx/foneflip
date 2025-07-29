@@ -22,9 +22,16 @@ export async function enqueue<T extends JobType>(type: T, data: JobData[T]) {
 }
 
 const queueEvents = new QueueEvents(QUEUE_NAME);
+/**
+ * Enqueues a job of the specified type and waits for its completion.
+ *
+ * @param type - The type of job to enqueue
+ * @param data - The data associated with the job type
+ * @returns The completed job after it has finished processing
+ */
 export async function enqueueAndWait<T extends JobType>(
   type: T,
-  data: JobData[T],
+  data: JobData[T]
 ) {
   const job = await enqueue(type, data);
   await job.waitUntilFinished(queueEvents);

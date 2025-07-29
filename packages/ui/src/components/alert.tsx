@@ -17,9 +17,14 @@ const alertVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
+/**
+ * Renders a styled alert container with support for visual variants.
+ *
+ * Applies appropriate ARIA roles and styling based on the selected variant.
+ */
 function Alert({
   className,
   variant,
@@ -35,19 +40,29 @@ function Alert({
   );
 }
 
+/**
+ * Renders the title section of an alert with appropriate styling and layout.
+ *
+ * Accepts all standard div properties.
+ */
 function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="alert-title"
       className={cn(
         "col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight",
-        className,
+        className
       )}
       {...props}
     />
   );
 }
 
+/**
+ * Renders the description section of an alert with muted styling and layout.
+ *
+ * Additional class names can be merged via the `className` prop.
+ */
 function AlertDescription({
   className,
   ...props
@@ -57,7 +72,7 @@ function AlertDescription({
       data-slot="alert-description"
       className={cn(
         "text-muted-foreground col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed",
-        className,
+        className
       )}
       {...props}
     />

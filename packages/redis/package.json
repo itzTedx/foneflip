@@ -5,6 +5,7 @@
   "scripts": {
     "build": "pnpm with-env tsup --clean",
     "check-types": "tsc --noEmit",
+    "format": "biome format --write ./src",
     "dev": "pnpm with-env tsup --watch",
     "lint": "eslint .",
     "with-env": "dotenv -e ../../.env --"

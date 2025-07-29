@@ -1,8 +1,8 @@
 "use client";
 
+import { Check, Plus, X } from "lucide-react";
 import type { RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
-import { Check, Plus, X } from "lucide-react";
 
 import { cn } from "@ziron/utils";
 
@@ -38,6 +38,13 @@ const tagStyles = {
   },
 };
 
+/**
+ * A React component for entering multiple tags with autocomplete suggestions, creation, and removal capabilities.
+ *
+ * Displays selected tags, allows users to add new tags from suggestions or by typing, and supports keyboard navigation. Suggestions are persisted in local storage and deduplicated. The component can be controlled via props and supports a maximum tag limit, custom placeholder, and error display.
+ *
+ * @returns The rendered multi-tag input component.
+ */
 export function MultiInput({
   value,
   onChange,
@@ -51,7 +58,7 @@ export function MultiInput({
   // Use local storage for suggestions only
   const [suggestionsLS, setSuggestionsLS] = useLocalStorage<string[]>(
     storageKey,
-    suggestions,
+    suggestions
   );
   // Use state for current product's tags
   const initialTags: Tag[] = (value || []).map((v) => ({ id: v, label: v }));
@@ -71,7 +78,7 @@ export function MultiInput({
     .filter(
       (suggestion) =>
         suggestion.toLowerCase().includes(input.toLowerCase()) &&
-        !tags.find((tag) => tag.label === suggestion),
+        !tags.find((tag) => tag.label === suggestion)
     )
     .slice(0, 5);
 
@@ -122,7 +129,7 @@ export function MultiInput({
   }
 
   useClickOutside(containerRef as RefObject<HTMLElement>, () =>
-    setIsOpen(false),
+    setIsOpen(false)
   );
 
   return (
@@ -141,12 +148,12 @@ export function MultiInput({
 
       <div
         className={cn(
-          "min-h-[3rem] px-1 py-1 sm:min-h-[2.5rem]",
+          "min-h-[3rem] px-2 py-1 sm:min-h-[2.5rem]",
           "rounded-lg border",
           "border-zinc-300 dark:border-zinc-700",
           "bg-white dark:bg-zinc-900",
           "focus-within:ring-2 focus-within:ring-indigo-500/30 dark:focus-within:ring-indigo-400/30",
-          "relative flex flex-row flex-wrap items-center gap-2 sm:gap-1.5",
+          "relative flex flex-row flex-wrap items-center gap-2 sm:gap-1.5"
         )}
       >
         {tags.map((tag) => (
@@ -155,7 +162,7 @@ export function MultiInput({
             className={cn(
               tagStyles.base,
               "py-1 text-base sm:py-0.5 sm:text-sm",
-              tag.color || tagStyles.colors.blue,
+              tag.color || tagStyles.colors.blue
             )}
           >
             {tag.label}
@@ -164,7 +171,7 @@ export function MultiInput({
               onClick={() => handleRemoveTag(tag.label)}
               className={cn(
                 "text-current/60 transition-colors hover:text-current",
-                "p-1 sm:p-0",
+                "p-1 sm:p-0"
               )}
             >
               <X className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
@@ -190,7 +197,7 @@ export function MultiInput({
             "text-base sm:text-sm",
             "text-zinc-900 dark:text-zinc-100",
             "placeholder:px-2 placeholder:text-zinc-500 dark:placeholder:text-zinc-400",
-            "focus:outline-hidden",
+            "focus:outline-hidden"
           )}
         />
 
@@ -202,7 +209,7 @@ export function MultiInput({
               "bg-white dark:bg-zinc-900",
               "border border-zinc-300 dark:border-zinc-700",
               "shadow-primary-background/5 rounded-lg shadow-lg",
-              "overflow-hidden",
+              "overflow-hidden"
             )}
           >
             <div className="border-b border-zinc-200 px-2 py-1.5 dark:border-zinc-800">
@@ -222,7 +229,7 @@ export function MultiInput({
                     tagStyles.base,
                     selectedIndex === index
                       ? tagStyles.colors.blue
-                      : "border border-zinc-300 bg-zinc-50 text-zinc-700 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600",
+                      : "border border-zinc-300 bg-zinc-50 text-zinc-700 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600"
                   )}
                 >
                   {suggestion}
@@ -239,7 +246,7 @@ export function MultiInput({
                     tagStyles.base,
                     selectedIndex === filteredSuggestions.length
                       ? tagStyles.colors.blue
-                      : "border border-zinc-300 bg-zinc-50 text-zinc-700 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600",
+                      : "border border-zinc-300 bg-zinc-50 text-zinc-700 hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600"
                   )}
                 >
                   <Plus className="h-3.5 w-3.5" />

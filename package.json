@@ -1,5 +1,5 @@
 {
-  "name": "test-shadcn",
+  "name": "foneflip",
   "version": "0.0.1",
   "private": true,
   "engines": {
@@ -13,7 +13,7 @@
     "dev:email": "turbo -F @ziron/email dev:email",
     "lint": "turbo lint",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
-    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "format:fix": "turbo run format --continue",
     "db:generate": "pnpm -F @ziron/db generate",
     "db:migrate": "turbo -F @ziron/db migrate",
     "db:studio": "turbo -F @ziron/db studio",
@@ -21,6 +21,7 @@
     "docker": "pnpm --filter @ziron/docker"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.1.2",
     "@turbo/gen": "^2.5.5",
     "@ziron/eslint-config": "workspace:*",
     "@ziron/prettier-config": "workspace:*",
@@ -29,9 +30,5 @@
     "turbo": "^2.5.5",
     "typescript": "catalog:"
   },
-  "prettier": "@ziron/prettier-config",
-  "dependencies": {
-    "@types/js-cookie": "^3.0.6",
-    "js-cookie": "^3.0.5"
-  }
+  "prettier": "@ziron/prettier-config"
 }

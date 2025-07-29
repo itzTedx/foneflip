@@ -1,4 +1,4 @@
-import { requireUser } from "@/features/auth/actions/data-access";
+import { requireUser } from "@/modules/auth/actions/data-access";
 import type { Metadata } from "next";
 
 import { TabsContent } from "@ziron/ui/tabs";
@@ -12,15 +12,20 @@ export const metadata: Metadata = {
   description: "Browse and manage your media assets.",
 };
 
+/**
+ * Renders the profile settings page for an authenticated user.
+ *
+ * Ensures the user is authenticated, retrieves their active sessions, and displays the profile form within the profile tab.
+ */
 export default async function ProfileSettingsPage() {
   const session = await requireUser();
 
   // const sessions = await getUserSessions(session.user.id);
-  const header = await headers()
+  const header = await headers();
 
   const sessions = await auth.api.listSessions({
-      headers:  header
-    });
+    headers: header,
+  });
   // console.log(sessions);
 
   return (

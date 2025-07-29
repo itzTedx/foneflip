@@ -10,7 +10,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
       className="toaster group"
       style={
         {
@@ -19,9 +18,17 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-border": "var(--border)",
         } as React.CSSProperties
       }
+      theme={theme as ToasterProps["theme"]}
       {...props}
     />
   );
 };
 
 export { Toaster };
+
+// export const TOAST_ICONS = {
+//   error: <CircleXmarkIcon className="size-4" />,
+//   success: <CircleCheckIcon className="size-4" />,
+//   warning: <TriangleWarningIcon className="size-4" />,
+//   info: <LabelInfoIcon className="size-4" />,
+// } satisfies ToasterProps["icons"];

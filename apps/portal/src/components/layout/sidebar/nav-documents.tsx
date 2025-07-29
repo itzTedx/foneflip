@@ -2,31 +2,36 @@
 
 import type { Icon } from "@tabler/icons-react";
 import {
-    IconDots,
-    IconFolder,
-    IconShare3,
-    IconTrash,
+  IconDots,
+  IconFolder,
+  IconShare3,
+  IconTrash,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 import {
-    SidebarGroup,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuAction,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@ziron/ui/sidebar";
 
+/**
+ * Renders a sidebar group labeled "Documents" with a list of document items, each displaying an icon, name, and a dropdown menu for actions.
+ *
+ * @param items - The list of documents to display, each with a name, URL, and icon.
+ */
 export function NavDocuments({
   items,
 }: {

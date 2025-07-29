@@ -1,5 +1,5 @@
-import { LoginForm } from "@/features/auth/components/login-form";
 import { getSession } from "@/lib/auth/server";
+import { LoginForm } from "@/modules/auth/components/login-form";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 

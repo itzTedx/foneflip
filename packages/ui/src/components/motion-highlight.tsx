@@ -37,11 +37,18 @@ const MotionHighlightContext = React.createContext<
   MotionHighlightContextType<any> | undefined
 >(undefined);
 
+/**
+ * Provides access to the current MotionHighlight context.
+ *
+ * Throws an error if called outside of a MotionHighlight provider.
+ *
+ * @returns The MotionHighlight context object for the current highlight group.
+ */
 function useMotionHighlight<T extends string>(): MotionHighlightContextType<T> {
   const context = React.useContext(MotionHighlightContext);
   if (!context) {
     throw new Error(
-      "useMotionHighlight must be used within a MotionHighlightProvider",
+      "useMotionHighlight must be used within a MotionHighlightProvider"
     );
   }
   return context as unknown as MotionHighlightContextType<T>;
@@ -106,6 +113,13 @@ type MotionHighlightProps<T extends string> = React.ComponentProps<"div"> &
     | UncontrolledChildrenModeMotionHighlightProps<T>
   );
 
+/**
+ * Provides animated highlight effects for its child elements, managing highlight state and transitions.
+ *
+ * Supports both controlled and uncontrolled modes, as well as "parent" and "children" highlight strategies. Handles highlight activation, bounding rectangle calculations, and context propagation to nested highlight items. Animates highlight backgrounds using the `motion` library and allows customization of transitions, activation triggers, and highlight appearance.
+ *
+ * @returns The highlight context provider wrapping the rendered children, with animated highlight effects applied when enabled.
+ */
 function MotionHighlight<T extends string>({
   ref,
   ...props
@@ -129,7 +143,7 @@ function MotionHighlight<T extends string>({
   React.useImperativeHandle(ref, () => localRef.current as HTMLDivElement);
 
   const [activeValue, setActiveValue] = React.useState<T | null>(
-    value ?? defaultValue ?? null,
+    value ?? defaultValue ?? null
   );
   const [boundsState, setBoundsState] = React.useState<Bounds | null>(null);
   const [activeClassNameState, setActiveClassNameState] =
@@ -140,7 +154,7 @@ function MotionHighlight<T extends string>({
       setActiveValue((prev) => (prev === id ? prev : id));
       if (id !== activeValue) onValueChange?.(id as T);
     },
-    [activeValue, onValueChange],
+    [activeValue, onValueChange]
   );
 
   const safeSetBounds = React.useCallback(
@@ -176,7 +190,7 @@ function MotionHighlight<T extends string>({
         return newBounds;
       });
     },
-    [props],
+    [props]
   );
 
   const clearBounds = React.useCallback(() => {
@@ -198,7 +212,7 @@ function MotionHighlight<T extends string>({
     const onScroll = () => {
       if (!activeValue) return;
       const activeEl = container.querySelector<HTMLElement>(
-        `[data-value="${activeValue}"][data-highlight="true"]`,
+        `[data-value="${activeValue}"][data-highlight="true"]`
       );
       if (activeEl) safeSetBounds(activeEl.getBoundingClientRect());
     };
@@ -216,7 +230,7 @@ function MotionHighlight<T extends string>({
             data-slot="motion-highlight-container"
             className={cn(
               "relative",
-              (props as ParentModeMotionHighlightProps)?.containerClassName,
+              (props as ParentModeMotionHighlightProps)?.containerClassName
             )}
           >
             <AnimatePresence initial={false}>
@@ -248,7 +262,7 @@ function MotionHighlight<T extends string>({
                   className={cn(
                     "bg-muted absolute z-0",
                     className,
-                    activeClassNameState,
+                    activeClassNameState
                   )}
                 />
               )}
@@ -268,7 +282,7 @@ function MotionHighlight<T extends string>({
       exitDelay,
       className,
       activeClassNameState,
-    ],
+    ]
   );
 
   return (
@@ -303,16 +317,23 @@ function MotionHighlight<T extends string>({
                 >
                   {child}
                 </MotionHighlightItem>
-              )),
+              ))
             )
         : children}
     </MotionHighlightContext.Provider>
   );
 }
 
+/**
+ * Returns a subset of data attributes that do not override existing props on the given React element.
+ *
+ * @param element - The React element to check for existing props
+ * @param dataAttributes - The data attributes to filter
+ * @returns An object containing only the data attributes whose keys are not already present in the element's props
+ */
 function getNonOverridingDataAttributes(
   element: React.ReactElement,
-  dataAttributes: Record<string, unknown>,
+  dataAttributes: Record<string, unknown>
 ): Record<string, unknown> {
   return Object.keys(dataAttributes).reduce<Record<string, unknown>>(
     (acc, key) => {
@@ -321,7 +342,7 @@ function getNonOverridingDataAttributes(
       }
       return acc;
     },
-    {},
+    {}
   );
 }
 
@@ -348,6 +369,11 @@ type MotionHighlightItemProps = React.ComponentProps<"div"> & {
   forceUpdateBounds?: boolean;
 };
 
+/**
+ * Wraps a child element to provide animated highlight effects based on active state within a MotionHighlight context.
+ *
+ * Supports both "parent" and "children" highlight modes, hover or click activation, and optional highlight background rendering. Adds relevant data attributes and event handlers to the child element for accessibility and state indication.
+ */
 function MotionHighlightItem({
   ref,
   children,
@@ -491,7 +517,7 @@ function MotionHighlightItem({
                 className={cn(
                   "bg-muted absolute inset-0 z-0",
                   contextClassName,
-                  activeClassName,
+                  activeClassName
                 )}
                 transition={itemTransition}
                 initial={{ opacity: 0 }}
@@ -517,7 +543,7 @@ function MotionHighlightItem({
           >
             {children}
           </div>
-        </>,
+        </>
       );
     }
 
@@ -550,7 +576,7 @@ function MotionHighlightItem({
               className={cn(
                 "bg-muted absolute inset-0 z-0",
                 contextClassName,
-                activeClassName,
+                activeClassName
               )}
               transition={itemTransition}
               initial={{ opacity: 0 }}

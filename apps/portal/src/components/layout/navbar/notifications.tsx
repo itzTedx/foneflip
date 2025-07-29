@@ -1,10 +1,10 @@
 "use client";
 
 import {
-    markAllNotificationsAsRead,
-    markNotificationAsRead,
-} from "@/features/notifications/actions/mutation";
-import { getNotifications } from "@/features/notifications/actions/queries";
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+} from "@/modules/notifications/actions/mutation";
+import { getNotifications } from "@/modules/notifications/actions/queries";
 import { BellIcon } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { io, Socket } from "socket.io-client";
@@ -13,11 +13,7 @@ import { useSession } from "@ziron/auth/client";
 import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@ziron/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@ziron/ui/popover";
 import { ScrollArea } from "@ziron/ui/scroll-area";
 import { toast } from "@ziron/ui/sonner";
 import { cn, formatDate } from "@ziron/utils";
@@ -36,9 +32,14 @@ type NormalizedNotification = Omit<NotificationProp, "createdAt"> & {
   createdAt: Date;
 };
 
-// Helper to ensure notification dates are Date objects
+/**
+ * Converts a notification's `createdAt` field from an ISO string to a `Date` object.
+ *
+ * @param notification - The notification object with a string `createdAt` field
+ * @returns The notification object with `createdAt` as a `Date` instance
+ */
 function normalizeNotification(
-  notification: NotificationProp,
+  notification: NotificationProp
 ): NormalizedNotification {
   return {
     ...notification,
@@ -46,6 +47,12 @@ function normalizeNotification(
   };
 }
 
+/**
+ * Displays a real-time notifications popover for the current user, supporting live updates, marking as read, and pagination.
+ *
+ * @param initialNotifications - Optional initial list of notifications to populate the component on mount
+ * @returns A React component that renders a notifications bell with a popover containing the user's notifications
+ */
 export default function Notifications({
   initialNotifications,
 }: {
@@ -55,7 +62,7 @@ export default function Notifications({
   const userId = data?.user.id;
   // When initializing state
   const notificationsArray = (initialNotifications ?? []).map(
-    normalizeNotification,
+    normalizeNotification
   );
   // Remove unused notifications state
   const [allLoaded, setAllLoaded] = useState(false);
@@ -91,7 +98,7 @@ export default function Notifications({
   const handleMarkAllAsRead = async () => {
     // Optimistically update UI
     setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, read: true })),
+      prev.map((notification) => ({ ...notification, read: true }))
     );
     try {
       await markAllNotificationsAsRead(userId!);
@@ -105,8 +112,8 @@ export default function Notifications({
     // Optimistically update UI
     setNotifications((prev) =>
       prev.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification,
-      ),
+        notification.id === id ? { ...notification, read: true } : notification
+      )
     );
     try {
       await markNotificationAsRead(id);
@@ -121,7 +128,7 @@ export default function Notifications({
       const newNotifications = await getNotifications(
         userId,
         10,
-        notifications.length,
+        notifications.length
       );
       if (!newNotifications || newNotifications.length === 0) {
         setAllLoaded(true);
@@ -202,7 +209,7 @@ export default function Notifications({
               key={`${notification.id}-${i}`}
               className={cn(
                 "hover:bg-accent my-1 rounded-md px-3 py-2 text-sm transition-colors",
-                !notification.read ? "bg-accent/30 font-semibold" : "",
+                !notification.read ? "bg-accent/30 font-semibold" : ""
               )}
             >
               <div className="relative flex items-start pe-3">

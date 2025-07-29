@@ -1,29 +1,25 @@
-import { getSignedURL } from "@/features/media/actions/mutations";
-import { computeSHA256 } from "@/features/media/utils/compute-sha256";
-import { deleteAvatar } from "@/features/users/actions/mutation";
 import { useFileUpload } from "@/hooks/use-file-upload";
+import { getSignedURL } from "@/modules/media/actions/mutations";
+import { computeSHA256 } from "@/modules/media/utils/compute-sha256";
+import { deleteAvatar } from "@/modules/users/actions/mutation";
 import { ArrowLeftIcon, XIcon, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@ziron/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@ziron/ui/avatar";
 import { Button } from "@ziron/ui/button";
 import {
-    Cropper,
-    CropperCropArea,
-    CropperDescription,
-    CropperImage,
+  Cropper,
+  CropperCropArea,
+  CropperDescription,
+  CropperImage,
 } from "@ziron/ui/cropper";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@ziron/ui/dialog";
 import { useFormContext } from "@ziron/ui/form";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
@@ -44,11 +40,20 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
     image.src = url;
   });
 
+/**
+ * Crops an image from a given source URL to the specified pixel area and returns the result as a JPEG blob.
+ *
+ * @param imageSrc - The source URL of the image to crop.
+ * @param pixelCrop - The pixel coordinates and dimensions of the crop area.
+ * @param outputWidth - The width of the output image in pixels. Defaults to the crop area's width.
+ * @param outputHeight - The height of the output image in pixels. Defaults to the crop area's height.
+ * @returns A Promise that resolves to a JPEG Blob of the cropped image, or `null` if cropping fails.
+ */
 async function getCroppedImg(
   imageSrc: string,
   pixelCrop: Area,
   outputWidth: number = pixelCrop.width, // Optional: specify output size
-  outputHeight: number = pixelCrop.height,
+  outputHeight: number = pixelCrop.height
 ): Promise<Blob | null> {
   try {
     const image = await createImage(imageSrc);
@@ -73,7 +78,7 @@ async function getCroppedImg(
       0,
       0,
       outputWidth, // Draw onto the output size
-      outputHeight,
+      outputHeight
     );
 
     // Convert canvas to blob
@@ -83,7 +88,7 @@ async function getCroppedImg(
           resolve(blob);
         },
         "image/jpeg",
-        0.7,
+        0.7
       ); // Specify format and quality if needed
     });
   } catch (error) {

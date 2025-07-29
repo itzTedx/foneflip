@@ -1,4 +1,4 @@
-import { RegisterForm } from "@/features/auth/components/register-form";
+import { RegisterForm } from "@/modules/auth/components/register-form";
 
 import { IconLogoMono } from "@ziron/ui/assets/logo";
 import { Card, CardContent } from "@ziron/ui/card";

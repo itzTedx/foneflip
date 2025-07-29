@@ -1,19 +1,23 @@
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { AddButton } from "@/components/ui/action-buttons";
-import { hasPermission } from "@/features/auth/actions/data-access";
+import { hasPermission } from "@/modules/auth/actions/data-access";
+import { TestButton } from "@/modules/media/components/test-button";
 
 export default async function ProductsPage() {
   await hasPermission({
     permissions: {
-      products: ["create", "delete", "update"]
-    }
+      products: ["create", "delete", "update"],
+    },
   });
   return (
     <MainWrapper>
       <PageHeader title="Products">
-        <AddButton title="Product" href="/products/new" />
+        <AddButton href="/products/new" title="Product" />
       </PageHeader>
+      <div>
+        <TestButton />
+      </div>
     </MainWrapper>
   );
 }

@@ -1,0 +1,7 @@
+{
+  "root": false,
+  "extends": "./base.json",
+  "formatter": {
+    "enabled": false
+  }
+}

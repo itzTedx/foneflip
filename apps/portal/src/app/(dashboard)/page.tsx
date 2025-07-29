@@ -1,6 +1,6 @@
 import { LogoutButton } from "@/components/ui/logout-button";
-import { sendMockNotification } from "@/features/notifications/actions/sendMockNotification";
 import { getSession } from "@/lib/auth/server";
+import { sendMockNotification } from "@/modules/notifications/actions/sendMockNotification";
 import Link from "next/link";
 
 import { Button } from "@ziron/ui/button";

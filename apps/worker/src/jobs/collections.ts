@@ -9,8 +9,8 @@ export const deleteSoftDeletedCollections = async () => {
     .where(lt(collectionsTable.deletedAt, THIRTY_DAYS_AGO))
     .returning();
   console.log(
-    `Hard-deleted collections soft-deleted over 30 days ago:`,
-    result,
+    "Hard-deleted collections soft-deleted over 30 days ago:",
+    result
   );
 
   // Send notification to admin users for each collection separately
@@ -33,7 +33,7 @@ export const deleteSoftDeletedCollections = async () => {
     }
 
     console.log(
-      `Sent ${result.length * adminUsers.length} notifications to ${adminUsers.length} admin users`,
+      `Sent ${result.length * adminUsers.length} notifications to ${adminUsers.length} admin users`
     );
   }
 };

@@ -107,7 +107,7 @@ type StatusBadgeRootProps = React.HTMLAttributes<HTMLDivElement> &
 const StatusBadgeRoot = React.forwardRef<HTMLDivElement, StatusBadgeRootProps>(
   (
     { asChild, children, variant, status, className, ...rest },
-    forwardedRef,
+    forwardedRef
   ) => {
     const uniqueId = React.useId();
     const Component = asChild ? Slot : "div";
@@ -123,7 +123,7 @@ const StatusBadgeRoot = React.forwardRef<HTMLDivElement, StatusBadgeRootProps>(
       sharedProps,
       [STATUS_BADGE_ICON_NAME, STATUS_BADGE_DOT_NAME],
       uniqueId,
-      asChild,
+      asChild
     );
 
     return (
@@ -135,7 +135,7 @@ const StatusBadgeRoot = React.forwardRef<HTMLDivElement, StatusBadgeRootProps>(
         {extendedChildren}
       </Component>
     );
-  },
+  }
 );
 StatusBadgeRoot.displayName = STATUS_BADGE_ROOT_NAME;
 
@@ -165,4 +165,3 @@ function StatusBadgeDot({
 StatusBadgeDot.displayName = STATUS_BADGE_DOT_NAME;
 
 export { StatusBadgeRoot as StatusBadge, StatusBadgeDot, StatusBadgeIcon };
-

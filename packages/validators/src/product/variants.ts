@@ -13,6 +13,6 @@ export const variantSchema = z.object({
     z.object({
       name: z.string().optional(),
       value: z.string().optional(),
-    }),
+    })
   ),
 });

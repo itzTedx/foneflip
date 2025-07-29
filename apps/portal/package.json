@@ -9,7 +9,7 @@
     "start": "pnpm with-env next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "format": "biome format --write ./src",
     "clean": "git clean -xdf .cache .next .turbo node_modules",
     "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"
@@ -22,6 +22,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@mdxeditor/editor": "^3.40.1",
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tabler/icons-react": "^3.34.0",
     "@tanstack/react-table": "^8.21.3",
@@ -37,27 +38,30 @@
     "bullmq": "^5.56.3",
     "dotenv-cli": "^8.0.0",
     "drizzle-orm": "^0.44.2",
+    "jotai": "^2.12.5",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.475.0",
+    "motion": "^12.23.3",
     "next": "^15.3.5",
+    "next-mdx-remote": "^5.0.0",
     "next-themes": "^0.4.4",
     "nuqs": "^2.4.3",
     "pg": "^8.16.3",
     "radix-ui": "^1.4.2",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
+    "remark-gfm": "^4.0.1",
     "sharp": "^0.34.3",
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.6"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.20",
     "@types/node": "^20",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
-    "@ziron/eslint-config": "workspace:^",
-    "@ziron/prettier-config": "workspace:*",
     "@ziron/tsconfig": "workspace:*",
     "typescript": "catalog:",
     "typescript-eslint": "^8.36.0"
-  },
-  "prettier": "@ziron/prettier-config"
+  }
 }

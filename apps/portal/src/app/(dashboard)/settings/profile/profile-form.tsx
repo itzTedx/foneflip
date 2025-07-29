@@ -52,6 +52,14 @@ interface Props {
   }[];
 }
 
+/**
+ * Renders a user profile settings form with editable profile information, security options, and session management.
+ *
+ * Displays and allows updating of the user's name and avatar, shows the email address, and provides controls for changing the password and managing two-factor authentication (UI only). Lists all active sessions, enabling the user to log out from individual sessions or from all other devices.
+ *
+ * @param initialData - The current session and user data used to populate the form.
+ * @param sessions - An array of active session objects for the user, used to display recent login activity and manage session revocation.
+ */
 export function ProfileForm({ initialData, sessions }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isRevokePending, startRevokeTransition] = useTransition();
@@ -115,8 +123,8 @@ export function ProfileForm({ initialData, sessions }: Props) {
 
   //   Ensure current device session is always first
   const sortedSessions = [
-    ...(sessions).filter((s) => s.id === initialData.session.id),
-    ...(sessions).filter((s) => s.id !== initialData.session.id),
+    ...sessions.filter((s) => s.id === initialData.session.id),
+    ...sessions.filter((s) => s.id !== initialData.session.id),
   ];
 
   return (
@@ -236,8 +244,6 @@ export function ProfileForm({ initialData, sessions }: Props) {
               />
             </CardContent>
           </Card>
-
-       
 
           <Card className="break-inside-avoid">
             <CardHeader className="flex items-center justify-between">

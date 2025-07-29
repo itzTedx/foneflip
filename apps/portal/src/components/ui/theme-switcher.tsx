@@ -1,18 +1,23 @@
 "use client";
 
 import {
-    IconAdjustmentsHorizontal,
-    IconMoon,
-    IconSun,
+  IconAdjustmentsHorizontal,
+  IconMoon,
+  IconSun,
 } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
 
 import {
-    SegmentedControl,
-    SegmentedControlList,
-    SegmentedControlTrigger,
+  SegmentedControl,
+  SegmentedControlList,
+  SegmentedControlTrigger,
 } from "@ziron/ui/segmented-control";
 
+/**
+ * Renders a segmented control for switching between light, dark, and system themes.
+ *
+ * Allows users to select their preferred theme, updating the application's appearance accordingly.
+ */
 export function ThemeSwitcher() {
   const { setTheme, theme } = useTheme();
   return (

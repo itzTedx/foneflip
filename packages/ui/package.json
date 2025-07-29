@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "lint": "eslint . --max-warnings 0",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "format": "biome format --write ./src",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "ui-add": "pnpm dlx shadcn@latest add && prettier src --write --list-different"
   },
@@ -27,6 +27,7 @@
     "nuqs": "^2.4.3",
     "radix-ui": "latest",
     "react": "catalog:react19",
+    "react-aria-components": "^1.11.0",
     "react-day-picker": "^9.8.0",
     "react-dom": "catalog:react19",
     "react-hook-form": "^7.60.0",

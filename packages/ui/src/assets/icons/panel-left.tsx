@@ -24,42 +24,47 @@ const animations = {
   } satisfies Record<string, Variants>,
 } as const;
 
+/**
+ * Renders an animated SVG icon representing a left panel using motion variants and context-based animation controls.
+ *
+ * @param size - The width and height of the icon in pixels
+ */
 function IconComponent({ size, ...props }: PanelLeftProps) {
   const { controls } = useAnimateIconContext();
   const variants = getVariants(animations);
 
   return (
     <motion.svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
       fill="none"
+      height={size}
       stroke="currentColor"
-      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <motion.rect
-        width={18}
+        animate={controls}
         height={18}
-        x={3}
-        y={3}
+        initial="initial"
         rx={2}
         ry={2}
         variants={variants.rect}
-        initial="initial"
-        animate={controls}
+        width={18}
+        x={3}
+        y={3}
       />
       <motion.line
-        x1={9}
-        y1={3}
-        x2={9}
-        y2={21}
-        variants={variants.line}
-        initial="initial"
         animate={controls}
+        initial="initial"
+        variants={variants.line}
+        x1={9}
+        x2={9}
+        y1={3}
+        y2={21}
       />
     </motion.svg>
   );

@@ -1,15 +1,13 @@
 // AlignUI SegmentedControl v0.0.0
 
 "use client";
-import { Slottable } from '@radix-ui/react-slot';
+import { Slottable } from "@radix-ui/react-slot";
 import { Tabs as TabsPrimitive } from "radix-ui";
 
 import mergeRefs from "merge-refs";
 import * as React from "react";
 
-
-
-import { cn } from '@ziron/utils';
+import { cn } from "@ziron/utils";
 import { useTabObserver } from "../hooks/use-tab-observer";
 
 const SegmentedControlRoot = TabsPrimitive.Root;
@@ -35,7 +33,7 @@ const SegmentedControlList = React.forwardRef<
       ref={mergeRefs(forwardedRef, listRef)}
       className={cn(
         "bg-muted/50 relative isolate grid w-full auto-cols-fr grid-flow-col gap-1 rounded-md p-1",
-        className,
+        className
       )}
       {...rest}
     >
@@ -48,7 +46,7 @@ const SegmentedControlList = React.forwardRef<
           {
             hidden: !mounted,
           },
-          floatingBgClassName,
+          floatingBgClassName
         )}
         style={{
           transform: `translate3d(${lineStyle.left}px, 0, 0)`,
@@ -79,7 +77,7 @@ const SegmentedControlTrigger = React.forwardRef<
         "focus:outline-none",
         // active
         "data-[state=active]:text-foreground",
-        className,
+        className
       )}
       {...rest}
     />
@@ -99,5 +97,5 @@ export {
   SegmentedControlRoot as SegmentedControl,
   SegmentedControlContent,
   SegmentedControlList,
-  SegmentedControlTrigger
+  SegmentedControlTrigger,
 };

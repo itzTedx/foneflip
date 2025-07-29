@@ -1,10 +1,12 @@
-import Navbar from "@/components/layout/navbar";
-import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
-import { getSession } from "@/lib/auth/server";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 
 import { SidebarInset, SidebarProvider } from "@ziron/ui/sidebar";
+
+import Navbar from "@/components/layout/navbar";
+import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
+import { getSession } from "@/lib/auth/server";
+import { getMedia } from "@/modules/media/actions/queries";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -23,6 +25,8 @@ export default async function RootLayout({
   // Get session server-side
   const session = await getSession();
 
+  const data = await getMedia();
+
   return (
     <SidebarProvider
       defaultOpen={defaultOpen}
@@ -33,7 +37,7 @@ export default async function RootLayout({
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="sidebar" session={session} />
+      <AppSidebar session={session} variant="sidebar" />
       <SidebarInset>
         <div className="relative flex-1">
           <Navbar session={session} />

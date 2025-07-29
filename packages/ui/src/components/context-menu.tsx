@@ -53,6 +53,11 @@ function ContextMenuRadioGroup({
   );
 }
 
+/**
+ * Renders a submenu trigger within a context menu, displaying a right-pointing chevron and supporting optional inset styling.
+ *
+ * @param inset - If true, applies additional left padding to visually align the submenu trigger.
+ */
 function ContextMenuSubTrigger({
   className,
   inset,
@@ -67,7 +72,7 @@ function ContextMenuSubTrigger({
       data-inset={inset}
       className={cn(
         "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className,
+        className
       )}
       {...props}
     >
@@ -77,6 +82,11 @@ function ContextMenuSubTrigger({
   );
 }
 
+/**
+ * Renders the content of a context menu submenu with styling and animation.
+ *
+ * Applies positioning, open/close animations, and visual styles for submenu content.
+ */
 function ContextMenuSubContent({
   className,
   ...props
@@ -86,13 +96,18 @@ function ContextMenuSubContent({
       data-slot="context-menu-sub-content"
       className={cn(
         "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg",
-        className,
+        className
       )}
       {...props}
     />
   );
 }
 
+/**
+ * Renders the main content area of a context menu within a React portal, applying styling, animations, and scroll behavior.
+ *
+ * Spreads additional props to the underlying radix-ui ContextMenuPrimitive.Content component.
+ */
 function ContextMenuContent({
   className,
   ...props
@@ -103,7 +118,7 @@ function ContextMenuContent({
         data-slot="context-menu-content"
         className={cn(
           "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-context-menu-content-available-height) min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md",
-          className,
+          className
         )}
         {...props}
       />
@@ -111,6 +126,14 @@ function ContextMenuContent({
   );
 }
 
+/**
+ * Renders a selectable item within a context menu, supporting optional inset styling and destructive variant.
+ *
+ * The item visually responds to focus, disabled, and destructive states, and can be styled as inset for alignment with grouped items.
+ *
+ * @param inset - If true, applies additional left padding for alignment.
+ * @param variant - Visual style of the item; "default" or "destructive".
+ */
 function ContextMenuItem({
   className,
   inset,
@@ -127,13 +150,20 @@ function ContextMenuItem({
       data-variant={variant}
       className={cn(
         "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className,
+        className
       )}
       {...props}
     />
   );
 }
 
+/**
+ * Renders a context menu item with a checkbox, allowing selection or deselection within the menu.
+ *
+ * Displays a check icon when selected and applies appropriate styles for focus and disabled states.
+ *
+ * @param checked - Whether the checkbox item is selected
+ */
 function ContextMenuCheckboxItem({
   className,
   children,
@@ -145,7 +175,7 @@ function ContextMenuCheckboxItem({
       data-slot="context-menu-checkbox-item"
       className={cn(
         "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className,
+        className
       )}
       checked={checked}
       {...props}
@@ -160,6 +190,11 @@ function ContextMenuCheckboxItem({
   );
 }
 
+/**
+ * Renders a context menu radio item with custom styling and a selected indicator.
+ *
+ * Displays a selectable radio option within a context menu. When selected, a filled circle icon appears to the left of the item.
+ */
 function ContextMenuRadioItem({
   className,
   children,
@@ -170,7 +205,7 @@ function ContextMenuRadioItem({
       data-slot="context-menu-radio-item"
       className={cn(
         "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className,
+        className
       )}
       {...props}
     >
@@ -184,6 +219,11 @@ function ContextMenuRadioItem({
   );
 }
 
+/**
+ * Renders a styled label within a context menu, with optional inset padding.
+ *
+ * @param inset - If true, applies additional left padding to the label
+ */
 function ContextMenuLabel({
   className,
   inset,
@@ -197,7 +237,7 @@ function ContextMenuLabel({
       data-inset={inset}
       className={cn(
         "text-foreground px-2 py-1.5 text-sm font-medium data-[inset]:pl-8",
-        className,
+        className
       )}
       {...props}
     />
@@ -217,6 +257,11 @@ function ContextMenuSeparator({
   );
 }
 
+/**
+ * Renders a styled span for displaying a keyboard shortcut within a context menu item.
+ *
+ * This component aligns the shortcut text to the right and applies muted styling.
+ */
 function ContextMenuShortcut({
   className,
   ...props
@@ -226,7 +271,7 @@ function ContextMenuShortcut({
       data-slot="context-menu-shortcut"
       className={cn(
         "text-muted-foreground ml-auto text-xs tracking-widest",
-        className,
+        className
       )}
       {...props}
     />

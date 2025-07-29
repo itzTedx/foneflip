@@ -195,17 +195,37 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overscroll-none;
   }
-}
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+ 
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  .mdxeditor-root-contenteditable {
+    @apply border-input has-focus-visible:border-ring has-focus-visible:ring-ring/50 dark:bg-input/30 rounded-t-none rounded-md border bg-transparent px-3 shadow-xs transition-[color,box-shadow] outline-none has-focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 overflow-hidden;
+
+    & * {
+      outline: none;
+    }
+  }
+
+  .mdxeditor-toolbar {
+    @apply bg-card border-card rounded-md !rounded-b-none shadow-sm flex-wrap;
+  }
+
+  .mdxeditor-popup-container {
+    @apply !z-50;
+  }
+
+  .dark-theme {
+    --basePageBg: var(--muted) !important;
+  }
 }

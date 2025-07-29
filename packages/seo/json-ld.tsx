@@ -1,14 +1,14 @@
-import type { Thing, WithContext } from 'schema-dts'
+import type { Thing, WithContext } from "schema-dts";
 
 type JsonLdProps = {
-  code: WithContext<Thing>
-}
+  code: WithContext<Thing>;
+};
 
 export const JsonLd = ({ code }: JsonLdProps) => (
   <script
-    type="application/ld+json"
     dangerouslySetInnerHTML={{ __html: JSON.stringify(code) }}
+    type="application/ld+json"
   />
-)
+);
 
-export * from 'schema-dts'
+export * from "schema-dts";

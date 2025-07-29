@@ -103,66 +103,74 @@ const animations = {
   } satisfies Record<string, Variants>,
 } as const;
 
+/**
+ * Renders an animated dashboard icon as an SVG with four rectangles, each animated using motion variants from context.
+ *
+ * The icon's appearance and animation are determined by the current animation context and the provided size.
+ *
+ * @param size - The width and height of the SVG icon in pixels
+ * @returns A React element representing the animated dashboard icon
+ */
 function IconComponent({ size, ...props }: LayoutDashboardProps) {
   const { controls } = useAnimateIconContext();
   const variants = getVariants(animations);
 
   return (
     <motion.svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
       fill="none"
+      height={size}
       stroke="currentColor"
-      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <motion.rect
-        width={7}
+        animate={controls}
         height={9}
-        x={3}
-        y={3}
+        initial="initial"
         rx={1}
         ry={1}
         variants={variants.rect1}
-        initial="initial"
-        animate={controls}
+        width={7}
+        x={3}
+        y={3}
       />
       <motion.rect
-        width={7}
+        animate={controls}
         height={5}
-        x={14}
-        y={3}
+        initial="initial"
         rx={1}
         ry={1}
         variants={variants.rect2}
-        initial="initial"
-        animate={controls}
+        width={7}
+        x={14}
+        y={3}
       />
       <motion.rect
-        width={7}
+        animate={controls}
         height={9}
-        x={14}
-        y={12}
+        initial="initial"
         rx={1}
         ry={1}
         variants={variants.rect3}
-        initial="initial"
-        animate={controls}
+        width={7}
+        x={14}
+        y={12}
       />
       <motion.rect
-        width={7}
+        animate={controls}
         height={5}
-        x={3}
-        y={16}
+        initial="initial"
         rx={1}
         ry={1}
         variants={variants.rect4}
-        initial="initial"
-        animate={controls}
+        width={7}
+        x={3}
+        y={16}
       />
     </motion.svg>
   );

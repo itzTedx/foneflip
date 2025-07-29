@@ -1,7 +1,6 @@
-import { Queue, Worker } from "bullmq";
-
 import { JobType, QUEUE_NAME } from "@ziron/queue";
 import redis from "@ziron/redis";
+import { Queue, Worker } from "bullmq";
 
 import { deleteSoftDeletedCollections } from "./jobs/collections";
 import {
@@ -31,7 +30,7 @@ const queue = new Queue(QUEUE_NAME, { connection: redis });
         removeOnComplete: true,
         removeOnFail: true,
       },
-    },
+    }
   );
 
   // Schedule hard deletion of soft-deleted notifications every 1st of the month at 1:00 AM
@@ -45,7 +44,7 @@ const queue = new Queue(QUEUE_NAME, { connection: redis });
         removeOnComplete: true,
         removeOnFail: true,
       },
-    },
+    }
   );
 
   // Schedule hard deletion of soft-deleted collections every day at 2:00 AM
@@ -59,7 +58,7 @@ const queue = new Queue(QUEUE_NAME, { connection: redis });
         removeOnComplete: true,
         removeOnFail: true,
       },
-    },
+    }
   );
 })();
 
@@ -68,7 +67,7 @@ new Worker(
   async (job) => {
     const runner = runners[job.name as JobType];
     if (!runner) {
-      console.error(`Unknown job type`, job.name);
+      console.error("Unknown job type", job.name);
       throw new Error(`Unknown job type ${job.name}`);
     }
 
@@ -76,7 +75,7 @@ new Worker(
     await runner(job.data);
     console.log(`[${job.id}] ${job.name} - Completed`);
   },
-  { connection: redis },
+  { connection: redis }
 );
 
 console.log("hello world");

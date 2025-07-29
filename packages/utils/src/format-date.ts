@@ -32,7 +32,7 @@ interface FormatDateOptions {
  */
 export function formatDate(
   date: Date | string | number,
-  options: FormatDateOptions = {},
+  options: FormatDateOptions = {}
 ): string {
   const {
     locale = "en-US",
@@ -81,8 +81,7 @@ export function formatDate(
   let dateString = "";
 
   if (showDayOfWeek) {
-    dateString +=
-      dateObj.toLocaleDateString(locale, { weekday: "long" }) + ", ";
+    dateString += `${dateObj.toLocaleDateString(locale, { weekday: "long" })}, `;
   }
 
   if (isToday) {

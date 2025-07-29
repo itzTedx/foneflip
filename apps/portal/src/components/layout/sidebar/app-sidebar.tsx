@@ -1,51 +1,53 @@
 "use client";
 
-import { canAccessSettings, UserRole } from "@/lib/auth/access-control";
+import * as React from "react";
+import Link from "next/link";
+
 import type { Icon } from "@tabler/icons-react";
 import {
-    IconCategory,
-    IconCirclePlusFilled,
-    IconDeviceMobileRotated,
-    IconFolder,
-    IconPackage,
-    IconPhoto,
-    IconPuzzle,
-    IconReport,
-    IconSettings,
-    IconUsersGroup,
-    IconWorld,
+  IconCategory,
+  IconCirclePlusFilled,
+  IconDeviceMobileRotated,
+  IconFolder,
+  IconPackage,
+  IconPhoto,
+  IconPuzzle,
+  IconReport,
+  IconSettings,
+  IconUsersGroup,
+  IconWorld,
 } from "@tabler/icons-react";
-import Link from "next/link";
-import * as React from "react";
 
 import { Session } from "@ziron/auth";
 import { IconProducts, IconVendors } from "@ziron/ui/assets/icons";
 import { LayoutDashboardIcon } from "@ziron/ui/assets/icons/layout-dashboard";
 import { IconLogo, LogoWordMark } from "@ziron/ui/assets/logo";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarRail,
-    SidebarSeparator,
-    SidebarTrigger,
-    useSidebar,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
 } from "@ziron/ui/sidebar";
+
+import { canAccessSettings, UserRole } from "@/lib/auth/access-control";
 
 import { NavDocuments } from "./nav-documents";
 import { NavMain } from "./nav-main";
@@ -156,6 +158,16 @@ const getNavigationData = (userRole: UserRole) => {
   return { navMain, documents, storefront };
 };
 
+/**
+ * Renders the sidebar content with navigation sections, quick create menu, and optional settings link.
+ *
+ * Displays main navigation, documents, and storefront links based on the provided arrays. Includes a "Quick Create" dropdown for creating products or collections, and conditionally shows a settings link in the footer.
+ *
+ * @param navMain - Array of main navigation items to display
+ * @param documents - Array of document navigation items to display
+ * @param storefront - Array of storefront navigation items to display
+ * @param showSettings - Whether to display the settings link in the sidebar footer
+ */
 function SidebarContentWrapper({
   navMain,
   documents,
@@ -187,10 +199,7 @@ function SidebarContentWrapper({
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
+            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
               <Link href="/">
                 <IconLogo className="!size-5" />
                 <span>
@@ -210,42 +219,32 @@ function SidebarContentWrapper({
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <SidebarMenuButton
+                      className="inset-shadow-[0_-3px_5px_0] inset-shadow-primary-background/40 min-w-8 border-background border-t bg-gradient-to-t from-primary to-primary/85 text-primary-foreground shadow-lg shadow-primary/20 duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground dark:border-foreground/20"
                       tooltip="Quick Create"
-                      className="from-primary to-primary/85 text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground border-background shadow-primary/20 dark:border-foreground/20 inset-shadow-primary-background/40 min-w-8 border-t bg-gradient-to-t shadow-lg inset-shadow-[0_-3px_5px_0] duration-200 ease-linear"
                     >
                       <IconCirclePlusFilled />
                       <span>Quick Create</span>
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
+                    align="start"
                     className="w-(--radix-dropdown-menu-trigger-width) min-w-40 rounded-lg"
                     side={state === "expanded" ? "bottom" : "right"}
-                    align="start"
                     sideOffset={4}
                   >
                     <DropdownMenuLabel>Quick Create</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup className="grid grid-cols-2 gap-2">
                       <DropdownMenuItem asChild>
-                        <Link
-                          href="/products/new"
-                          className="flex flex-col items-center !gap-0 pt-2"
-                        >
-                          <IconProducts className="fill-foreground size-5" />
-                          <span className="text-muted-foreground text-sm">
-                            Product
-                          </span>
+                        <Link className="!gap-0 flex flex-col items-center pt-2" href="/products/new">
+                          <IconProducts className="size-5 fill-foreground" />
+                          <span className="text-muted-foreground text-sm">Product</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link
-                          href="/collections/new"
-                          className="flex flex-col items-center !gap-0 pt-2"
-                        >
-                          <IconCategory className="text-foreground size-5" />
-                          <span className="text-muted-foreground text-sm">
-                            Collection
-                          </span>
+                        <Link className="!gap-0 flex flex-col items-center pt-2" href="/collections/new">
+                          <IconCategory className="size-5 text-foreground" />
+                          <span className="text-muted-foreground text-sm">Collection</span>
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
@@ -277,8 +276,8 @@ function SidebarContentWrapper({
           <SidebarMenuItem className="flex w-full items-center gap-2">
             <SidebarMenuButton
               asChild
+              className="justify-start font-normal text-muted-foreground"
               tooltip="Toggle Sidebar"
-              className="text-muted-foreground justify-start font-normal"
             >
               <SidebarTrigger />
             </SidebarMenuButton>
@@ -294,6 +293,11 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   session: Session | null;
 }
 
+/**
+ * Renders the application sidebar with navigation sections filtered by the user's role.
+ *
+ * Displays main navigation, documents, and storefront links appropriate to the user's role, and conditionally shows a settings link for users with sufficient permissions.
+ */
 export function AppSidebar({ session, ...props }: AppSidebarProps) {
   const userRole = (session?.user?.role || "user") as UserRole;
   const data = getNavigationData(userRole);
@@ -304,10 +308,10 @@ export function AppSidebar({ session, ...props }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContentWrapper
-        navMain={data.navMain}
         documents={data.documents}
-        storefront={data.storefront}
+        navMain={data.navMain}
         showSettings={showSettings}
+        storefront={data.storefront}
       />
     </Sidebar>
   );

@@ -39,7 +39,7 @@ export const collectionsTable = pgTable(
   (table) => [
     uniqueIndex("collections_slug_idx").on(table.slug),
     index("collections_seo_id_idx").on(table.seoId),
-  ],
+  ]
 );
 
 export const collectionMediaTable = pgTable(
@@ -59,7 +59,7 @@ export const collectionMediaTable = pgTable(
     index("collection_media_collection_id_idx").on(table.collectionId),
     index("collection_media_media_id_idx").on(table.mediaId),
     index("collection_media_type_idx").on(table.type),
-  ],
+  ]
 );
 
 export const collectionSettingsTable = pgTable(
@@ -85,7 +85,7 @@ export const collectionSettingsTable = pgTable(
   },
   (table) => [
     index("collection_settings_collection_id_idx").on(table.collectionId),
-  ],
+  ]
 );
 
 export const collectionsRelations = relations(
@@ -101,7 +101,7 @@ export const collectionsRelations = relations(
       fields: [collectionsTable.id],
       references: [collectionSettingsTable.collectionId],
     }),
-  }),
+  })
 );
 
 export const collectionMediaRelations = relations(
@@ -115,7 +115,7 @@ export const collectionMediaRelations = relations(
       fields: [collectionMediaTable.mediaId],
       references: [mediaTable.id],
     }),
-  }),
+  })
 );
 
 export const collectionSettingsRelations = relations(
@@ -125,5 +125,5 @@ export const collectionSettingsRelations = relations(
       fields: [collectionSettingsTable.collectionId],
       references: [collectionsTable.id],
     }),
-  }),
+  })
 );

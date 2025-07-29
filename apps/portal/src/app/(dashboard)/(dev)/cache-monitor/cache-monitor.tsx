@@ -23,6 +23,11 @@ interface CacheInsights {
   recommendations: string[];
 }
 
+/**
+ * Displays a dashboard with real-time cache metrics and performance insights.
+ *
+ * Fetches cache statistics and recommendations, presenting them in a grid of metric cards and a summary section. Handles loading and error states, and shows detailed enterprise metrics when available.
+ */
 export default function CacheMonitorPage() {
   const [metrics, setMetrics] = useState<CacheMetrics | null>(null);
   const [insights, setInsights] = useState<CacheInsights | null>(null);
@@ -48,8 +53,6 @@ export default function CacheMonitorPage() {
       setLoading(false);
     }
   }
-
-
 
   return (
     <MainWrapper className="px-6">
