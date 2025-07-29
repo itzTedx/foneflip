@@ -95,7 +95,7 @@ export const vendorsTable = pgTable(
     slugIdx: uniqueIndex("idx_vendors_slug").on(table.slug),
     nameIdx: index("idx_vendors_name").on(table.name),
     statusIdx: index("idx_vendors_status").on(table.status),
-  }),
+  })
 );
 
 // Vendor Documents table
@@ -113,15 +113,15 @@ export const vendorDocumentsTable = pgTable(
   },
   (table) => ({
     vendorDocVendorIdIdx: index("idx_vendor_documents_vendor_id").on(
-      table.vendorId,
+      table.vendorId
     ),
     vendorDocTypeIdx: index("idx_vendor_documents_document_type").on(
-      table.documentType,
+      table.documentType
     ),
     vendorDocFormatIdx: index("idx_vendor_documents_document_format").on(
-      table.documentFormat,
+      table.documentFormat
     ),
-  }),
+  })
 );
 
 // Member table - links users to vendors
@@ -141,12 +141,12 @@ export const member = pgTable(
   (table) => ({
     userVendorIdx: uniqueIndex("idx_member_user_vendor").on(
       table.userId,
-      table.vendorId,
+      table.vendorId
     ),
     userIdIdx: index("idx_member_user_id").on(table.userId),
     vendorIdIdx: index("idx_member_vendor_id").on(table.vendorId),
     roleIdx: index("idx_member_role").on(table.role),
-  }),
+  })
 );
 
 // Legacy vendor invitations table (keeping for backward compatibility)
@@ -170,19 +170,19 @@ export const vendorInvitations = pgTable(
   },
   (table) => ({
     vendorEmailIdx: index("idx_vendor_invitations_vendor_email").on(
-      table.vendorEmail,
+      table.vendorEmail
     ),
     tokenIdx: uniqueIndex("idx_vendor_invitations_token").on(table.token),
     expiresAtIdx: index("idx_vendor_invitations_expires_at").on(
-      table.expiresAt,
+      table.expiresAt
     ),
     sentByAdminIdx: index("idx_vendor_invitations_sent_by_admin_id").on(
-      table.sentByAdminId,
+      table.sentByAdminId
     ),
     deletedAtIdx: index("idx_vendor_invitations_deleted_at").on(
-      table.deletedAt,
+      table.deletedAt
     ),
-  }),
+  })
 );
 
 // Relations
@@ -209,7 +209,7 @@ export const vendorDocumentsRelations = relations(
       fields: [vendorDocumentsTable.vendorId],
       references: [vendorsTable.id],
     }),
-  }),
+  })
 );
 
 export const vendorInvitationsRelations = relations(
@@ -219,5 +219,5 @@ export const vendorInvitationsRelations = relations(
       fields: [vendorInvitations.sentByAdminId],
       references: [users.id],
     }),
-  }),
+  })
 );

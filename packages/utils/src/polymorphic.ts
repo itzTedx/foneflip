@@ -30,6 +30,6 @@ export type PolymorphicComponentProps<
 
 export type PolymorphicComponent<P> = {
   <T extends React.ElementType>(
-    props: PolymorphicComponentPropsWithRef<T, P>,
+    props: PolymorphicComponentPropsWithRef<T, P>
   ): React.ReactNode;
 };

@@ -109,60 +109,60 @@ function IconComponent({ size, ...props }: LayoutDashboardProps) {
 
   return (
     <motion.svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
       fill="none"
+      height={size}
       stroke="currentColor"
-      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
       <motion.rect
-        width={7}
+        animate={controls}
         height={9}
-        x={3}
-        y={3}
+        initial="initial"
         rx={1}
         ry={1}
         variants={variants.rect1}
-        initial="initial"
-        animate={controls}
+        width={7}
+        x={3}
+        y={3}
       />
       <motion.rect
-        width={7}
+        animate={controls}
         height={5}
-        x={14}
-        y={3}
+        initial="initial"
         rx={1}
         ry={1}
         variants={variants.rect2}
-        initial="initial"
-        animate={controls}
+        width={7}
+        x={14}
+        y={3}
       />
       <motion.rect
-        width={7}
+        animate={controls}
         height={9}
-        x={14}
-        y={12}
+        initial="initial"
         rx={1}
         ry={1}
         variants={variants.rect3}
-        initial="initial"
-        animate={controls}
+        width={7}
+        x={14}
+        y={12}
       />
       <motion.rect
-        width={7}
+        animate={controls}
         height={5}
-        x={3}
-        y={16}
+        initial="initial"
         rx={1}
         ry={1}
         variants={variants.rect4}
-        initial="initial"
-        animate={controls}
+        width={7}
+        x={3}
+        y={16}
       />
     </motion.svg>
   );

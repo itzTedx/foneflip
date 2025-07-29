@@ -9,7 +9,7 @@
     "start": "pnpm with-env next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "format": "biome format --write ./src",
     "clean": "git clean -xdf .cache .next .turbo node_modules",
     "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"

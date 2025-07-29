@@ -13,7 +13,7 @@
     "dev:email": "turbo -F @ziron/email dev:email",
     "lint": "turbo lint",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
-    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "format:fix": "turbo run format --continue",
     "db:generate": "pnpm -F @ziron/db generate",
     "db:migrate": "turbo -F @ziron/db migrate",
     "db:studio": "turbo -F @ziron/db studio",

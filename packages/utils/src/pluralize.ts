@@ -12,19 +12,23 @@
  * pluralize('cat', 2) // 'cats'
  * pluralize('child', 2, 'children') // 'children'
  */
-export function pluralize(word: string, count: number, pluralForm?: string): string {
+export function pluralize(
+  word: string,
+  count: number,
+  pluralForm?: string
+): string {
   if (count === 1) return word;
   if (pluralForm) return pluralForm;
 
   const lowerWord = word.toLowerCase();
 
-  if (lowerWord.endsWith('y') && !/[aeiou]y$/.test(lowerWord)) {
-    return word.slice(0, -1) + 'ies';
+  if (lowerWord.endsWith("y") && !/[aeiou]y$/.test(lowerWord)) {
+    return `${word.slice(0, -1)}ies`;
   }
 
   if (/(s|x|z|ch|sh)$/.test(lowerWord)) {
-    return word + 'es';
+    return `${word}es`;
   }
 
-  return word + 's';
+  return `${word}s`;
 }

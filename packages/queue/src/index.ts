@@ -24,7 +24,7 @@ export async function enqueue<T extends JobType>(type: T, data: JobData[T]) {
 const queueEvents = new QueueEvents(QUEUE_NAME);
 export async function enqueueAndWait<T extends JobType>(
   type: T,
-  data: JobData[T],
+  data: JobData[T]
 ) {
   const job = await enqueue(type, data);
   await job.waitUntilFinished(queueEvents);

@@ -32,6 +32,6 @@ export const admin = ac.newRole({
 export const dev = ac.newRole({
   products: ["create", "update", "delete"],
   collections: ["create", "update", "delete"],
-  cache: ['view'],
+  cache: ["view"],
   ...adminAc.statements,
 });

@@ -3,7 +3,7 @@ import { JSX, SVGProps } from "react";
 export * from "./currency";
 
 export const IconMenu = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -36,7 +36,7 @@ export const IconMenu = (
 };
 
 export const IconProducts = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -54,7 +54,7 @@ export const IconProducts = (
 };
 
 export const IconDashboard = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -77,7 +77,7 @@ export const IconDashboard = (
 };
 
 export const IconOrders = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -93,7 +93,7 @@ export const IconOrders = (
 };
 
 export const IconVendors = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -111,7 +111,7 @@ export const IconVendors = (
 };
 
 export const IconUsers = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -129,7 +129,7 @@ export const IconUsers = (
 };
 
 export const IconChevronDoubleRight = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -147,7 +147,7 @@ export const IconChevronDoubleRight = (
 };
 
 export const IconClock = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -229,7 +229,7 @@ export const IconClock = (
 };
 
 export const IconDot = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -247,7 +247,7 @@ export const IconDot = (
 };
 
 export const IconFileEditFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -262,7 +262,7 @@ export const IconFileEditFilled = (
 };
 
 export const IconSettingsFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -277,7 +277,7 @@ export const IconSettingsFilled = (
 };
 
 export const IconInformationFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -292,7 +292,7 @@ export const IconInformationFilled = (
 };
 
 export const IconImageFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -307,7 +307,7 @@ export const IconImageFilled = (
 };
 
 export const IconShoppingBasketFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -322,7 +322,7 @@ export const IconShoppingBasketFilled = (
 };
 
 export const IconGlobalFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -337,7 +337,7 @@ export const IconGlobalFilled = (
 };
 
 export const IconSaveFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -352,7 +352,7 @@ export const IconSaveFilled = (
 };
 
 export const IconUnarchiveFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -367,7 +367,7 @@ export const IconUnarchiveFilled = (
 };
 
 export const IconAddCircleFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -382,7 +382,7 @@ export const IconAddCircleFilled = (
 };
 
 export const IconExportFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -397,7 +397,7 @@ export const IconExportFilled = (
 };
 
 export const IconHomeGearFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -412,7 +412,7 @@ export const IconHomeGearFilled = (
 };
 
 export const IconShieldUserFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -427,7 +427,7 @@ export const IconShieldUserFilled = (
 };
 
 export const IconStoreFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -442,7 +442,7 @@ export const IconStoreFilled = (
 };
 
 export const IconBankCardFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg
@@ -457,7 +457,7 @@ export const IconBankCardFilled = (
 };
 
 export const IconNotificationFilled = (
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) => {
   return (
     <svg

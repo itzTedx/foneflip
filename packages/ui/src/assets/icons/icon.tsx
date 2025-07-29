@@ -1,7 +1,8 @@
 "use client";
 
-import type { LegacyAnimationControls, Variants } from "motion/react";
 import * as React from "react";
+
+import type { LegacyAnimationControls, Variants } from "motion/react";
 import { SVGMotionProps, useAnimation } from "motion/react";
 
 import { cn } from "@ziron/utils";
@@ -47,7 +48,7 @@ interface DefaultIconProps<T = string> {
   animate?: TriggerProp<T>;
   onAnimateChange?: (
     value: boolean,
-    animation: StaticAnimations | string,
+    animation: StaticAnimations | string
   ) => void;
   animateOnHover?: TriggerProp<T>;
   animateOnTap?: TriggerProp<T>;
@@ -59,7 +60,7 @@ interface DefaultIconProps<T = string> {
 }
 
 interface AnimateIconProps<T = string> extends DefaultIconProps<T> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   children: React.ReactElement<any, any>;
 }
 
@@ -77,7 +78,7 @@ interface IconWrapperProps<T> extends IconProps<T> {
 }
 
 const AnimateIconContext = React.createContext<AnimateIconContextValue | null>(
-  null,
+  null
 );
 
 function useAnimateIconContext() {
@@ -114,7 +115,7 @@ function AnimateIcon({
         typeof trigger === "string" ? trigger : animation;
       setLocalAnimate(true);
     },
-    [animation],
+    [animation]
   );
 
   const stopAnimation = React.useCallback(() => {
@@ -130,7 +131,7 @@ function AnimateIcon({
 
   React.useEffect(
     () => onAnimateChange?.(localAnimate, currentAnimation.current),
-    [localAnimate, onAnimateChange],
+    [localAnimate, onAnimateChange]
   );
 
   React.useEffect(() => {
@@ -220,12 +221,12 @@ function IconWrapper<T extends string>({
         }}
       >
         <IconComponent
-          size={size}
           className={cn(
             className,
             (animationToUse === "path" || animationToUse === "path-loop") &&
-              pathClassName,
+              pathClassName
           )}
+          size={size}
           {...props}
         />
       </AnimateIconContext.Provider>
@@ -242,22 +243,22 @@ function IconWrapper<T extends string>({
     return (
       <AnimateIcon
         animate={animate}
-        onAnimateChange={onAnimateChange}
         animateOnHover={animateOnHover}
         animateOnTap={animateOnTap}
         animation={animationProp}
         loop={loop}
         loopDelay={loopDelay}
-        onAnimateStart={onAnimateStart}
+        onAnimateChange={onAnimateChange}
         onAnimateEnd={onAnimateEnd}
+        onAnimateStart={onAnimateStart}
       >
         <IconComponent
-          size={size}
           className={cn(
             className,
             (animationProp === "path" || animationProp === "path-loop") &&
-              pathClassName,
+              pathClassName
           )}
+          size={size}
           {...props}
         />
       </AnimateIcon>
@@ -266,12 +267,12 @@ function IconWrapper<T extends string>({
 
   return (
     <IconComponent
-      size={size}
       className={cn(
         className,
         (animationProp === "path" || animationProp === "path-loop") &&
-          pathClassName,
+          pathClassName
       )}
+      size={size}
       {...props}
     />
   );
@@ -303,7 +304,7 @@ function getVariants<
 
   if (loop) {
     for (const key in result) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       const state = result[key] as any;
       const transition = state.animate?.transition;
       if (!transition) continue;
@@ -312,7 +313,7 @@ function getVariants<
         (v) =>
           typeof v === "object" &&
           v !== null &&
-          ("ease" in v || "duration" in v || "times" in v),
+          ("ease" in v || "duration" in v || "times" in v)
       );
 
       if (hasNestedKeys) {
@@ -321,7 +322,7 @@ function getVariants<
           if (typeof subTrans === "object" && subTrans !== null) {
             transition[prop] = {
               ...subTrans,
-              repeat: Infinity,
+              repeat: Number.POSITIVE_INFINITY,
               repeatType: "loop",
               repeatDelay: loopDelay,
             };
@@ -330,7 +331,7 @@ function getVariants<
       } else {
         state.animate.transition = {
           ...transition,
-          repeat: Infinity,
+          repeat: Number.POSITIVE_INFINITY,
           repeatType: "loop",
           repeatDelay: loopDelay,
         };

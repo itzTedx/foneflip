@@ -22,7 +22,7 @@
     "build": "tsup --clean",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "concurrently \"pnpm with-env drizzle-kit studio --config=drizzle.config.ts --verbose\" \"tsc --watch\"",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "format": "biome format --write ./src",
     "lint": "eslint",
     "generate": "pnpm with-env drizzle-kit generate",
     "migrate": "pnpm with-env drizzle-kit migrate",

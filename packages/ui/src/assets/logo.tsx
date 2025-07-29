@@ -1,7 +1,7 @@
 import { JSX } from "react/jsx-runtime";
 
 export function Logo(
-  props: JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>,
+  props: JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
 ) {
   return (
     <svg
@@ -157,7 +157,7 @@ export function Logo(
 }
 
 export function IconLogo(
-  props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>,
+  props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
 ) {
   return (
     <svg
@@ -213,7 +213,7 @@ export function IconLogo(
 }
 
 export function IconLogoMono(
-  props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>,
+  props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
 ) {
   return (
     <svg
@@ -245,7 +245,7 @@ export function IconLogoMono(
 }
 
 export function LogoWordMark(
-  props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>,
+  props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
 ) {
   return (
     <svg

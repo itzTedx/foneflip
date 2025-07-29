@@ -16,7 +16,7 @@ export function recursiveCloneChildren(
   additionalProps: any,
   displayNames: string[],
   uniqueId: string,
-  asChild?: boolean,
+  asChild?: boolean
 ): React.ReactNode | React.ReactNode[] {
   const mappedChildren = React.Children.map(
     children,
@@ -41,10 +41,10 @@ export function recursiveCloneChildren(
           additionalProps,
           displayNames,
           uniqueId,
-          childProps?.asChild,
-        ),
+          childProps?.asChild
+        )
       );
-    },
+    }
   );
 
   return asChild ? mappedChildren?.[0] : mappedChildren;

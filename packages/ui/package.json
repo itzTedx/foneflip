@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "lint": "eslint . --max-warnings 0",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "format": "biome format --write ./src",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "ui-add": "pnpm dlx shadcn@latest add && prettier src --write --list-different"
   },

@@ -8,7 +8,8 @@
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev:email": "email dev --dir ./src/templates -p 3333",
-    "export": "email export --packageManager"
+    "export": "email export --packageManager",
+    "format": "biome format --write ./src"
   },
   "dependencies": {
     "@react-email/components": "^0.3.2",

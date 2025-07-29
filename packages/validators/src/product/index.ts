@@ -9,7 +9,9 @@ import { variantSchema } from "./variants";
 export const productSchema = z
   .object({
     id: z.string().optional(),
-    title: z.string("Please enter valid title").min(1, {message: "Title is Required"}),
+    title: z
+      .string("Please enter valid title")
+      .min(1, { message: "Title is Required" }),
     description: z.string().optional(),
     slug: z.string().optional(),
     condition: productConditionEnum.default("pristine").optional(),
@@ -27,13 +29,15 @@ export const productSchema = z
 
     specifications: z
       .array(
-        z.object({
-          order: z.number().optional(),
-          name: z
-            .string()
-            .min(1, { message: "Please enter title for the link" }),
-          value: z.string().min(1, { message: "Please enter a valid." }),
-        }).optional(),
+        z
+          .object({
+            order: z.number().optional(),
+            name: z
+              .string()
+              .min(1, { message: "Please enter title for the link" }),
+            value: z.string().min(1, { message: "Please enter a valid." }),
+          })
+          .optional()
       )
       .optional(),
 
@@ -58,7 +62,7 @@ export const productSchema = z
         z.object({
           name: z.string(),
           options: z.array(z.string()),
-        }),
+        })
       )
       .optional(),
     variants: z.array(variantSchema).optional(),
@@ -77,9 +81,7 @@ export const productSchema = z
         return (
           data.attributes &&
           data.attributes.length > 0 &&
-          data.attributes.some(
-            (attr) => attr.name  && attr.options.length > 0,
-          )
+          data.attributes.some((attr) => attr.name && attr.options.length > 0)
         );
       }
       return true;
@@ -87,7 +89,7 @@ export const productSchema = z
     {
       message: "Variants can only be added when attributes are defined",
       path: ["variants"],
-    },
+    }
   );
 
 export type ProductFormType = z.infer<typeof productSchema>;
@@ -96,4 +98,3 @@ export * from "./draft";
 export * from "./enum";
 export * from "./settings";
 export * from "./variants";
-

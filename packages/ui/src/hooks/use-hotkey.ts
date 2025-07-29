@@ -106,12 +106,13 @@ export function useHotkey({
       const now = Date.now();
 
       // Check if any combo matches the current keypress
-      const isMatch = combos.some((combo) =>
-        event.key.toLowerCase() === combo.key.toLowerCase() &&
-        (combo.ctrl === undefined || event.ctrlKey === combo.ctrl) &&
-        (combo.meta === undefined || event.metaKey === combo.meta) &&
-        (combo.shift === undefined || event.shiftKey === combo.shift) &&
-        (combo.alt === undefined || event.altKey === combo.alt)
+      const isMatch = combos.some(
+        (combo) =>
+          event.key.toLowerCase() === combo.key.toLowerCase() &&
+          (combo.ctrl === undefined || event.ctrlKey === combo.ctrl) &&
+          (combo.meta === undefined || event.metaKey === combo.meta) &&
+          (combo.shift === undefined || event.shiftKey === combo.shift) &&
+          (combo.alt === undefined || event.altKey === combo.alt)
       );
 
       if (isMatch) {

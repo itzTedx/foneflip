@@ -3,7 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label as LabelPrimitive, Slot as SlotPrimitive } from "radix-ui";
 import * as React from "react";
-import type { ControllerProps, FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+import type {
+  ControllerProps,
+  FieldPath,
+  FieldValues,
+  UseFormReturn,
+} from "react-hook-form";
 import {
   Controller,
   FormProvider,
@@ -11,8 +16,7 @@ import {
   useFieldArray,
   useForm,
   useFormContext,
-
-  useFormState
+  useFormState,
 } from "react-hook-form";
 
 import { Label, LabelAsterisk } from "@ziron/ui/label";
@@ -28,7 +32,7 @@ type FormFieldContextValue<
 };
 
 const FormFieldContext = React.createContext<FormFieldContextValue>(
-  {} as FormFieldContextValue,
+  {} as FormFieldContextValue
 );
 
 const FormField = <
@@ -72,7 +76,7 @@ type FormItemContextValue = {
 };
 
 const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue,
+  {} as FormItemContextValue
 );
 
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
@@ -94,7 +98,7 @@ function FormLabel({
   children,
   required,
   ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root> & {required?: boolean}) {
+}: React.ComponentProps<typeof LabelPrimitive.Root> & { required?: boolean }) {
   const { error, formItemId } = useFormField();
 
   return (
@@ -166,12 +170,19 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
 }
 
 export {
-  FieldValues, Form,
+  FieldValues,
+  Form,
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, useFieldArray, useForm, useFormContext, useFormField, UseFormReturn, zodResolver, type SubmitHandler
+  FormMessage,
+  useFieldArray,
+  useForm,
+  useFormContext,
+  useFormField,
+  UseFormReturn,
+  zodResolver,
+  type SubmitHandler,
 };
-

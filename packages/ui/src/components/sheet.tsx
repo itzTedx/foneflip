@@ -15,7 +15,7 @@ type SheetContextType = {
 };
 
 const SheetContext = React.createContext<SheetContextType | undefined>(
-  undefined,
+  undefined
 );
 
 const useSheet = (): SheetContextType => {
@@ -30,7 +30,7 @@ type SheetProps = React.ComponentProps<typeof SheetPrimitive.Root>;
 
 function Sheet({ children, ...props }: SheetProps) {
   const [isOpen, setIsOpen] = React.useState(
-    props?.open ?? props?.defaultOpen ?? false,
+    props?.open ?? props?.defaultOpen ?? false
   );
 
   React.useEffect(() => {
@@ -42,7 +42,7 @@ function Sheet({ children, ...props }: SheetProps) {
       setIsOpen(open);
       props.onOpenChange?.(open);
     },
-    [props],
+    [props]
   );
 
   return (
@@ -84,7 +84,7 @@ function SheetOverlay({ className, ...props }: SheetOverlayProps) {
       data-slot="sheet-overlay"
       className={cn(
         "bg-background/20 fixed inset-0 z-50 backdrop-blur-xs",
-        className,
+        className
       )}
       {...props}
     />
@@ -166,7 +166,7 @@ function SheetContent({
               className={cn(
                 sheetVariants({ side }),
                 "flex flex-col",
-                className,
+                className
               )}
               {...props}
             >
@@ -194,7 +194,7 @@ function SheetHeader({ className, ...props }: SheetHeaderProps) {
       data-slot="sheet-header"
       className={cn(
         "flex flex-col space-y-2 text-center sm:text-left",
-        className,
+        className
       )}
       {...props}
     />
@@ -209,7 +209,7 @@ function SheetFooter({ className, ...props }: SheetFooterProps) {
       data-slot="sheet-footer"
       className={cn(
         "flex flex-col-reverse px-4 py-3 sm:flex-row sm:justify-end sm:space-x-2",
-        className,
+        className
       )}
       {...props}
     />

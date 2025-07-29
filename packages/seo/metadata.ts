@@ -1,21 +1,24 @@
-import merge from 'lodash.merge'
-import type { Metadata } from 'next'
+import type { Metadata } from "next";
 
-type MetadataGenerator = Omit<Metadata, 'description' | 'title'> & {
-  title: string
-  description: string
-  image?: string
-}
+import merge from "lodash.merge";
 
-const applicationName = 'Ziron'
-const author: Metadata['authors'] = {
-  name: 'Ziron',
-  url: 'https://www.zironmedia.com/',
-}
-const publisher = 'Ziron'
-const twitterHandle = '@ziron'
-const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-const productionUrl = process.env.SITE_URL
+type MetadataGenerator = Omit<Metadata, "description" | "title"> & {
+  title: string;
+  description: string;
+  image?: string;
+};
+
+const applicationName = "Ziron";
+const author: Metadata["authors"] = {
+  name: "Ziron",
+  url: "https://www.zironmedia.com/",
+};
+const publisher = "Ziron";
+const twitterHandle = "@ziron";
+// biome-ignore lint/style/noProcessEnv: <explanation>
+const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+// biome-ignore lint/style/noProcessEnv: <explanation>
+const productionUrl = process.env.SITE_URL;
 
 export const createMetadata = ({
   title,
@@ -23,7 +26,7 @@ export const createMetadata = ({
   image,
   ...properties
 }: MetadataGenerator): Metadata => {
-  const parsedTitle = `${title} | ${applicationName}`
+  const parsedTitle = `${title} | ${applicationName}`;
   const defaultMetadata: Metadata = {
     title: parsedTitle,
     description,
@@ -38,24 +41,24 @@ export const createMetadata = ({
     },
     appleWebApp: {
       capable: true,
-      statusBarStyle: 'default',
+      statusBarStyle: "default",
       title: parsedTitle,
     },
     openGraph: {
       title: parsedTitle,
       description,
-      type: 'website',
+      type: "website",
       siteName: applicationName,
-      locale: 'en_US',
+      locale: "en_US",
     },
     publisher,
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       creator: twitterHandle,
     },
-  }
+  };
 
-  const metadata: Metadata = merge(defaultMetadata, properties)
+  const metadata: Metadata = merge(defaultMetadata, properties);
 
   if (image && metadata.openGraph) {
     metadata.openGraph.images = [
@@ -65,8 +68,8 @@ export const createMetadata = ({
         height: 630,
         alt: title,
       },
-    ]
+    ];
   }
 
-  return metadata
-}
+  return metadata;
+};

@@ -10,6 +10,7 @@ export function authEnv() {
 
     experimental__runtimeEnv: {},
     skipValidation:
+      // biome-ignore lint/style/noProcessEnv: Disabling validation while CI in process
       !!process.env.CI || process.env.npm_lifecycle_event === "lint",
   });
 }

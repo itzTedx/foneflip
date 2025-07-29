@@ -47,15 +47,15 @@ const GlareHover: React.FC<GlareHoverProps> = ({
     ) {
       const r = parseInt(
         (hex[0]?.toString() ?? "") + (hex[0]?.toString() ?? ""),
-        16,
+        16
       );
       const g = parseInt(
         (hex[1]?.toString() ?? "") + (hex[1]?.toString() ?? ""),
-        16,
+        16
       );
       const b = parseInt(
         (hex[2]?.toString() ?? "") + (hex[2]?.toString() ?? ""),
-        16,
+        16
       );
       return `rgba(${r}, ${g}, ${b}, ${glareOpacity})`;
     }
@@ -78,7 +78,7 @@ const GlareHover: React.FC<GlareHoverProps> = ({
       backgroundPosition: "-100% -100%, 0 0",
       pointerEvents: "none",
     }),
-    [glareAngle, rgbaColor, glareSize],
+    [glareAngle, rgbaColor, glareSize]
   );
 
   // Use useCallback to prevent unnecessary re-renders of event handlers
@@ -114,7 +114,7 @@ const GlareHover: React.FC<GlareHoverProps> = ({
     <div
       className={cn(
         "relative grid cursor-pointer place-items-center overflow-hidden border",
-        className,
+        className
       )}
       onMouseEnter={animateIn}
       onMouseLeave={animateOut}
