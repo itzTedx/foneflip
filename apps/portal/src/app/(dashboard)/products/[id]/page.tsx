@@ -24,7 +24,6 @@ export default async function ProductPage({ params }: { params: Params }) {
   const editMode = id !== "new";
   return (
     <MainWrapper>
-      {/* <pre>{JSON.stringify(collections, null, 2)}</pre> */}
       <ProductForm collections={collections} isEditMode={editMode} />
     </MainWrapper>
   );

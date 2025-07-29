@@ -1,8 +1,8 @@
 import { useAtomValue } from "jotai";
+import { parseAsBoolean, useQueryState } from "nuqs";
 
 import { IconFileAlertFilled } from "@ziron/ui/assets/icons";
 import { Badge } from "@ziron/ui/badge";
-import { Button } from "@ziron/ui/button";
 import {
   Dialog,
   DialogContainer,
@@ -12,20 +12,20 @@ import {
   DialogHeader,
   DialogIcon,
   DialogTitle,
-  DialogTrigger,
 } from "@ziron/ui/dialog";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
-import { cn, pluralize } from "@ziron/utils";
+import { pluralize } from "@ziron/utils";
 
 import { isEditModeAtom, productErrorAtom } from "../../atom";
 
 export const ErrorDialog = () => {
   const validationErrors = useAtomValue(productErrorAtom);
   const isEditMode = useAtomValue(isEditModeAtom); // if you have an atom for this
+  const [isOpen, setIsOpen] = useQueryState("console", parseAsBoolean.withDefault(false));
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Dialog onOpenChange={setIsOpen} open={isOpen}>
+      {/* <DialogTrigger asChild>
         <Button
           disabled={validationErrors.length === 0}
           type="button"
@@ -33,7 +33,7 @@ export const ErrorDialog = () => {
         >
           <IconFileAlertFilled /> <span className={cn(validationErrors.length ? "" : "opacity-50")}>Console</span>
         </Button>
-      </DialogTrigger>
+      </DialogTrigger> */}
       <DialogContent>
         <DialogContainer>
           <DialogIcon>

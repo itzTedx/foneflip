@@ -392,3 +392,91 @@ export const IconLoader = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGEleme
     </svg>
   );
 };
+
+export const IconExpandDuo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => {
+  return (
+    <svg {...props} fill="none" height="21" viewBox="0 0 21 21" width="21" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M17.4284 12.5385V14.5385C17.4284 16.1955 16.0854 17.5385 14.4284 17.5385H12.4284"
+        opacity="0.4"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M3.42841 8.53845V6.53845C3.42841 4.88145 4.77141 3.53845 6.42841 3.53845H8.42841"
+        opacity="0.4"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M17.4284 8.53845V3.53845H12.4284"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M12.4284 8.53845L17.4284 3.53845"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M3.42841 12.5385V17.5385H8.42841"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M8.42841 12.5385L3.42841 17.5385"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+};
+
+export const IconExpandDiagonalDuo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => {
+  return (
+    <svg {...props} fill="none" height="21" viewBox="0 0 21 21" width="21" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M8.28574 17.3846H3.28574V12.3846"
+        opacity="0.4"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M3.28574 17.3846L8.28574 12.3846"
+        opacity="0.4"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M12.2857 3.38461H17.2857V8.38461"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M17.2857 3.38461L12.2857 8.38461"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+};

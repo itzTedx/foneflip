@@ -15,6 +15,7 @@ import { ProductFormType, productSchema } from "@ziron/validators";
 
 import { Header } from "@/components/layout/header";
 import { DraftButton, RestoreArchiveButton, SaveButton } from "@/components/ui/action-buttons";
+import { Console } from "@/components/ui/notification-list";
 import { Tabs, TabsContent, TabsTriggers } from "@/components/ui/tabs";
 import { CollectionMetadata } from "@/modules/collections/types";
 
@@ -139,11 +140,11 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
           <div className="sticky top-[calc(3rem+1px)] z-99 bg-background/80 backdrop-blur-xl">
             <Header backLink="/products" title={isEditMode ? "Edit Product" : "Add Product"}>
               <div className="flex items-center gap-3">
+                <ErrorDialog />
                 {isArchived ? (
                   <RestoreArchiveButton disabled={false} isLoading={false} onClick={handleRestore} />
                 ) : (
                   <>
-                    <ErrorDialog />
                     <DraftButton
                       disabled={form.formState.isSubmitting || isArchived}
                       isLoading={false}
@@ -191,6 +192,7 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
             </TabsContent>
           </div>
         </Tabs>
+        <Console />
       </form>
     </Form>
   );
