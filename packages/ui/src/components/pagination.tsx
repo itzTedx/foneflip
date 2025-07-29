@@ -42,6 +42,13 @@ type PaginationLinkProps = {
 } & Pick<React.ComponentProps<typeof Button>, "size"> &
   React.ComponentProps<"a">;
 
+/**
+ * Renders a styled pagination link as an anchor element, supporting active state and size variants.
+ *
+ * @param isActive - Whether the link represents the current page
+ * @param size - The button size variant; defaults to "icon"
+ * @returns The pagination link element with appropriate styling and accessibility attributes
+ */
 function PaginationLink({
   className,
   isActive,
@@ -99,6 +106,11 @@ function PaginationNext({
   );
 }
 
+/**
+ * Renders an ellipsis indicator for pagination, signaling the presence of additional pages.
+ *
+ * Displays a horizontal "more" icon and a screen-reader-only label for accessibility.
+ */
 function PaginationEllipsis({
   className,
   ...props

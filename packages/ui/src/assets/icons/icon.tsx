@@ -81,6 +81,11 @@ const AnimateIconContext = React.createContext<AnimateIconContextValue | null>(
   null
 );
 
+/**
+ * Retrieves the current animation context for icons, providing default values if no context is available.
+ *
+ * @returns The current animation context, or default animation settings if not within an `AnimateIconContext` provider.
+ */
 function useAnimateIconContext() {
   const context = React.useContext(AnimateIconContext);
   if (!context)
@@ -93,6 +98,13 @@ function useAnimateIconContext() {
   return context;
 }
 
+/**
+ * Provides animation controls and context for a single child element, enabling SVG icon animations based on props or user interactions.
+ *
+ * Supports triggering animations via props, hover, or tap events, with optional looping and animation lifecycle callbacks. Supplies animation context to descendants.
+ *
+ * @param children - The single React element to animate and provide context for
+ */
 function AnimateIcon({
   animate,
   onAnimateChange,
@@ -183,6 +195,24 @@ function AnimateIcon({
 const pathClassName =
   "[&_[stroke-dasharray='1px_1px']]:![stroke-dasharray:1px_0px]";
 
+/**
+ * Wraps an icon component to provide animation context and behavior based on animation-related props.
+ *
+ * If an animation context exists, merges or overrides animation settings and provides them to the icon. If animation props are specified but no context exists, wraps the icon in an `AnimateIcon` to manage animation triggers and lifecycle. Otherwise, renders the icon directly.
+ *
+ * @param icon - The icon component to render and animate
+ * @param animation - The animation variant or type to apply
+ * @param animate - Controls whether the animation is active
+ * @param animateOnHover - Whether to trigger animation on hover
+ * @param animateOnTap - Whether to trigger animation on tap
+ * @param loop - Whether the animation should loop
+ * @param loopDelay - Delay between animation loops in milliseconds
+ * @param onAnimateChange - Callback invoked when animation state changes
+ * @param onAnimateStart - Callback invoked when animation starts
+ * @param onAnimateEnd - Callback invoked when animation ends
+ * @param className - Additional CSS classes for the icon
+ * @param size - The rendered icon size in pixels
+ */
 function IconWrapper<T extends string>({
   size = 28,
   animation: animationProp,
@@ -278,6 +308,13 @@ function IconWrapper<T extends string>({
   );
 }
 
+/**
+ * Returns the animation variants for the current icon animation context, applying static or custom variants and looping behavior as needed.
+ *
+ * If the current animation type matches a static animation, returns the corresponding static variant for each key, skipping group keys for path animations. Otherwise, selects the variant matching the current animation type or falls back to the default. If looping is enabled, modifies the transition properties to repeat infinitely with the specified delay.
+ *
+ * @returns The set of animation variants to use for the current animation context.
+ */
 function getVariants<
   V extends { default: T; [key: string]: T },
   T extends Record<string, Variants>,

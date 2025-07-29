@@ -45,6 +45,16 @@ interface Props {
   checksum: string;
 }
 
+/**
+ * Generates a pre-signed S3 URL for uploading a media file after validating authentication, file type, and size.
+ *
+ * Validates the user's session and the provided file's type and size. Constructs a unique S3 object key using the user ID, optional collection, a random string, and a sanitized file name. Returns a signed URL for uploading the file to S3, or an error object if validation or URL generation fails.
+ *
+ * @param file - The file object containing type, size, and fileName properties
+ * @param checksum - The SHA256 checksum of the file
+ * @param collection - Optional collection name to organize the file in S3
+ * @returns An object containing either a `success` property with the signed URL and key, or an `error` property with a message
+ */
 export async function getSignedURL({ file, checksum, collection }: Props) {
   const session = await getSession();
 
@@ -96,10 +106,11 @@ export async function getSignedURL({ file, checksum, collection }: Props) {
 }
 
 /**
- * Upserts a media row in the mediaTable by URL. If not found, inserts a new row.
- * Returns the UUID of the media row.
- * @param media - Media object (url, fileName, fileSize, width, height, blurData, alt, userId)
- * @param transaction - Optional DB transaction
+ * Inserts a new media record into the database if one with the same URL does not exist, or returns the existing record's UUID.
+ *
+ * @param media - Media metadata including URL, file details, and user ID
+ * @param transaction - Optional database transaction to use for the operation
+ * @returns The UUID of the existing or newly inserted media record
  */
 export async function upsertMedia(
   media: MediaToInsert,

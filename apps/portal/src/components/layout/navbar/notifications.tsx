@@ -32,7 +32,12 @@ type NormalizedNotification = Omit<NotificationProp, "createdAt"> & {
   createdAt: Date;
 };
 
-// Helper to ensure notification dates are Date objects
+/**
+ * Converts a notification's `createdAt` field from an ISO string to a `Date` object.
+ *
+ * @param notification - The notification object with a string `createdAt` field
+ * @returns The notification object with `createdAt` as a `Date` instance
+ */
 function normalizeNotification(
   notification: NotificationProp
 ): NormalizedNotification {
@@ -42,6 +47,12 @@ function normalizeNotification(
   };
 }
 
+/**
+ * Displays a real-time notifications popover for the current user, supporting live updates, marking as read, and pagination.
+ *
+ * @param initialNotifications - Optional initial list of notifications to populate the component on mount
+ * @returns A React component that renders a notifications bell with a popover containing the user's notifications
+ */
 export default function Notifications({
   initialNotifications,
 }: {

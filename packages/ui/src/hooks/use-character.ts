@@ -8,6 +8,16 @@ type UseCharacterCountProps = {
   onChange?: (value: string) => void;
 };
 
+/**
+ * React hook for managing and tracking the character count of an input or textarea with a maximum length.
+ *
+ * Provides the current value, character count, maximum length, status flags for reaching or exceeding the limit, a status message, and a change handler for use in controlled components.
+ *
+ * @param maxLength - The maximum allowed number of characters
+ * @param value - The current input value (defaults to an empty string)
+ * @param onChange - Optional callback invoked with the new value when the input changes
+ * @returns An object containing the value, character count, max length, status flags, status message, and a change handler
+ */
 export function useCharacterCount({
   maxLength,
   value = "",

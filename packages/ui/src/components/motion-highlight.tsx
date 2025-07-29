@@ -37,6 +37,13 @@ const MotionHighlightContext = React.createContext<
   MotionHighlightContextType<any> | undefined
 >(undefined);
 
+/**
+ * Provides access to the current MotionHighlight context.
+ *
+ * Throws an error if called outside of a MotionHighlight provider.
+ *
+ * @returns The MotionHighlight context object for the current highlight group.
+ */
 function useMotionHighlight<T extends string>(): MotionHighlightContextType<T> {
   const context = React.useContext(MotionHighlightContext);
   if (!context) {
@@ -106,6 +113,13 @@ type MotionHighlightProps<T extends string> = React.ComponentProps<"div"> &
     | UncontrolledChildrenModeMotionHighlightProps<T>
   );
 
+/**
+ * Provides animated highlight effects for its child elements, managing highlight state and transitions.
+ *
+ * Supports both controlled and uncontrolled modes, as well as "parent" and "children" highlight strategies. Handles highlight activation, bounding rectangle calculations, and context propagation to nested highlight items. Animates highlight backgrounds using the `motion` library and allows customization of transitions, activation triggers, and highlight appearance.
+ *
+ * @returns The highlight context provider wrapping the rendered children, with animated highlight effects applied when enabled.
+ */
 function MotionHighlight<T extends string>({
   ref,
   ...props
@@ -310,6 +324,13 @@ function MotionHighlight<T extends string>({
   );
 }
 
+/**
+ * Returns a subset of data attributes that do not override existing props on the given React element.
+ *
+ * @param element - The React element to check for existing props
+ * @param dataAttributes - The data attributes to filter
+ * @returns An object containing only the data attributes whose keys are not already present in the element's props
+ */
 function getNonOverridingDataAttributes(
   element: React.ReactElement,
   dataAttributes: Record<string, unknown>
@@ -348,6 +369,11 @@ type MotionHighlightItemProps = React.ComponentProps<"div"> & {
   forceUpdateBounds?: boolean;
 };
 
+/**
+ * Wraps a child element to provide animated highlight effects based on active state within a MotionHighlight context.
+ *
+ * Supports both "parent" and "children" highlight modes, hover or click activation, and optional highlight background rendering. Adds relevant data attributes and event handlers to the child element for accessibility and state indication.
+ */
 function MotionHighlightItem({
   ref,
   children,

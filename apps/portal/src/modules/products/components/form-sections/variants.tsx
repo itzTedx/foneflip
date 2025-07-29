@@ -35,6 +35,11 @@ export const ProductVariants = memo(function ProductVariants({ isEditMode, hasVa
   );
 });
 
+/**
+ * Displays an overlay prompting the user to enable product variants when variants are currently disabled.
+ *
+ * The overlay explains that attributes and variant pricing require variants to be enabled, and provides a toggle switch bound to the form's `hasVariant` field for enabling variants directly.
+ */
 function VariantsDisabledOverlay() {
   const form = useFormContext<ProductFormType>();
 

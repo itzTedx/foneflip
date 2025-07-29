@@ -2,6 +2,11 @@ import * as React from "react";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * Renders a styled textarea element with customizable class names and standard textarea props.
+ *
+ * Combines default styling with any additional classes provided via the `className` prop. All other props are passed directly to the underlying `<textarea>` element.
+ */
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea

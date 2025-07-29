@@ -10,6 +10,16 @@ import {
 } from "@ziron/ui/dialog";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 
+/**
+ * Displays a block of markdown content with a fixed maximum height and an expandable dialog for overflowed content.
+ *
+ * Shows the provided `mainMarkdown` content in a container limited to 300px height. If the content overflows, a gradient overlay and a "Read More" button appear. Clicking "Read More" opens a dialog displaying the full `dialogMarkdown` content with the specified `dialogTitle`.
+ *
+ * @param mainMarkdown - The primary markdown content to display in the collapsed view.
+ * @param dialogMarkdown - The full markdown content shown in the dialog when expanded.
+ * @param dialogTitle - The title displayed in the dialog header.
+ * @returns The rendered markdown content with conditional overflow handling and dialog expansion.
+ */
 export function MarkdownPartial({
   mainMarkdown,
   dialogMarkdown,

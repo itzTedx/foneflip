@@ -17,6 +17,13 @@ function PopoverTrigger({
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
 }
 
+/**
+ * Renders the content of a popover in a React portal with default styling and animation.
+ *
+ * @param className - Additional CSS classes to apply to the popover content
+ * @param align - Alignment of the popover relative to its trigger (default: "center")
+ * @param sideOffset - Offset distance from the trigger element (default: 4)
+ */
 function PopoverContent({
   className,
   align = "center",

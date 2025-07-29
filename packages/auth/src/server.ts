@@ -14,6 +14,14 @@ import redis from "@ziron/redis";
 
 import { ac, admin, dev, user, vendor } from "./permission";
 
+/**
+ * Initializes and configures the authentication system for the application.
+ *
+ * Sets up authentication with PostgreSQL and Redis, enables plugins for organizations, admin roles, two-factor authentication, and email OTP, and configures rate limiting, session caching, and trusted origins.
+ *
+ * @param options - Contains the base URL, production URL, and secret for authentication configuration.
+ * @returns The initialized authentication instance.
+ */
 export function initAuth(options: {
   baseUrl: string;
   productionUrl: string;

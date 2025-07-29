@@ -13,6 +13,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/**
+ * Server component that renders the dashboard layout with sidebar, navbar, and content area.
+ *
+ * Retrieves the sidebar open state from cookies and the user session server-side, then provides these to layout components.
+ *
+ * @param children - The content to display within the dashboard layout
+ */
 export default async function RootLayout({
   children,
 }: Readonly<{

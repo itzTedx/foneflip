@@ -42,7 +42,18 @@ import { CollectionFormType } from "@ziron/validators";
 
 import { ImagePreview } from "./ui/image-preview";
 
-// Reusable component for media upload and preview
+/**
+ * Provides a UI component for uploading, previewing, and removing a single image file (thumbnail or banner) within a form.
+ *
+ * Supports drag-and-drop or browsing for image selection, displays upload progress, handles file validation and errors, and integrates with form state for value and error management. Allows users to remove the uploaded image or choose from existing media.
+ *
+ * @param label - The display label for the upload section.
+ * @param name - The form field name, either "thumbnail" or "banner".
+ * @param tooltip - Tooltip text explaining the upload field.
+ * @param value - The current value of the media file from the form.
+ * @param onRemove - Callback to remove the current media.
+ * @param form - The form context object for managing form state and errors.
+ */
 function MediaUploadPreview({
   label,
   name,

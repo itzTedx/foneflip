@@ -45,6 +45,11 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
   const router = useRouter();
   const [dialog, setDialog] = useState<DialogType>(null);
 
+  /**
+   * Duplicates the collection identified by `id` and displays a toast notification indicating success or failure.
+   *
+   * On successful duplication, refreshes the current route and shows a success message. On failure, displays an error message.
+   */
   function handleDuplicate() {
     startDuplicateTransition(async () => {
       const result = await duplicateCollection(id);
@@ -66,6 +71,11 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
     });
   }
 
+  /**
+   * Deletes the collection identified by `id` and provides user feedback based on the operation's outcome.
+   *
+   * Closes the confirmation dialog, refreshes the page, and displays a success or error toast depending on whether the deletion was successful.
+   */
   function handleDelete() {
     startDeleteTransition(async () => {
       const result = await deleteCollection(id);
@@ -88,6 +98,11 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
     });
   }
 
+  /**
+   * Updates the status of the collection and provides user feedback based on the operation's result.
+   *
+   * @param status - The new status to set for the collection.
+   */
   function handleCollectionStatus({
     status,
   }: {

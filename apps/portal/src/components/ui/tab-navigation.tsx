@@ -16,6 +16,17 @@ interface TabNavigationProps {
   type?: "products" | "collections";
 }
 
+/**
+ * Renders navigation controls for switching between product or collection tabs.
+ *
+ * Displays "Previous" and "Next" buttons to navigate through a set of tabs, updating the "tab" query parameter in the URL. Buttons are disabled when at the first or last tab. Returns nothing if the current tab is not found.
+ *
+ * @param currentTab - The value of the currently active tab.
+ * @param nextLabel - Accessible label for the "Next" button.
+ * @param prevLabel - Accessible label for the "Previous" button.
+ * @param className - Additional CSS classes for the container.
+ * @param type - Specifies whether to use product or collection tabs.
+ */
 export function TabNavigation({
   currentTab,
   nextLabel = "Next",

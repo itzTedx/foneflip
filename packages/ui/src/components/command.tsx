@@ -13,6 +13,11 @@ import {
 } from "@ziron/ui/dialog";
 import { cn } from "@ziron/utils";
 
+/**
+ * Renders a styled command menu container using the Command Primitive component.
+ *
+ * Applies base layout, background, and text styling, and accepts additional class names and props for customization.
+ */
 function Command({
   className,
   ...props
@@ -60,6 +65,11 @@ function CommandDialog({
   );
 }
 
+/**
+ * Renders a styled command input field with a search icon for use in a command palette.
+ *
+ * Displays a search icon alongside the input and applies styles for layout, placeholder text, and disabled state.
+ */
 function CommandInput({
   className,
   ...props
@@ -82,6 +92,11 @@ function CommandInput({
   );
 }
 
+/**
+ * Renders a scrollable list of command items with custom styling.
+ *
+ * Applies a maximum height and enables vertical scrolling for the command list.
+ */
 function CommandList({
   className,
   ...props
@@ -110,6 +125,11 @@ function CommandEmpty({
   );
 }
 
+/**
+ * Renders a styled group of command items with a heading for use in a command menu.
+ *
+ * Applies muted styling to the group heading and manages spacing and layout for grouped command items.
+ */
 function CommandGroup({
   className,
   ...props
@@ -139,6 +159,11 @@ function CommandSeparator({
   );
 }
 
+/**
+ * Renders a styled command menu item with support for selected and disabled states.
+ *
+ * Applies visual styles for selection, disabled state, and layout, and supports custom class names and additional props.
+ */
 function CommandItem({
   className,
   ...props
@@ -155,6 +180,11 @@ function CommandItem({
   );
 }
 
+/**
+ * Displays a keyboard shortcut aligned to the right within a command item.
+ *
+ * Renders a styled span for shortcut hints, typically used in command palette UIs.
+ */
 function CommandShortcut({
   className,
   ...props

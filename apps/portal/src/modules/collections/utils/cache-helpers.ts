@@ -80,10 +80,11 @@ export async function revertOptimisticCache({
 }
 
 /**
- * Updates cache with actual database result
- * @param collection - The collection data from database
- * @param operation - The cache operation type
- * @returns Promise resolving to cache operation result
+ * Updates the cache to reflect the actual state of a collection after a database operation.
+ *
+ * @param collection - The collection data to synchronize with the cache
+ * @param operation - The type of cache operation performed ("create", "update", or "delete")
+ * @returns A promise that resolves to the result of the cache operation, indicating success or failure
  */
 export async function updateCacheWithResult(
   collection: Collection,
@@ -140,9 +141,10 @@ export async function invalidateAndRevalidateCaches({
 }
 
 /**
- * Handles cache operations for collection deletion
- * @param collection - The collection being deleted
- * @returns Promise resolving to cache operation result
+ * Performs all necessary cache operations when deleting a collection, including optimistic cache removal and invalidation of related caches.
+ *
+ * @param collection - The collection to be deleted.
+ * @returns The result of the cache operations, indicating success or failure.
  */
 export async function handleDeletionCacheOperations(
   collection: Collection

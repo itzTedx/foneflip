@@ -1,5 +1,12 @@
 import { ImageResponse } from "next/og";
 
+/**
+ * Asynchronously loads custom font assets from base64-encoded JSON files and returns them as font descriptors.
+ *
+ * If font loading fails, returns an empty array to allow fallback to system fonts.
+ *
+ * @returns An array of font descriptor objects containing the font name, data buffer, weight, and style.
+ */
 async function loadAssets(): Promise<
   { name: string; data: Buffer; weight: 400 | 600; style: "normal" }[]
 > {
@@ -40,6 +47,14 @@ async function loadAssets(): Promise<
   }
 }
 
+/**
+ * Handles GET requests to generate a dynamic Open Graph image with custom fonts and styling.
+ *
+ * Extracts `title` and `description` from the request's query parameters, applies truncation and defaults, and renders a styled image containing the provided text and a logo. The image is returned with HTTP headers set for long-term public caching.
+ *
+ * @param request - The incoming HTTP request containing query parameters for image customization
+ * @returns An `ImageResponse` containing the generated Open Graph image
+ */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const title = searchParams.get("title")?.slice(0, 100) || "Foneflip";

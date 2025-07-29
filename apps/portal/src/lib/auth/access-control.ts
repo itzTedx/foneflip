@@ -22,7 +22,13 @@ export const ROUTE_ACCESS = {
 } as const;
 
 /**
- * Check if a user has access to a specific route
+ * Determines whether a user session is permitted to access a given route path.
+ *
+ * Returns `true` if the session is absent and the path is public, or if the user role is `admin` or `dev`. Denies access to admin-only routes for users with the `vendor` role. Grants access in all other cases.
+ *
+ * @param session - The current user session, or `null` if unauthenticated
+ * @param pathname - The route path to check access for
+ * @returns `true` if access is allowed; otherwise, `false`
  */
 export function hasRouteAccess(
   session: Session | null,

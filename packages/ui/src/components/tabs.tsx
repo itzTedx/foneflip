@@ -3,6 +3,11 @@ import * as React from "react";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * Renders a styled tab root component that manages tab state and layout.
+ *
+ * Combines default and custom class names, and forwards tab state props and additional properties to the underlying primitive.
+ */
 function Tabs({
   className,
   defaultValue,
@@ -22,6 +27,11 @@ function Tabs({
   );
 }
 
+/**
+ * Renders a styled container for tab triggers within a tab interface.
+ *
+ * Combines default and custom class names to provide consistent layout and appearance for the tab list.
+ */
 function TabsList({
   className,
   ...props
@@ -38,6 +48,11 @@ function TabsList({
   );
 }
 
+/**
+ * Renders a styled tab trigger button for switching between tab panels.
+ *
+ * Applies visual styles for active, focused, and disabled states, and forwards all additional props to the underlying primitive trigger.
+ */
 function TabsTrigger({
   className,
   ...props

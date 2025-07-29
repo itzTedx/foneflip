@@ -26,6 +26,12 @@ import {
 import { CollectionQueryResult } from "../../types";
 import { ActionDropdown } from "../action-dropdown";
 
+/**
+ * Converts an unknown status value to a valid collection status or null.
+ *
+ * @param status - The status value to normalize
+ * @returns The status if it is "draft", "active", or "archived"; otherwise, null
+ */
 function normalizeStatus(
   status: unknown
 ): "draft" | "active" | "archived" | null {
@@ -35,7 +41,13 @@ function normalizeStatus(
   return null;
 }
 
-// Subcomponent for product badge with hover card
+/**
+ * Returns a product object with its collection property simplified to include only id, title, and slug, and all variant options cleared.
+ *
+ * @param product - The product to transform
+ * @param collection - The collection to extract minimal shape from
+ * @returns The product with a simplified collection and variants with empty options arrays
+ */
 function withCollectionShape(
   product: ProductQueryResult,
   collection: CollectionQueryResult

@@ -79,6 +79,9 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
     return () => subscription.unsubscribe();
   }, [form, isEditMode, setDraft]);
 
+  /**
+   * Restores an archived collection by setting its status to "active" and displays a toast notification indicating success or failure.
+   */
   function handleRestore() {
     startRestoreTransition(async () => {
       const result = await setCollectionStatus(initialData?.id, "active");
@@ -94,6 +97,11 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
     });
   }
 
+  /**
+   * Handles form submission to create or update a collection with active status.
+   *
+   * Submits the form values to the backend, updates the collection status to active, removes any local draft, displays a success or error toast, and navigates to the collections list on success.
+   */
   function onSubmit(values: CollectionFormType) {
     startTransition(async () => {
       const result = await upsertCollection({
@@ -116,6 +124,11 @@ export const CollectionForm = ({ isEditMode, initialData }: Props) => {
     });
   }
 
+  /**
+   * Saves the current form data as a draft collection and navigates to the collections page on success.
+   *
+   * Displays a success or error toast notification based on the result.
+   */
   function onSaveDraft() {
     startDraftTransition(async () => {
       const values = form.getValues();

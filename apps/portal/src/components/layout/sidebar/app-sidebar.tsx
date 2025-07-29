@@ -158,6 +158,16 @@ const getNavigationData = (userRole: UserRole) => {
   return { navMain, documents, storefront };
 };
 
+/**
+ * Renders the sidebar content with navigation sections, quick create menu, and optional settings link.
+ *
+ * Displays main navigation, documents, and storefront links based on the provided arrays. Includes a "Quick Create" dropdown for creating products or collections, and conditionally shows a settings link in the footer.
+ *
+ * @param navMain - Array of main navigation items to display
+ * @param documents - Array of document navigation items to display
+ * @param storefront - Array of storefront navigation items to display
+ * @param showSettings - Whether to display the settings link in the sidebar footer
+ */
 function SidebarContentWrapper({
   navMain,
   documents,
@@ -283,6 +293,11 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   session: Session | null;
 }
 
+/**
+ * Renders the application sidebar with navigation sections filtered by the user's role.
+ *
+ * Displays main navigation, documents, and storefront links appropriate to the user's role, and conditionally shows a settings link for users with sufficient permissions.
+ */
 export function AppSidebar({ session, ...props }: AppSidebarProps) {
   const userRole = (session?.user?.role || "user") as UserRole;
   const data = getNavigationData(userRole);

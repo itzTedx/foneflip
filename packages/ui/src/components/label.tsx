@@ -5,6 +5,11 @@ import * as React from "react";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * Renders an accessible label component with consistent styling and disabled state handling.
+ *
+ * Combines default label styles with any additional class names and passes all other props to the underlying Radix UI LabelPrimitive.
+ */
 function Label({
   className,
   ...props
@@ -21,6 +26,13 @@ function Label({
   );
 }
 
+/**
+ * Renders a styled asterisk or custom content to indicate a required field or similar emphasis.
+ *
+ * Displays an asterisk by default, or custom children if provided. Applies styling for destructive color and disabled states.
+ *
+ * @param children - Optional content to display instead of the default asterisk
+ */
 function LabelAsterisk({
   className,
   children,

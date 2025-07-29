@@ -5,6 +5,11 @@ import { Switch as SwitchPrimitive } from "radix-ui";
 
 import { cn } from "@ziron/utils";
 
+/**
+ * A styled toggle switch component based on Radix UI's SwitchPrimitive.
+ *
+ * Accepts all props supported by `SwitchPrimitive.Root` and applies custom styling for various states, including checked, unchecked, focus, disabled, and dark mode.
+ */
 function Switch({
   className,
   ...props

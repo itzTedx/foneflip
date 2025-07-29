@@ -19,6 +19,11 @@ function RadioGroup({
   );
 }
 
+/**
+ * A styled radio button item for use within a RadioGroup.
+ *
+ * Renders a selectable radio button with custom indicator and visual states, supporting additional props and custom class names.
+ */
 function RadioGroupItem({
   className,
   ...props

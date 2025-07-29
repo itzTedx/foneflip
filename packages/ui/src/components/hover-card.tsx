@@ -19,6 +19,13 @@ function HoverCardTrigger({
   );
 }
 
+/**
+ * Renders the content area of a hover card inside a portal with customizable alignment, offset, and styling.
+ *
+ * @param className - Additional CSS classes to apply to the content container
+ * @param align - Alignment of the hover card content relative to the trigger (defaults to "center")
+ * @param sideOffset - Offset distance from the trigger element (defaults to 4)
+ */
 function HoverCardContent({
   className,
   align = "center",
