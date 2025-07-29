@@ -1,9 +1,8 @@
-import { Button } from "@ziron/ui/button";
-
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { AddButton } from "@/components/ui/action-buttons";
 import { hasPermission } from "@/modules/auth/actions/data-access";
+import { TestButton } from "@/modules/media/components/test-button";
 
 export default async function ProductsPage() {
   await hasPermission({
@@ -17,7 +16,7 @@ export default async function ProductsPage() {
         <AddButton href="/products/new" title="Product" />
       </PageHeader>
       <div>
-        <Button />
+        <TestButton />
       </div>
     </MainWrapper>
   );

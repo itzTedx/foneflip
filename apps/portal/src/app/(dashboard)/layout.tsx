@@ -6,6 +6,7 @@ import { SidebarInset, SidebarProvider } from "@ziron/ui/sidebar";
 import Navbar from "@/components/layout/navbar";
 import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
 import { getSession } from "@/lib/auth/server";
+import { ExistingMediaDialog } from "@/modules/media/components/existing-media-dialog";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -48,6 +49,7 @@ export default async function RootLayout({
           {children}
         </div>
       </SidebarInset>
+      <ExistingMediaDialog />
     </SidebarProvider>
   );
 }
