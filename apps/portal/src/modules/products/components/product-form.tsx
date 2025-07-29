@@ -126,27 +126,31 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
   return (
     <Form {...form}>
       <form className="relative mx-auto max-w-7xl flex-1 pb-6" onSubmit={form.handleSubmit(onSubmit)}>
-        <Header backLink="/products" title={isEditMode ? "Edit Product" : "Add Product"}>
-          <div className="flex items-center gap-3">
-            {isArchived ? (
-              <RestoreArchiveButton disabled={false} isLoading={false} onClick={handleRestore} />
-            ) : (
-              <>
-                <ErrorDialog />
-                <DraftButton
-                  disabled={form.formState.isSubmitting || isArchived}
-                  isLoading={false}
-                  onClick={onSaveDraft}
-                  type="button"
-                />
-                <SaveButton disabled={isArchived || false} isEditMode={isEditMode} isLoading={false} title="Product" />
-              </>
-            )}
-          </div>
-        </Header>
-
         <Tabs className="w-full" defaultValue="info">
-          <div className="sticky top-[calc(3.75rem+3rem+1px)] z-50">
+          <div className="sticky top-[calc(3rem+1px)] z-99 bg-background/80 backdrop-blur-xl">
+            <Header backLink="/products" title={isEditMode ? "Edit Product" : "Add Product"}>
+              <div className="flex items-center gap-3">
+                {isArchived ? (
+                  <RestoreArchiveButton disabled={false} isLoading={false} onClick={handleRestore} />
+                ) : (
+                  <>
+                    <ErrorDialog />
+                    <DraftButton
+                      disabled={form.formState.isSubmitting || isArchived}
+                      isLoading={false}
+                      onClick={onSaveDraft}
+                      type="button"
+                    />
+                    <SaveButton
+                      disabled={isArchived || false}
+                      isEditMode={isEditMode}
+                      isLoading={false}
+                      title="Product"
+                    />
+                  </>
+                )}
+              </div>
+            </Header>
             <ScrollArea>
               <TabsTriggers showSettings={true} tabTriggers={PRODUCTS_TABS} />
               <ScrollBar orientation="horizontal" />

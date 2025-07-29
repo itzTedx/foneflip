@@ -1,9 +1,17 @@
+import {
+  IconGlobalFilled,
+  IconImageFilled,
+  IconInformationFilled,
+  IconListCheck,
+  IconStackFilled,
+} from "@ziron/ui/assets/icons";
+
 export const PRODUCTS_TABS = [
-  { value: "info", label: "Product Info" },
-  { value: "media", label: "Media" },
-  { value: "variants", label: "Variants" },
-  { value: "specifications", label: "Specifications" },
-  { value: "seo", label: "SEO & Meta" },
+  { value: "info", label: "Product Info", Icon: IconInformationFilled },
+  { value: "media", label: "Media", Icon: IconImageFilled },
+  { value: "variants", label: "Variants", Icon: IconStackFilled },
+  { value: "specifications", label: "Specifications", Icon: IconListCheck },
+  { value: "seo", label: "SEO & Meta", Icon: IconGlobalFilled },
 ] as const;
 
 export const ATTRIBUTE_TYPES = {

@@ -10,9 +10,7 @@ import {
 export type TabTriggerType = {
   value: string;
   label: string;
-  Icon: (
-    props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-  ) => JSX.Element;
+  Icon: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => JSX.Element;
 };
 
 export const COLLECTION_TABS = [

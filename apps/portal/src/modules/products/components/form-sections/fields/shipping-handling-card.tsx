@@ -76,7 +76,7 @@ export const ShippingHandlingCard = memo(function ShippingHandlingCard() {
               render={({ field }) => (
                 <div className="flex items-start gap-2">
                   <Checkbox
-                    aria-controls="delivery.deliveryType.fees"
+                    aria-controls="delivery.type.fees"
                     aria-describedby={"delivery-type-express-description"}
                     checked={!!field.value}
                     id="delivery-type-express"

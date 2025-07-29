@@ -22,8 +22,8 @@ export const productSettingsSchema = z
       .optional(),
 
     // 🔹 4. Custom Display Settings
-    featured: z.boolean(),
-    hidePrice: z.boolean(),
+    featured: z.boolean("Please specify if the product should be featured."),
+    hidePrice: z.boolean("Please specify if the price should be hidden."),
     customCTA: z
       .string("Custom CTA must be text.")
       .max(40, "Custom call-to-action must be 40 characters or fewer.")

@@ -1,36 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Image from "next/image";
 
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
-import {
-  closestCenter,
-  DndContext,
-  DragOverlay,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { closestCenter, DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IconGripVertical, IconStar, IconTrash } from "@tabler/icons-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { toast } from "sonner";
 
 import { Button } from "@ziron/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@ziron/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
 import {
   FormControl,
   FormField,
@@ -80,11 +63,11 @@ function ProductImagePreviewCard({
       <div className="flex items-center gap-2">
         <div className="relative aspect-square size-16 shrink-0 overflow-hidden rounded-sm border bg-card">
           <Image
-            fill
-            src={url ?? "/images/product-placeholder.webp"}
             alt={fileName ?? ""}
-            quality={50}
             className="h-full w-full object-cover"
+            fill
+            quality={50}
+            src={url ?? "/images/product-placeholder.webp"}
           />
         </div>
         <div className="flex min-w-0 flex-col gap-0.5">
@@ -99,35 +82,35 @@ function ProductImagePreviewCard({
       </div>
       {showActions && (
         <div className="flex items-center gap-2">
-          <TooltipBadge tooltip="Mark as featured" asChild>
+          <TooltipBadge asChild tooltip="Mark as featured">
             <IconButton
-              size="sm"
-              type="button"
-              icon={IconStar}
-              onClick={onMarkFeatured}
               active={isPrimary}
               aria-label={"Mark as featured"}
+              icon={IconStar}
+              onClick={onMarkFeatured}
+              size="sm"
+              type="button"
             />
           </TooltipBadge>
           <Button
-            type="button"
-            size="icon"
-            variant="ghost"
+            aria-label={`Remove ${fileName}`}
             className="-me-2 size-8 text-muted-foreground/80 hover:bg-transparent hover:text-foreground"
             onClick={onRemove}
-            aria-label={`Remove ${fileName}`}
+            size="icon"
+            type="button"
+            variant="ghost"
           >
             <IconTrash className="size-3.5" />
           </Button>
           <Button
-            variant="ghost"
             size="btn"
             type="button"
+            variant="ghost"
             {...dragListeners}
-            className="ml-2 w-auto cursor-grab text-muted-foreground/60"
-            style={{ touchAction: "none" }}
             aria-label="Drag to reorder"
+            className="ml-2 w-auto cursor-grab text-muted-foreground/60"
             onClick={onDrag}
+            style={{ touchAction: "none" }}
           >
             <IconGripVertical className="size-3.5" />
           </Button>
@@ -153,21 +136,8 @@ type SortableImageItemProps = {
   toggleFeaturedImage: (index: number) => void;
 };
 
-function SortableImageItem({
-  f,
-  i,
-  isFeatured,
-  remove,
-  toggleFeaturedImage,
-}: SortableImageItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: f.id });
+function SortableImageItem({ f, i, isFeatured, remove, toggleFeaturedImage }: SortableImageItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: f.id });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -179,22 +149,19 @@ function SortableImageItem({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={cn(
-        f.url.search("blob:") === 0 ? "animate-pulse transition-all" : "",
-        "space-y-2"
-      )}
+      className={cn(f.url.search("blob:") === 0 ? "animate-pulse transition-all" : "", "space-y-2")}
     >
       <ProductImagePreviewCard
-        url={f.url}
+        dragListeners={listeners}
         fileName={f.fileName}
         fileSize={f.fileSize}
-        width={f.width}
         height={f.height}
+        isPrimary={isFeatured}
         onMarkFeatured={() => toggleFeaturedImage(i)}
         onRemove={() => remove(i)}
-        isPrimary={isFeatured}
         showActions={true}
-        dragListeners={listeners}
+        url={f.url}
+        width={f.width}
       />
     </div>
   );
@@ -225,22 +192,24 @@ export function ProductMedia() {
   );
 
   // Dialog state for selecting existing media
-  const [mediaDialog, setMediaDialog] = useQueryState(
-    "media",
-    parseAsString.withDefault("")
-  );
+  const [mediaDialog, setMediaDialog] = useQueryState("media", parseAsString.withDefault(""));
 
   // Toggle function
-  function toggleFeaturedImage(index: number) {
-    const images = form.getValues("images");
-    if (Array.isArray(images)) {
-      const isAlreadyFeatured = images[index]?.isPrimary;
-      if (isAlreadyFeatured) return;
-      images.forEach((_, i) => {
-        form.setValue(`images.${i}.isPrimary`, i === index);
-      });
-    }
-  }
+  const toggleFeaturedImage = useCallback(
+    (index: number) => {
+      const images = form.getValues("images");
+      if (Array.isArray(images)) {
+        const isAlreadyFeatured = images[index]?.isPrimary;
+        if (isAlreadyFeatured) return;
+        const updatedImages = images.map((img, i) => ({
+          ...img,
+          isPrimary: i === index,
+        }));
+        form.setValue("images", updatedImages);
+      }
+    },
+    [form]
+  );
 
   // Memoized handleSelectMedia
   function handleSelectMedia(media: Media | Media[]) {
@@ -354,9 +323,7 @@ export function ProductMedia() {
   const watchedImages = form.watch("images") || [];
 
   // Featured status for each image
-  const featuredStatus = fields.map((_, i) =>
-    form.getValues(`images.${i}.isPrimary`)
-  );
+  const featuredStatus = fields.map((_, i) => form.getValues(`images.${i}.isPrimary`));
 
   // Find the active image for overlay
   const idx = fields.findIndex((f) => f.id === activeId);
@@ -372,9 +339,7 @@ export function ProductMedia() {
         <Card className="h-fit">
           <CardHeader>
             <CardTitle>Product Images</CardTitle>
-            <CardDescription>
-              Upload and manage product images including thumbnails and order.
-            </CardDescription>
+            <CardDescription>Upload and manage product images including thumbnails and order.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -385,11 +350,11 @@ export function ProductMedia() {
                   <div className="-mb-3 flex items-center justify-between">
                     <FormLabel>Upload Images</FormLabel>
                     <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
                       className="text-muted-foreground text-xs"
                       onClick={() => setMediaDialog("1")}
+                      size="sm"
+                      type="button"
+                      variant="ghost"
                     >
                       Choose from existing
                     </Button>
@@ -431,11 +396,7 @@ export function ProductMedia() {
                   </span>
                 </h4>
                 {fields.length > 1 && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => remove(fields.map((_, idx) => idx))}
-                  >
+                  <Button onClick={() => remove(fields.map((_, idx) => idx))} size="sm" variant="outline">
                     Remove all files
                   </Button>
                 )}
@@ -443,20 +404,16 @@ export function ProductMedia() {
             </CardHeader>
             <CardContent>
               <DndContext
-                sensors={sensors}
                 collisionDetection={closestCenter}
-                onDragStart={onDragStart}
-                onDragEnd={onDragEnd}
                 onDragCancel={onDragCancel}
+                onDragEnd={onDragEnd}
+                onDragStart={onDragStart}
+                sensors={sensors}
               >
-                <SortableContext
-                  items={fields.map((f) => f.id)}
-                  strategy={verticalListSortingStrategy}
-                >
+                <SortableContext items={fields.map((f) => f.id)} strategy={verticalListSortingStrategy}>
                   <div className="grid gap-3">
                     {watchedImages.map((img, i) => (
                       <SortableImageItem
-                        key={img.id || i}
                         f={{
                           ...img,
                           id: img.id || String(i),
@@ -464,6 +421,7 @@ export function ProductMedia() {
                         }}
                         i={i}
                         isFeatured={featuredStatus[i]}
+                        key={img.id || i}
                         remove={remove}
                         toggleFeaturedImage={toggleFeaturedImage}
                       />
@@ -473,12 +431,12 @@ export function ProductMedia() {
                 <DragOverlay>
                   {activeImage ? (
                     <ProductImagePreviewCard
-                      url={activeImage.file?.url}
                       fileName={activeImage.file?.name ?? ""}
                       fileSize={activeImage.file?.size ?? undefined}
-                      width={activeImage.metadata?.width ?? undefined}
                       height={activeImage.metadata?.height ?? undefined}
                       showActions={false}
+                      url={activeImage.file?.url}
+                      width={activeImage.metadata?.width ?? undefined}
                     />
                   ) : null}
                 </DragOverlay>

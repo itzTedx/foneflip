@@ -17,11 +17,11 @@ import {
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
 import { cn, pluralize } from "@ziron/utils";
 
-import { productErrorAtom } from "../../atom";
+import { isEditModeAtom, productErrorAtom } from "../../atom";
 
 export const ErrorDialog = () => {
   const validationErrors = useAtomValue(productErrorAtom);
-  const isEditMode = true;
+  const isEditMode = useAtomValue(isEditModeAtom); // if you have an atom for this
 
   return (
     <Dialog>
