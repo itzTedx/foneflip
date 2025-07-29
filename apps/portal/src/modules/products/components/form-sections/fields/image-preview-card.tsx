@@ -8,11 +8,10 @@ import { formatFileSize } from "@ziron/utils";
 import { MediaFormType } from "@ziron/validators";
 
 import { IconButton } from "@/components/ui/icon-button";
-import { TooltipBadge } from "@/components/ui/tooltip";
+import { SimpleTooltip } from "@/components/ui/tooltip";
 
 type ProductImagePreviewCardProps = {
   media: MediaFormType;
-
   onMarkFeatured?: () => void;
   onRemove?: () => void;
   onDrag?: () => void;
@@ -23,15 +22,10 @@ type ProductImagePreviewCardProps = {
 /**
  * Displays a preview card for a product image with thumbnail, file information, and optional action buttons for marking as featured, removing, or dragging.
  *
- * @param url - The image URL to display; falls back to a placeholder if not provided.
- * @param fileName - The name of the image file.
- * @param fileSize - The size of the image file in bytes.
- * @param width - The width of the image in pixels.
- * @param height - The height of the image in pixels.
+ * @param media - The image data.
  * @param onMarkFeatured - Callback invoked when marking the image as featured.
  * @param onRemove - Callback invoked when removing the image.
  * @param onDrag - Callback invoked when initiating a drag action.
- * @param isPrimary - Indicates if the image is currently marked as featured.
  * @param showActions - Whether to display action buttons for feature, remove, and drag.
  * @param dragListeners - Drag event listeners for drag-and-drop functionality.
  */
@@ -67,7 +61,7 @@ export const ImagePreviewCard = ({
       </div>
       {showActions && (
         <div className="flex items-center gap-2">
-          <TooltipBadge asChild tooltip="Mark as featured">
+          <SimpleTooltip asChild tooltip="Mark as featured">
             <IconButton
               active={media.isPrimary}
               aria-label={"Mark as featured"}
@@ -76,7 +70,7 @@ export const ImagePreviewCard = ({
               size="sm"
               type="button"
             />
-          </TooltipBadge>
+          </SimpleTooltip>
           <Button
             aria-label={`Remove ${media.file?.name}`}
             className="-me-2 size-8 text-muted-foreground/80 hover:bg-transparent hover:text-foreground"

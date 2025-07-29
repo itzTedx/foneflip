@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type KeyCombo = {
   /** The main key to trigger (e.g., 's', 'Enter', 'k') */
@@ -131,4 +131,41 @@ export function useHotkey({
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [combos, enabled, condition, callback, throttleMs, ignoreIfFocused]);
+}
+
+export function useModifierKeys() {
+  const [modifiers, setModifiers] = useState({
+    ctrl: false,
+    meta: false,
+    shift: false,
+    alt: false,
+  });
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      setModifiers({
+        ctrl: e.ctrlKey,
+        meta: e.metaKey,
+        shift: e.shiftKey,
+        alt: e.altKey,
+      });
+    };
+    const handleKeyUp = () => {
+      setModifiers({
+        ctrl: false,
+        meta: false,
+        shift: false,
+        alt: false,
+      });
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
+  return modifiers;
 }

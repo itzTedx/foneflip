@@ -19,6 +19,7 @@ import {
   DialogIcon,
   DialogTitle,
 } from "@ziron/ui/dialog";
+import { useModifierKeys } from "@ziron/ui/hooks/use-hotkey";
 import { ScrollArea, ScrollBar } from "@ziron/ui/scroll-area";
 import { cn } from "@ziron/utils";
 
@@ -29,7 +30,7 @@ import { MediaImage } from "./media";
 
 interface Props {
   multiple?: boolean;
-  value?: Media;
+  value?: Omit<Media, "createdAt">;
   onSelect: (value: Media | Media[]) => void;
 }
 
@@ -38,6 +39,8 @@ export const MediaPickerModal = ({ multiple = false, value, onSelect }: Props) =
   const [mediaItems, setMediaItems] = useState<Media[]>([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Media[]>([]);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
+  const { shift } = useModifierKeys();
 
   useEffect(() => {
     if (open) {
@@ -52,15 +55,34 @@ export const MediaPickerModal = ({ multiple = false, value, onSelect }: Props) =
     }
   }, [open]);
 
-  const handleSelect = (media: Media) => {
-    if (multiple) {
-      setSelected((prev) =>
-        prev.some((m) => m.id === media.id) ? prev.filter((m) => m.id !== media.id) : [...prev, media]
-      );
-    } else {
+  const handleSelect = (media: Media, index: number) => {
+    const isSelected = selected.some((m) => m.id === media.id);
+
+    if (!multiple) {
       onSelect(media);
       setOpen(false);
       toast.success("Media selected from library");
+      return;
+    }
+
+    if (shift && lastSelectedIndex !== null) {
+      // Select range
+      const start = Math.min(lastSelectedIndex, index);
+      const end = Math.max(lastSelectedIndex, index);
+      const rangeItems = mediaItems.slice(start, end + 1);
+
+      setSelected((prev) => {
+        const ids = new Set(prev.map((m) => m.id));
+        const merged = [...prev];
+        for (const item of rangeItems) {
+          if (!ids.has(item.id)) merged.push(item);
+        }
+        return merged;
+      });
+    } else {
+      // Toggle single
+      setSelected((prev) => (isSelected ? prev.filter((m) => m.id !== media.id) : [...prev, media]));
+      setLastSelectedIndex(index);
     }
   };
 
@@ -104,7 +126,7 @@ export const MediaPickerModal = ({ multiple = false, value, onSelect }: Props) =
                         isActive && "ring-2"
                       )}
                       key={media.id}
-                      onClick={() => handleSelect(media)}
+                      onClick={() => handleSelect(media, i)}
                       type="button"
                     >
                       <MediaImage index={i} media={media} />

@@ -32,7 +32,6 @@ import { ImagePreviewCard } from "./fields/image-preview-card";
 type SortableImageItemProps = {
   f: MediaFormType;
   i: number;
-  isFeatured?: boolean;
   remove: (index: number) => void;
   toggleFeaturedImage: (index: number) => void;
 };
@@ -42,7 +41,7 @@ type SortableImageItemProps = {
  *
  * Wraps a product image preview card with sortable behavior, applying drag styles and passing handlers for marking as featured and removing the image.
  */
-function SortableImageItem({ f, i, isFeatured, remove, toggleFeaturedImage }: SortableImageItemProps) {
+function SortableImageItem({ f, i, remove, toggleFeaturedImage }: SortableImageItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: f.id ?? "" });
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -155,7 +154,6 @@ export function ProductMedia() {
 
   // Always get the latest images from the form state
   const watchedImages = form.watch("images") || [];
-  console.log(watchedImages);
 
   // Featured status for each image
   const featuredStatus = fields.map((_, i) => form.getValues(`images.${i}.isPrimary`));
@@ -248,7 +246,6 @@ export function ProductMedia() {
                           id: img.id || String(i),
                         }}
                         i={i}
-                        isFeatured={featuredStatus[i]}
                         key={img.id || i}
                         remove={remove}
                         toggleFeaturedImage={toggleFeaturedImage}
