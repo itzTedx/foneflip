@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { useSetAtom } from "jotai";
 import { cloneDeep, debounce, isEqual } from "lodash";
@@ -45,6 +46,7 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
   const setValidationError = useSetAtom(productErrorAtom);
   const [, setTitle] = useQueryState("title", parseAsString.withDefault(""));
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   useEffect(() => {
     setTitle(initialData?.title ?? null);
@@ -127,9 +129,13 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
       if (!res.success) {
         toast.error("Something went wrong");
       }
-      console.log(res.error);
-      console.log(res.message);
-      toast.success("success");
+
+      if (res.success) {
+        removeDraft();
+        const message = (res as { message?: string }).message;
+        toast.success(typeof message === "string" ? message : "Product Updated successfully");
+        router.push("/products");
+      }
     });
   }
 

@@ -46,6 +46,8 @@ export async function generateUniqueSlug(baseSlug: string, maxAttempts = 100): P
     counter++;
   }
 
+  console.log("GENERATED UNIQUE SLUG LOOP", slug);
+
   return slug;
 }
 
