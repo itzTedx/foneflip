@@ -1,4 +1,7 @@
+import { Metadata } from "next";
+
 import type { CollectionFormType, MediaFormType } from "@ziron/validators";
+
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { hasPermission } from "@/modules/auth/actions/data-access";
 import { getCollectionById } from "@/modules/collections/actions/queries";
@@ -6,6 +9,22 @@ import { CollectionForm } from "@/modules/collections/components/collections-for
 import { CollectionQueryResult, Media } from "@/modules/collections/types";
 
 type Params = Promise<{ id: string }>;
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { id } = await params;
+
+  const collection = await getCollectionById(id);
+
+  if (!collection && id === "new") {
+    return {
+      title: "Add New Collection - Foneflip",
+    };
+  }
+
+  return {
+    title: `Edit "${collection?.title}" - Collection | Foneflip`,
+  };
+}
 
 /**
  * Converts a collection database object into a structure suitable for form initialization.
@@ -57,12 +76,8 @@ function transformCollectionToFormType(
       description: collection.seo?.metaDescription || undefined,
       keywords: collection.seo?.keywords || undefined,
     },
-    banner: toFormMedia(
-      collection.collectionMedia.find((c) => c.type === "banner")?.media
-    ),
-    thumbnail: toFormMedia(
-      collection.collectionMedia.find((c) => c.type === "thumbnail")?.media
-    ),
+    banner: toFormMedia(collection.collectionMedia.find((c) => c.type === "banner")?.media),
+    thumbnail: toFormMedia(collection.collectionMedia.find((c) => c.type === "thumbnail")?.media),
     settings: {
       ...collection.settings,
     },
@@ -90,7 +105,7 @@ export default async function CollectionPage({ params }: { params: Params }) {
 
   return (
     <MainWrapper>
-      <CollectionForm isEditMode={isEditMode} initialData={initialData} />
+      <CollectionForm initialData={initialData} isEditMode={isEditMode} />
     </MainWrapper>
   );
 }
