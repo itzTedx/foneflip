@@ -59,6 +59,7 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
     resolver: zodResolver(productSchema),
     defaultValues: {
       ...productFormDefaultValues,
+      ...initialData,
       ...draft,
     },
     mode: "onTouched",

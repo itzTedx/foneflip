@@ -1,14 +1,9 @@
 "use client";
 
-import { Button } from "@ziron/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@ziron/ui/dialog";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
+
+import { Button } from "@ziron/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@ziron/ui/dialog";
 
 /**
  * Displays a block of markdown content with a fixed maximum height and an expandable dialog for overflowed content.
@@ -59,21 +54,21 @@ export function MarkdownPartial({
 
   return (
     <>
-      <div ref={markdownRef} className="max-h-[300px] overflow-hidden relative">
+      <div className="relative max-h-[300px] overflow-hidden" ref={markdownRef}>
         {mainMarkdown}
         {isOverflowing && (
-          <div className="bg-gradient-to-t from-background to-transparent to-15% inset-0 absolute pointer-events-none" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background to-15% to-transparent" />
         )}
       </div>
 
       {isOverflowing && (
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="ghost" className="underline -ml-3">
+            <Button className="-ml-3 underline" variant="ghost">
               Read More
             </Button>
           </DialogTrigger>
-          <DialogContent className="md:max-w-3xl lg:max-w-4xl max-h-[calc(100%-2rem)] overflow-hidden flex flex-col">
+          <DialogContent className="flex max-h-[calc(100%-2rem)] flex-col overflow-hidden md:max-w-3xl lg:max-w-4xl">
             <DialogHeader>
               <DialogTitle>{dialogTitle}</DialogTitle>
             </DialogHeader>

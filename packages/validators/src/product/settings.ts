@@ -15,11 +15,11 @@ export const productSettingsSchema = z
     showStockStatus: z.boolean("Please choose whether to show stock availability to customers."),
 
     // 🔹 3. Tagging & Metadata
-    tags: z.array(z.string("Each tag must be a text value.")).optional(),
+    tags: z.array(z.string("Each tag must be a text value.")).nullish(),
     internalNotes: z
       .string("Internal notes must be text.")
       .max(1000, "Notes must not exceed 1000 characters.")
-      .optional(),
+      .nullish(),
 
     // 🔹 4. Custom Display Settings
     featured: z.boolean("Please specify if the product should be featured."),
@@ -27,7 +27,7 @@ export const productSettingsSchema = z
     customCTA: z
       .string("Custom CTA must be text.")
       .max(40, "Custom call-to-action must be 40 characters or fewer.")
-      .optional(),
+      .nullish(),
   })
   .refine(
     (data) => {

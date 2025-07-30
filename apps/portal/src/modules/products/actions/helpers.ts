@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "@ziron/db";
-import { productsTable, seoTable } from "@ziron/db/schema";
+import { collectionsTable, productsTable, seoTable } from "@ziron/db/schema";
 import { slugify } from "@ziron/utils";
 
 import { createLog } from "@/lib/utils";
@@ -64,6 +64,23 @@ export async function createProductSlug({
   const baseSlug = customSlug ?? slugify(title);
   return generateUniqueSlug(baseSlug, maxAttempts);
 }
+
+/**
+ * Resolves collection ID from slug if needed
+ */
+export const resolveCollectionId = async (collectionId?: string, collectionSlug?: string) => {
+  if (collectionId) return collectionId;
+
+  if (collectionSlug) {
+    const collection = await db.query.collectionsTable.findFirst({
+      where: eq(collectionsTable.slug, collectionSlug),
+      columns: { id: true },
+    });
+    return collection?.id;
+  }
+
+  return null;
+};
 
 // Types for SEO operations
 export interface SeoMetaData {

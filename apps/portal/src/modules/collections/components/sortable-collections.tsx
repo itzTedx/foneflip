@@ -1,21 +1,10 @@
 "use client";
 
-import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import React, { useCallback, useMemo, useState } from "react";
-import {
-  closestCenter,
-  DndContext,
-  DragOverlay,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+
+import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
+import { closestCenter, DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
 
@@ -30,15 +19,9 @@ const SortableCollectionCard = React.memo(function SortableCollectionCard({
 }: {
   collection: CollectionsQueryResult[number];
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: collection?.id as string });
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({
+    id: collection?.id as string,
+  });
   const style = useMemo(
     () => ({
       transform: CSS.Transform.toString(transform),
@@ -49,11 +32,7 @@ const SortableCollectionCard = React.memo(function SortableCollectionCard({
   );
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
-      <CollectionCard
-        collection={collection}
-        dragHandleProps={listeners}
-        dragHandleRef={setActivatorNodeRef}
-      />
+      <CollectionCard collection={collection} dragHandleProps={listeners} dragHandleRef={setActivatorNodeRef} />
     </div>
   );
 });
@@ -65,20 +44,13 @@ const SortableCollectionCard = React.memo(function SortableCollectionCard({
  *
  * @param collections - The initial array of collections to display and sort
  */
-export function CollectionListSortable({
-  collections: initialCollections,
-}: {
-  collections: CollectionsQueryResult;
-}) {
+export function CollectionListSortable({ collections: initialCollections }: { collections: CollectionsQueryResult }) {
   const [collections, setCollections] = useState(initialCollections);
   const sensors = useSensors(useSensor(PointerSensor));
   const [activeId, setActiveId] = useState<string | null>(null);
 
   // Memoize ids array
-  const ids = useMemo(
-    () => collections.map((c) => c?.id as string),
-    [collections]
-  );
+  const ids = useMemo(() => collections.map((c) => c?.id as string), [collections]);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -107,33 +79,23 @@ export function CollectionListSortable({
     [collections]
   );
 
-  const activeCollection = useMemo(
-    () => collections.find((c) => c?.id === activeId),
-    [collections, activeId]
-  );
+  const activeCollection = useMemo(() => collections.find((c) => c?.id === activeId), [collections, activeId]);
 
   return (
     <DndContext
-      sensors={sensors}
       collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragStart={handleDragStart}
+      sensors={sensors}
     >
       <SortableContext items={ids} strategy={verticalListSortingStrategy}>
         <div className="space-y-3">
           {collections.map((collection) => (
-            <SortableCollectionCard
-              key={collection?.id}
-              collection={collection}
-            />
+            <SortableCollectionCard collection={collection} key={collection?.id} />
           ))}
         </div>
       </SortableContext>
-      <DragOverlay>
-        {activeCollection ? (
-          <CollectionCard collection={activeCollection} />
-        ) : null}
-      </DragOverlay>
+      <DragOverlay>{activeCollection ? <CollectionCard collection={activeCollection} /> : null}</DragOverlay>
     </DndContext>
   );
 }

@@ -18,9 +18,10 @@ import {
   toolbarPlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
+import { Ref } from "react";
+
 import { useIsDarkMode } from "@ziron/ui/hooks/use-dark-mode";
 import { cn } from "@ziron/utils";
-import { Ref } from "react";
 
 import { markdownClassNames } from "./markdown-renderer";
 
@@ -41,9 +42,7 @@ export default function InternalMarkdownEditor({
   return (
     <MDXEditor
       {...props}
-      ref={ref}
       className={cn(markdownClassNames, isDarkMode && "dark-theme", className)}
-      suppressHtmlProcessing
       plugins={[
         headingsPlugin(),
         listsPlugin(),
@@ -64,6 +63,8 @@ export default function InternalMarkdownEditor({
           ),
         }),
       ]}
+      ref={ref}
+      suppressHtmlProcessing
     />
   );
 }
