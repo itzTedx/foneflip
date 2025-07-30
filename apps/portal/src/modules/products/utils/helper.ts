@@ -7,7 +7,7 @@ export const productFormDefaultValues: ProductFormType = {
   collectionId: "",
   brand: "",
   condition: "new",
-  slug: "",
+  slug: undefined,
   vendorId: "",
   hasVariant: false,
   price: {
@@ -38,9 +38,9 @@ export const productFormDefaultValues: ProductFormType = {
   },
 
   meta: {
-    title: "",
-    description: "",
-    keywords: "",
+    title: undefined,
+    description: undefined,
+    keywords: undefined,
   },
 
   settings: {

@@ -6,6 +6,6 @@ export type Product = InferSelectModel<typeof productsTable>;
 export type ProductVariants = InferSelectModel<typeof productVariantsTable>;
 
 // Query result types
-export type ProductQueryResult =
-  | (Product & { variants?: ProductVariants[] })
-  | undefined;
+export type ProductQueryResult = (Product & { variants?: ProductVariants[] }) | undefined;
+
+export type ProductUpsertType = InferInsertModel<typeof productsTable>;

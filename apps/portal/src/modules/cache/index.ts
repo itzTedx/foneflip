@@ -2,6 +2,8 @@ import { revalidatePath, revalidateTag } from "next/cache";
 
 import redis from "@ziron/redis";
 
+import { CACHE_DURATIONS } from "./constants";
+
 // Cache configuration constants
 export const CACHE_TAGS = {
   COLLECTION: "collection",
@@ -14,13 +16,6 @@ export const CACHE_TAGS = {
   COLLECTION_DETAILS: "collection-details",
   PRODUCT: "product",
   MEDIA: "media",
-} as const;
-
-export const CACHE_DURATIONS = {
-  SHORT: 60, // 1 minute
-  MEDIUM: 300, // 5 minutes
-  LONG: 3600, // 1 hour
-  VERY_LONG: 86400, // 24 hours
 } as const;
 
 // Redis cache keys
@@ -46,11 +41,7 @@ export const redisCache = {
     }
   },
 
-  async set<T>(
-    key: string,
-    data: T,
-    ttl: number = CACHE_DURATIONS.MEDIUM
-  ): Promise<void> {
+  async set<T>(key: string, data: T, ttl: number = CACHE_DURATIONS.MEDIUM): Promise<void> {
     try {
       await redis.setex(key, ttl, JSON.stringify(data));
     } catch (error) {
@@ -100,28 +91,20 @@ export const redisCache = {
       const memoryMatch = infoMemory.match(/used_memory_human:(\S+)/);
       const memoryUsage = memoryMatch?.[1] || "unknown";
       const peakMemoryMatch =
-        (infoMemory ?? "").match(/peak_memory_human:(\S+)/) ||
-        (infoMemory ?? "").match(/used_memory_peak_human:(\S+)/);
+        (infoMemory ?? "").match(/peak_memory_human:(\S+)/) || (infoMemory ?? "").match(/used_memory_peak_human:(\S+)/);
       const peakMemoryUsage = peakMemoryMatch?.[1] || "unknown";
-      const maxMemoryPolicyMatch = (infoMemory ?? "").match(
-        /maxmemory_policy:(\S+)/
-      );
+      const maxMemoryPolicyMatch = (infoMemory ?? "").match(/maxmemory_policy:(\S+)/);
       const maxMemoryPolicy = maxMemoryPolicyMatch?.[1] || "unknown";
 
       // Parse stats info
       const evictedKeysMatch = infoStats.match(/evicted_keys:(\d+)/);
 
       const evictedKeys =
-        evictedKeysMatch && evictedKeysMatch[1] !== undefined
-          ? parseInt(evictedKeysMatch[1], 10)
-          : 0;
+        evictedKeysMatch && evictedKeysMatch[1] !== undefined ? Number.parseInt(evictedKeysMatch[1], 10) : 0;
 
       // Parse server info
       const uptimeMatch = infoServer.match(/uptime_in_seconds:(\d+)/);
-      const uptimeSeconds =
-        uptimeMatch && uptimeMatch[1] !== undefined
-          ? parseInt(uptimeMatch[1], 10)
-          : 0;
+      const uptimeSeconds = uptimeMatch && uptimeMatch[1] !== undefined ? Number.parseInt(uptimeMatch[1], 10) : 0;
 
       return {
         totalKeys: keys,
@@ -144,53 +127,34 @@ export const redisCache = {
         return await this.get<T>(key);
       } catch (error) {
         if (i === retries - 1) {
-          console.error(
-            `Redis get failed after ${retries} retries for key ${key}:`,
-            error
-          );
+          console.error(`Redis get failed after ${retries} retries for key ${key}:`, error);
           return null;
         }
         // Wait before retry (exponential backoff)
-        await new Promise((resolve) =>
-          setTimeout(resolve, Math.pow(2, i) * 100)
-        );
+        await new Promise((resolve) => setTimeout(resolve, Math.pow(2, i) * 100));
       }
     }
     return null;
   },
 
-  async setWithRetry<T>(
-    key: string,
-    data: T,
-    ttl: number = CACHE_DURATIONS.MEDIUM,
-    retries = 3
-  ): Promise<void> {
+  async setWithRetry<T>(key: string, data: T, ttl: number = CACHE_DURATIONS.MEDIUM, retries = 3): Promise<void> {
     for (let i = 0; i < retries; i++) {
       try {
         await this.set(key, data, ttl);
         return;
       } catch (error) {
         if (i === retries - 1) {
-          console.error(
-            `Redis set failed after ${retries} retries for key ${key}:`,
-            error
-          );
+          console.error(`Redis set failed after ${retries} retries for key ${key}:`, error);
           return;
         }
         // Wait before retry (exponential backoff)
-        await new Promise((resolve) =>
-          setTimeout(resolve, Math.pow(2, i) * 100)
-        );
+        await new Promise((resolve) => setTimeout(resolve, Math.pow(2, i) * 100));
       }
     }
   },
 
   // Cache warming utilities
-  async warmCache<T>(
-    key: string,
-    dataFetcher: () => Promise<T>,
-    ttl?: number
-  ): Promise<void> {
+  async warmCache<T>(key: string, dataFetcher: () => Promise<T>, ttl?: number): Promise<void> {
     try {
       const data = await dataFetcher();
       await this.set(key, data, ttl);
@@ -211,9 +175,7 @@ export const redisCache = {
     }
   },
 
-  async mset<T>(
-    entries: Array<{ key: string; value: T; ttl?: number }>
-  ): Promise<void> {
+  async mset<T>(entries: Array<{ key: string; value: T; ttl?: number }>): Promise<void> {
     try {
       const pipeline = redis.pipeline();
 
@@ -233,10 +195,7 @@ export const redisCache = {
 };
 
 // Helper function to revalidate all collection-related caches
-export const revalidateCollectionCaches = (
-  collectionId?: string,
-  slug?: string
-) => {
+export const revalidateCollectionCaches = (collectionId?: string, slug?: string) => {
   revalidateTag(CACHE_TAGS.COLLECTION);
   revalidateTag(CACHE_TAGS.COLLECTIONS);
   revalidateTag(CACHE_TAGS.COLLECTION_DRAFTS);
@@ -261,10 +220,7 @@ export const revalidateCollectionCaches = (
 };
 
 // Enhanced cache invalidation with Redis
-export const invalidateCollectionCaches = async (
-  collectionId?: string,
-  slug?: string
-) => {
+export const invalidateCollectionCaches = async (collectionId?: string, slug?: string) => {
   // Invalidate Next.js caches
   revalidateCollectionCaches(collectionId, slug);
 

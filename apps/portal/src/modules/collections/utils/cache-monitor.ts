@@ -1,5 +1,5 @@
+import { redisCache } from "../../cache";
 import type { CacheInsights, CacheMetrics } from "../types";
-import { redisCache } from "./cache";
 
 export class CacheMonitor {
   private static instance: CacheMonitor;
@@ -34,20 +34,13 @@ export class CacheMonitor {
   async getMetrics(): Promise<CacheMetrics> {
     const stats = await redisCache.getStats();
 
-    const hitRate =
-      this.metrics.totalRequests > 0
-        ? (this.metrics.hits / this.metrics.totalRequests) * 100
-        : 0;
+    const hitRate = this.metrics.totalRequests > 0 ? (this.metrics.hits / this.metrics.totalRequests) * 100 : 0;
 
-    const missRate =
-      this.metrics.totalRequests > 0
-        ? (this.metrics.misses / this.metrics.totalRequests) * 100
-        : 0;
+    const missRate = this.metrics.totalRequests > 0 ? (this.metrics.misses / this.metrics.totalRequests) * 100 : 0;
 
     const averageResponseTime =
       this.metrics.responseTimes.length > 0
-        ? this.metrics.responseTimes.reduce((a, b) => a + b, 0) /
-          this.metrics.responseTimes.length
+        ? this.metrics.responseTimes.reduce((a, b) => a + b, 0) / this.metrics.responseTimes.length
         : 0;
 
     return {
@@ -128,10 +121,7 @@ export async function withCacheMonitoring<T>(
  * @param cacheKey - The cache key to check for a hit or miss
  * @returns The result of the executed operation
  */
-export async function withSmartCacheMonitoring<T>(
-  operation: () => Promise<T>,
-  cacheKey: string
-): Promise<T> {
+export async function withSmartCacheMonitoring<T>(operation: () => Promise<T>, cacheKey: string): Promise<T> {
   const monitor = CacheMonitor.getInstance();
   const startTime = Date.now();
 
@@ -170,19 +160,12 @@ export async function getCacheInsights(): Promise<{
   const metrics = await monitor.getMetrics();
 
   const insights: CacheInsights = {
-    performance:
-      metrics.hitRate > 80
-        ? "Excellent"
-        : metrics.hitRate > 60
-          ? "Good"
-          : "Needs Improvement",
+    performance: metrics.hitRate > 80 ? "Excellent" : metrics.hitRate > 60 ? "Good" : "Needs Improvement",
     recommendations: [],
   };
 
   if (metrics.hitRate < 60) {
-    insights.recommendations.push(
-      "Consider increasing cache TTL for frequently accessed data"
-    );
+    insights.recommendations.push("Consider increasing cache TTL for frequently accessed data");
     insights.recommendations.push("Review cache invalidation strategy");
   }
 
@@ -192,9 +175,7 @@ export async function getCacheInsights(): Promise<{
   }
 
   if (metrics.cacheSize > 1000) {
-    insights.recommendations.push(
-      "Consider implementing cache eviction policies"
-    );
+    insights.recommendations.push("Consider implementing cache eviction policies");
   }
 
   return {

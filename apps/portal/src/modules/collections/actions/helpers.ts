@@ -1,11 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "@ziron/db";
-import {
-  collectionSettingsTable,
-  collectionsTable,
-  seoTable,
-} from "@ziron/db/schema";
+import { collectionSettingsTable, collectionsTable, seoTable } from "@ziron/db/schema";
 import redis from "@ziron/redis";
 import { slugify } from "@ziron/utils";
 
@@ -82,9 +78,7 @@ export function prepareCollectionData({
  * @param data - The collection data to validate
  * @returns An object indicating whether the data is valid and an array of error messages if invalid
  */
-export function validateCollectionData(
-  data: CollectionData
-): CollectionValidationResult {
+export function validateCollectionData(data: CollectionData): CollectionValidationResult {
   const errors: string[] = [];
 
   if (!data.title || data.title.trim().length === 0) {
@@ -107,10 +101,7 @@ export function validateCollectionData(
     errors.push("Slug is required");
   }
 
-  if (
-    data.sortOrder !== undefined &&
-    (data.sortOrder < 0 || !Number.isInteger(data.sortOrder))
-  ) {
+  if (data.sortOrder !== undefined && (data.sortOrder < 0 || !Number.isInteger(data.sortOrder))) {
     errors.push("Sort order must be a non-negative integer");
   }
 
@@ -291,10 +282,7 @@ export async function upsertSeoMeta({
  *
  * @param seoId - The ID of the SEO metadata to soft delete
  */
-export async function softDeleteSeo(
-  seoId: string,
-  transaction: any = db
-): Promise<void> {
+export async function softDeleteSeo(seoId: string, transaction: any = db): Promise<void> {
   await transaction
     .update(seoTable)
     .set({ deletedAt: new Date(), updatedAt: new Date() })
@@ -323,18 +311,13 @@ export interface SlugValidationResult {
  * @returns A unique slug string
  * @throws If a unique slug cannot be generated within the allowed number of attempts
  */
-export async function generateUniqueSlug(
-  baseSlug: string,
-  maxAttempts = 100
-): Promise<string> {
+export async function generateUniqueSlug(baseSlug: string, maxAttempts = 100): Promise<string> {
   let slug = baseSlug;
   let counter = 1;
 
   while (await existingCollection(slug)) {
     if (counter > maxAttempts) {
-      throw new Error(
-        `Unable to generate unique slug after ${maxAttempts} attempts`
-      );
+      throw new Error(`Unable to generate unique slug after ${maxAttempts} attempts`);
     }
     slug = `${baseSlug}-${counter}`;
     counter++;
@@ -395,9 +378,7 @@ export function validateSlug(slug: string): SlugValidationResult {
  * @param originalSlug - The slug of the collection being duplicated
  * @returns A promise that resolves to a unique slug for the duplicate collection
  */
-export async function generateDuplicateSlug(
-  originalSlug: string
-): Promise<string> {
+export async function generateDuplicateSlug(originalSlug: string): Promise<string> {
   const baseSlug = `${originalSlug}-copy`;
   return generateUniqueSlug(baseSlug);
 }

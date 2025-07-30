@@ -6,10 +6,7 @@ import { z } from "@ziron/validators";
  * @param schema - The Zod schema to validate against
  * @returns The validation result from Zod's safeParse
  */
-export const validateForm = <T extends z.ZodTypeAny>(
-  data: z.infer<T>,
-  schema: T
-) => {
+export const validateForm = <T extends z.ZodTypeAny>(data: z.infer<T>, schema: T) => {
   return schema.safeParse(data);
 };
 
@@ -19,32 +16,12 @@ export const validateForm = <T extends z.ZodTypeAny>(
  * @param label - Optional label to prefix log messages; defaults to "App"
  * @returns An object with `info`, `success`, `warn`, and `error` methods for logging messages to the console
  */
-export function createLog(label: string = "App") {
+export function createLog(label: string) {
   return {
-    info: (...args: unknown[]) =>
-      console.log(
-        `%c[ℹ️] [${label}]`,
-        "color: #1976d2; font-weight: bold;",
-        ...args
-      ),
-    success: (...args: unknown[]) =>
-      console.log(
-        `%c[✅] [${label}]`,
-        "color: #388e3c; font-weight: bold;",
-        ...args
-      ),
-    warn: (...args: unknown[]) =>
-      console.log(
-        `%c[⚠️] [${label}]`,
-        "color: #fbc02d; font-weight: bold;",
-        ...args
-      ),
-    error: (...args: unknown[]) =>
-      console.error(
-        `%c[❌] [${label}]`,
-        "color: #d32f2f; font-weight: bold;",
-        ...args
-      ),
+    info: (...args: unknown[]) => console.log(`%c[ℹ️] [${label}]`, "color: #1976d2; font-weight: bold;", ...args),
+    success: (...args: unknown[]) => console.log(`%c[✅] [${label}]`, "color: #388e3c; font-weight: bold;", ...args),
+    warn: (...args: unknown[]) => console.log(`%c[⚠️] [${label}]`, "color: #fbc02d; font-weight: bold;", ...args),
+    error: (...args: unknown[]) => console.error(`%c[❌] [${label}]`, "color: #d32f2f; font-weight: bold;", ...args),
   };
 }
 
@@ -54,11 +31,7 @@ export function escapeCsvValue(value: unknown): string {
     return "";
   }
   const stringValue = String(value);
-  if (
-    stringValue.includes(",") ||
-    stringValue.includes('"') ||
-    stringValue.includes("\n")
-  ) {
+  if (stringValue.includes(",") || stringValue.includes('"') || stringValue.includes("\n")) {
     return `"${stringValue.replace(/"/g, '""')}"`;
   }
   return stringValue;
@@ -78,9 +51,7 @@ export function convertToCsv(data: Record<string, unknown>[]): string {
   }
   const headers = Object.keys(data[0]!);
   const headerRow = headers.map((header) => escapeCsvValue(header)).join(",");
-  const dataRows = data.map((row) =>
-    headers.map((header) => escapeCsvValue(row[header])).join(",")
-  );
+  const dataRows = data.map((row) => headers.map((header) => escapeCsvValue(row[header])).join(","));
   return [headerRow, ...dataRows].join("\n");
 }
 
@@ -90,10 +61,7 @@ export function convertToCsv(data: Record<string, unknown>[]): string {
  * @param data - The CSV-formatted string to be downloaded
  * @param filename - Optional name for the downloaded file; defaults to "collections-export.csv"
  */
-export function downloadCsv(
-  data: string,
-  filename: string = "collections-export.csv"
-) {
+export function downloadCsv(data: string, filename = "collections-export.csv") {
   const blob = new Blob([data], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");
   const url = URL.createObjectURL(blob);

@@ -1,20 +1,20 @@
 "use server";
 
-import { convertToCsv, createLog } from "@/lib/utils";
-import { requireUser } from "@/modules/auth/actions/data-access";
-
 import { asc, db, desc, eq, isNull } from "@ziron/db";
 import {
   collectionMediaTable,
   collectionSettingsTable,
-  collectionsTable,
   collectionStatusEnum,
+  collectionsTable,
   seoTable,
 } from "@ziron/db/schema";
 import { slugify } from "@ziron/utils";
 import { collectionSchema, z } from "@ziron/validators";
 
-import { invalidateCollectionCaches } from "../utils/cache";
+import { convertToCsv, createLog } from "@/lib/utils";
+import { requireUser } from "@/modules/auth/actions/data-access";
+
+import { invalidateCollectionCaches } from "../../cache";
 import {
   invalidateAndRevalidateCaches,
   performOptimisticCacheUpdate,
@@ -117,10 +117,7 @@ export async function upsertCollection(formData: unknown) {
         }
       }
 
-      log.info(
-        "Performing upsert (insert on conflict do update) for collection",
-        { slug: collectionData.slug }
-      );
+      log.info("Performing upsert (insert on conflict do update) for collection", { slug: collectionData.slug });
       const [collection] = await tx
         .insert(collectionsTable)
         .values(collectionData)
@@ -155,19 +152,11 @@ export async function upsertCollection(formData: unknown) {
 
       // --- Upsert media (thumbnail, banner) ---
       // Remove existing media for this collection (for simplicity)
-      await tx
-        .delete(collectionMediaTable)
-        .where(eq(collectionMediaTable.collectionId, collection.id));
+      await tx.delete(collectionMediaTable).where(eq(collectionMediaTable.collectionId, collection.id));
       const { thumbnail, banner } = data;
       const mediaToInsert = [];
-      if (
-        thumbnail &&
-        thumbnail.file &&
-        typeof thumbnail.file.url === "string"
-      ) {
-        const mediaId = await (
-          await import("@/modules/media/actions/mutations")
-        ).upsertMedia(
+      if (thumbnail && thumbnail.file && typeof thumbnail.file.url === "string") {
+        const mediaId = await (await import("@/modules/media/actions/mutations")).upsertMedia(
           {
             url: thumbnail.file.url,
             fileName: thumbnail.file.name ?? undefined,
@@ -195,9 +184,7 @@ export async function upsertCollection(formData: unknown) {
         if (mediaRow) mediaToInsert.push(mediaRow);
       }
       if (banner && banner.file && typeof banner.file.url === "string") {
-        const mediaId = await (
-          await import("@/modules/media/actions/mutations")
-        ).upsertMedia(
+        const mediaId = await (await import("@/modules/media/actions/mutations")).upsertMedia(
           {
             url: banner.file.url,
             fileName: banner.file.name ?? undefined,
@@ -346,10 +333,7 @@ export async function deleteCollection(id: string) {
         id: deletedCollection.id,
         slug: deletedCollection.slug,
       });
-      await invalidateCollectionCaches(
-        deletedCollection.id,
-        deletedCollection.slug
-      );
+      await invalidateCollectionCaches(deletedCollection.id, deletedCollection.slug);
 
       log.info("deleteCollection succeeded", { deletedCollection });
       return {
@@ -385,16 +369,12 @@ export async function deleteCollection(id: string) {
  * @param status - The status value to assign to the collection
  * @returns An object containing either a success message with collection data or an error message
  */
-export async function setCollectionStatus(
-  id?: string,
-  status?: (typeof collectionStatusEnum)["enumValues"][number]
-) {
+export async function setCollectionStatus(id?: string, status?: (typeof collectionStatusEnum)["enumValues"][number]) {
   try {
     if (!id) {
-      log.warn(`Set status failed: ID not valid`);
+      log.warn("Set status failed: ID not valid");
       return {
-        error:
-          "Error updating collection status. Please contact technical support to fix this issue.",
+        error: "Error updating collection status. Please contact technical support to fix this issue.",
       };
     }
     log.info(`Setting collection status to ${status} for ID: ${id}`);
@@ -419,9 +399,7 @@ export async function setCollectionStatus(
 
     // Invalidate both Next.js and Redis caches
     await invalidateCollectionCaches(collection.id, collection.slug);
-    log.info(
-      `Successfully set collection status to ${status} for: "${collection.title}" (ID: ${id})`
-    );
+    log.info(`Successfully set collection status to ${status} for: "${collection.title}" (ID: ${id})`);
     return {
       success: `Collection (${collection.title}) has been set to ${status}`,
       data: collection,
@@ -432,8 +410,7 @@ export async function setCollectionStatus(
       message: err instanceof Error ? err.message : "Unknown error occurred",
       stack: err instanceof Error ? err.stack : undefined,
     });
-    const message =
-      err instanceof Error ? err.message : "Unknown error occurred";
+    const message = err instanceof Error ? err.message : "Unknown error occurred";
     return { error: `Failed to set collection status: ${message}` };
   }
 }
@@ -442,18 +419,11 @@ export async function setCollectionStatus(
  * Update the sort order of multiple collections.
  * @param orders - Array of objects with id and sortOrder
  */
-export async function updateCollectionsOrder({
-  orders,
-}: {
-  orders: { id: string; sortOrder: number }[];
-}) {
+export async function updateCollectionsOrder({ orders }: { orders: { id: string; sortOrder: number }[] }) {
   try {
     log.info("Updating collections order", { orders });
     for (const { id, sortOrder } of orders) {
-      await db
-        .update(collectionsTable)
-        .set({ sortOrder })
-        .where(eq(collectionsTable.id, id));
+      await db.update(collectionsTable).set({ sortOrder }).where(eq(collectionsTable.id, id));
     }
     // Invalidate both Next.js and Redis caches
     await invalidateCollectionCaches();
@@ -517,11 +487,7 @@ export async function duplicateCollection(id: string) {
       });
 
       // Create new collection with duplicated data
-      const collectionData = prepareDuplicateCollectionData(
-        originalCollection,
-        uniqueSlug,
-        newSeoId
-      );
+      const collectionData = prepareDuplicateCollectionData(originalCollection, uniqueSlug, newSeoId);
 
       const [newCollection] = await trx
         .insert(collectionsTable)
@@ -538,18 +504,12 @@ export async function duplicateCollection(id: string) {
 
       // Duplicate settings
       if (originalCollection.settings) {
-        const settingsData = prepareDuplicateSettingsData(
-          originalCollection.settings,
-          newCollection.id
-        );
+        const settingsData = prepareDuplicateSettingsData(originalCollection.settings, newCollection.id);
         await upsertCollectionSettings(settingsData, trx);
       }
 
       // Duplicate media
-      if (
-        originalCollection.collectionMedia &&
-        Array.isArray(originalCollection.collectionMedia)
-      ) {
+      if (originalCollection.collectionMedia && Array.isArray(originalCollection.collectionMedia)) {
         for (const mediaItem of originalCollection.collectionMedia) {
           await trx.insert(collectionMediaTable).values({
             collectionId: newCollection.id,
@@ -567,9 +527,7 @@ export async function duplicateCollection(id: string) {
     });
 
     if (!duplicatedCollection) {
-      throw new Error(
-        "Failed to duplicate collection - transaction returned no data"
-      );
+      throw new Error("Failed to duplicate collection - transaction returned no data");
     }
 
     // Invalidate all related caches (Next.js and Redis)
@@ -588,8 +546,7 @@ export async function duplicateCollection(id: string) {
       message: err instanceof Error ? err.message : "Unknown error occurred",
       stack: err instanceof Error ? err.stack : undefined,
     });
-    const message =
-      err instanceof Error ? err.message : "Unknown error occurred";
+    const message = err instanceof Error ? err.message : "Unknown error occurred";
     return { error: `Failed to duplicate collection: ${message}` };
   }
 }
@@ -685,15 +642,13 @@ export async function saveCollectionDraft(formData: unknown) {
             description,
             label,
             slug: slug || (title ? slugify(title) : `draft-${Date.now()}`),
-            sortOrder:
-              sortOrderToUse !== undefined ? sortOrderToUse : sortOrder,
+            sortOrder: sortOrderToUse !== undefined ? sortOrderToUse : sortOrder,
             seoId: seo.seoId,
             updatedAt: new Date(),
           },
         })
         .returning();
-      if (!savedCollection)
-        throw new Error("Failed to save collection draft data");
+      if (!savedCollection) throw new Error("Failed to save collection draft data");
 
       // --- Upsert collection settings ---
       await upsertCollectionSettings(
@@ -707,18 +662,10 @@ export async function saveCollectionDraft(formData: unknown) {
 
       // --- Upsert media (thumbnail, banner) ---
       // Remove existing media for this collection (for simplicity)
-      await trx
-        .delete(collectionMediaTable)
-        .where(eq(collectionMediaTable.collectionId, savedCollection.id));
+      await trx.delete(collectionMediaTable).where(eq(collectionMediaTable.collectionId, savedCollection.id));
       const mediaToInsert = [];
-      if (
-        thumbnail &&
-        thumbnail.file &&
-        typeof thumbnail.file.url === "string"
-      ) {
-        const mediaId = await (
-          await import("@/modules/media/actions/mutations")
-        ).upsertMedia(
+      if (thumbnail && thumbnail.file && typeof thumbnail.file.url === "string") {
+        const mediaId = await (await import("@/modules/media/actions/mutations")).upsertMedia(
           {
             url: thumbnail.file.url,
             fileName: thumbnail.file.name ?? undefined,
@@ -746,9 +693,7 @@ export async function saveCollectionDraft(formData: unknown) {
         if (mediaRow) mediaToInsert.push(mediaRow);
       }
       if (banner && banner.file && typeof banner.file.url === "string") {
-        const mediaId = await (
-          await import("@/modules/media/actions/mutations")
-        ).upsertMedia(
+        const mediaId = await (await import("@/modules/media/actions/mutations")).upsertMedia(
           {
             url: banner.file.url,
             fileName: banner.file.name ?? undefined,
@@ -776,10 +721,7 @@ export async function saveCollectionDraft(formData: unknown) {
         if (mediaRow) mediaToInsert.push(mediaRow);
       }
 
-      log.success(
-        "Transaction completed for draft collection",
-        savedCollection.id
-      );
+      log.success("Transaction completed for draft collection", savedCollection.id);
       return savedCollection;
     });
 
@@ -806,10 +748,7 @@ export async function saveCollectionDraft(formData: unknown) {
  * @param includeSeo - Whether to include SEO metadata for each collection
  * @returns An object containing the CSV data, filename, and record count on success, or an error message if export fails or no collections are found
  */
-export async function exportCollectionsToCsv(
-  includeProducts: boolean = false,
-  includeSeo: boolean = false
-) {
+export async function exportCollectionsToCsv(includeProducts = false, includeSeo = false) {
   try {
     log.info("Starting CSV export with options:", {
       includeProducts,
@@ -848,12 +787,8 @@ export async function exportCollectionsToCsv(
       return { error: "No collections found to export" };
     }
     const csvData = collections.map((collection) => {
-      const thumbnailMedia = collection.collectionMedia.find(
-        (m) => m.type === "thumbnail"
-      );
-      const bannerMedia = collection.collectionMedia.find(
-        (m) => m.type === "banner"
-      );
+      const thumbnailMedia = collection.collectionMedia.find((m) => m.type === "thumbnail");
+      const bannerMedia = collection.collectionMedia.find((m) => m.type === "banner");
       const baseData = {
         id: collection.id,
         title: collection.title,
@@ -888,9 +823,7 @@ export async function exportCollectionsToCsv(
     const csv = convertToCsv(csvData);
     const timestamp = new Date().toISOString().split("T")[0];
     const filename = `collections-export-${timestamp}.csv`;
-    log.success(
-      `CSV export completed successfully. Exported ${collections.length} collections`
-    );
+    log.success(`CSV export completed successfully. Exported ${collections.length} collections`);
     return {
       success: true,
       data: csv,
@@ -904,8 +837,7 @@ export async function exportCollectionsToCsv(
       stack: err instanceof Error ? err.stack : undefined,
     });
     return {
-      error:
-        err instanceof Error ? err.message : "Failed to export collections",
+      error: err instanceof Error ? err.message : "Failed to export collections",
     };
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useTransition } from "react";
 
 import { useSetAtom } from "jotai";
 import { cloneDeep, debounce, isEqual } from "lodash";
@@ -19,6 +19,7 @@ import { Console } from "@/components/ui/notification-list";
 import { Tabs, TabsContent, TabsTriggers } from "@/components/ui/tabs";
 import { CollectionMetadata } from "@/modules/collections/types";
 
+import { upsertProduct } from "../actions/mutations";
 import { productErrorAtom } from "../atom";
 import { PRODUCTS_TABS } from "../data/constants";
 import { Product } from "../types";
@@ -43,6 +44,7 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
   const lastProcessedValueRef = useRef<ProductFormType>(productFormDefaultValues);
   const setValidationError = useSetAtom(productErrorAtom);
   const [, setTitle] = useQueryState("title", parseAsString.withDefault(""));
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     setTitle(initialData?.title ?? null);
@@ -58,7 +60,7 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
       ...draft,
     },
     mode: "onTouched",
-    disabled: isArchived,
+    disabled: isArchived || isPending,
   });
 
   const hasVariant = form.watch("hasVariant");
@@ -72,8 +74,7 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
     enabled: true,
     condition: () => !form.formState.isSubmitting && !isArchived,
     callback: () => {
-      toast.success("Saving....");
-      form.handleSubmit(onSubmit);
+      form.handleSubmit(onSubmit)();
     },
     throttleMs: 2000,
   });
@@ -112,11 +113,24 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
     };
   }, [form]);
 
+  // const formdata = form.watch();
+  // const validation = validateForm(formdata, productSchema);
+  // console.log(validation);
+
   /**
    * Handles form submission for the product form.
    */
   function onSubmit(values: ProductFormType) {
     console.log(values);
+    startTransition(async () => {
+      const res = await upsertProduct(values);
+      if (!res.success) {
+        toast.error("Something went wrong");
+      }
+      console.log(res.error);
+      console.log(res.message);
+      toast.success("success");
+    });
   }
 
   /**
@@ -146,15 +160,15 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
                 ) : (
                   <>
                     <DraftButton
-                      disabled={form.formState.isSubmitting || isArchived}
+                      disabled={form.formState.isSubmitting || isArchived || isPending}
                       isLoading={false}
                       onClick={onSaveDraft}
                       type="button"
                     />
                     <SaveButton
-                      disabled={isArchived || false}
+                      disabled={isArchived || isPending}
                       isEditMode={isEditMode}
-                      isLoading={false}
+                      isLoading={isPending}
                       title="Product"
                     />
                   </>

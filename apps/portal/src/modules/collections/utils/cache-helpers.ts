@@ -1,11 +1,8 @@
 import { createLog } from "@/lib/utils";
 
-import type { Collection } from "../types";
+import { invalidateCollectionCaches, revalidateCollectionCaches } from "../../cache";
 import { updateCollectionCache } from "../actions/cache";
-import {
-  invalidateCollectionCaches,
-  revalidateCollectionCaches,
-} from "./cache";
+import type { Collection } from "../types";
 
 const log = createLog("CollectionCache");
 
@@ -62,10 +59,7 @@ export async function performOptimisticCacheUpdate({
  * @param options - Cache invalidation options
  * @returns Promise resolving to cache operation result
  */
-export async function revertOptimisticCache({
-  id,
-  slug,
-}: CacheInvalidationOptions): Promise<CacheOperationResult> {
+export async function revertOptimisticCache({ id, slug }: CacheInvalidationOptions): Promise<CacheOperationResult> {
   try {
     await invalidateCollectionCaches(id, slug);
     log.info("Reverted optimistic cache updates due to error");
@@ -146,9 +140,7 @@ export async function invalidateAndRevalidateCaches({
  * @param collection - The collection to be deleted.
  * @returns The result of the cache operations, indicating success or failure.
  */
-export async function handleDeletionCacheOperations(
-  collection: Collection
-): Promise<CacheOperationResult> {
+export async function handleDeletionCacheOperations(collection: Collection): Promise<CacheOperationResult> {
   try {
     // Optimistic cache removal
     await performOptimisticCacheUpdate({

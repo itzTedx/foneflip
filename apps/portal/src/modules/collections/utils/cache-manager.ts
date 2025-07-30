@@ -1,5 +1,5 @@
+import { CACHE_DURATIONS, REDIS_KEYS, redisCache } from "../../cache";
 import type { Collection } from "../types";
-import { CACHE_DURATIONS, REDIS_KEYS, redisCache } from "./cache";
 import { CacheMonitor, getCacheInsights } from "./cache-monitor";
 
 export class CollectionCacheManager {
@@ -23,9 +23,7 @@ export class CollectionCacheManager {
 
     try {
       // Try cache first
-      const cached = await redisCache.getWithRetry<Collection>(
-        REDIS_KEYS.COLLECTION_BY_SLUG(slug)
-      );
+      const cached = await redisCache.getWithRetry<Collection>(REDIS_KEYS.COLLECTION_BY_SLUG(slug));
 
       if (cached) {
         const responseTime = Date.now() - startTime;
@@ -42,11 +40,7 @@ export class CollectionCacheManager {
 
       // Cache the result
       if (collection) {
-        await redisCache.setWithRetry(
-          REDIS_KEYS.COLLECTION_BY_SLUG(slug),
-          collection,
-          CACHE_DURATIONS.MEDIUM
-        );
+        await redisCache.setWithRetry(REDIS_KEYS.COLLECTION_BY_SLUG(slug), collection, CACHE_DURATIONS.MEDIUM);
       }
 
       return collection || null;
@@ -64,9 +58,7 @@ export class CollectionCacheManager {
 
     try {
       // Try cache first
-      const cached = await redisCache.getWithRetry<Collection>(
-        REDIS_KEYS.COLLECTION_BY_ID(id)
-      );
+      const cached = await redisCache.getWithRetry<Collection>(REDIS_KEYS.COLLECTION_BY_ID(id));
 
       if (cached) {
         const responseTime = Date.now() - startTime;
@@ -83,11 +75,7 @@ export class CollectionCacheManager {
 
       // Cache the result
       if (collection) {
-        await redisCache.setWithRetry(
-          REDIS_KEYS.COLLECTION_BY_ID(id),
-          collection,
-          CACHE_DURATIONS.MEDIUM
-        );
+        await redisCache.setWithRetry(REDIS_KEYS.COLLECTION_BY_ID(id), collection, CACHE_DURATIONS.MEDIUM);
       }
 
       return collection || null;
@@ -105,9 +93,7 @@ export class CollectionCacheManager {
 
     try {
       // Try cache first
-      const cached = await redisCache.getWithRetry<Collection[]>(
-        REDIS_KEYS.COLLECTIONS
-      );
+      const cached = await redisCache.getWithRetry<Collection[]>(REDIS_KEYS.COLLECTIONS);
 
       if (cached) {
         const responseTime = Date.now() - startTime;
@@ -123,11 +109,7 @@ export class CollectionCacheManager {
       this.monitor.recordMiss(responseTime);
 
       // Cache the result
-      await redisCache.setWithRetry(
-        REDIS_KEYS.COLLECTIONS,
-        collections,
-        CACHE_DURATIONS.LONG
-      );
+      await redisCache.setWithRetry(REDIS_KEYS.COLLECTIONS, collections, CACHE_DURATIONS.LONG);
 
       return collections;
     } catch (error) {
@@ -154,16 +136,8 @@ export class CollectionCacheManager {
       } else {
         // Update cache optimistically
         await Promise.all([
-          redisCache.setWithRetry(
-            REDIS_KEYS.COLLECTION_BY_SLUG(collection.slug),
-            collection,
-            CACHE_DURATIONS.MEDIUM
-          ),
-          redisCache.setWithRetry(
-            REDIS_KEYS.COLLECTION_BY_ID(collection.id),
-            collection,
-            CACHE_DURATIONS.MEDIUM
-          ),
+          redisCache.setWithRetry(REDIS_KEYS.COLLECTION_BY_SLUG(collection.slug), collection, CACHE_DURATIONS.MEDIUM),
+          redisCache.setWithRetry(REDIS_KEYS.COLLECTION_BY_ID(collection.id), collection, CACHE_DURATIONS.MEDIUM),
           redisCache.del(REDIS_KEYS.COLLECTIONS), // Invalidate list cache
         ]);
       }
@@ -174,17 +148,13 @@ export class CollectionCacheManager {
   }
 
   // Batch cache operations for better performance
-  async getCollectionsBatch(
-    slugs: string[]
-  ): Promise<Map<string, Collection | null>> {
+  async getCollectionsBatch(slugs: string[]): Promise<Map<string, Collection | null>> {
     const result = new Map<string, Collection | null>();
     const missingSlugs: string[] = [];
 
     try {
       // Try to get all from cache first
-      const cacheKeys = slugs.map((slug) =>
-        REDIS_KEYS.COLLECTION_BY_SLUG(slug)
-      );
+      const cacheKeys = slugs.map((slug) => REDIS_KEYS.COLLECTION_BY_SLUG(slug));
       const cachedResults = await redisCache.mget<Collection>(cacheKeys);
 
       // Process cached results
@@ -206,11 +176,7 @@ export class CollectionCacheManager {
           const collection = await getCollectionBySlug(slug);
           if (collection) {
             // Cache the result
-            await redisCache.setWithRetry(
-              REDIS_KEYS.COLLECTION_BY_SLUG(slug),
-              collection,
-              CACHE_DURATIONS.MEDIUM
-            );
+            await redisCache.setWithRetry(REDIS_KEYS.COLLECTION_BY_SLUG(slug), collection, CACHE_DURATIONS.MEDIUM);
           }
           return { slug, collection: collection || null };
         });

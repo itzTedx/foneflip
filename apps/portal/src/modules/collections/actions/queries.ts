@@ -3,28 +3,18 @@ import { unstable_cache as cache } from "next/cache";
 import { asc, db, eq, isNull } from "@ziron/db";
 import { collectionsTable } from "@ziron/db/schema";
 
-import type {
-  Collection,
-  CollectionMetadata,
-  CollectionQueryResult,
-  CollectionsQueryResult,
-} from "../types";
-import {
-  CACHE_DURATIONS,
-  CACHE_TAGS,
-  REDIS_KEYS,
-  redisCache,
-} from "../utils/cache";
+import { CACHE_TAGS, REDIS_KEYS, redisCache } from "@/modules/cache";
+
+import type { Collection, CollectionMetadata, CollectionQueryResult, CollectionsQueryResult } from "../types";
 import { withCacheMonitoring } from "../utils/cache-monitor";
+import { CACHE_DURATIONS } from "./cache";
 
 export const existingCollection = cache(
   async (slug: string) => {
     return withCacheMonitoring(
       async () => {
         // Try Redis first
-        const cached = await redisCache.get<Collection>(
-          REDIS_KEYS.COLLECTION_BY_SLUG(slug)
-        );
+        const cached = await redisCache.get<Collection>(REDIS_KEYS.COLLECTION_BY_SLUG(slug));
         if (cached) {
           return cached;
         }
@@ -36,11 +26,7 @@ export const existingCollection = cache(
 
         // Cache the result
         if (collection) {
-          await redisCache.set(
-            REDIS_KEYS.COLLECTION_BY_SLUG(slug),
-            collection,
-            CACHE_DURATIONS.MEDIUM
-          );
+          await redisCache.set(REDIS_KEYS.COLLECTION_BY_SLUG(slug), collection, CACHE_DURATIONS.MEDIUM);
         }
 
         return collection;
@@ -61,9 +47,7 @@ export const getCollections = cache(
     return withCacheMonitoring(
       async () => {
         // Try Redis first
-        const cached = await redisCache.get<CollectionsQueryResult>(
-          REDIS_KEYS.COLLECTIONS
-        );
+        const cached = await redisCache.get<CollectionsQueryResult>(REDIS_KEYS.COLLECTIONS);
         if (cached) {
           return cached;
         }
@@ -82,11 +66,7 @@ export const getCollections = cache(
         });
 
         // Cache the result
-        await redisCache.set(
-          REDIS_KEYS.COLLECTIONS,
-          collections,
-          CACHE_DURATIONS.LONG
-        );
+        await redisCache.set(REDIS_KEYS.COLLECTIONS, collections, CACHE_DURATIONS.LONG);
 
         return collections;
       },
@@ -101,16 +81,12 @@ export const getCollections = cache(
   }
 );
 
-export type CollectionsQueryResultType = Awaited<
-  ReturnType<typeof getCollections>
->;
+export type CollectionsQueryResultType = Awaited<ReturnType<typeof getCollections>>;
 
 export const getCollectionBySlug = cache(
   async (slug: string) => {
     // Try Redis first
-    const cached = await redisCache.get<Collection>(
-      REDIS_KEYS.COLLECTION_BY_SLUG(slug)
-    );
+    const cached = await redisCache.get<Collection>(REDIS_KEYS.COLLECTION_BY_SLUG(slug));
     if (cached) {
       return cached;
     }
@@ -122,11 +98,7 @@ export const getCollectionBySlug = cache(
 
     // Cache the result
     if (collection) {
-      await redisCache.set(
-        REDIS_KEYS.COLLECTION_BY_SLUG(slug),
-        collection,
-        CACHE_DURATIONS.MEDIUM
-      );
+      await redisCache.set(REDIS_KEYS.COLLECTION_BY_SLUG(slug), collection, CACHE_DURATIONS.MEDIUM);
     }
 
     return collection;
@@ -134,12 +106,7 @@ export const getCollectionBySlug = cache(
 
   [CACHE_TAGS.COLLECTION_BY_SLUG, "slug"],
   {
-    tags: [
-      CACHE_TAGS.COLLECTION_BY_ID,
-      CACHE_TAGS.COLLECTION,
-      CACHE_TAGS.PRODUCT,
-      CACHE_TAGS.MEDIA,
-    ],
+    tags: [CACHE_TAGS.COLLECTION_BY_ID, CACHE_TAGS.COLLECTION, CACHE_TAGS.PRODUCT, CACHE_TAGS.MEDIA],
     revalidate: CACHE_DURATIONS.MEDIUM,
   }
 );
@@ -149,9 +116,7 @@ export const getCollectionById = cache(
     return withCacheMonitoring(
       async () => {
         // Try Redis first
-        const cached = await redisCache.get<CollectionQueryResult>(
-          REDIS_KEYS.COLLECTION_BY_ID(id)
-        );
+        const cached = await redisCache.get<CollectionQueryResult>(REDIS_KEYS.COLLECTION_BY_ID(id));
         if (cached) {
           return cached;
         }
@@ -168,11 +133,7 @@ export const getCollectionById = cache(
 
         // Cache the result
         if (collection) {
-          await redisCache.set(
-            REDIS_KEYS.COLLECTION_BY_ID(id),
-            collection,
-            CACHE_DURATIONS.MEDIUM
-          );
+          await redisCache.set(REDIS_KEYS.COLLECTION_BY_ID(id), collection, CACHE_DURATIONS.MEDIUM);
         }
 
         return collection;
@@ -183,12 +144,7 @@ export const getCollectionById = cache(
   },
   [CACHE_TAGS.COLLECTION_BY_ID, "id"],
   {
-    tags: [
-      CACHE_TAGS.COLLECTION_BY_ID,
-      CACHE_TAGS.COLLECTION,
-      CACHE_TAGS.PRODUCT,
-      CACHE_TAGS.MEDIA,
-    ],
+    tags: [CACHE_TAGS.COLLECTION_BY_ID, CACHE_TAGS.COLLECTION, CACHE_TAGS.PRODUCT, CACHE_TAGS.MEDIA],
     revalidate: CACHE_DURATIONS.MEDIUM,
   }
 );
@@ -215,9 +171,7 @@ export const getActiveCollections = cache(
 export const getCollectionsMetadata = cache(
   async (): Promise<CollectionMetadata[]> => {
     // Try Redis first
-    const cached = await redisCache.get<CollectionMetadata[]>(
-      REDIS_KEYS.COLLECTIONS_METADATA
-    );
+    const cached = await redisCache.get<CollectionMetadata[]>(REDIS_KEYS.COLLECTIONS_METADATA);
     if (cached) {
       return cached;
     }
@@ -234,11 +188,7 @@ export const getCollectionsMetadata = cache(
 
     // Cache the result
     if (collections) {
-      await redisCache.set(
-        REDIS_KEYS.COLLECTIONS_METADATA,
-        collections,
-        CACHE_DURATIONS.MEDIUM
-      );
+      await redisCache.set(REDIS_KEYS.COLLECTIONS_METADATA, collections, CACHE_DURATIONS.MEDIUM);
     }
 
     return collections;
@@ -250,6 +200,4 @@ export const getCollectionsMetadata = cache(
     revalidate: CACHE_DURATIONS.MEDIUM,
   }
 );
-export type CollectionsMetadataQueryResultType = Awaited<
-  ReturnType<typeof getCollectionsMetadata>
->;
+export type CollectionsMetadataQueryResultType = Awaited<ReturnType<typeof getCollectionsMetadata>>;

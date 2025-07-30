@@ -20,18 +20,9 @@ import { mediaTable } from "./media-schema";
 import { seoTable } from "./seo-schema";
 import { vendorsTable } from "./vendor-schema";
 
-export const productConditionEnum = pgEnum("product_condition", [
-  "pristine",
-  "excellent",
-  "good",
-  "new",
-]);
+export const productConditionEnum = pgEnum("product_condition", ["pristine", "excellent", "good", "new"]);
 
-export const productStatusEnum = pgEnum("product_status", [
-  "active",
-  "archived",
-  "draft",
-]);
+export const productStatusEnum = pgEnum("product_status", ["active", "archived", "draft"]);
 
 export const productsTable = pgTable(
   "products",
@@ -53,28 +44,26 @@ export const productsTable = pgTable(
     seoId: uuid("seo_id").references(() => seoTable.id, {
       onDelete: "set null",
     }),
-    deliveryId: uuid("delivery_id").references(
-      () => productDeliveriesTable.id,
-      {
-        onDelete: "set null",
-      }
-    ),
-    userId: uuid("user_id").references(() => user.id, {
+    deliveryId: uuid("delivery_id").references(() => productDeliveriesTable.id, {
       onDelete: "set null",
     }),
+    userId: uuid("user_id").references(() => user.id, {
+      onDelete: "cascade",
+    }),
     vendorId: uuid("vendor_id").references(() => vendorsTable.id, {
-      onDelete: "set null",
+      onDelete: "cascade",
     }),
     ...baseSchema,
   },
-  (table) => ({
-    slugIdx: index("products_slug_idx").on(table.slug),
-    collectionIdIdx: index("products_collection_id_idx").on(table.collectionId),
-    brandIdx: index("products_brand_idx").on(table.brand),
-    conditionIdx: index("products_condition_idx").on(table.condition),
-    userIdIdx: index("products_user_id_idx").on(table.userId),
-    vendorIdIdx: index("products_vendor_id_idx").on(table.vendorId),
-  })
+  (table) => [
+    index("products_slug_idx").on(table.slug),
+    index("products_id_idx").on(table.id),
+    index("products_collection_id_idx").on(table.collectionId),
+    index("products_brand_idx").on(table.brand),
+    index("products_condition_idx").on(table.condition),
+    index("products_user_id_idx").on(table.userId),
+    index("products_vendor_id_idx").on(table.vendorId),
+  ]
 );
 
 export const productVariantsTable = pgTable("product_variants", {
@@ -107,9 +96,7 @@ export const productAttributeOptionsTable = pgTable(
     value: text("value").notNull(),
   },
   (table) => ({
-    attributeIdIdx: index("attribute_options_attribute_id_idx").on(
-      table.attributeId
-    ),
+    attributeIdIdx: index("attribute_options_attribute_id_idx").on(table.attributeId),
   })
 );
 
@@ -155,9 +142,7 @@ export const productSpecificationsTable = pgTable(
     value: text("value").notNull(),
   },
   (table) => ({
-    productIdIdx: index("product_specifications_product_id_idx").on(
-      table.productId
-    ),
+    productIdIdx: index("product_specifications_product_id_idx").on(table.productId),
   })
 );
 
@@ -242,93 +227,69 @@ export const productsRelations = relations(productsTable, ({ one, many }) => ({
   }),
 }));
 
-export const productVariantsRelations = relations(
-  productVariantsTable,
-  ({ one, many }) => ({
-    product: one(productsTable, {
-      fields: [productVariantsTable.productId],
-      references: [productsTable.id],
-    }),
-    options: many(productVariantOptionsTable),
-  })
-);
+export const productVariantsRelations = relations(productVariantsTable, ({ one, many }) => ({
+  product: one(productsTable, {
+    fields: [productVariantsTable.productId],
+    references: [productsTable.id],
+  }),
+  options: many(productVariantOptionsTable),
+}));
 
-export const productAttributesRelations = relations(
-  productAttributesTable,
-  ({ one, many }) => ({
-    product: one(productsTable, {
-      fields: [productAttributesTable.productId],
-      references: [productsTable.id],
-    }),
-    options: many(productAttributeOptionsTable),
-  })
-);
+export const productAttributesRelations = relations(productAttributesTable, ({ one, many }) => ({
+  product: one(productsTable, {
+    fields: [productAttributesTable.productId],
+    references: [productsTable.id],
+  }),
+  options: many(productAttributeOptionsTable),
+}));
 
-export const productAttributeOptionsRelations = relations(
-  productAttributeOptionsTable,
-  ({ one, many }) => ({
-    attribute: one(productAttributesTable, {
-      fields: [productAttributeOptionsTable.attributeId],
-      references: [productAttributesTable.id],
-    }),
-    variantOptions: many(productVariantOptionsTable),
-  })
-);
+export const productAttributeOptionsRelations = relations(productAttributeOptionsTable, ({ one, many }) => ({
+  attribute: one(productAttributesTable, {
+    fields: [productAttributeOptionsTable.attributeId],
+    references: [productAttributesTable.id],
+  }),
+  variantOptions: many(productVariantOptionsTable),
+}));
 
-export const productVariantOptionsRelations = relations(
-  productVariantOptionsTable,
-  ({ one }) => ({
-    variant: one(productVariantsTable, {
-      fields: [productVariantOptionsTable.variantId],
-      references: [productVariantsTable.id],
-    }),
-    option: one(productAttributeOptionsTable, {
-      fields: [productVariantOptionsTable.optionId],
-      references: [productAttributeOptionsTable.id],
-    }),
-  })
-);
+export const productVariantOptionsRelations = relations(productVariantOptionsTable, ({ one }) => ({
+  variant: one(productVariantsTable, {
+    fields: [productVariantOptionsTable.variantId],
+    references: [productVariantsTable.id],
+  }),
+  option: one(productAttributeOptionsTable, {
+    fields: [productVariantOptionsTable.optionId],
+    references: [productAttributeOptionsTable.id],
+  }),
+}));
 
-export const productImagesRelations = relations(
-  productImagesTable,
-  ({ one }) => ({
-    product: one(productsTable, {
-      fields: [productImagesTable.productId],
-      references: [productsTable.id],
-    }),
-    media: one(mediaTable, {
-      fields: [productImagesTable.mediaId],
-      references: [mediaTable.id],
-    }),
-  })
-);
+export const productImagesRelations = relations(productImagesTable, ({ one }) => ({
+  product: one(productsTable, {
+    fields: [productImagesTable.productId],
+    references: [productsTable.id],
+  }),
+  media: one(mediaTable, {
+    fields: [productImagesTable.mediaId],
+    references: [mediaTable.id],
+  }),
+}));
 
-export const productReviewsRelations = relations(
-  productReviewsTable,
-  ({ one }) => ({
-    product: one(productsTable, {
-      fields: [productReviewsTable.productId],
-      references: [productsTable.id],
-    }),
-  })
-);
+export const productReviewsRelations = relations(productReviewsTable, ({ one }) => ({
+  product: one(productsTable, {
+    fields: [productReviewsTable.productId],
+    references: [productsTable.id],
+  }),
+}));
 
-export const productSpecificationsRelations = relations(
-  productSpecificationsTable,
-  ({ one }) => ({
-    product: one(productsTable, {
-      fields: [productSpecificationsTable.productId],
-      references: [productsTable.id],
-    }),
-  })
-);
+export const productSpecificationsRelations = relations(productSpecificationsTable, ({ one }) => ({
+  product: one(productsTable, {
+    fields: [productSpecificationsTable.productId],
+    references: [productsTable.id],
+  }),
+}));
 
-export const productSettingsRelations = relations(
-  productSettingsTable,
-  ({ one }) => ({
-    product: one(productsTable, {
-      fields: [productSettingsTable.productId],
-      references: [productsTable.id],
-    }),
-  })
-);
+export const productSettingsRelations = relations(productSettingsTable, ({ one }) => ({
+  product: one(productsTable, {
+    fields: [productSettingsTable.productId],
+    references: [productsTable.id],
+  }),
+}));
