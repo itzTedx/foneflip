@@ -264,6 +264,7 @@ export function transformProductToFormType(
         blurData: media.blurData ?? undefined,
       },
       alt: media.alt ?? undefined,
+      isPrimary: false,
     };
   }
 
@@ -312,7 +313,7 @@ export function transformProductToFormType(
           original: v.originalPrice ?? undefined,
         },
         stock: v.stock ?? undefined,
-        isDefault: v.isDefault ?? undefined,
+        isDefault: v.isDefault ?? false,
         attributes:
           v.options?.map((o) => ({
             name: o.option.attribute.name,
@@ -335,7 +336,7 @@ export function transformProductToFormType(
           blurData: media.blurData,
         },
         alt: media.alt ?? undefined,
-        isPrimary: isFeatured ?? undefined,
+        isPrimary: isFeatured ?? false,
       })) ?? [],
 
     meta: {

@@ -48,7 +48,7 @@ export default async function ProductPage({ params }: { params: Params }) {
 
   return (
     <MainWrapper>
-      <pre>{JSON.stringify(product, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(product, null, 2)}</pre> */}
       <ProductForm collections={collections} initialData={initialData} isEditMode={editMode} />
     </MainWrapper>
   );

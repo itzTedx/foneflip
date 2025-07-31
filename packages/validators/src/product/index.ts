@@ -23,7 +23,7 @@ export const productSchema = z
     collectionId: z.string("Please select a valid collection.").optional(),
     vendorId: z.string("Vendor ID must be a valid string").optional(),
 
-    hasVariant: z.boolean().optional(),
+    hasVariant: z.boolean().default(false),
     price: z.object({
       selling: z.string("Selling price must be a valid number.").optional(),
       original: z.string("Original price must be a valid number.").optional(),
