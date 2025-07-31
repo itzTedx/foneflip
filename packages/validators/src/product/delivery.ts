@@ -9,7 +9,7 @@ export const deliverySchema = z
     returnPeriod: z.string("Return period must be a valid text.").nullish(),
     type: z
       .object({
-        express: z.boolean().optional(),
+        express: z.boolean().default(false),
         fees: z.string({ error: "Delivery fees must be a valid text." }).optional(),
       })
       .optional()

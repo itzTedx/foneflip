@@ -98,6 +98,7 @@ export async function upsertCollection(formData: unknown) {
 
       log.info("Prepared collection data", { collectionData });
 
+      // TODO: Fix the any type with actual type
       // Optimistic cache update for existing collections
       if (data.id) {
         try {

@@ -208,8 +208,11 @@ export const getProductById = cache(
             seo: true,
             settings: true,
             attributes: true,
+            specifications: true,
+            variants: true,
             collection: true,
             delivery: true,
+            images: true,
           },
         });
 

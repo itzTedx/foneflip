@@ -1,13 +1,28 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 import { db } from "@ziron/db";
-import { collectionsTable, productsTable, seoTable } from "@ziron/db/schema";
+import {
+  collectionsTable,
+  mediaTable,
+  productAttributeOptionsTable,
+  productAttributesTable,
+  productDeliveriesTable,
+  productImagesTable,
+  productSettingsTable,
+  productSpecificationsTable,
+  productsTable,
+  productVariantOptionsTable,
+  productVariantsTable,
+  seoTable,
+} from "@ziron/db/schema";
 import { slugify } from "@ziron/utils";
+import { ProductDraftFormType, ProductFormType } from "@ziron/validators";
 
 import { createLog } from "@/lib/utils";
 import { Seo } from "@/modules/collections/types";
+import { InsertMedia } from "@/modules/media/types";
 
-import { ProductUpsertType } from "../types";
+import { ProductUpsertType, UpsertProductDeliveries } from "../types";
 import { existingProduct } from "./queries";
 
 const log = createLog("Product");
@@ -177,4 +192,281 @@ export const upsertProductData = async (trx: Trx, { data, seoId, deliveryId, pro
   log.success("Product created", product);
 
   return product;
+};
+
+interface UpsertProductSettingsProps {
+  productId: string;
+  settings: ProductFormType["settings"] | ProductDraftFormType["settings"];
+}
+
+export const upsertSettings = async (trx: Trx, { productId, settings }: UpsertProductSettingsProps) => {
+  if (!settings) return;
+
+  log.info("Handling product settings", { productId, settings });
+  await trx
+    .insert(productSettingsTable)
+    .values({
+      productId,
+      status: settings.status,
+      visible: settings.visible,
+      allowReviews: settings.allowReviews,
+      allowBackorders: settings.allowBackorders,
+      showStockStatus: settings.showStockStatus,
+      tags: settings.tags,
+      internalNotes: settings.internalNotes,
+      featured: settings.featured,
+      hidePrice: settings.hidePrice,
+      customCTA: settings.customCTA,
+    })
+    .onConflictDoUpdate({
+      target: productSettingsTable.productId,
+      set: {
+        status: settings.status,
+        visible: settings.visible,
+        allowReviews: settings.allowReviews,
+        allowBackorders: settings.allowBackorders,
+        showStockStatus: settings.showStockStatus,
+        tags: settings.tags,
+        internalNotes: settings.internalNotes,
+        featured: settings.featured,
+        hidePrice: settings.hidePrice,
+        customCTA: settings.customCTA,
+      },
+    });
+  log.success("Inserted/Updated product settings");
+};
+
+interface UpsertSpecificationsProps {
+  productId: string;
+  specifications: ProductFormType["specifications"] | ProductDraftFormType["specifications"];
+}
+
+export const upsertSpecifications = async (trx: Trx, { productId, specifications }: UpsertSpecificationsProps) => {
+  await trx.delete(productSpecificationsTable).where(eq(productSpecificationsTable.productId, productId));
+
+  if (!specifications || !Array.isArray(specifications) || specifications.length === 0) {
+    log.info("No specifications to insert for product", { productId });
+    return;
+  }
+
+  log.info("Handling product specifications", { count: specifications.length });
+  const specsToInsert = specifications.reduce<{ productId: string; name: string; value: string }[]>((acc, spec) => {
+    if (spec?.name && spec.value) {
+      acc.push({ productId, name: spec.name, value: spec.value });
+    }
+    return acc;
+  }, []);
+
+  if (specsToInsert.length > 0) {
+    await trx.insert(productSpecificationsTable).values(specsToInsert);
+    log.success("Inserted/Updated product specifications", {
+      count: specsToInsert.length,
+    });
+  }
+};
+
+interface UpsertDeliveryProps {
+  product: { id: string; deliveryId?: string | null };
+  delivery: ProductFormType["delivery"] | ProductDraftFormType["delivery"];
+}
+
+export const upsertDelivery = async (trx: Trx, { product, delivery }: UpsertDeliveryProps) => {
+  if (!delivery) return null;
+
+  log.info("Handling product delivery details", { delivery });
+  const deliveryData: UpsertProductDeliveries = {
+    weight: delivery.weight ?? "",
+    packageSize: delivery.packageSize ?? "",
+    cod: delivery.cod ?? false,
+    returnable: delivery.returnable ?? false,
+    returnPeriod: delivery.returnPeriod ? Number(delivery.returnPeriod) : null,
+    expressDelivery: delivery.type?.express ?? false,
+    deliveryFees: delivery.type?.fees ?? "free",
+  };
+
+  let deliveryId = product.deliveryId;
+
+  if (deliveryId) {
+    await trx.update(productDeliveriesTable).set(deliveryData).where(eq(productDeliveriesTable.id, deliveryId));
+
+    log.success("Updated product delivery details", { deliveryId });
+  } else {
+    const [newDelivery] = await trx
+      .insert(productDeliveriesTable)
+      .values(deliveryData)
+      .returning({ id: productDeliveriesTable.id });
+
+    deliveryId = newDelivery?.id;
+
+    await trx.update(productsTable).set({ deliveryId }).where(eq(productsTable.id, product.id));
+
+    log.success("Created new product delivery details", { deliveryId });
+  }
+  return deliveryId;
+};
+
+interface UpsertAttributesAndVariantsProps {
+  productId: string;
+  hasVariant: ProductFormType["hasVariant"];
+  attributes: ProductFormType["attributes"] | ProductDraftFormType["attributes"];
+  variants: ProductFormType["variants"] | ProductDraftFormType["variants"];
+}
+
+export const upsertAttributesAndVariants = async (
+  trx: Trx,
+  { productId, hasVariant, attributes, variants }: UpsertAttributesAndVariantsProps
+) => {
+  await trx.delete(productAttributesTable).where(eq(productAttributesTable.productId, productId));
+  await trx.delete(productVariantsTable).where(eq(productVariantsTable.productId, productId));
+
+  if (!hasVariant) {
+    log.info("Product has no variants, cleaning up existing data.");
+    return;
+  }
+
+  log.info("Handling product attributes and variants", { productId });
+  const createdOptionsMap = new Map<string, string>();
+
+  if (attributes && Array.isArray(attributes)) {
+    for (const attr of attributes) {
+      if (!attr?.name || !attr.options?.length) continue;
+
+      const [newAttribute] = await trx
+        .insert(productAttributesTable)
+        .values({ productId: productId, name: attr.name })
+        .returning({ id: productAttributesTable.id });
+
+      if (!newAttribute) continue;
+
+      const optionsToInsert = attr.options
+        .filter((o): o is string => !!o)
+        .map((value) => ({
+          attributeId: newAttribute.id,
+          value,
+        }));
+
+      if (optionsToInsert.length > 0) {
+        const insertedOptions = await trx.insert(productAttributeOptionsTable).values(optionsToInsert).returning();
+
+        insertedOptions.forEach((opt) => {
+          if (attr.name && opt.value) {
+            createdOptionsMap.set(`${attr.name}:${opt.value}`, opt.id);
+          }
+        });
+      }
+    }
+    log.success("Created product attributes and options");
+  }
+
+  if (variants && Array.isArray(variants)) {
+    for (const variant of variants) {
+      if (!variant?.price) continue;
+
+      const [newVariant] = await trx
+        .insert(productVariantsTable)
+        .values({
+          productId: productId,
+          sku: variant.sku,
+          stock: variant.stock,
+          sellingPrice: String(variant.price.selling || "0"),
+          originalPrice: variant.price.original ? String(variant.price.original) : null,
+          isDefault: variant.isDefault ?? false,
+        })
+        .returning({ id: productVariantsTable.id });
+
+      if (!newVariant) continue;
+
+      if (variant.attributes && Array.isArray(variant.attributes)) {
+        const variantOptionsToInsert = variant.attributes
+          .map((opt) => {
+            if (!opt?.name || !opt?.value) return null;
+            const optionId = createdOptionsMap.get(`${opt.name}:${opt.value}`);
+            if (!optionId) {
+              log.error(`Could not find option for ${opt.name}:${opt.value}`);
+              return null;
+            }
+            return {
+              variantId: newVariant.id,
+              optionId,
+            };
+          })
+          .filter((v): v is NonNullable<typeof v> => v !== null);
+
+        if (variantOptionsToInsert.length > 0) {
+          await trx.insert(productVariantOptionsTable).values(variantOptionsToInsert);
+        }
+      }
+    }
+    log.success("Created product variants and linked options");
+  }
+};
+
+interface UpsertImagesProps {
+  productId: string;
+  images: ProductFormType["images"] | ProductDraftFormType["images"];
+  userId: string;
+}
+
+export const upsertImages = async (trx: Trx, { images, userId, productId }: UpsertImagesProps) => {
+  await trx.delete(productImagesTable).where(eq(productImagesTable.productId, productId));
+
+  if (!images || images.length === 0) {
+    log.info("No images to process for product", { productId });
+    return;
+  }
+
+  log.info("Processing images", { count: images.length });
+
+  // Assume images is always an array of objects with the correct shape
+  const urls = images.map((img) => img?.file?.url).filter((url): url is string => !!url);
+  const existingMedia = await trx.select().from(mediaTable).where(inArray(mediaTable.url, urls));
+
+  const existingUrls = new Set(existingMedia.map((m) => m.url));
+  const newMediaToInsert = images.filter((img) => img.file?.url && !existingUrls.has(img.file.url));
+
+  let insertedMedia: InsertMedia[] = [];
+  if (newMediaToInsert.length > 0) {
+    insertedMedia = await trx
+      .insert(mediaTable)
+      .values(
+        newMediaToInsert.map((image) => ({
+          url: image.file?.url!,
+          fileName: image.file?.name ?? "",
+          fileSize: image.file?.size ?? 0,
+          width: image.metadata?.width ?? 0,
+          height: image.metadata?.height ?? 0,
+          alt: image.alt ?? null,
+          blurData: image.metadata?.blurData ?? "",
+          userId,
+        }))
+      )
+      .returning();
+    log.success("Inserted new media", { count: insertedMedia.length });
+  }
+
+  const allMediaForProduct = [...existingMedia, ...insertedMedia];
+  // Find the index of the featured image, or default to the first image
+  let featuredIdx = images.findIndex((img) => img.isPrimary);
+  if (featuredIdx === -1 && images.length > 0) featuredIdx = 0;
+
+  const productImagesValues = images
+    .map((img, idx) => {
+      const media = allMediaForProduct.find((m) => m.url === img.file?.url);
+      return media
+        ? {
+            productId: productId,
+            mediaId: media.id,
+            sortOrder: idx,
+            isFeatured: idx === featuredIdx,
+          }
+        : undefined;
+    })
+    .filter((v): v is NonNullable<typeof v> => v !== null);
+
+  if (productImagesValues.length > 0) {
+    await trx.insert(productImagesTable).values(productImagesValues);
+    log.success("Inserted product images", {
+      count: productImagesValues.length,
+    });
+  }
 };

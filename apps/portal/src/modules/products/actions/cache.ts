@@ -1,3 +1,5 @@
+import { revalidatePath, revalidateTag } from "next/cache";
+
 // Redis cache keys
 export const REDIS_KEYS = {
   PRODUCTS: "products:all",
@@ -22,3 +24,24 @@ export const CACHE_TAGS = {
   COLLECTION: "collection",
   MEDIA: "media",
 } as const;
+
+// Helper function to revalidate all product-related caches
+export const revalidateProductCaches = (productId?: string, slug?: string) => {
+  revalidateTag(CACHE_TAGS.PRODUCT);
+  revalidateTag(CACHE_TAGS.PRODUCTS);
+  revalidateTag(CACHE_TAGS.PRODUCT_DRAFTS);
+  revalidateTag(CACHE_TAGS.PRODUCT_ACTIVE);
+  revalidateTag(CACHE_TAGS.PRODUCT_ARCHIVED);
+  revalidateTag(CACHE_TAGS.PRODUCT_DETAILS);
+  revalidateTag(CACHE_TAGS.MEDIA);
+  revalidateTag(CACHE_TAGS.COLLECTION);
+
+  if (productId) revalidateTag(`${CACHE_TAGS.PRODUCT_BY_ID}:${productId}`);
+  if (slug) revalidateTag(`${CACHE_TAGS.PRODUCT_BY_SLUG}:${slug}`);
+
+  revalidatePath("/");
+  revalidatePath("/products");
+  revalidatePath("/products/[slug]", "page");
+  revalidatePath("/collections");
+  revalidatePath("/collections/[slug]", "page");
+};

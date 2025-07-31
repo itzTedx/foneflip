@@ -37,7 +37,9 @@ export const Console = () => {
             )}
           >
             {validationErrors.length ? <IconFileAlertFilled /> : <IconCheck className="size-4 text-muted-foreground" />}
-            <span className={cn(validationErrors.length ? "" : "opacity-50")}>Console</span>
+            <span className={cn(validationErrors.length ? "" : "opacity-50")}>
+              Console {validationErrors.length ? validationErrors.length : null}
+            </span>
           </button>
         </CollapsibleTrigger>
         <div className="flex items-center gap-1 text-muted-foreground">

@@ -8,7 +8,17 @@ import { createLog } from "@/lib/utils";
 import { requireUser } from "@/modules/auth/actions/data-access";
 
 import { ProductUpsertType } from "../types";
-import { createProductSlug, upsertProductData, upsertSeoMeta } from "./helpers";
+import { revalidateProductCaches } from "./cache";
+import {
+  createProductSlug,
+  upsertAttributesAndVariants,
+  upsertDelivery,
+  upsertImages,
+  upsertProductData,
+  upsertSeoMeta,
+  upsertSettings,
+  upsertSpecifications,
+} from "./helpers";
 
 const log = createLog("Product");
 
@@ -36,7 +46,7 @@ export async function upsertProduct(formData: unknown) {
   }
 
   try {
-    return await db.transaction(async (tx) => {
+    const product = await db.transaction(async (tx) => {
       const uniqueSlug = await createProductSlug({
         title: data.title,
         customSlug: data.slug,
@@ -71,19 +81,62 @@ export async function upsertProduct(formData: unknown) {
         seoId,
       });
 
-      if (!savedProduct)
-        return {
-          success: false,
-          error: "INVALID_VENDOR_ID",
-          message: "Updating product data into database failed. Please contact technical support",
-        };
+      if (!savedProduct) throw new Error("Failed to save product data");
 
-      return {
-        success: true,
-        error: null,
-        message: `${data.title} has been created`,
-      };
+      await upsertSettings(tx, {
+        productId: savedProduct.id,
+        settings: data.settings,
+      });
+
+      await upsertSpecifications(tx, {
+        productId: savedProduct.id,
+        specifications: data.specifications,
+      });
+
+      const deliveryId = await upsertDelivery(tx, {
+        product: {
+          id: savedProduct.id,
+          deliveryId: savedProduct.deliveryId,
+        },
+        delivery: data.delivery,
+      });
+      if (deliveryId) {
+        savedProduct.deliveryId = deliveryId;
+      }
+
+      await upsertAttributesAndVariants(tx, {
+        productId: savedProduct.id,
+        hasVariant: data.hasVariant,
+        attributes: data.attributes,
+        variants: data.variants,
+      });
+
+      await upsertImages(tx, {
+        productId: savedProduct.id,
+        userId: session.user.id,
+        images: data.images,
+      });
+
+      // Refetch to get all relations
+      const finalProduct = await tx.query.productsTable.findFirst({
+        where: (products, { eq }) => eq(products.id, savedProduct.id),
+      });
+
+      if (!finalProduct) throw new Error("Could not refetch product");
+
+      log.success("Transaction completed for product", finalProduct.id);
+
+      return finalProduct;
     });
+
+    revalidateProductCaches(product.id, product.slug);
+    log.success("Revalidated all product-related caches");
+
+    return {
+      success: true,
+      error: null,
+      message: `Product: (${product.title}) has been ${data.id ? "updated" : "created"}`,
+    };
   } catch (error) {
     log.error("Upsert failed", { error });
 
