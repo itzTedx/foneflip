@@ -279,7 +279,7 @@ export const upsertDelivery = async (trx: Trx, { product, delivery }: UpsertDeli
     packageSize: delivery.packageSize ?? "",
     cod: delivery.cod ?? false,
     returnable: delivery.returnable ?? false,
-    returnPeriod: delivery.returnPeriod ? Number(delivery.returnPeriod) : null,
+    returnPeriod: delivery.returnPeriod ? Number.parseInt(delivery.returnPeriod.toString()) : null,
     expressDelivery: delivery.type?.express ?? false,
     deliveryFees: delivery.type?.fees ?? "free",
   };

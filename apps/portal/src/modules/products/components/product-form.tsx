@@ -23,7 +23,6 @@ import { CollectionMetadata } from "@/modules/collections/types";
 import { upsertProduct } from "../actions/mutations";
 import { productErrorAtom } from "../atom";
 import { PRODUCTS_TABS } from "../data/constants";
-import { Product } from "../types";
 import { productFormDefaultValues } from "../utils/helper";
 import { ProductInfo } from "./form-sections/info";
 import { ProductMedia } from "./form-sections/media";
@@ -36,7 +35,7 @@ import { ErrorDialog } from "./ui/error-dialog";
 interface Props {
   isEditMode: boolean;
   collections: CollectionMetadata[];
-  initialData?: Product;
+  initialData?: ProductFormType;
 }
 
 const LOCAL_STORAGE_KEY = "product-form-draft";

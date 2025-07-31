@@ -1,24 +1,28 @@
 import type { InferSelectModel } from "drizzle-orm";
 
 import {
+  productAttributeOptionsTable,
   productAttributesTable,
   productDeliveriesTable,
   productImagesTable,
   productSettingsTable,
   productSpecificationsTable,
   productsTable,
+  productVariantOptionsTable,
   productVariantsTable,
 } from "@ziron/db/schema";
 
-import { Collection, Seo } from "../collections/types";
+import { Collection, Media, Seo } from "../collections/types";
 
 export type UpsertProductDeliveries = InferInsertModel<typeof productDeliveriesTable>;
 
 export type Product = InferSelectModel<typeof productsTable>;
-export type ProductVariants = InferSelectModel<typeof productVariantsTable>;
-export type ProductAttributes = InferSelectModel<typeof productAttributesTable>;
-export type ProductSettings = InferSelectModel<typeof productSettingsTable>;
-export type ProductDeliveries = InferSelectModel<typeof productDeliveriesTable>;
+export type ProductVariant = InferSelectModel<typeof productVariantsTable>;
+export type ProductVariantsOption = InferSelectModel<typeof productVariantOptionsTable>;
+export type ProductAttribute = InferSelectModel<typeof productAttributesTable>;
+export type ProductAttributeOption = InferSelectModel<typeof productAttributeOptionsTable>;
+export type ProductSetting = InferSelectModel<typeof productSettingsTable>;
+export type ProductDelivery = InferSelectModel<typeof productDeliveriesTable>;
 export type ProductSpecification = InferSelectModel<typeof productSpecificationsTable>;
 export type ProductImage = InferSelectModel<typeof productImagesTable>;
 
@@ -26,13 +30,15 @@ export type ProductImage = InferSelectModel<typeof productImagesTable>;
 export type ProductQueryResult =
   | (Product & {
       seo?: Seo | null;
-      settings: ProductSettings;
-      attributes?: ProductAttributes;
+      settings: ProductSetting;
+      attributes?: (ProductAttribute & { options: ProductAttributeOption[] })[];
       specifications?: ProductSpecification[];
-      variants?: ProductVariants[];
+      variants?: (ProductVariant & {
+        options: (ProductVariantsOption & { option: ProductAttributeOption & { attribute: ProductAttribute } })[];
+      })[];
       collection?: Collection;
-      delivery?: ProductDeliveries;
-      images?: ProductImage[];
+      delivery?: ProductDelivery;
+      images?: (ProductImage & { media: Media })[];
     })
   | undefined;
 

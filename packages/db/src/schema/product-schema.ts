@@ -59,8 +59,6 @@ export const productsTable = pgTable(
     index("products_slug_idx").on(table.slug),
     index("products_id_idx").on(table.id),
     index("products_collection_id_idx").on(table.collectionId),
-    index("products_brand_idx").on(table.brand),
-    index("products_condition_idx").on(table.condition),
     index("products_user_id_idx").on(table.userId),
     index("products_vendor_id_idx").on(table.vendorId),
   ]
@@ -95,9 +93,7 @@ export const productAttributeOptionsTable = pgTable(
       .references(() => productAttributesTable.id, { onDelete: "cascade" }),
     value: text("value").notNull(),
   },
-  (table) => ({
-    attributeIdIdx: index("attribute_options_attribute_id_idx").on(table.attributeId),
-  })
+  (table) => [index("attribute_options_attribute_id_idx").on(table.attributeId)]
 );
 
 export const productVariantOptionsTable = pgTable(
@@ -148,13 +144,13 @@ export const productSpecificationsTable = pgTable(
 
 export const productDeliveriesTable = pgTable("product_deliveries", {
   id: uuid("id").primaryKey().defaultRandom(),
-  weight: numeric("weight"),
+  weight: varchar("weight"),
   packageSize: text("package_size"),
   cod: boolean("cod").default(false),
   returnable: boolean("returnable").default(false),
   returnPeriod: integer("returnable_period"),
   expressDelivery: boolean("express_delivery").default(false),
-  deliveryFees: varchar("delivery_fees").default("free"),
+  deliveryFees: varchar("delivery_fees").default("0"),
 });
 
 export const productSettingsTable = pgTable(

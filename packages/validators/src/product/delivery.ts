@@ -12,10 +12,9 @@ export const deliverySchema = z
         express: z.boolean().default(false),
         fees: z.string({ error: "Delivery fees must be a valid text." }).optional(),
       })
-      .optional()
+
       .refine(
         (type) => {
-          if (!type) return true;
           if (type.express) {
             return !!type.fees && type.fees.trim() !== "";
           }

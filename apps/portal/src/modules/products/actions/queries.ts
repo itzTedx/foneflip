@@ -192,7 +192,11 @@ export const getProducts = cache(
 // );
 
 export const getProductById = cache(
-  async (id: string): Promise<ProductQueryResult> => {
+  async (id: string): Promise<ProductQueryResult | null> => {
+    if (id === "new") {
+      return null;
+    }
+
     return withCacheMonitoring(
       async () => {
         // Try Redis first
@@ -207,12 +211,28 @@ export const getProductById = cache(
           with: {
             seo: true,
             settings: true,
-            attributes: true,
+            attributes: {
+              with: {
+                options: true,
+              },
+            },
             specifications: true,
-            variants: true,
+            variants: {
+              with: {
+                options: {
+                  with: {
+                    option: {
+                      with: {
+                        attribute: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
             collection: true,
             delivery: true,
-            images: true,
+            images: { with: { media: true } },
           },
         });
 

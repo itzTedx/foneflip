@@ -43,11 +43,12 @@ export default async function ProductPage({ params }: { params: Params }) {
   const { id } = await params;
   const editMode = id !== "new";
 
-  const product = id !== "new" && (await getProductById(id));
+  const product = await getProductById(id);
   const initialData = transformProductToFormType(product);
 
   return (
     <MainWrapper>
+      <pre>{JSON.stringify(product, null, 2)}</pre>
       <ProductForm collections={collections} initialData={initialData} isEditMode={editMode} />
     </MainWrapper>
   );

@@ -61,8 +61,7 @@ export const productSchema = z
     images: z.array(mediaSchema).optional(),
 
     settings: productSettingsSchema.optional(),
-
-    customFields: z.record(z.any(), z.any()).optional(),
+    updatedAt: z.date().optional(),
   })
   .refine(
     (data) => {

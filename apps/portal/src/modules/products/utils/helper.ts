@@ -238,9 +238,9 @@ export const getFullProductRelations = () => ({
  * @returns The form-compatible product data with `updatedAt`, or `null` if input is `false`
  */
 export function transformProductToFormType(
-  product: false | ProductQueryResult
-): (ProductFormType & { updatedAt: Date }) | null {
-  if (!product) return null;
+  product: ProductQueryResult | null
+): (ProductFormType & { updatedAt: Date }) | undefined {
+  if (!product) return undefined;
 
   /**
    * Converts a Media object to a MediaFormType suitable for form usage, or returns undefined if the media or its URL is missing.
@@ -271,22 +271,73 @@ export function transformProductToFormType(
     ...product,
     id: product.id ?? undefined,
     description: product.description || "",
+    slug: product.slug ?? undefined,
+    condition: product.condition ?? undefined,
     brand: product.brand ?? "",
     collectionId: product.collectionId ?? "",
     vendorId: product.vendorId ?? "",
-    attributes: [],
-
-    variants: [],
-
-    specifications: [],
 
     hasVariant: product.hasVariant ?? false,
-    sku: product.sku ?? "",
-    slug: product.slug ?? "",
     price: {
       selling: product.sellingPrice ?? undefined,
       original: product.originalPrice ?? undefined,
     },
+    sku: product.sku ?? "",
+
+    specifications: product.specifications ?? [],
+
+    delivery: {
+      packageSize: product.delivery?.packageSize ?? undefined,
+      weight: product.delivery?.weight ?? undefined,
+      cod: product.delivery?.cod ?? false,
+      returnable: product.delivery?.returnable ?? false,
+      returnPeriod: product.delivery?.returnPeriod?.toString(),
+      type: {
+        express: product.delivery?.expressDelivery ?? false,
+        fees: product.delivery?.deliveryFees ?? undefined,
+      },
+    },
+
+    attributes:
+      product.attributes?.map((attr) => ({
+        name: attr.name ?? "",
+        options: attr.options.map((opt) => opt.value) ?? [],
+      })) ?? [],
+
+    variants:
+      product?.variants?.map((v) => ({
+        sku: v.sku ?? undefined,
+        price: {
+          selling: v.sellingPrice ?? undefined,
+          original: v.originalPrice ?? undefined,
+        },
+        stock: v.stock ?? undefined,
+        isDefault: v.isDefault ?? undefined,
+        attributes:
+          v.options?.map((o) => ({
+            name: o.option.attribute.name,
+            value: o.option.value,
+          })) ?? [],
+      })) ?? [],
+
+    images:
+      product.images?.map(({ media, isFeatured }) => ({
+        id: media.id,
+        file: {
+          url: media.url,
+          name: media.fileName ?? undefined,
+          size: media.fileSize ?? undefined,
+          key: media.key ?? undefined,
+        },
+        metadata: {
+          width: media.width,
+          height: media.height,
+          blurData: media.blurData,
+        },
+        alt: media.alt ?? undefined,
+        isPrimary: isFeatured ?? undefined,
+      })) ?? [],
+
     meta: {
       title: product.seo?.metaTitle || undefined,
       description: product.seo?.metaDescription || undefined,
@@ -296,6 +347,9 @@ export function transformProductToFormType(
     settings: {
       ...product.settings,
       status: product.settings?.status ?? "draft",
+      tags: product.settings.tags ?? undefined,
+      internalNotes: product.settings.internalNotes ?? undefined,
+      customCTA: product.settings.customCTA ?? undefined,
     },
     updatedAt: product.updatedAt,
   };
