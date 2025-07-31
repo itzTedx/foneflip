@@ -36,7 +36,7 @@ export const productFormDefaultValues: ProductFormType = {
     weight: null,
     packageSize: null,
     cod: false,
-    returnPeriod: null,
+    returnPeriod: undefined,
     returnable: false,
     type: {
       express: false,
@@ -237,9 +237,7 @@ export const getFullProductRelations = () => ({
  * @param product - The product object to transform, or `false` if not available
  * @returns The form-compatible product data with `updatedAt`, or `null` if input is `false`
  */
-export function transformProductToFormType(
-  product: ProductQueryResult | null
-): (ProductFormType & { updatedAt: Date }) | undefined {
+export function transformProductToFormType(product: ProductQueryResult | null): ProductFormType | undefined {
   if (!product) return undefined;
 
   /**
@@ -352,6 +350,5 @@ export function transformProductToFormType(
       internalNotes: product.settings.internalNotes ?? undefined,
       customCTA: product.settings.customCTA ?? undefined,
     },
-    updatedAt: product.updatedAt,
   };
 }

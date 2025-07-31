@@ -4,12 +4,12 @@ export const deliverySchema = z
   .object({
     packageSize: z.string("Package size must be a valid text.").nullish(),
     weight: z.string("Weight must be a valid text.").nullish(),
-    cod: z.boolean().default(false),
-    returnable: z.boolean().default(false),
-    returnPeriod: z.string("Return period must be a valid text.").nullish(),
+    cod: z.boolean().optional(),
+    returnable: z.boolean().optional(),
+    returnPeriod: z.string("Return period must be a valid text.").optional(),
     type: z
       .object({
-        express: z.boolean().default(false),
+        express: z.boolean().optional(),
         fees: z.string({ error: "Delivery fees must be a valid text." }).optional(),
       })
       .refine(

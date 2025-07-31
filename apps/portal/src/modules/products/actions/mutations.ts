@@ -8,7 +8,7 @@ import { createLog } from "@/lib/utils";
 import { requireUser } from "@/modules/auth/actions/data-access";
 
 import { ProductUpsertType } from "../types";
-import { revalidateProductCaches } from "./cache";
+import { invalidateAndRevalidateCaches, updateCacheWithResult } from "./cache";
 import {
   createProductSlug,
   upsertAttributesAndVariants,
@@ -79,6 +79,7 @@ export async function upsertProduct(formData: unknown) {
       const savedProduct = await upsertProductData(tx, {
         data: productData,
         seoId,
+        productId: data.id,
       });
 
       if (!savedProduct) throw new Error("Failed to save product data");
@@ -129,8 +130,31 @@ export async function upsertProduct(formData: unknown) {
       return finalProduct;
     });
 
-    revalidateProductCaches(product.id, product.slug);
+    // Update cache with the actual result
+    try {
+      await updateCacheWithResult(product, data.id ? "update" : "create");
+      log.info("Updated cache with actual collection data", {
+        id: product.id,
+        slug: product.slug,
+      });
+    } catch (cacheError) {
+      log.warn("Cache update failed after database operation", {
+        cacheError,
+      });
+    }
+
+    // Invalidate Next.js caches
+    log.info("Invalidating Next.js caches", {
+      id: product.id,
+      slug: product.slug,
+    });
+    await invalidateAndRevalidateCaches({
+      id: product.id,
+      slug: product.slug,
+    });
+
     log.success("Revalidated all product-related caches");
+    log.info("upsertProduct succeeded", { product });
 
     return {
       success: true,

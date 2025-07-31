@@ -61,8 +61,6 @@ export async function generateUniqueSlug(baseSlug: string, maxAttempts = 100): P
     counter++;
   }
 
-  console.log("GENERATED UNIQUE SLUG LOOP", slug);
-
   return slug;
 }
 
@@ -180,7 +178,9 @@ interface UpsertProductDataProps {
 
 export const upsertProductData = async (trx: Trx, { data, seoId, deliveryId, productId }: UpsertProductDataProps) => {
   const values = { ...data, seoId, deliveryId: deliveryId ?? null };
+  log.success("Values Received for upsertProductData", data);
   if (productId) {
+    log.success("Product Id to update", productId);
     const [product] = await trx.update(productsTable).set(values).where(eq(productsTable.id, productId)).returning();
 
     log.success("Product updated", product);

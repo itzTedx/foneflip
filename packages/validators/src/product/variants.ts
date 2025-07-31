@@ -8,7 +8,7 @@ export const variantSchema = z.object({
     original: z.string().optional(),
   }),
   stock: z.number().optional(),
-  isDefault: z.boolean().default(false),
+  isDefault: z.boolean().optional(),
   attributes: z.array(
     z.object({
       name: z.string().optional(),
