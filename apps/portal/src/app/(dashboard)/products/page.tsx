@@ -27,12 +27,12 @@ export default async function ProductsPage() {
       <PageHeader title="Products">
         <AddButton href="/products/new" title="Product" />
       </PageHeader>
-      <div className=" grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
         {products.map((product) => (
           <Card className="relative" key={product.id}>
             <Link
               className="absolute inset-0 z-0"
-              href={`/products/${product.id}?title=${product.title.replace(" ", "+")}`}
+              href={`/products/${product.id}?title=${encodeURIComponent(product.title)}`}
             />
             <CardContent>{product.title}</CardContent>
           </Card>

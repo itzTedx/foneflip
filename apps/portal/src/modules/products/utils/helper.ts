@@ -1,9 +1,7 @@
 import { asc } from "drizzle-orm";
 
 import { productImagesTable } from "@ziron/db/schema";
-import { MediaFormType, ProductFormType } from "@ziron/validators";
-
-import { Media } from "@/modules/collections/types";
+import { ProductFormType } from "@ziron/validators";
 
 import { ProductQueryResult } from "../types";
 
@@ -239,32 +237,6 @@ export const getFullProductRelations = () => ({
  */
 export function transformProductToFormType(product: ProductQueryResult | null): ProductFormType | undefined {
   if (!product) return undefined;
-
-  /**
-   * Converts a Media object to a MediaFormType suitable for form usage, or returns undefined if the media or its URL is missing.
-   *
-   * Maps media properties such as URL, file name, size, dimensions, blur data, and alt text to the form structure.
-   *
-   * @param media - The media object to convert
-   * @returns The converted MediaFormType, or undefined if input is invalid
-   */
-  function toFormMedia(media?: Media): MediaFormType | undefined {
-    if (!media || !media.url) return undefined; // url is required
-    return {
-      file: {
-        url: media.url,
-        name: media.fileName ?? undefined,
-        size: media.fileSize ?? undefined,
-      },
-      metadata: {
-        width: media.width ?? undefined,
-        height: media.height ?? undefined,
-        blurData: media.blurData ?? undefined,
-      },
-      alt: media.alt ?? undefined,
-      isPrimary: false,
-    };
-  }
 
   return {
     ...product,

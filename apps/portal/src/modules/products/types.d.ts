@@ -36,8 +36,8 @@ export type ProductQueryResult =
       variants?: (ProductVariant & {
         options: (ProductVariantsOption & { option: ProductAttributeOption & { attribute: ProductAttribute } })[];
       })[];
-      collection?: Collection;
-      delivery?: ProductDelivery;
+      collection?: Collection | null;
+      delivery?: ProductDelivery | null;
       images?: (ProductImage & { media: Media })[];
     })
   | undefined;

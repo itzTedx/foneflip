@@ -58,10 +58,9 @@ export const fetchProducts = cache(
     } = options;
 
     if (slug) {
-      const [product] = await db.query.productsTable.findMany({
+      const product = await db.query.productsTable.findFirst({
         where: eq(productsTable.slug, slug),
         with: getFullProductRelations(),
-        orderBy: desc(productsTable.createdAt),
       });
 
       return product;
@@ -174,22 +173,6 @@ export const getProducts = cache(
     tags: [CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT, CACHE_TAGS.COLLECTION, CACHE_TAGS.MEDIA],
   }
 );
-
-// export const getProductById = cache(
-//   async (id: string) => {
-//     const [product] = await db.query.productsTable.findMany({
-//       where: eq(productsTable.id, id),
-//       with: getFullProductRelations(),
-//       orderBy: desc(productsTable.createdAt),
-//     });
-//     return product;
-//   },
-//   [CACHE_TAGS.PRODUCTS, "id"],
-//   {
-//     revalidate: CACHE_DURATIONS.MEDIUM,
-//     tags: [CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT, CACHE_TAGS.COLLECTION, CACHE_TAGS.MEDIA],
-//   }
-// );
 
 export const getProductById = cache(
   async (id: string): Promise<ProductQueryResult | null> => {

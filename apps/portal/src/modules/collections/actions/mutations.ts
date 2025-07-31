@@ -15,6 +15,7 @@ import { convertToCsv, createLog } from "@/lib/utils";
 import { requireUser } from "@/modules/auth/actions/data-access";
 
 import { invalidateCollectionCaches } from "../../cache";
+import { Collection } from "../types";
 import {
   invalidateAndRevalidateCaches,
   performOptimisticCacheUpdate,
@@ -98,7 +99,6 @@ export async function upsertCollection(formData: unknown) {
 
       log.info("Prepared collection data", { collectionData });
 
-      // TODO: Fix the any type with actual type
       // Optimistic cache update for existing collections
       if (data.id) {
         try {
@@ -109,7 +109,7 @@ export async function upsertCollection(formData: unknown) {
             updatedAt: new Date(),
           };
           await performOptimisticCacheUpdate({
-            collection: optimisticData as any,
+            collection: optimisticData as Collection,
             operation: "update",
           });
           log.info("Applied optimistic cache update", { id: data.id });
