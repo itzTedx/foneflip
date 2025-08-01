@@ -14,15 +14,19 @@
   "dependencies": {
     "@react-email/components": "^0.3.2",
     "@react-email/preview-server": "^4.2.3",
+    "@t3-oss/env-core": "^0.13.8",
+    "nodemailer": "^7.0.5",
     "react-email": "^4.2.3"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@ziron/eslint-config": "workspace:*",
     "@ziron/prettier-config": "workspace:*",
     "@ziron/tsconfig": "workspace:*",
+    "@ziron/validators": "workspace:*",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },

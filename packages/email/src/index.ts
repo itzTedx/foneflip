@@ -1,5 +1,33 @@
-export const sendEmail = async () => {
-  console.info(
-    "Email sending failed: Neither SMTP nor Resend is configured. Please set up at least one email service to send emails."
-  );
+import type { ReactElement } from "react";
+
+import { render } from "@react-email/components";
+import nodemailer from "nodemailer";
+
+import { env } from "./lib/env.js";
+
+export const transporter = nodemailer.createTransport({
+  host: env.SMTP_HOST,
+  port: Number(env.SMTP_PORT) || 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: env.SMTP_USER,
+    pass: env.SMTP_PASS,
+  },
+});
+
+interface SendEmailOptions {
+  email: string;
+  subject: string;
+  react?: ReactElement;
+  text?: string;
+}
+
+export const sendEmail = async ({ email, subject, react, text }: SendEmailOptions) => {
+  return await transporter.sendMail({
+    from: env.SMTP_FROM,
+    to: email,
+    subject,
+    text,
+    html: await render(react),
+  });
 };

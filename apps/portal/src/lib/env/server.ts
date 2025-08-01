@@ -39,5 +39,6 @@ export const env = createEnv({
   },
   emptyStringAsUndefined: true,
 
+  // biome-ignore lint/style/noProcessEnv: Required for t3-env configuration
   experimental__runtimeEnv: process.env,
 });
