@@ -28,7 +28,7 @@ export const ActionConfirmDialog = ({
   isLoading: boolean;
 }) => {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog onOpenChange={onOpenChange} open={open}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -37,12 +37,12 @@ export const ActionConfirmDialog = ({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            disabled={isLoading}
-            onClick={onConfirm}
             className={cn(
-              "hover:from-destructive shadow-destructive/20 hover:to-destructive from-red-600 to-red-400 text-red-50 transition-colors ease-out",
+              "from-red-600 to-red-400 text-red-50 shadow-destructive/20 transition-colors ease-out hover:from-destructive hover:to-destructive",
               className
             )}
+            disabled={isLoading}
+            onClick={onConfirm}
           >
             Confirm
           </AlertDialogAction>

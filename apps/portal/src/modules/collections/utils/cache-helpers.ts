@@ -1,18 +1,11 @@
 import { createLog } from "@/lib/utils";
+import { CacheOperationResult, CacheOperationType } from "@/modules/cache/types";
 
 import { invalidateCollectionCaches, revalidateCollectionCaches } from "../../cache";
 import { updateCollectionCache } from "../actions/cache";
 import type { Collection } from "../types";
 
 const log = createLog("CollectionCache");
-
-// Types for cache operations
-export type CacheOperationType = "create" | "update" | "delete";
-
-export interface CacheOperationResult {
-  success: boolean;
-  error?: string;
-}
 
 export interface OptimisticCacheOptions {
   collection: Collection;

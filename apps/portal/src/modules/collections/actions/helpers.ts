@@ -4,8 +4,9 @@ import { db } from "@ziron/db";
 import { collectionSettingsTable, collectionsTable, seoTable } from "@ziron/db/schema";
 import redis from "@ziron/redis";
 import { slugify } from "@ziron/utils";
+import { CollectionDraftFormType, CollectionFormType } from "@ziron/validators";
 
-import type { Collection, CollectionSettings, Seo } from "../types";
+import type { Collection, CollectionSettings, Seo, UpsertCollectionSettings } from "../types";
 import { existingCollection } from "./queries";
 
 // Types for collection operations
@@ -21,7 +22,7 @@ export interface CollectionData {
 
 export interface CollectionSettingsData {
   collectionId: string;
-  status?: string;
+  status?: "active" | "archived" | "draft";
   isFeatured?: boolean;
   layout?: string;
   showLabel?: boolean;
@@ -111,6 +112,8 @@ export function validateCollectionData(data: CollectionData): CollectionValidati
   };
 }
 
+export type Trx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
 /**
  * Inserts or updates collection settings for a given collection.
  *
@@ -119,8 +122,8 @@ export function validateCollectionData(data: CollectionData): CollectionValidati
  * @returns The upserted collection settings, or null if the operation did not succeed.
  */
 export async function upsertCollectionSettings(
-  settingsData: CollectionSettingsData,
-  transaction: any = db
+  settingsData: UpsertCollectionSettings,
+  trx: Trx
 ): Promise<CollectionSettings | null> {
   const data = {
     ...settingsData,
@@ -129,7 +132,7 @@ export async function upsertCollectionSettings(
   };
 
   // Try update first
-  const [existingSettings] = await transaction
+  const [existingSettings] = await trx
     .update(collectionSettingsTable)
     .set(data)
     .where(eq(collectionSettingsTable.collectionId, settingsData.collectionId))
@@ -137,7 +140,7 @@ export async function upsertCollectionSettings(
 
   if (!existingSettings) {
     // Insert if not exists
-    const [newSettings] = await transaction
+    const [newSettings] = await trx
       .insert(collectionSettingsTable)
       .values({
         ...data,
@@ -214,8 +217,7 @@ export interface SeoUpsertResult {
 
 export interface SeoUpsertOptions {
   collectionId?: string;
-  meta: SeoMetaData;
-  transaction?: any; // Use any to handle both db and transaction types
+  meta: CollectionFormType["meta"] | CollectionDraftFormType["meta"];
 }
 
 /**
@@ -223,27 +225,23 @@ export interface SeoUpsertOptions {
  * @param options - SEO upsert options including collection ID, meta data, and transaction
  * @returns Promise resolving to SEO upsert result with ID and row data
  */
-export async function upsertSeoMeta({
-  collectionId,
-  meta,
-  transaction = db,
-}: SeoUpsertOptions): Promise<SeoUpsertResult> {
+export async function upsertSeoMeta(tx: Trx, { collectionId, meta }: SeoUpsertOptions): Promise<SeoUpsertResult> {
   let seoRow: Seo | undefined;
 
   if (collectionId) {
     // Try to find existing SEO row by collection id
-    const existing = await transaction.query.collectionsTable.findFirst({
+    const existing = await tx.query.collectionsTable.findFirst({
       where: eq(collectionsTable.id, collectionId),
     });
 
     if (existing?.seoId) {
       // Update existing SEO row
-      [seoRow] = await transaction
+      [seoRow] = await tx
         .update(seoTable)
         .set({
-          metaTitle: meta.title || "",
-          metaDescription: meta.description || "",
-          keywords: meta.keywords || "",
+          metaTitle: meta?.title || "",
+          metaDescription: meta?.description || "",
+          keywords: meta?.keywords || "",
           deletedAt: null,
           updatedAt: new Date(),
         })
@@ -254,12 +252,12 @@ export async function upsertSeoMeta({
 
   if (!seoRow) {
     // Insert new SEO row
-    [seoRow] = await transaction
+    [seoRow] = await tx
       .insert(seoTable)
       .values({
-        metaTitle: meta.title || "",
-        metaDescription: meta.description || "",
-        keywords: meta.keywords || "",
+        metaTitle: meta?.title || "",
+        metaDescription: meta?.description || "",
+        keywords: meta?.keywords || "",
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -277,16 +275,17 @@ export async function upsertSeoMeta({
   };
 }
 
+interface SoftDeleteSeoProps {
+  seoId: string;
+}
+
 /**
  * Marks the specified SEO metadata as deleted by setting its deletedAt and updatedAt timestamps.
  *
  * @param seoId - The ID of the SEO metadata to soft delete
  */
-export async function softDeleteSeo(seoId: string, transaction: any = db): Promise<void> {
-  await transaction
-    .update(seoTable)
-    .set({ deletedAt: new Date(), updatedAt: new Date() })
-    .where(eq(seoTable.id, seoId));
+export async function softDeleteSeo(trx: Trx, { seoId }: SoftDeleteSeoProps): Promise<void> {
+  await trx.update(seoTable).set({ deletedAt: new Date(), updatedAt: new Date() }).where(eq(seoTable.id, seoId));
 }
 
 // Types for slug operations

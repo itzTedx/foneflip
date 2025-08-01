@@ -1,6 +1,7 @@
 "use server";
 
-import { db } from "@ziron/db";
+import { db, eq } from "@ziron/db";
+import { productsTable } from "@ziron/db/schema";
 import { slugify } from "@ziron/utils";
 import { productSchema, z } from "@ziron/validators";
 
@@ -8,7 +9,17 @@ import { createLog } from "@/lib/utils";
 import { requireUser } from "@/modules/auth/actions/data-access";
 
 import { ProductUpsertType } from "../types";
-import { createProductSlug, upsertProductData, upsertSeoMeta } from "./helpers";
+import { invalidateAndRevalidateCaches, updateCacheWithResult } from "./cache";
+import {
+  createProductSlug,
+  upsertAttributesAndVariants,
+  upsertDelivery,
+  upsertImages,
+  upsertProductData,
+  upsertSeoMeta,
+  upsertSettings,
+  upsertSpecifications,
+} from "./helpers";
 
 const log = createLog("Product");
 
@@ -36,7 +47,7 @@ export async function upsertProduct(formData: unknown) {
   }
 
   try {
-    return await db.transaction(async (tx) => {
+    const product = await db.transaction(async (tx) => {
       const uniqueSlug = await createProductSlug({
         title: data.title,
         customSlug: data.slug,
@@ -69,21 +80,88 @@ export async function upsertProduct(formData: unknown) {
       const savedProduct = await upsertProductData(tx, {
         data: productData,
         seoId,
+        productId: data.id,
       });
 
-      if (!savedProduct)
-        return {
-          success: false,
-          error: "INVALID_VENDOR_ID",
-          message: "Updating product data into database failed. Please contact technical support",
-        };
+      if (!savedProduct) throw new Error("Failed to save product data");
 
-      return {
-        success: true,
-        error: null,
-        message: `${data.title} has been created`,
-      };
+      await upsertSettings(tx, {
+        productId: savedProduct.id,
+        settings: data.settings,
+      });
+
+      await upsertSpecifications(tx, {
+        productId: savedProduct.id,
+        specifications: data.specifications,
+      });
+
+      const deliveryId = await upsertDelivery(tx, {
+        product: {
+          id: savedProduct.id,
+          deliveryId: savedProduct.deliveryId,
+        },
+        delivery: data.delivery,
+      });
+      if (deliveryId) {
+        savedProduct.deliveryId = deliveryId;
+      }
+
+      await upsertAttributesAndVariants(tx, {
+        productId: savedProduct.id,
+        hasVariant: data.hasVariant,
+        attributes: data.attributes,
+        variants: data.variants,
+      });
+
+      await upsertImages(tx, {
+        productId: savedProduct.id,
+        userId: session.user.id,
+        images: data.images,
+      });
+
+      // Refetch to get all relations
+      const finalProduct = await tx.query.productsTable.findFirst({
+        where: (products, { eq }) => eq(products.id, savedProduct.id),
+      });
+
+      if (!finalProduct) throw new Error("Could not refetch product");
+
+      log.success("Transaction completed for product", finalProduct.id);
+
+      return finalProduct;
     });
+
+    // Update cache with the actual result
+    try {
+      await updateCacheWithResult(product, data.id ? "update" : "create");
+      log.info("Updated cache with actual collection data", {
+        id: product.id,
+        slug: product.slug,
+      });
+    } catch (cacheError) {
+      log.warn("Cache update failed after database operation", {
+        cacheError,
+      });
+    }
+
+    // Invalidate Next.js caches
+    log.info("Invalidating Next.js caches", {
+      id: product.id,
+      slug: product.slug,
+    });
+    await invalidateAndRevalidateCaches({
+      id: product.id,
+      slug: product.slug,
+    });
+
+    log.success("Revalidated all product-related caches");
+    log.info("upsertProduct succeeded", { product });
+
+    return {
+      success: true,
+      error: null,
+      message: `Product: (${product.title}) has been ${data.id ? "updated" : "created"}`,
+    };
   } catch (error) {
     log.error("Upsert failed", { error });
 
@@ -102,5 +180,57 @@ export async function upsertProduct(formData: unknown) {
       error: "Database error",
       message: error instanceof Error ? error.message : error,
     };
+  }
+}
+
+export async function deleteProduct(id: string) {
+  try {
+    log.info(`Starting soft deletion for product with ID: ${id}`);
+
+    const [product] = await db
+      .update(productsTable)
+      .set({ deletedAt: new Date() })
+      .where(eq(productsTable.id, id))
+      .returning({
+        id: productsTable.id,
+        title: productsTable.title,
+        slug: productsTable.slug,
+      });
+
+    if (!product) {
+      log.warn(`Soft deletion failed: Product with ID ${id} not found.`);
+      return { error: "Product not found." };
+    }
+
+    // Comprehensive cache revalidation
+    try {
+      await invalidateAndRevalidateCaches({
+        id: product.id,
+        slug: product.slug,
+      });
+      log.info("Invalidated and revalidated all product-related caches", {
+        id: product.id,
+        slug: product.slug,
+      });
+    } catch (cacheError) {
+      log.warn("Cache revalidation failed after product deletion", {
+        cacheError,
+      });
+    }
+
+    log.success(`Successfully soft-deleted product: "${product.title}" (ID: ${id})`);
+
+    return {
+      success: `Product (${product.title}) has been deleted`,
+      data: product,
+    };
+  } catch (err) {
+    log.error(`Error in deleteProduct action for ID: ${id}`, {
+      error: err,
+      message: err instanceof Error ? err.message : "Unknown error occurred",
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    const message = err instanceof Error ? err.message : "Unknown error occurred";
+    return { error: `Failed to delete product: ${message}` };
   }
 }

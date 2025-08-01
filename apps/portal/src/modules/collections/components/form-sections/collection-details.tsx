@@ -1,16 +1,9 @@
 "use client";
 
-import { TabNavigation } from "@/components/ui/tab-navigation";
 import { IconSparkles } from "@tabler/icons-react";
 
 import { Button } from "@ziron/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@ziron/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
 import {
   FormControl,
   FormDescription,
@@ -25,6 +18,9 @@ import { Switch } from "@ziron/ui/switch";
 import { Textarea } from "@ziron/ui/textarea";
 import { slugify } from "@ziron/utils";
 import type { CollectionFormType } from "@ziron/validators";
+
+import { TabNavigation } from "@/components/ui/tab-navigation";
+import { InfoTooltip } from "@/components/ui/tooltip";
 
 export function CollectionDetails() {
   const form = useFormContext<CollectionFormType>();
@@ -58,7 +54,7 @@ export function CollectionDetails() {
   return (
     <>
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="px-2 text-lg font-medium">General Info</h2>
+        <h2 className="px-2 font-medium text-lg">General Info</h2>
         <TabNavigation currentTab="details" type="collections" />
       </div>
 
@@ -66,9 +62,7 @@ export function CollectionDetails() {
         <Card className="h-fit md:col-span-2">
           <CardHeader>
             <CardTitle>Collection Details</CardTitle>
-            <CardDescription>
-              Basic info for identifying the collection.
-            </CardDescription>
+            <CardDescription>Basic info for identifying the collection.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -111,23 +105,27 @@ export function CollectionDetails() {
                 name="slug"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Slug</FormLabel>
+                    <FormLabel>
+                      Slug{" "}
+                      <InfoTooltip
+                        info={
+                          <p>
+                            Enter a unique, URL-friendly identifier for the Collection{" "}
+                            <strong className="font-medium">(e.g. iphone).</strong> Used in the collection link.
+                          </p>
+                        }
+                      />
+                    </FormLabel>
                     <FormControl>
                       <div className="flex items-center gap-2">
                         <Input placeholder="Slug" {...field} />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleGenerateSlug}
-                        >
+                        <Button onClick={handleGenerateSlug} type="button" variant="outline">
                           <IconSparkles className="h-4 w-4" />
                           Generate
                         </Button>
                       </div>
                     </FormControl>
-                    <FormDescription>
-                      Automatically Generate from Title of the collection
-                    </FormDescription>
+                    <FormDescription>Automatically Generate from Title of the collection</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -139,7 +137,14 @@ export function CollectionDetails() {
               name="label"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel>
+                    Label{" "}
+                    <InfoTooltip
+                      info={
+                        <p>A short tag (e.g., “New Arrivals”) shown on the storefront to highlight this collection.</p>
+                      }
+                    />
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="New Arrivals" {...field} />
                   </FormControl>
@@ -154,18 +159,16 @@ export function CollectionDetails() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="border-input has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border p-4 shadow-xs outline-none">
+                    <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        onBlur={field.onBlur}
+                        className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
                         disabled={field.disabled}
-                        className="order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2 data-[state=checked]:[&_span]:rtl:-translate-x-2"
+                        onBlur={field.onBlur}
+                        onCheckedChange={field.onChange}
                       />
                       <div className="grid grow gap-2">
-                        <FormLabel htmlFor={field.name}>
-                          Featured Collection
-                        </FormLabel>
+                        <FormLabel htmlFor={field.name}>Featured Collection</FormLabel>
                         <FormDescription className="text-muted-foreground text-xs">
                           Used for homepage banners, promo spots
                         </FormDescription>

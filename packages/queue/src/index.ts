@@ -10,11 +10,13 @@ export const queue = new Queue(QUEUE_NAME, { connection: redis });
 export enum JobType {
   Notification = "notification",
   DeleteSoftDeletedCollections = "delete-soft-deleted-collections",
+  DeleteSoftDeletedProducts = "delete-soft-deleted-products",
 }
 
 export type JobData = {
   [JobType.Notification]: { userId: string; type: string; message: string };
   [JobType.DeleteSoftDeletedCollections]: object;
+  [JobType.DeleteSoftDeletedProducts]: object;
 };
 
 export async function enqueue<T extends JobType>(type: T, data: JobData[T]) {
@@ -29,10 +31,7 @@ const queueEvents = new QueueEvents(QUEUE_NAME);
  * @param data - The data associated with the job type
  * @returns The completed job after it has finished processing
  */
-export async function enqueueAndWait<T extends JobType>(
-  type: T,
-  data: JobData[T]
-) {
+export async function enqueueAndWait<T extends JobType>(type: T, data: JobData[T]) {
   const job = await enqueue(type, data);
   await job.waitUntilFinished(queueEvents);
   return job;

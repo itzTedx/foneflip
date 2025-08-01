@@ -29,7 +29,7 @@ export const productSchema = z
       original: z.string("Original price must be a valid number.").optional(),
     }),
     sku: z.string("SKU must be a valid text value.").optional(),
-    stock: z.number("Stock quantity is required.").min(0, "Stock must be a positive number"),
+    stock: z.number("Stock quantity is required.").nullish(),
 
     specifications: z
       .array(
@@ -60,9 +60,7 @@ export const productSchema = z
     meta: metaSchema,
     images: z.array(mediaSchema).optional(),
 
-    settings: productSettingsSchema,
-
-    customFields: z.record(z.any(), z.any()).optional(),
+    settings: productSettingsSchema.optional(),
   })
   .refine(
     (data) => {

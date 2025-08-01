@@ -12,9 +12,10 @@ import { slugify } from "@ziron/utils";
 import { collectionSchema, z } from "@ziron/validators";
 
 import { convertToCsv, createLog } from "@/lib/utils";
-import { requireUser } from "@/modules/auth/actions/data-access";
+import { hasPermission, requireUser } from "@/modules/auth/actions/data-access";
 
 import { invalidateCollectionCaches } from "../../cache";
+import { Collection } from "../types";
 import {
   invalidateAndRevalidateCaches,
   performOptimisticCacheUpdate,
@@ -40,6 +41,28 @@ const log = createLog("Collection");
  */
 export async function upsertCollection(formData: unknown) {
   const session = await requireUser();
+
+  if (!session) {
+    return {
+      success: false,
+      error: "UNAUTHENTICATED",
+      message: "User not authenticated",
+    };
+  }
+
+  const { res } = await hasPermission({
+    permissions: {
+      collections: ["create"],
+    },
+  });
+
+  if (!res.success) {
+    return {
+      success: false,
+      error: "UNAUTHORIZED",
+      message: "User not authorized to create collections",
+    };
+  }
 
   log.info("Received upsertCollection request", { formData });
   const { success, data, error } = collectionSchema.safeParse(formData);
@@ -77,10 +100,9 @@ export async function upsertCollection(formData: unknown) {
       // --- Upsert SEO meta ---
       let seoId: string | undefined = undefined;
       if (data.meta) {
-        const seoResult = await upsertSeoMeta({
+        const seoResult = await upsertSeoMeta(tx, {
           collectionId: data.id,
           meta: data.meta,
-          transaction: tx,
         });
         seoId = seoResult.seoId;
       }
@@ -108,7 +130,7 @@ export async function upsertCollection(formData: unknown) {
             updatedAt: new Date(),
           };
           await performOptimisticCacheUpdate({
-            collection: optimisticData as any,
+            collection: optimisticData as Collection,
             operation: "update",
           });
           log.info("Applied optimistic cache update", { id: data.id });
@@ -608,15 +630,13 @@ export async function saveCollectionDraft(formData: unknown) {
         const existingCollection = await trx.query.collectionsTable.findFirst({
           where: eq(collectionsTable.id, id),
         });
-        seo = await upsertSeoMeta({
+        seo = await upsertSeoMeta(trx, {
           collectionId: id,
           meta: safeMeta,
-          transaction: trx,
         });
       } else {
-        seo = await upsertSeoMeta({
+        seo = await upsertSeoMeta(trx, {
           meta: safeMeta,
-          transaction: trx,
         });
       }
 

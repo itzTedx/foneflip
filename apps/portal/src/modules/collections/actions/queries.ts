@@ -112,7 +112,10 @@ export const getCollectionBySlug = cache(
 );
 
 export const getCollectionById = cache(
-  async (id: string): Promise<CollectionQueryResult> => {
+  async (id: string): Promise<CollectionQueryResult | null> => {
+    if (id === "new") {
+      return null;
+    }
     return withCacheMonitoring(
       async () => {
         // Try Redis first

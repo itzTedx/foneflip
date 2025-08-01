@@ -18,30 +18,25 @@ type PageHeaderProps = {
  * @param children - Optional elements to display on the right side of the header
  * @param className - Optional additional CSS classes for the header container
  */
-export function PageHeader({
-  title,
-  children,
-  className,
-  badge,
-}: PageHeaderProps) {
+export function PageHeader({ title, children, className, badge }: PageHeaderProps) {
   return (
     <div
       className={cn(
-        "bg-background/80 sticky top-[calc(3rem+1px)] z-50 flex items-center justify-between px-4 py-3 backdrop-blur-2xl md:px-6",
+        "sticky top-[calc(3rem+1px)] z-50 flex items-center justify-between bg-background/80 px-4 py-3 backdrop-blur-2xl md:px-6",
         className
       )}
     >
       <div className="flex items-center justify-center gap-2">
-        <h1 className="text-2xl leading-none font-medium">{title}</h1>
+        <h1 className="font-medium text-2xl leading-none">{title}</h1>
         {badge && (
-          <Badge variant="outline" className="capitalize">
+          <Badge className="capitalize" variant="outline">
             {badge}
           </Badge>
         )}
       </div>
       {children && <div className="flex items-center gap-2">{children}</div>}
-      <div className="from-background absolute inset-y-0 left-0 -z-10 w-12 bg-gradient-to-r to-transparent" />
-      <div className="from-background absolute inset-y-0 right-0 -z-10 w-12 bg-gradient-to-l to-transparent" />
+      <div className="-z-10 absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-background to-transparent" />
+      <div className="-z-10 absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background to-transparent" />
     </div>
   );
 }

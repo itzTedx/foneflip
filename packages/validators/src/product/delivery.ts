@@ -6,16 +6,14 @@ export const deliverySchema = z
     weight: z.string("Weight must be a valid text.").nullish(),
     cod: z.boolean().optional(),
     returnable: z.boolean().optional(),
-    returnPeriod: z.string("Return period must be a valid text.").nullish(),
+    returnPeriod: z.string("Return period must be a valid text.").optional(),
     type: z
       .object({
         express: z.boolean().optional(),
         fees: z.string({ error: "Delivery fees must be a valid text." }).optional(),
       })
-      .optional()
       .refine(
         (type) => {
-          if (!type) return true;
           if (type.express) {
             return !!type.fees && type.fees.trim() !== "";
           }
@@ -27,10 +25,8 @@ export const deliverySchema = z
         }
       ),
   })
-  .optional()
   .refine(
     (delivery) => {
-      if (!delivery) return true;
       if (delivery.returnable) {
         return !!delivery.returnPeriod && delivery.returnPeriod.trim() !== "";
       }

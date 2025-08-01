@@ -1,14 +1,10 @@
 "use client";
 
-import type { Icon } from "@tabler/icons-react";
-import {
-  IconDots,
-  IconFolder,
-  IconShare3,
-  IconTrash,
-} from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import type { Icon } from "@tabler/icons-react";
+import { IconDots, IconFolder, IconShare3, IconTrash } from "@tabler/icons-react";
 
 import {
   DropdownMenu,
@@ -59,18 +55,15 @@ export function NavStorefront({
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuAction
-                  showOnHover
-                  className="data-[state=open]:bg-accent rounded-sm"
-                >
+                <SidebarMenuAction className="rounded-sm data-[state=open]:bg-accent" showOnHover>
                   <IconDots />
                   <span className="sr-only">More</span>
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
               <DropdownMenuContent
+                align={isMobile ? "end" : "start"}
                 className="w-24 rounded-lg"
                 side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
               >
                 <DropdownMenuItem>
                   <IconFolder />

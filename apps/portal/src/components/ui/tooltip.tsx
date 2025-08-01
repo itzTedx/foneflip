@@ -2,6 +2,7 @@ import { IconInfoCircle } from "@tabler/icons-react";
 
 import { Badge } from "@ziron/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@ziron/ui/tooltip";
+import { cn } from "@ziron/utils";
 
 export const InfoTooltip = ({ info }: { info: React.ReactNode }) => {
   return (
@@ -18,14 +19,15 @@ interface Props {
   tooltip: string;
   children: React.ReactNode;
   asChild?: boolean;
-  variant?: "default" | "success" | "secondary" | "destructive" | "outline";
+  variant?: "default" | "success" | "secondary" | "destructive" | "outline" | "warn";
+  className?: string;
 }
 
-export const TooltipBadge = ({ tooltip, children, asChild = false, variant }: Props) => {
+export const TooltipBadge = ({ tooltip, children, asChild = false, variant, className }: Props) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Badge asChild={asChild} variant={variant}>
+        <Badge asChild={asChild} className={cn("capitalize", className)} variant={variant}>
           {children}
         </Badge>
       </TooltipTrigger>

@@ -1,5 +1,6 @@
-import { auth, getSession } from "@/lib/auth/server";
 import { redirect } from "next/navigation";
+
+import { auth, getSession } from "@/lib/auth/server";
 
 import "server-only";
 
@@ -58,11 +59,7 @@ interface HasPermissionOptions {
  * @param throwOnFail - If true, throws an error instead of redirecting on failure (defaults to false)
  * @returns An object containing the user session and the permission check response if access is granted
  */
-export async function hasPermission({
-  permissions,
-  redirectTo = "/",
-  throwOnFail = false,
-}: HasPermissionOptions) {
+export async function hasPermission({ permissions, redirectTo = "/", throwOnFail = false }: HasPermissionOptions) {
   const session = await requireUser();
 
   const res = await auth.api.userHasPermission({

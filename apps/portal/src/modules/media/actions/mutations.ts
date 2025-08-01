@@ -1,23 +1,20 @@
 "use server";
 
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
+
+import { mediaTable } from "@ziron/db/schema";
+import type { Trx } from "@ziron/db/types";
+import { MediaToInsert } from "@ziron/db/types";
+
 import { getSession } from "@/lib/auth/server";
 import { env } from "@/lib/env/server";
 import { createLog } from "@/lib/utils";
-import {
-  DeleteObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
-import { mediaTable } from "@ziron/db/schema";
-import { MediaToInsert } from "@ziron/db/types";
 
 const log = createLog("Collection");
 
-const generateFileName = (bytes = 16) =>
-  crypto.randomBytes(bytes).toString("hex");
+const generateFileName = (bytes = 16) => crypto.randomBytes(bytes).toString("hex");
 
 const s3 = new S3Client({
   region: env.AWS_BUCKET_REGION,
@@ -28,12 +25,7 @@ const s3 = new S3Client({
 });
 
 const maxSize = 4 * 1024 * 1024; // 4MB default
-const acceptedFileTypes = [
-  "image/png",
-  "image/jpeg",
-  "image/jpg",
-  "image/webp",
-];
+const acceptedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
 
 interface Props {
   file: {
@@ -71,10 +63,7 @@ export async function getSignedURL({ file, checksum, collection }: Props) {
   }
 
   // Generate a unique key: userId/checksum-fileName
-  const safeFileName = (file.fileName || "file").replace(
-    /[^a-zA-Z0-9._-]/g,
-    "_"
-  );
+  const safeFileName = (file.fileName || "file").replace(/[^a-zA-Z0-9._-]/g, "_");
 
   const key = collection
     ? `${session.user.id}/${collection}/${generateFileName()}-${safeFileName}`
@@ -97,6 +86,7 @@ export async function getSignedURL({ file, checksum, collection }: Props) {
       expiresIn: 120,
     });
   } catch (err) {
+    console.error("Failed to generate signed URL", err);
     return { error: true, message: "Failed to generate signed URL" };
   }
 
@@ -112,17 +102,14 @@ export async function getSignedURL({ file, checksum, collection }: Props) {
  * @param transaction - Optional database transaction to use for the operation
  * @returns The UUID of the existing or newly inserted media record
  */
-export async function upsertMedia(
-  media: MediaToInsert,
-  transaction?: any
-): Promise<string> {
+export async function upsertMedia(media: MediaToInsert, transaction?: Trx): Promise<string> {
   const dbOrTx = transaction || (await import("@ziron/db")).db;
   log.info("Performing upsert for Media", {
     data: media,
   });
 
   const existing = await dbOrTx.query.mediaTable.findFirst({
-    where: (row: any) => row.url === media.url,
+    where: (fields, { eq }) => eq(fields.url, media.url),
   });
 
   if (existing) return existing.id;
@@ -153,7 +140,7 @@ export async function upsertMedia(
 
 export async function deleteMediaFromS3(key: string) {
   const deleteParams = {
-    Bucket: process.env.AWS_BUCKET_NAME!,
+    Bucket: env.AWS_BUCKET_NAME,
     Key: key,
   };
 

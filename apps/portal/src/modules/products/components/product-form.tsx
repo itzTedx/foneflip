@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { useSetAtom } from "jotai";
 import { cloneDeep, debounce, isEqual } from "lodash";
@@ -22,7 +23,6 @@ import { CollectionMetadata } from "@/modules/collections/types";
 import { upsertProduct } from "../actions/mutations";
 import { productErrorAtom } from "../atom";
 import { PRODUCTS_TABS } from "../data/constants";
-import { Product } from "../types";
 import { productFormDefaultValues } from "../utils/helper";
 import { ProductInfo } from "./form-sections/info";
 import { ProductMedia } from "./form-sections/media";
@@ -35,7 +35,7 @@ import { ErrorDialog } from "./ui/error-dialog";
 interface Props {
   isEditMode: boolean;
   collections: CollectionMetadata[];
-  initialData?: Product;
+  initialData?: ProductFormType;
 }
 
 const LOCAL_STORAGE_KEY = "product-form-draft";
@@ -45,6 +45,7 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
   const setValidationError = useSetAtom(productErrorAtom);
   const [, setTitle] = useQueryState("title", parseAsString.withDefault(""));
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   useEffect(() => {
     setTitle(initialData?.title ?? null);
@@ -57,6 +58,7 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
     resolver: zodResolver(productSchema),
     defaultValues: {
       ...productFormDefaultValues,
+      ...initialData,
       ...draft,
     },
     mode: "onTouched",
@@ -127,9 +129,13 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
       if (!res.success) {
         toast.error("Something went wrong");
       }
-      console.log(res.error);
-      console.log(res.message);
-      toast.success("success");
+
+      if (res.success) {
+        removeDraft();
+        const message = (res as { message?: string }).message;
+        toast.success(typeof message === "string" ? message : "Product Updated successfully");
+        router.push("/products");
+      }
     });
   }
 

@@ -49,7 +49,7 @@ export const ShippingHandlingCard = memo(function ShippingHandlingCard() {
                       inputMode="numeric"
                       pattern="[0-9]*"
                       placeholder="e.g. 14"
-                      type="text"
+                      required={!!isReturnable}
                     />
                     <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground text-sm peer-disabled:opacity-50">
                       Days

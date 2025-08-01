@@ -10,7 +10,7 @@
   - Show a toast: "Collection deleted successfully".
   - Redirect to `/collections`.
 - [ ] On error: Show an error toast.
-- [ ] Disable the button if the collection is archived or a mutation is in progress.
+- [x] Disable the button if the collection is archived or a mutation is in progress.
 
 ## 2. File Upload Enhancement
 
@@ -21,7 +21,7 @@
   - [x] Implement file preview functionality
   - [ ] Add error handling for failed uploads
   - [x] Integrate with existing form validation system
-  - [ ] Style component to match current design system
+  - [x] Style component to match current design system
 
 ## 3. UI/UX Improvements
 
@@ -34,17 +34,17 @@
 ## 4. Feature Enhancements
 
 - [ ] Bulk actions: allow selecting multiple collections for delete/archive/status change.
-- [ ] Archive/unarchive collections (toggle status between "active" and "archived").
-- [ ] Expose "duplicate collection" in the UI (already implemented in backend).
-- [ ] Support "draft" mode for collections (already in schema/settings).
-- [ ] Allow editing and previewing SEO meta for each collection.
+- [x] Archive/unarchive collections (toggle status between "active" and "archived").
+- [x] Expose "duplicate collection" in the UI (already implemented in backend).
+- [x] Support "draft" mode for collections (already in schema/settings).
+- [x] Allow editing and previewing SEO meta for each collection.
 - [ ] Expose custom CTA and banner fields in the UI.
 
 ## 5. Settings & Metadata
 
-- [ ] Allow editing all settings fields: featured, layout, showLabel, showBanner, showInNav, tags, internalNotes, customCTA.
-- [ ] Add tooltips/help text for each setting.
-- [ ] Show and allow changing collection status in the settings tab.
+- [x] Allow editing all settings fields: featured, layout, showLabel, showBanner, showInNav, tags, internalNotes, customCTA.
+- [x] Add tooltips/help text for each setting.
+- [x] Show and allow changing collection status in the settings tab.
 
 ## 6. Performance & Caching
 
@@ -54,7 +54,7 @@
 ## 7. Developer/Code Quality
 
 - [ ] Add more unit/integration tests for collection actions.
-- [ ] Ensure all code is type-safe and uses the latest schema/types.
+- [x] Ensure all code is type-safe and uses the latest schema/types.
 - [ ] Refactor any duplicated logic in helpers/actions.
 
 ## 8. Documentation

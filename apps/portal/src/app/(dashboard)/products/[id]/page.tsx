@@ -3,29 +3,25 @@ import { Metadata } from "next";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { hasPermission } from "@/modules/auth/actions/data-access";
 import { getCollectionsMetadata } from "@/modules/collections/actions/queries";
+import { getProductById } from "@/modules/products/actions/queries";
 import { ProductForm } from "@/modules/products/components/product-form";
+import { transformProductToFormType } from "@/modules/products/utils/helper";
 
 type Params = Promise<{ id: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { id } = await params;
 
-  // const product = await getProductBySlug(id);
+  const product = await getProductById(id);
 
-  // if (!product || Array.isArray(product)) {
-  //   return {
-  //     title: "Add New Product - Foneflip",
-  //   };
-  // }
-
-  if (id === "new") {
+  if (!product || id === "new") {
     return {
       title: "Add New Product - Foneflip",
     };
   }
 
   return {
-    title: `Edit "${"product?.title"}" - Products | Foneflip`,
+    title: `Edit "${product.title}" - Product | Foneflip`,
   };
 }
 
@@ -46,9 +42,14 @@ export default async function ProductPage({ params }: { params: Params }) {
 
   const { id } = await params;
   const editMode = id !== "new";
+
+  const product = await getProductById(id);
+  const initialData = transformProductToFormType(product);
+
   return (
     <MainWrapper>
-      <ProductForm collections={collections} isEditMode={editMode} />
+      {/* <pre>{JSON.stringify(product, null, 2)}</pre> */}
+      <ProductForm collections={collections} initialData={initialData} isEditMode={editMode} />
     </MainWrapper>
   );
 }
