@@ -9,6 +9,7 @@ import { ArchiveRestoreIcon, Ellipsis, Share2Icon } from "lucide-react";
 import { toast } from "sonner";
 
 import { IconTrashFilled } from "@ziron/ui/assets/icons";
+import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
 import {
   DropdownMenu,
@@ -25,6 +26,16 @@ import { deleteProduct } from "../../actions/mutations";
 
 type DialogType = null | "delete" | "archive";
 
+interface DeleteProductResult {
+  success?: string;
+  error?: string;
+  data?: {
+    id: string;
+    title: string;
+    slug: string;
+  };
+}
+
 export const ProductActions = ({ id, title }: { id: string; title: string }) => {
   const [dialog, setDialog] = useState<DialogType>(null);
   const [isDeletePending, startDeleteTransition] = useTransition();
@@ -37,16 +48,14 @@ export const ProductActions = ({ id, title }: { id: string; title: string }) => 
    */
   function handleDelete() {
     startDeleteTransition(async () => {
-      const result = await deleteProduct(id);
+      const result: DeleteProductResult = await deleteProduct(id);
       if (result.success) {
-        const message = (result as { message?: string }).message;
         setDialog(null);
         router.refresh();
-        toast.success(typeof message === "string" ? message : "Product deleted successfully");
+        toast.success(result.success);
       }
-      if (!result.success) {
-        const message = (result as { message?: string }).message;
-        toast.error(typeof message === "string" ? message : "An error occurred");
+      if (result.error) {
+        toast.error(result.error);
       }
     });
   }
@@ -67,20 +76,29 @@ export const ProductActions = ({ id, title }: { id: string; title: string }) => 
                 <span>Edit</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem disabled title="Coming soon">
               <IconCopy aria-hidden="true" className="opacity-60" size={16} />
               <span>Duplicate</span>
+              <Badge className="ml-auto" variant={"outline"}>
+                Under dev
+              </Badge>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem disabled title="Under development">
               <Share2Icon aria-hidden="true" className="opacity-60" size={16} />
               <span>Share</span>
+              <Badge className="ml-auto" variant={"outline"}>
+                Under dev
+              </Badge>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem disabled title="Under development">
               <ArchiveRestoreIcon aria-hidden="true" className="opacity-60" size={16} />
               <span>Archive</span>
+              <Badge className="ml-auto" variant={"outline"}>
+                Under dev
+              </Badge>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />

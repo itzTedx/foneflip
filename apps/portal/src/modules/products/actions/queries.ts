@@ -18,7 +18,7 @@ async function getCurrentUserContext() {
   const session = await getSession();
   return {
     currentUserId: session?.user?.id,
-    currentUserRole: session?.user?.role as "user" | "vendor" | "admin" | "dev" | undefined,
+    currentUserRole: session?.user?.role,
   };
 }
 

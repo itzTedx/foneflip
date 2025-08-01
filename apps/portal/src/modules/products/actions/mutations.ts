@@ -67,9 +67,10 @@ export async function upsertProduct(formData: unknown) {
         seoId = seoResult.seoId;
       }
 
-      const productData: ProductUpsertType = {
+      const productData: ProductUpsertType & { status: "active" | "draft" | "archived" } = {
         ...data,
         slug: uniqueSlug,
+        condition: data.condition ?? "new",
         status: "active" as const,
         sellingPrice: data.price.selling,
         originalPrice: data.price.original,
@@ -134,7 +135,7 @@ export async function upsertProduct(formData: unknown) {
     // Update cache with the actual result
     try {
       await updateCacheWithResult(product, data.id ? "update" : "create");
-      log.info("Updated cache with actual collection data", {
+      log.info("Updated cache with actual product data", {
         id: product.id,
         slug: product.slug,
       });

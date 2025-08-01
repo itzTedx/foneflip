@@ -32,13 +32,13 @@ export const ProductCard = ({ data, showAction = true }: Props) => {
 
   return (
     <Card className="relative overflow-hidden transition-[border-color] duration-300 hover:border-primary/50">
-      <Link className="absolute inset-0 z-0" href={`/collections/${data.id}?title=${data.title.replace(" ", "+")}`} />
+      <Link className="absolute inset-0 z-0" href={`/products/${data.id}?title=${encodeURIComponent(data.title)}`} />
       <CardHeader className="relative z-10 flex justify-between">
         <div className="flex items-center gap-2">
           {data.images && (
             <div className="relative aspect-square size-14 overflow-hidden rounded-sm border bg-muted">
               <Image
-                alt={"product image"}
+                alt={`${data.title} product image`}
                 blurDataURL={data.images[0]?.media.blurData ?? undefined}
                 className="object-cover"
                 fill

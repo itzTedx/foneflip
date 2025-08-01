@@ -1,5 +1,7 @@
 import { Metadata } from "next";
+import Link from "next/link";
 
+import { IconEmpty } from "@ziron/ui/assets/empty";
 import { Badge } from "@ziron/ui/badge";
 
 import { MainWrapper } from "@/components/layout/main-wrapper";
@@ -79,9 +81,17 @@ export default async function ProductsPage() {
         </div>
 
         <TabsContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3" value="all">
-          {products.map((product) => (
-            <ProductCard data={product} key={product.id} />
-          ))}
+          {products.length === 0 ? (
+            <div className="col-span-full py-8 text-center text-muted-foreground">
+              <IconEmpty />
+              No products found.{" "}
+              <Link className="text-primary hover:underline" href="/products/new">
+                Create your first product
+              </Link>
+            </div>
+          ) : (
+            products.map((product) => <ProductCard data={product} key={product.id} />)
+          )}
         </TabsContent>
       </Tabs>
     </MainWrapper>
