@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { IconCopy, IconEdit } from "@tabler/icons-react";
-import { ArchiveRestoreIcon, Ellipsis, Share2Icon, Trash2Icon } from "lucide-react";
+import { ArchiveRestoreIcon, Ellipsis, Share2Icon } from "lucide-react";
 import { toast } from "sonner";
 
+import { IconTrashFilled } from "@ziron/ui/assets/icons";
 import { Button } from "@ziron/ui/button";
 import {
   DropdownMenu,
@@ -84,7 +85,7 @@ export const ProductActions = ({ id, title }: { id: string; title: string }) => 
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setDialog("delete")} variant="destructive">
-            <Trash2Icon aria-hidden="true" size={16} />
+            <IconTrashFilled aria-hidden="true" />
             <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

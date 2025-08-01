@@ -1,11 +1,17 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 
-import { AlertCircle, BarChart3, CheckCircle, RefreshCw, Trash2 } from "lucide-react";
+import { AlertCircle, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
-import { IconCrownFilled, IconRefreshFilled } from "@ziron/ui/assets/icons";
+import {
+  IconCrownFilled,
+  IconRefresh,
+  IconRefreshDuo,
+  IconRefreshFilled,
+  IconTrashFilled,
+} from "@ziron/ui/assets/icons";
 import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
 import { CardContent } from "@ziron/ui/card";
@@ -20,6 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@ziron/ui/dialog";
+import { formatDate } from "@ziron/utils";
 
 import { type CacheRevalidationType, clearAllCaches, getCacheStats, revalidateCache } from "@/modules/cache/actions";
 
@@ -32,6 +39,65 @@ interface CacheStats {
   maxMemoryPolicy: string;
 }
 
+// IndexedDB helper functions
+const DB_NAME = "cache-management-db";
+const DB_VERSION = 1;
+const STORE_NAME = "last-revalidation";
+
+async function openDB(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: "id" });
+      }
+    };
+  });
+}
+
+async function saveLastRevalidation(timestamp: string): Promise<void> {
+  try {
+    const db = await openDB();
+    const transaction = db.transaction([STORE_NAME], "readwrite");
+    const store = transaction.objectStore(STORE_NAME);
+
+    await new Promise<void>((resolve, reject) => {
+      const request = store.put({ id: "lastRevalidation", timestamp });
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+
+    db.close();
+  } catch (error) {
+    console.error("Failed to save last revalidation:", error);
+  }
+}
+
+async function loadLastRevalidation(): Promise<string | null> {
+  try {
+    const db = await openDB();
+    const transaction = db.transaction([STORE_NAME], "readonly");
+    const store = transaction.objectStore(STORE_NAME);
+
+    const result = await new Promise<string | null>((resolve, reject) => {
+      const request = store.get("lastRevalidation");
+      request.onsuccess = () => resolve(request.result?.timestamp || null);
+      request.onerror = () => reject(request.error);
+    });
+
+    db.close();
+    return result;
+  } catch (error) {
+    console.error("Failed to load last revalidation:", error);
+    return null;
+  }
+}
+
 export function CacheManagement() {
   const [isPendingAll, startTransitionAll] = useTransition();
   const [isPendingCollections, startTransitionCollections] = useTransition();
@@ -41,6 +107,23 @@ export function CacheManagement() {
   const [lastRevalidated, setLastRevalidated] = useState<string | null>(null);
   const [stats, setStats] = useState<CacheStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Load persisted last revalidation on mount
+  useEffect(() => {
+    loadLastRevalidation().then((timestamp) => {
+      if (timestamp) {
+        setLastRevalidated(timestamp);
+      }
+    });
+  }, []);
+
+  // Load stats when dialog opens
+  useEffect(() => {
+    if (isDialogOpen) {
+      loadStats();
+    }
+  }, [isDialogOpen]);
 
   const handleRevalidate = async (type: CacheRevalidationType) => {
     const startTransition =
@@ -57,8 +140,11 @@ export function CacheManagement() {
         const result = await revalidateCache({ type });
 
         if (result.success) {
+          const timestamp = new Date().toISOString();
           toast.success(`Successfully revalidated ${type} caches`);
-          setLastRevalidated(new Date().toLocaleTimeString());
+          setLastRevalidated(timestamp);
+          // Persist the timestamp
+          await saveLastRevalidation(timestamp);
           // Refresh stats after revalidation
           await loadStats();
         } else {
@@ -77,8 +163,11 @@ export function CacheManagement() {
         const result = await clearAllCaches();
 
         if (result.success) {
+          const timestamp = new Date().toISOString();
           toast.success("Successfully cleared all caches");
-          setLastRevalidated(new Date().toLocaleTimeString());
+          setLastRevalidated(timestamp);
+          // Persist the timestamp
+          await saveLastRevalidation(timestamp);
           // Refresh stats after clearing
           await loadStats();
         } else {
@@ -115,7 +204,7 @@ export function CacheManagement() {
   }
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline">
           Dev Tools
@@ -153,7 +242,7 @@ export function CacheManagement() {
                   size="sm"
                   variant="outline"
                 >
-                  <RefreshCw className={`mr-1 h-3 w-3 ${isPendingAll ? "animate-spin" : ""}`} />
+                  <IconRefresh className={`mr-1 h-3 w-3 ${isPendingAll ? "animate-spin" : ""}`} />
                   All Caches
                 </Button>
 
@@ -166,7 +255,7 @@ export function CacheManagement() {
                   size="sm"
                   variant="outline"
                 >
-                  <RefreshCw className={`mr-1 h-3 w-3 ${isPendingCollections ? "animate-spin" : ""}`} />
+                  <IconRefresh className={`mr-1 h-3 w-3 ${isPendingCollections ? "animate-spin" : ""}`} />
                   Collections
                 </Button>
 
@@ -179,7 +268,7 @@ export function CacheManagement() {
                   size="sm"
                   variant="outline"
                 >
-                  <RefreshCw className={`mr-1 h-3 w-3 ${isPendingProducts ? "animate-spin" : ""}`} />
+                  <IconRefresh className={`mr-1 h-3 w-3 ${isPendingProducts ? "animate-spin" : ""}`} />
                   Products
                 </Button>
 
@@ -192,7 +281,7 @@ export function CacheManagement() {
                   size="sm"
                   variant="outline"
                 >
-                  <RefreshCw className={`mr-1 h-3 w-3 ${isPendingMedia ? "animate-spin" : ""}`} />
+                  <IconRefresh className={`mr-1 h-3 w-3 ${isPendingMedia ? "animate-spin" : ""}`} />
                   Media
                 </Button>
               </div>
@@ -208,7 +297,7 @@ export function CacheManagement() {
                 size="sm"
                 variant="destructive"
               >
-                <Trash2 className="mr-1 h-3 w-3" />
+                <IconTrashFilled className="mr-1 h-3 w-3" />
                 Clear All
               </Button>
             </div>
@@ -218,7 +307,7 @@ export function CacheManagement() {
               <div className="flex items-center justify-between">
                 <h4 className="font-medium text-sm">Cache Statistics</h4>
                 <Button className="text-xs" disabled={isLoadingStats} onClick={loadStats} size="sm" variant="ghost">
-                  <BarChart3 className={`mr-1 h-3 w-3 ${isLoadingStats ? "animate-spin" : ""}`} />
+                  <IconRefreshDuo className={`mr-1 h-3 w-3 ${isLoadingStats ? "animate-spin" : ""}`} />
                   Refresh
                 </Button>
               </div>
@@ -263,7 +352,7 @@ export function CacheManagement() {
             {lastRevalidated && (
               <div className="flex items-center gap-1 text-muted-foreground text-xs">
                 <CheckCircle className="h-3 w-3" />
-                Last action: {lastRevalidated}
+                Last action: {formatDate(lastRevalidated, { includeTime: true, relative: true })}
               </div>
             )}
 

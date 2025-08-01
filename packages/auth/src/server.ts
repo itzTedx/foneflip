@@ -2,12 +2,7 @@ import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import {
-  admin as adminPlugin,
-  emailOTP,
-  organization,
-  twoFactor,
-} from "better-auth/plugins";
+import { admin as adminPlugin, emailOTP, organization, twoFactor } from "better-auth/plugins";
 
 import { db } from "@ziron/db";
 import redis from "@ziron/redis";
@@ -22,11 +17,7 @@ import { ac, admin, dev, user, vendor } from "./permission";
  * @param options - Contains the base URL, production URL, and secret for authentication configuration.
  * @returns The initialized authentication instance.
  */
-export function initAuth(options: {
-  baseUrl: string;
-  productionUrl: string;
-  secret: string | undefined;
-}) {
+export function initAuth(options: { baseUrl: string; productionUrl: string; secret: string | undefined }) {
   const config = {
     database: drizzleAdapter(db, {
       provider: "pg",
@@ -107,12 +98,7 @@ export function initAuth(options: {
         maxAge: 5 * 60, // Cache duration in seconds
       },
     },
-    trustedOrigins: [
-      "expo://",
-      "http://localhost:3000",
-      "http://192.168.0.206:3000",
-      "http://192.168.1.158:3000",
-    ],
+    trustedOrigins: ["expo://", "http://localhost:3000", "http://192.168.0.206:3000", "http://192.168.1.158:3000"],
   } satisfies BetterAuthOptions;
 
   return betterAuth(config);
