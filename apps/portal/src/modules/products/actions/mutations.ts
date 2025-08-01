@@ -1,6 +1,7 @@
 "use server";
 
-import { db } from "@ziron/db";
+import { db, eq } from "@ziron/db";
+import { productsTable } from "@ziron/db/schema";
 import { slugify } from "@ziron/utils";
 import { productSchema, z } from "@ziron/validators";
 
@@ -179,5 +180,57 @@ export async function upsertProduct(formData: unknown) {
       error: "Database error",
       message: error instanceof Error ? error.message : error,
     };
+  }
+}
+
+export async function deleteProduct(id: string) {
+  try {
+    log.info(`Starting soft deletion for product with ID: ${id}`);
+
+    const [product] = await db
+      .update(productsTable)
+      .set({ deletedAt: new Date() })
+      .where(eq(productsTable.id, id))
+      .returning({
+        id: productsTable.id,
+        title: productsTable.title,
+        slug: productsTable.slug,
+      });
+
+    if (!product) {
+      log.warn(`Soft deletion failed: Product with ID ${id} not found.`);
+      return { error: "Product not found." };
+    }
+
+    // Comprehensive cache revalidation
+    try {
+      await invalidateAndRevalidateCaches({
+        id: product.id,
+        slug: product.slug,
+      });
+      log.info("Invalidated and revalidated all product-related caches", {
+        id: product.id,
+        slug: product.slug,
+      });
+    } catch (cacheError) {
+      log.warn("Cache revalidation failed after product deletion", {
+        cacheError,
+      });
+    }
+
+    log.success(`Successfully soft-deleted product: "${product.title}" (ID: ${id})`);
+
+    return {
+      success: `Product (${product.title}) has been deleted`,
+      data: product,
+    };
+  } catch (err) {
+    log.error(`Error in deleteProduct action for ID: ${id}`, {
+      error: err,
+      message: err instanceof Error ? err.message : "Unknown error occurred",
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    const message = err instanceof Error ? err.message : "Unknown error occurred";
+    return { error: `Failed to delete product: ${message}` };
   }
 }

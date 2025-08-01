@@ -27,20 +27,18 @@ export type ProductSpecification = InferSelectModel<typeof productSpecifications
 export type ProductImage = InferSelectModel<typeof productImagesTable>;
 
 // Query result types
-export type ProductQueryResult =
-  | (Product & {
-      seo?: Seo | null;
-      settings: ProductSetting;
-      attributes?: (ProductAttribute & { options: ProductAttributeOption[] })[];
-      specifications?: ProductSpecification[];
-      variants?: (ProductVariant & {
-        options: (ProductVariantsOption & { option: ProductAttributeOption & { attribute: ProductAttribute } })[];
-      })[];
-      collection?: Collection | null;
-      delivery?: ProductDelivery | null;
-      images?: (ProductImage & { media: Media })[];
-    })
-  | undefined;
+export type ProductQueryResult = Product & {
+  seo?: Seo | null;
+  settings: ProductSetting;
+  attributes?: (ProductAttribute & { options: ProductAttributeOption[] })[];
+  specifications?: ProductSpecification[];
+  variants?: (ProductVariant & {
+    options: (ProductVariantsOption & { option: ProductAttributeOption & { attribute: ProductAttribute } })[];
+  })[];
+  collection?: Collection | null;
+  delivery?: ProductDelivery | null;
+  images?: (ProductImage & { media: Media })[];
+};
 
 export type ProductUpsertType = InferInsertModel<typeof productsTable>;
 

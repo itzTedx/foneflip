@@ -19,8 +19,8 @@ import {
   DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 
+import { ActionConfirmDialog } from "../../../components/ui/action-confirm-dialog";
 import { deleteCollection, duplicateCollection, setCollectionStatus } from "../actions/mutations";
-import { ActionConfirmDialog } from "./ui/action-confirm-dialog";
 
 interface Props {
   title: string;
@@ -67,9 +67,9 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
       const result = await deleteCollection(id);
       if (result.success) {
         const message = (result as { message?: string }).message;
-        setDialog(null);
         router.refresh();
         toast.success(typeof message === "string" ? message : "Collection Deleted successfully");
+        setDialog(null);
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
@@ -161,7 +161,7 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
         isLoading={isDeletePending}
         onConfirm={handleDelete}
         onOpenChange={(open) => setDialog(open ? "delete" : null)}
-        open={dialog === "delete"}
+        open={dialog === "delete" || isDeletePending}
       />
       <ActionConfirmDialog
         isLoading={isStatusPending}

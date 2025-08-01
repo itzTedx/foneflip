@@ -1,13 +1,11 @@
 import { Metadata } from "next";
-import Link from "next/link";
-
-import { Card, CardContent } from "@ziron/ui/card";
 
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { AddButton } from "@/components/ui/action-buttons";
 import { hasPermission } from "@/modules/auth/actions/data-access";
 import { getProducts } from "@/modules/products/actions/queries";
+import { ProductCard } from "@/modules/products/components/ui/product-card";
 
 export const metadata: Metadata = {
   title: "Manage Products | Foneflip",
@@ -27,15 +25,10 @@ export default async function ProductsPage() {
       <PageHeader title="Products">
         <AddButton href="/products/new" title="Product" />
       </PageHeader>
+
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
         {products.map((product) => (
-          <Card className="relative" key={product.id}>
-            <Link
-              className="absolute inset-0 z-0"
-              href={`/products/${product.id}?title=${encodeURIComponent(product.title)}`}
-            />
-            <CardContent>{product.title}</CardContent>
-          </Card>
+          <ProductCard data={product} key={product.id} />
         ))}
       </div>
     </MainWrapper>

@@ -177,8 +177,15 @@ interface UpsertProductDataProps {
 }
 
 export const upsertProductData = async (trx: Trx, { data, seoId, deliveryId, productId }: UpsertProductDataProps) => {
-  const values = { ...data, seoId, deliveryId: deliveryId ?? null };
-  log.success("Values Received for upsertProductData", data);
+  // Convert empty strings to null for UUID fields
+  const sanitizedData = {
+    ...data,
+    collectionId: data.collectionId === "" ? null : data.collectionId,
+    vendorId: data.vendorId === "" ? null : data.vendorId,
+  };
+
+  const values = { ...sanitizedData, seoId, deliveryId: deliveryId ?? null };
+  log.success("Values Received for upsertProductData", sanitizedData);
   if (productId) {
     log.success("Product Id to update", productId);
     const [product] = await trx.update(productsTable).set(values).where(eq(productsTable.id, productId)).returning();

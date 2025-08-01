@@ -3,6 +3,7 @@ import { IconLayoutSidebar } from "@tabler/icons-react";
 import { Session } from "@ziron/auth";
 import { SidebarTrigger } from "@ziron/ui/sidebar";
 
+import { CacheManagement } from "@/modules/cache/components/cache-management";
 import { getNotifications } from "@/modules/notifications/actions/queries";
 
 import { NavBreadcrumb } from "./nav-breadcrumb";
@@ -32,6 +33,8 @@ export default async function Navbar({ session }: NavbarProps) {
         {!session && <ThemeToggle />}
         {session && (
           <div className="flex flex-1 items-center justify-end gap-3">
+            {/* Cache Management (Dev Only) */}
+            <CacheManagement />
             <Notifications initialNotifications={notifications} />
             <UserMenu />
           </div>

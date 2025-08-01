@@ -1,19 +1,18 @@
-import { JobType, QUEUE_NAME } from "@ziron/queue";
-import redis from "@ziron/redis";
 import { Queue, Worker } from "bullmq";
 
+import { JobType, QUEUE_NAME } from "@ziron/queue";
+import redis from "@ziron/redis";
+
 import { deleteSoftDeletedCollections } from "./jobs/collections";
-import {
-  deleteOldNotifications,
-  deleteSoftDeletedNotifications,
-  runNotification,
-} from "./jobs/notifications";
+import { deleteOldNotifications, deleteSoftDeletedNotifications, runNotification } from "./jobs/notifications";
+import { deleteSoftDeletedProducts } from "./jobs/products";
 
 const runners = {
   [JobType.Notification]: runNotification,
   deleteOldNotifications,
   deleteSoftDeletedNotifications,
   [JobType.DeleteSoftDeletedCollections]: deleteSoftDeletedCollections,
+  [JobType.DeleteSoftDeletedProducts]: deleteSoftDeletedProducts,
 };
 
 const queue = new Queue(QUEUE_NAME, { connection: redis });
@@ -53,6 +52,20 @@ const queue = new Queue(QUEUE_NAME, { connection: redis });
     { pattern: "0 2 * * *" }, // every day at 2:00 AM
     {
       name: JobType.DeleteSoftDeletedCollections,
+      data: {},
+      opts: {
+        removeOnComplete: true,
+        removeOnFail: true,
+      },
+    }
+  );
+
+  // Schedule hard deletion of soft-deleted products every day at 3:00 AM
+  await queue.upsertJobScheduler(
+    "delete-soft-deleted-products-scheduler",
+    { pattern: "0 3 * * *" }, // every day at 3:00 AM
+    {
+      name: JobType.DeleteSoftDeletedProducts,
       data: {},
       opts: {
         removeOnComplete: true,

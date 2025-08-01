@@ -30,28 +30,28 @@ function normalizeStatus(status: unknown): "draft" | "active" | "archived" | nul
   return null;
 }
 
-/**
- * Returns a product object with its collection property simplified to include only id, title, and slug, and all variant options cleared.
- *
- * @param product - The product to transform
- * @param collection - The collection to extract minimal shape from
- * @returns The product with a simplified collection and variants with empty options arrays
- */
-function withCollectionShape(product: ProductQueryResult, collection: CollectionQueryResult): ProductQueryResult {
-  return {
-    ...product,
-    collection: {
-      id: collection?.id,
-      title: collection?.title,
-      slug: collection?.slug,
-    },
-    variants:
-      product?.variants?.map((v) => ({
-        ...v,
-        options: [],
-      })) ?? [],
-  } as ProductQueryResult;
-}
+// /**
+//  * Returns a product object with its collection property simplified to include only id, title, and slug, and all variant options cleared.
+//  *
+//  * @param product - The product to transform
+//  * @param collection - The collection to extract minimal shape from
+//  * @returns The product with a simplified collection and variants with empty options arrays
+//  */
+// function withCollectionShape(product: ProductQueryResult, collection: CollectionQueryResult): ProductQueryResult {
+//   return {
+//     ...product,
+//     collection: {
+//       id: collection?.id,
+//       title: collection?.title,
+//       slug: collection?.slug,
+//     },
+//     variants:
+//       product?.variants?.map((v) => ({
+//         ...v,
+//         options: [],
+//       })) ?? [],
+//   } as ProductQueryResult;
+// }
 
 function ProductBadgeHover({
   product,

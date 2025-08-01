@@ -1,6 +1,6 @@
 import { unstable_cache as cache } from "next/cache";
 
-import { db, desc, eq } from "@ziron/db";
+import { db, desc, eq, isNull } from "@ziron/db";
 import { productsTable } from "@ziron/db/schema";
 
 import { redisCache } from "@/modules/cache";
@@ -106,18 +106,7 @@ export const fetchProducts = cache(
 
         return and(...conditions);
       },
-      columns: {
-        id: true,
-        title: true,
-        slug: true,
-        condition: true,
-        sellingPrice: true,
-        originalPrice: true,
-        sku: true,
-        stock: true,
-        hasVariant: true,
-        createdAt: true,
-      },
+
       with: getProductRelations(),
       orderBy: desc(productsTable.createdAt),
       limit,
@@ -139,45 +128,66 @@ export const fetchProducts = cache(
 
 export const getProducts = cache(
   async () => {
-    // Build where conditions with role-based filtering
-    const products = await db.query.productsTable.findMany({
-      columns: {
-        id: true,
-        title: true,
-        slug: true,
-        condition: true,
-        sellingPrice: true,
-        originalPrice: true,
-        sku: true,
-        stock: true,
-        hasVariant: true,
-        createdAt: true,
-      },
-      with: {
-        images: {
-          with: {
-            media: {
-              with: true,
-            },
-          },
-        },
-      },
-      orderBy: desc(productsTable.createdAt),
-    });
+    return withCacheMonitoring(
+      async () => {
+        // Try Redis first
+        const cached = await redisCache.get<ProductQueryResult[]>(REDIS_KEYS.PRODUCTS);
+        if (cached) {
+          return cached;
+        }
 
-    return products;
+        // Fallback to database
+        const products = await db.query.productsTable.findMany({
+          where: isNull(productsTable.deletedAt),
+          with: {
+            seo: true,
+            settings: true,
+            attributes: {
+              with: {
+                options: true,
+              },
+            },
+            specifications: true,
+            variants: {
+              with: {
+                options: {
+                  with: {
+                    option: {
+                      with: {
+                        attribute: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            collection: true,
+            delivery: true,
+            images: { with: { media: true } },
+          },
+          orderBy: desc(productsTable.createdAt),
+        });
+
+        // Cache the result
+        await redisCache.set(REDIS_KEYS.PRODUCTS, products, CACHE_DURATIONS.MEDIUM);
+
+        return products;
+      },
+      REDIS_KEYS.PRODUCTS,
+      false // This is a miss since we're fetching fresh data
+    );
   },
-  [CACHE_TAGS.PRODUCTS, "dynamic"],
+  ["get-products"],
   {
-    revalidate: CACHE_DURATIONS.MEDIUM,
     tags: [CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT, CACHE_TAGS.COLLECTION, CACHE_TAGS.MEDIA],
+    revalidate: CACHE_DURATIONS.MEDIUM,
   }
 );
 
 export const getProductById = cache(
-  async (id: string): Promise<ProductQueryResult | null> => {
+  async (id: string): Promise<ProductQueryResult | undefined> => {
     if (id === "new") {
-      return null;
+      return undefined;
     }
 
     return withCacheMonitoring(
