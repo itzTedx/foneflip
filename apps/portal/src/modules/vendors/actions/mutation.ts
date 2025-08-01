@@ -42,7 +42,7 @@ export async function sendInvitation(formData: unknown) {
   const { success, data, error } = invitationSchema.safeParse(formData);
 
   if (!success) {
-    log.warn("Validation failed for upsertCollection", { error });
+    log.warn("Validation failed for sendInvitation", { error });
     return {
       success: false,
       error: "Invalid data",
@@ -61,9 +61,16 @@ export async function sendInvitation(formData: unknown) {
       "48h": 48,
     } as const;
 
-    const hours = expiryMap[expiresIn as keyof typeof expiryMap] || 1;
+    const hours = expiryMap[expiresIn as keyof typeof expiryMap];
+    if (!hours) {
+      log.warn("Invalid expiresIn value, defaulting to 1 hour", { expiresIn });
+      return {
+        success: false,
+        error: "VALIDATION_ERROR",
+        message: "Invalid expiration time",
+      };
+    }
     const expiresAt = addHours(new Date(), hours);
-
     const invitation = await db.transaction(async (trx) => {
       // Check if email already has a pending invitation
       const hasPending = await hasPendingInvitation(trx, email);
@@ -92,7 +99,7 @@ export async function sendInvitation(formData: unknown) {
           vendorName: name,
           verificationLink: `${env.BETTER_AUTH_URL}/verify?token=${invitation?.token}`,
           inviterName: session.user.name,
-          expiresIn: expiresIn ?? "1",
+          expiresIn: hours.toString(),
         }),
       });
     } catch (error: unknown) {
@@ -105,8 +112,8 @@ export async function sendInvitation(formData: unknown) {
     }
 
     return createSuccessResponse(invitation, `Invitation sent to ${email}`);
-  } catch {
-    log.error("Send invitation action failed", { error });
+  } catch (error) {
+    log.error("Send invitation action failed", error);
     return {
       success: false,
       error: "INTERNAL_SERVER_ERROR",

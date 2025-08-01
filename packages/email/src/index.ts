@@ -9,27 +9,36 @@ import { env } from "./lib/env";
 
 export const transporter = nodemailer.createTransport({
   host: env.SMTP_HOST,
-  port: env.SMTP_PORT,
-  secure: false, // true for 465, false for other ports
+  port: Number(env.SMTP_PORT),
+  secure: env.SMTP_PORT === "465",
   auth: {
     user: env.SMTP_USER,
     pass: env.SMTP_PASS,
   },
 });
 
-interface SendEmailOptions {
-  email: string;
-  subject: string;
-  react?: ReactElement;
-  text?: string;
-}
+type SendEmailOptions =
+  | {
+      email: string;
+      subject: string;
+      react: ReactElement;
+      text?: string;
+    }
+  | {
+      email: string;
+      subject: string;
+      text: string;
+    };
 
-export const sendEmail = async ({ email, subject, react, text }: SendEmailOptions) => {
+export const sendEmail = async (options: SendEmailOptions) => {
+  const { email, subject, text } = options;
+  const react = "react" in options ? options.react : undefined;
+
   return await transporter.sendMail({
     from: env.SMTP_FROM,
     to: email,
     subject,
     text,
-    html: await render(react),
+    html: react ? await render(react) : undefined,
   });
 };

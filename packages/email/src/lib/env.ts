@@ -5,11 +5,15 @@ import { z } from "@ziron/validators";
 export const env = createEnv({
   server: {
     SMTP_HOST: z.string().min(1),
-    SMTP_PORT: z.number().min(1),
+    SMTP_PORT: z.string().min(1),
     SMTP_USER: z.string().min(1),
     SMTP_PASS: z.string().min(1),
-    SMTP_FROM: z.email().min(1),
+    SMTP_FROM: z.string().min(1),
   },
 
   experimental__runtimeEnv: {},
+
+  skipValidation:
+    // biome-ignore lint/style/noProcessEnv: Disabling validation while CI in process
+    !!process.env.CI || process.env.npm_lifecycle_event === "lint",
 });
