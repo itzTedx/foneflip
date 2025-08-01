@@ -60,6 +60,8 @@ export const updateProductCache = async (product: Product, operation: "create" |
     if (operation === "delete") {
       // Remove from cache
       await redisCache.del(REDIS_KEYS.PRODUCT_BY_SLUG(product.slug), REDIS_KEYS.PRODUCT_BY_ID(product.id));
+      // Also invalidate related caches
+      await redisCache.del(REDIS_KEYS.PRODUCT_STATS, REDIS_KEYS.PRODUCT_POPULAR, REDIS_KEYS.PRODUCT_RECENT);
     } else {
       // Update cache optimistically
       await Promise.all([

@@ -194,7 +194,18 @@ export const upsertProductData = async (trx: Trx, { data, seoId, deliveryId, pro
 
     return product;
   }
-  const [product] = await trx.insert(productsTable).values(values).returning();
+  // Ensure required fields are present and filter out undefined values
+  const insertValues = {
+    title: values.title || "",
+    slug: values.slug || "",
+    condition: values.condition || "pristine",
+    ...Object.fromEntries(
+      Object.entries(values).filter(
+        ([key, value]) => value !== undefined && key !== "title" && key !== "slug" && key !== "condition"
+      )
+    ),
+  };
+  const [product] = await trx.insert(productsTable).values(insertValues).returning();
 
   log.success("Product created", product);
 
@@ -286,7 +297,12 @@ export const upsertDelivery = async (trx: Trx, { product, delivery }: UpsertDeli
     packageSize: delivery.packageSize ?? "",
     cod: delivery.cod ?? false,
     returnable: delivery.returnable ?? false,
-    returnPeriod: delivery.returnPeriod ? Number.parseInt(delivery.returnPeriod.toString()) : null,
+    returnPeriod: delivery.returnPeriod
+      ? (() => {
+          const parsed = Number.parseInt(delivery.returnPeriod.toString(), 10);
+          return Number.isNaN(parsed) ? null : parsed;
+        })()
+      : null,
     expressDelivery: delivery.type?.express ?? false,
     deliveryFees: delivery.type?.fees ?? "free",
   };

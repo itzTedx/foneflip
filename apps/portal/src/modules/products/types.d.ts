@@ -1,4 +1,4 @@
-import type { InferSelectModel } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 import {
   productAttributeOptionsTable,
@@ -15,7 +15,6 @@ import {
 import { Collection, Media, Seo } from "../collections/types";
 
 export type UpsertProductDeliveries = InferInsertModel<typeof productDeliveriesTable>;
-
 export type Product = InferSelectModel<typeof productsTable>;
 export type ProductVariant = InferSelectModel<typeof productVariantsTable>;
 export type ProductVariantsOption = InferSelectModel<typeof productVariantOptionsTable>;

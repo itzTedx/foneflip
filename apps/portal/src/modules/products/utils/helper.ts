@@ -235,7 +235,7 @@ export const getFullProductRelations = () => ({
  * @param product - The product object to transform, or `false` if not available
  * @returns The form-compatible product data with `updatedAt`, or `null` if input is `false`
  */
-export function transformProductToFormType(product: ProductQueryResult | null): ProductFormType | undefined {
+export function transformProductToFormType(product?: ProductQueryResult): ProductFormType | undefined {
   if (!product) return undefined;
 
   return {
