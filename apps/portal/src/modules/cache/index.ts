@@ -27,6 +27,13 @@ export const REDIS_KEYS = {
   COLLECTION_STATS: "collections:stats",
   COLLECTION_POPULAR: "collections:popular",
   COLLECTION_RECENT: "collections:recent",
+  PRODUCTS: "products:all",
+  PRODUCTS_METADATA: "products:all:metadata",
+  PRODUCT_BY_SLUG: (slug: string) => `product:${slug}`,
+  PRODUCT_BY_ID: (id: string) => `product:id:${id}`,
+  PRODUCT_STATS: "products:stats",
+  PRODUCT_POPULAR: "products:popular",
+  PRODUCT_RECENT: "products:recent",
 } as const;
 
 // Redis cache utilities with improved typing and error handling

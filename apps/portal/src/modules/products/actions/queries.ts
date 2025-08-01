@@ -1,8 +1,9 @@
 import { unstable_cache as cache } from "next/cache";
 
-import { db, desc, eq, isNull } from "@ziron/db";
-import { productsTable } from "@ziron/db/schema";
+import { db, desc, eq } from "@ziron/db";
+import { productSettingsTable, productsTable } from "@ziron/db/schema";
 
+import { getSession } from "@/lib/auth/server";
 import { redisCache } from "@/modules/cache";
 import { CACHE_DURATIONS } from "@/modules/cache/constants";
 import { withCacheMonitoring, withSmartCacheMonitoring } from "@/modules/collections/utils/cache-monitor";
@@ -11,6 +12,15 @@ import { ProductQueryOptions, ProductQueryResult } from "../types";
 import { getFullProductRelations, getProductRelations } from "../utils/helper";
 import { CACHE_TAGS, REDIS_KEYS } from "./cache";
 import { resolveCollectionId } from "./helpers";
+
+// Helper function to get current user context from session
+async function getCurrentUserContext() {
+  const session = await getSession();
+  return {
+    currentUserId: session?.user?.id,
+    currentUserRole: session?.user?.role as "user" | "vendor" | "admin" | "dev" | undefined,
+  };
+}
 
 export const existingProduct = cache(
   async (slug: string) => {
@@ -70,7 +80,7 @@ export const fetchProducts = cache(
 
     // Build where conditions with role-based filtering
     const products = await db.query.productsTable.findMany({
-      where: (fields, { eq, and, ilike, or }) => {
+      where: (fields, { eq, and, ilike, or, exists }) => {
         const conditions = [];
 
         // Role-based filtering
@@ -104,6 +114,23 @@ export const fetchProducts = cache(
           );
         }
 
+        // Filter by status using relation
+        if (status) {
+          conditions.push(
+            exists(
+              db
+                .select()
+                .from(productSettingsTable)
+                .where(
+                  and(
+                    eq(productSettingsTable.productId, fields.id),
+                    eq(productSettingsTable.status, status as "active" | "archived" | "draft")
+                  )
+                )
+            )
+          );
+        }
+
         return and(...conditions);
       },
 
@@ -113,11 +140,7 @@ export const fetchProducts = cache(
       offset,
     });
 
-    const filtered = status
-      ? products.filter((p) => (p as { settings?: { status?: string } | null }).settings?.status === status)
-      : products;
-
-    return filtered;
+    return products;
   },
   [CACHE_TAGS.PRODUCTS, "dynamic"],
   {
@@ -127,18 +150,42 @@ export const fetchProducts = cache(
 );
 
 export const getProducts = cache(
-  async () => {
+  async (options: { currentUserId?: string; currentUserRole?: string } = {}) => {
+    // If no options provided, get current user context from session
+    const userContext = Object.keys(options).length === 0 ? await getCurrentUserContext() : options;
+
+    const { currentUserId, currentUserRole } = userContext;
+
     return withCacheMonitoring(
       async () => {
-        // Try Redis first
-        const cached = await redisCache.get<ProductQueryResult[]>(REDIS_KEYS.PRODUCTS);
-        if (cached) {
-          return cached;
+        try {
+          // Try Redis first
+          const cached = await redisCache.get<ProductQueryResult[]>(REDIS_KEYS.PRODUCTS);
+          if (cached) {
+            return cached;
+          }
+        } catch (error) {
+          console.error("Error fetching products from Redis", error);
         }
 
-        // Fallback to database
+        // Build where conditions with role-based filtering
         const products = await db.query.productsTable.findMany({
-          where: isNull(productsTable.deletedAt),
+          where: (fields, { eq, and, isNull }) => {
+            const conditions = [isNull(fields.deletedAt)];
+
+            // Role-based filtering
+            if (currentUserRole === "admin" || currentUserRole === "dev") {
+              // Admins can see all products - no additional filtering needed
+            } else if (currentUserRole === "vendor" && currentUserId) {
+              // Vendors can only see their own products
+              conditions.push(eq(fields.userId, currentUserId));
+            } else if (currentUserId) {
+              // Regular users can only see their own products
+              conditions.push(eq(fields.userId, currentUserId));
+            }
+
+            return and(...conditions);
+          },
           with: {
             seo: true,
             settings: true,
@@ -190,15 +237,19 @@ export const getProductById = cache(
       return undefined;
     }
 
+    // Try Redis first
+    const cached = await redisCache.get<ProductQueryResult>(REDIS_KEYS.PRODUCT_BY_ID(id));
+    if (cached) {
+      return withCacheMonitoring(
+        async () => cached,
+        REDIS_KEYS.PRODUCT_BY_ID(id),
+        true // This is a cache hit
+      );
+    }
+
+    // Fallback to database
     return withCacheMonitoring(
       async () => {
-        // Try Redis first
-        const cached = await redisCache.get<ProductQueryResult>(REDIS_KEYS.PRODUCT_BY_ID(id));
-        if (cached) {
-          return cached;
-        }
-
-        // Fallback to database
         const product = await db.query.productsTable.findFirst({
           where: eq(productsTable.id, id),
           with: {
@@ -229,15 +280,19 @@ export const getProductById = cache(
           },
         });
 
-        // Cache the result
+        // Cache the result (don't fail if cache write fails)
         if (product) {
-          await redisCache.set(REDIS_KEYS.PRODUCT_BY_ID(id), product, CACHE_DURATIONS.MEDIUM);
+          try {
+            await redisCache.set(REDIS_KEYS.PRODUCT_BY_ID(id), product, CACHE_DURATIONS.MEDIUM);
+          } catch (error) {
+            console.error("Redis cache write error:", error);
+          }
         }
 
         return product;
       },
       REDIS_KEYS.PRODUCT_BY_ID(id),
-      false // This is a miss since we're fetching fresh data
+      false // This is a miss since we're fetching fresh data from database
     );
   },
   [CACHE_TAGS.PRODUCT_BY_ID, "id"],

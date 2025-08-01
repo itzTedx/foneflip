@@ -155,10 +155,10 @@ async function revalidateProductCaches(productId?: string, slug?: string): Promi
   const keysToInvalidate: string[] = [];
 
   if (productId) {
-    keysToInvalidate.push(`product:id:${productId}`);
+    keysToInvalidate.push(REDIS_KEYS.PRODUCT_BY_ID(productId));
   }
   if (slug) {
-    keysToInvalidate.push(`product:${slug}`);
+    keysToInvalidate.push(REDIS_KEYS.PRODUCT_BY_SLUG(slug));
   }
 
   if (keysToInvalidate.length > 0) {

@@ -31,7 +31,7 @@ export const ProductActions = ({ id, title }: { id: string; title: string }) => 
   const router = useRouter();
 
   /**
-   * Deletes the collection identified by `id` and provides user feedback based on the operation's outcome.
+   * Deletes the product identified by `id` and provides user feedback based on the operation's outcome.
    *
    * Closes the confirmation dialog, refreshes the page, and displays a success or error toast depending on whether the deletion was successful.
    */
@@ -42,7 +42,7 @@ export const ProductActions = ({ id, title }: { id: string; title: string }) => 
         const message = (result as { message?: string }).message;
         setDialog(null);
         router.refresh();
-        toast.success(typeof message === "string" ? message : "Collection Deleted successfully");
+        toast.success(typeof message === "string" ? message : "Product deleted successfully");
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
@@ -62,7 +62,7 @@ export const ProductActions = ({ id, title }: { id: string; title: string }) => 
         <DropdownMenuContent>
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href={`/products/${id}?title=${title.replace(" ", "+")}`}>
+              <Link href={`/products/${id}?title=${encodeURIComponent(title)}`}>
                 <IconEdit aria-hidden="true" className="opacity-60" size={16} />
                 <span>Edit</span>
               </Link>

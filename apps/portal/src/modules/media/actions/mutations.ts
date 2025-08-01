@@ -5,6 +5,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 
 import { mediaTable } from "@ziron/db/schema";
+import type { Trx } from "@ziron/db/types";
 import { MediaToInsert } from "@ziron/db/types";
 
 import { getSession } from "@/lib/auth/server";
@@ -100,14 +101,14 @@ export async function getSignedURL({ file, checksum, collection }: Props) {
  * @param transaction - Optional database transaction to use for the operation
  * @returns The UUID of the existing or newly inserted media record
  */
-export async function upsertMedia(media: MediaToInsert, transaction?: any): Promise<string> {
+export async function upsertMedia(media: MediaToInsert, transaction?: Trx): Promise<string> {
   const dbOrTx = transaction || (await import("@ziron/db")).db;
   log.info("Performing upsert for Media", {
     data: media,
   });
 
   const existing = await dbOrTx.query.mediaTable.findFirst({
-    where: (row: any) => row.url === media.url,
+    where: (fields, { eq }) => eq(fields.url, media.url),
   });
 
   if (existing) return existing.id;
