@@ -68,11 +68,6 @@ export default async function ProductsPage() {
               )}
             </TabsTrigger> */}
           </div>
-          {/* <div className="flex items-center justify-between">
-            <Button size="sm" variant="ghost">
-              <IconSettings /> Settings
-            </Button>
-          </div> */}
         </TabsList>
         <div className="mb-2 flex items-center justify-between gap-3">
           {/* <Suspense>
