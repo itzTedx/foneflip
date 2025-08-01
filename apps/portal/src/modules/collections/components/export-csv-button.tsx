@@ -1,9 +1,11 @@
 "use client";
 
 import { useTransition } from "react";
+
+import { toast } from "sonner";
+
 import { ExportButton } from "@/components/ui/action-buttons";
 import { downloadCsv } from "@/lib/utils";
-import { toast } from "sonner";
 
 import { exportCollectionsToCsv } from "../actions/mutations";
 
@@ -25,11 +27,5 @@ export const ExportCsvButton = () => {
     });
   }
 
-  return (
-    <ExportButton
-      onClick={handleExport}
-      disabled={isPending}
-      isLoading={isPending}
-    />
-  );
+  return <ExportButton disabled={isPending} isLoading={isPending} onClick={handleExport} />;
 };

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { IconBook, IconLogout, IconPhone, IconSettings, IconUser } from "@tabler/icons-react";
 import { BookOpenIcon, Layers2Icon } from "lucide-react";
 
-import { useSession } from "@ziron/auth/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@ziron/ui/avatar";
 import {
   DropdownMenu,
@@ -20,6 +19,7 @@ import GlareHover from "@ziron/ui/glare-hover";
 
 import { LogoutButton } from "@/components/ui/logout-button";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
+import { useSession } from "@/lib/auth/client";
 
 export default function UserMenu() {
   const { data } = useSession();

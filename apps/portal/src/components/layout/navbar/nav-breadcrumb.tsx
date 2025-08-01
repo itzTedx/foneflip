@@ -1,8 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { parseAsString, useQueryState } from "nuqs";
 import React, { useMemo } from "react";
+import { usePathname } from "next/navigation";
+
+import { parseAsString, useQueryState } from "nuqs";
 
 import { IconLogoMono } from "@ziron/ui/assets/logo";
 import {
@@ -54,9 +55,7 @@ export const NavBreadcrumb = () => {
     if (pathSegments.length === 0) return null;
 
     // If 'title' is present, use it as the last segment
-    const displaySegments = title
-      ? [...pathSegments.slice(0, -1), title]
-      : pathSegments;
+    const displaySegments = title ? [...pathSegments.slice(0, -1), title] : pathSegments;
 
     if (isMobile) {
       // Mobile: Only show last segment with ellipsis if there are previous segments
@@ -67,7 +66,7 @@ export const NavBreadcrumb = () => {
         <span className="flex items-center gap-2">
           {displaySegments.length > 1 && <BreadcrumbEllipsis />}
           <BreadcrumbItem>
-            <BreadcrumbPage className="truncate overflow-hidden capitalize">
+            <BreadcrumbPage className="overflow-hidden truncate capitalize">
               {getSegmentText(lastSegment ?? "", previousSegment ?? "")}
             </BreadcrumbPage>
           </BreadcrumbItem>
@@ -79,7 +78,7 @@ export const NavBreadcrumb = () => {
     return (
       <span className="flex items-center gap-2">
         {displaySegments.map((segment, index) => {
-          const href = "/" + pathSegments.slice(0, index + 1).join("/");
+          const href = `/${pathSegments.slice(0, index + 1).join("/")}`;
           const isLast = index === displaySegments.length - 1;
           const previousSegment = index > 0 ? displaySegments[index - 1] : "";
 
@@ -88,11 +87,11 @@ export const NavBreadcrumb = () => {
               <BreadcrumbSeparator />
               <BreadcrumbItem className="capitalize">
                 {isLast ? (
-                  <BreadcrumbPage className="truncate overflow-hidden">
+                  <BreadcrumbPage className="overflow-hidden truncate">
                     {getSegmentText(segment, previousSegment)}
                   </BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink href={href} className="capitalize">
+                  <BreadcrumbLink className="capitalize" href={href}>
                     {getSegmentText(segment, previousSegment)}
                   </BreadcrumbLink>
                 )}

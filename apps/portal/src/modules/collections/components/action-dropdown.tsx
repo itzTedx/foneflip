@@ -1,15 +1,11 @@
 "use client";
 
-import { IconCopy, IconEdit, IconRestore } from "@tabler/icons-react";
-import {
-  ArchiveRestoreIcon,
-  Ellipsis,
-  Share2Icon,
-  TrashIcon,
-} from "lucide-react";
+import { useCallback, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useState, useTransition } from "react";
+
+import { IconCopy, IconEdit, IconRestore } from "@tabler/icons-react";
+import { ArchiveRestoreIcon, Ellipsis, Share2Icon, TrashIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { collectionStatusEnum } from "@ziron/db/schema";
@@ -23,11 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 
-import {
-  deleteCollection,
-  duplicateCollection,
-  setCollectionStatus,
-} from "../actions/mutations";
+import { deleteCollection, duplicateCollection, setCollectionStatus } from "../actions/mutations";
 import { ActionConfirmDialog } from "./ui/action-confirm-dialog";
 
 interface Props {
@@ -56,17 +48,11 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
       if (result.success) {
         router.refresh();
         const message = (result as { message?: string }).message;
-        toast.success(
-          typeof message === "string"
-            ? message
-            : "Collection Duplicated successfully"
-        );
+        toast.success(typeof message === "string" ? message : "Collection Duplicated successfully");
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
-        toast.error(
-          typeof message === "string" ? message : "An error occurred"
-        );
+        toast.error(typeof message === "string" ? message : "An error occurred");
       }
     });
   }
@@ -83,17 +69,11 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
         const message = (result as { message?: string }).message;
         setDialog(null);
         router.refresh();
-        toast.success(
-          typeof message === "string"
-            ? message
-            : "Collection Deleted successfully"
-        );
+        toast.success(typeof message === "string" ? message : "Collection Deleted successfully");
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
-        toast.error(
-          typeof message === "string" ? message : "An error occurred"
-        );
+        toast.error(typeof message === "string" ? message : "An error occurred");
       }
     });
   }
@@ -103,28 +83,18 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
    *
    * @param status - The new status to set for the collection.
    */
-  function handleCollectionStatus({
-    status,
-  }: {
-    status: (typeof collectionStatusEnum)["enumValues"][number];
-  }) {
+  function handleCollectionStatus({ status }: { status: (typeof collectionStatusEnum)["enumValues"][number] }) {
     startStatusTransition(async () => {
       const result = await setCollectionStatus(id, status);
       if (result.success) {
         const message = (result as { message?: string }).message;
         setDialog(null);
         router.refresh();
-        toast.success(
-          typeof message === "string"
-            ? message
-            : "Collection status changed successfully"
-        );
+        toast.success(typeof message === "string" ? message : "Collection status changed successfully");
       }
       if (!result.success) {
         const message = (result as { message?: string }).message;
-        toast.error(
-          typeof message === "string" ? message : "An error occurred"
-        );
+        toast.error(typeof message === "string" ? message : "An error occurred");
       }
     });
   }
@@ -142,31 +112,20 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="size-7"
-            aria-label="Open actions menu"
-          >
+          <Button aria-label="Open actions menu" className="size-7" size="icon" variant="ghost">
             <Ellipsis />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link
-                href={`/collections/${id}?=${title}`}
-                aria-label="Edit collection"
-              >
-                <IconEdit size={16} className="opacity-60" aria-hidden="true" />
+              <Link aria-label="Edit collection" href={`/collections/${id}?=${title}`}>
+                <IconEdit aria-hidden="true" className="opacity-60" size={16} />
                 <span>Edit</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={handleDuplicate}
-              aria-label="Duplicate collection"
-            >
-              <IconCopy size={16} className="opacity-60" aria-hidden="true" />
+            <DropdownMenuItem aria-label="Duplicate collection" onClick={handleDuplicate}>
+              <IconCopy aria-hidden="true" className="opacity-60" size={16} />
               <span>Duplicate</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -174,59 +133,41 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
 
           <DropdownMenuGroup>
             <DropdownMenuItem aria-label="Share collection">
-              <Share2Icon size={16} className="opacity-60" aria-hidden="true" />
+              <Share2Icon aria-hidden="true" className="opacity-60" size={16} />
               <span>Share</span>
             </DropdownMenuItem>
 
             {status === "archived" ? (
-              <DropdownMenuItem
-                onClick={handleSetActive}
-                aria-label="Set as Active"
-              >
-                <IconRestore
-                  size={16}
-                  className="opacity-60"
-                  aria-hidden="true"
-                />
+              <DropdownMenuItem aria-label="Set as Active" onClick={handleSetActive}>
+                <IconRestore aria-hidden="true" className="opacity-60" size={16} />
                 <span>Restore from Archive</span>
               </DropdownMenuItem>
             ) : (
-              <DropdownMenuItem
-                onClick={() => setDialog("archive")}
-                aria-label="Move to Archive"
-              >
-                <ArchiveRestoreIcon
-                  size={16}
-                  className="opacity-60"
-                  aria-hidden="true"
-                />
+              <DropdownMenuItem aria-label="Move to Archive" onClick={() => setDialog("archive")}>
+                <ArchiveRestoreIcon aria-hidden="true" className="opacity-60" size={16} />
                 <span>Move to Archive</span>
               </DropdownMenuItem>
             )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => setDialog("delete")}
-            aria-label="Delete collection"
-          >
-            <TrashIcon className="text-destructive size-4" aria-hidden="true" />
+          <DropdownMenuItem aria-label="Delete collection" onClick={() => setDialog("delete")} variant="destructive">
+            <TrashIcon aria-hidden="true" className="size-4 text-destructive" />
             <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <ActionConfirmDialog
-        open={dialog === "delete"}
-        onOpenChange={(open) => setDialog(open ? "delete" : null)}
-        onConfirm={handleDelete}
         isLoading={isDeletePending}
+        onConfirm={handleDelete}
+        onOpenChange={(open) => setDialog(open ? "delete" : null)}
+        open={dialog === "delete"}
       />
       <ActionConfirmDialog
-        open={dialog === "archive"}
-        onOpenChange={(open) => setDialog(open ? "archive" : null)}
-        onConfirm={handleArchive}
         isLoading={isStatusPending}
+        onConfirm={handleArchive}
+        onOpenChange={(open) => setDialog(open ? "archive" : null)}
+        open={dialog === "archive"}
       />
     </>
   );

@@ -1,13 +1,13 @@
 "use client";
 
-import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
+
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 import { Input } from "@ziron/ui/input";
 
 interface PasswordInputProps {
   id?: string;
-  label?: string;
   placeholder?: string;
   value: string;
   onChange: (value: string) => void;
@@ -17,7 +17,6 @@ interface PasswordInputProps {
 
 export function PasswordInput({
   id = "password",
-  label = "Password",
   placeholder = "Password",
   value,
   onChange,
@@ -31,27 +30,25 @@ export function PasswordInput({
   return (
     <div className="relative">
       <Input
-        id={id}
+        autoComplete="current-password webauthn"
         className={`pe-9 ${className || ""}`}
+        id={id}
+        name="password"
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        required={required}
         type={isVisible ? "text" : "password"}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
       />
       <button
-        className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-        type="button"
-        onClick={toggleVisibility}
+        aria-controls={id}
         aria-label={isVisible ? "Hide password" : "Show password"}
         aria-pressed={isVisible}
-        aria-controls={id}
+        className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-[color,box-shadow] hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+        onClick={toggleVisibility}
+        type="button"
       >
-        {isVisible ? (
-          <EyeOffIcon size={16} aria-hidden="true" />
-        ) : (
-          <EyeIcon size={16} aria-hidden="true" />
-        )}
+        {isVisible ? <EyeOffIcon aria-hidden="true" size={16} /> : <EyeIcon aria-hidden="true" size={16} />}
       </button>
     </div>
   );

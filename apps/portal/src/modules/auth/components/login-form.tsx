@@ -1,15 +1,17 @@
 "use client";
 
-import { PasswordInput } from "@/components/ui/password-input";
-import { useRouter } from "next/navigation";
 import { FormEvent, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+
 import { toast } from "sonner";
 
-import { authClient } from "@ziron/auth/client";
 import { Button } from "@ziron/ui/button";
 import { Input } from "@ziron/ui/input";
 import { Label } from "@ziron/ui/label";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
+
+import { PasswordInput } from "@/components/ui/password-input";
+import { signIn } from "@/lib/auth/client";
 
 export function LoginForm() {
   const router = useRouter();
@@ -20,7 +22,7 @@ export function LoginForm() {
   async function loginWithEmail(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     startTransition(async () => {
-      await authClient.signIn.email({
+      await signIn.email({
         email,
         password,
         callbackURL: "/",
@@ -46,20 +48,22 @@ export function LoginForm() {
         <div className="space-y-2">
           <Label htmlFor="email">Email address</Label>
           <Input
+            autoComplete="email webauthn"
             id="email"
-            type="email"
-            placeholder="name@mail.com"
-            value={email}
+            name="email"
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="name@mail.com"
             required
+            type="email"
+            value={email}
           />
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">Password</Label>
-          <PasswordInput value={password} onChange={setPassword} required />
+          <PasswordInput onChange={setPassword} required value={password} />
         </div>
 
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button className="w-full" disabled={isPending} type="submit">
           <LoadingSwap isLoading={isPending}>Login</LoadingSwap>
         </Button>
       </div>

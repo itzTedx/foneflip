@@ -3,8 +3,9 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-import { authClient } from "@ziron/auth/client";
 import { cn } from "@ziron/utils";
+
+import { signOut } from "@/lib/auth/client";
 
 interface Props {
   children: React.ReactNode;
@@ -17,7 +18,7 @@ export const LogoutButton = ({ children, className }: Props) => {
 
   async function logout() {
     startTransition(async () => {
-      await authClient.signOut({
+      await signOut({
         fetchOptions: {
           onSuccess: () => {
             router.push("/login");
@@ -28,10 +29,10 @@ export const LogoutButton = ({ children, className }: Props) => {
   }
   return (
     <button
-      onClick={logout}
-      disabled={isPending}
       aria-disabled={isPending}
       className={cn("flex cursor-pointer items-center gap-2", className)}
+      disabled={isPending}
+      onClick={logout}
     >
       {children}
     </button>

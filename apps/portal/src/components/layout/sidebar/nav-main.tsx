@@ -1,17 +1,12 @@
 "use client";
 
-import { type Icon } from "@tabler/icons-react";
+import React, { ElementType } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { ElementType } from "react";
 
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@ziron/ui/sidebar";
+import { type Icon } from "@tabler/icons-react";
+
+import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@ziron/ui/sidebar";
 
 /**
  * Renders a sidebar navigation menu with items that display icons, animated icons, and titles.
@@ -37,11 +32,7 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                tooltip={item.title}
-                asChild
-                isActive={pathname.startsWith(item.url)}
-              >
+              <SidebarMenuButton asChild isActive={pathname.startsWith(item.url)} tooltip={item.title}>
                 <Link href={item.url}>
                   {item.animatedIcon && <>{item.animatedIcon}</>}
                   {item.icon && <item.icon />}
