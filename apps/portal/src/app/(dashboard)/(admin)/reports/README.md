@@ -38,7 +38,7 @@ The Reports Page of the **Foneflip Admin Portal** offers powerful analytics and 
 - **Recharts / Chart.js / Victory** for data visualizations
 
 ### Access Reports Page
-Visit: [/reports](http://localhost:3000/reports)
+Visit: [(http://localhost:3000/reports](http://localhost:3000/reports)
 
 ## 📤 Export & Automation
 - Export any report to CSV or PDF
