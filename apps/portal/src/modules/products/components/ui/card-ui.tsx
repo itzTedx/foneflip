@@ -1,7 +1,6 @@
 import { IconBolt } from "@tabler/icons-react";
 
 import { IconAed } from "@ziron/ui/assets/currency";
-import { Badge } from "@ziron/ui/badge";
 
 import { TooltipBadge } from "@/components/ui/tooltip";
 
@@ -40,34 +39,26 @@ export const PriceDisplay = ({
 
 export const ProductBadges = ({ data }: { data: ProductQueryResult }) => (
   <div className="flex flex-wrap items-center gap-2">
-    {data.condition && (
-      <TooltipBadge tooltip={`Condition: ${data.condition}`}>
-        <Badge className="capitalize">{data.condition}</Badge>
-      </TooltipBadge>
-    )}
+    {data.condition && <TooltipBadge tooltip={`Condition: ${data.condition}`}>{data.condition}</TooltipBadge>}
     {data.collection && (
-      <TooltipBadge tooltip={`Collection: ${data.collection?.title}`}>
-        <Badge variant="secondary"> {data.collection?.title}</Badge>
+      <TooltipBadge tooltip={`Collection: ${data.collection?.title}`} variant="secondary">
+        {data.collection?.title}
       </TooltipBadge>
     )}
     {/* <TooltipBadge tooltip={`Seller: ${data?.vendor?.businessName}`}>
-        <Badge className="capitalize" variant="secondary">
+        
           {data?.vendor?.businessName}
-        </Badge>
+       
       </TooltipBadge> */}
     {data.settings && data?.settings?.tags && data?.settings?.tags?.length > 0 && (
-      <TooltipBadge tooltip={data.settings.tags.join(", ")}>
-        <Badge className="capitalize" variant="secondary">
-          +{data.settings.tags.length}
-        </Badge>
+      <TooltipBadge tooltip={data.settings.tags.join(", ")} variant="secondary">
+        +{data.settings.tags.length}
       </TooltipBadge>
     )}
     {data.delivery?.expressDelivery && (
-      <TooltipBadge tooltip={"Express Delivery"}>
-        <Badge className="capitalize" variant="warn">
-          <IconBolt className="!size-2.5" />
-          Express
-        </Badge>
+      <TooltipBadge tooltip={"Express Delivery"} variant="warn">
+        <IconBolt className="!size-2.5" />
+        Express
       </TooltipBadge>
     )}
   </div>
