@@ -1,4 +1,4 @@
-import { createEnv } from "@t3-oss/env-core";
+import { createEnv } from "@t3-oss/env-nextjs";
 
 import { z } from "@ziron/validators";
 
@@ -11,6 +11,5 @@ export const env = createEnv({
     SMTP_FROM: z.email().min(1),
   },
 
-  // biome-ignore lint/style/noProcessEnv: Required for t3-env configuration
-  runtimeEnv: process.env,
+  experimental__runtimeEnv: {},
 });

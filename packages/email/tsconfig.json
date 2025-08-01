@@ -1,13 +1,5 @@
 {
   "extends": "@ziron/tsconfig/base.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
-    "strict": true
-  },
-  "include": ["src/**/*"],
+  "include": ["src", "*.ts"],
   "exclude": ["node_modules"]
 }

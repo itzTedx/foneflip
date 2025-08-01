@@ -7,14 +7,14 @@
   "license": "MIT",
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev:email": "email dev --dir ./src/templates -p 3333",
+    "dev:email": "email dev --dir ./src/templates -p 3333 ",
     "export": "email export --packageManager",
     "format": "biome format --write ./src"
   },
   "dependencies": {
     "@react-email/components": "^0.3.2",
     "@react-email/preview-server": "^4.2.3",
-    "@t3-oss/env-core": "^0.13.8",
+    "@t3-oss/env-nextjs": "^0.13.8",
     "nodemailer": "^7.0.5",
     "react-email": "^4.2.3"
   },

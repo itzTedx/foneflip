@@ -16,17 +16,13 @@ import {
 } from "@react-email/components";
 
 const VerificationEmail = (props: { verificationUrl: string }) => {
-  const { verificationUrl = "https://www.foneflip.com/verify?token=abc123" } =
-    props;
+  const { verificationUrl = "https://www.foneflip.com/verify?token=abc123" } = props;
 
   return (
     <Html dir="ltr" lang="en">
       <Tailwind>
         <Head />
-        <Preview>
-          ✨ Welcome to Foneflip! Verify your account to unlock amazing tech
-          deals
-        </Preview>
+        <Preview>✨ Welcome to Foneflip! Verify your account to unlock amazing tech deals</Preview>
         <Body className="bg-[#f2f2fa] py-[40px] font-sans">
           <Container className="mx-auto max-w-[600px] overflow-hidden rounded-[16px] bg-white shadow-lg">
             {/* Header with gradient background */}
@@ -36,25 +32,17 @@ const VerificationEmail = (props: { verificationUrl: string }) => {
                 className="mx-auto mb-[24px] h-auto w-full max-w-[180px] object-cover"
                 src="https://di867tnz6fwga.cloudfront.net/brand-kits/453a191a-fef2-4ba6-88fe-b9e7a16650cd/primary/a14c98ef-2a94-4c00-91e4-6e1dedfcd261.png"
               />
-              <Heading className="m-0 mb-[8px] font-bold text-[28px]">
-                Welcome to Foneflip! 🎉
-              </Heading>
-              <Text className="m-0 text-[16px] leading-[24px]">
-                Your journey to sustainable tech starts here
-              </Text>
+              <Heading className="m-0 mb-[8px] font-bold text-[28px]">Welcome to Foneflip! 🎉</Heading>
+              <Text className="m-0 text-[16px] leading-[24px]">Your journey to sustainable tech starts here</Text>
             </Section>
 
             {/* Main Content */}
             <Section className="px-[40px] py-[48px]">
-              <Text className="mb-[24px] font-medium text-[#0b0917] text-[18px] leading-[28px]">
-                Hey there! 👋
-              </Text>
+              <Text className="mb-[24px] font-medium text-[#0b0917] text-[18px] leading-[28px]">Hey there! 👋</Text>
 
               <Text className="mb-[24px] text-[#0b0917] text-[16px] leading-[26px]">
-                Thanks for joining our community of smart shoppers who believe
-                in quality tech without the premium price tag. We're excited to
-                help you discover amazing deals on certified refurbished
-                devices!
+                Thanks for joining our community of smart shoppers who believe in quality tech without the premium price
+                tag. We're excited to help you discover amazing deals on certified refurbished devices!
               </Text>
 
               {/* Verification Card */}
@@ -81,10 +69,7 @@ const VerificationEmail = (props: { verificationUrl: string }) => {
                   Having trouble with the button? Copy and paste this link:
                 </Text>
                 <Text className="break-all rounded-[8px] border border-[#e2e8f0] border-solid bg-[#f1f5f9] p-[12px] text-[#4A3AFF] text-[14px] leading-[20px]">
-                  <Link
-                    className="text-[#4A3AFF] no-underline"
-                    href={verificationUrl}
-                  >
+                  <Link className="text-[#4A3AFF] no-underline" href={verificationUrl}>
                     {verificationUrl}
                   </Link>
                 </Text>
@@ -92,18 +77,14 @@ const VerificationEmail = (props: { verificationUrl: string }) => {
 
               {/* Benefits Grid */}
               <Section className="mb-[32px]">
-                <Heading className="mb-[24px] font-bold text-[#0b0917] text-[20px]">
-                  What's waiting for you:
-                </Heading>
+                <Heading className="mb-[24px] font-bold text-[#0b0917] text-[20px]">What's waiting for you:</Heading>
 
                 <Row className="mb-[16px]">
                   <Column>
                     <Text className="mb-[12px] text-[#0b0917] text-[15px] leading-[24px]">
                       🔍 <strong>Quality Guaranteed</strong>
                       <br />
-                      <span className="text-[#64748b]">
-                        Certified refurbished devices with warranty protection
-                      </span>
+                      <span className="text-[#64748b]">Certified refurbished devices with warranty protection</span>
                     </Text>
                   </Column>
                 </Row>
@@ -113,9 +94,7 @@ const VerificationEmail = (props: { verificationUrl: string }) => {
                     <Text className="mb-[12px] text-[#0b0917] text-[15px] leading-[24px]">
                       💰 <strong>Unbeatable Prices</strong>
                       <br />
-                      <span className="text-[#64748b]">
-                        Premium tech at prices that won't break the bank
-                      </span>
+                      <span className="text-[#64748b]">Premium tech at prices that won't break the bank</span>
                     </Text>
                   </Column>
                 </Row>
@@ -125,9 +104,7 @@ const VerificationEmail = (props: { verificationUrl: string }) => {
                     <Text className="mb-[12px] text-[#0b0917] text-[15px] leading-[24px]">
                       🌱 <strong>Eco-Conscious Choice</strong>
                       <br />
-                      <span className="text-[#64748b]">
-                        Support sustainable tech consumption and reduce e-waste
-                      </span>
+                      <span className="text-[#64748b]">Support sustainable tech consumption and reduce e-waste</span>
                     </Text>
                   </Column>
                 </Row>
@@ -137,9 +114,7 @@ const VerificationEmail = (props: { verificationUrl: string }) => {
                     <Text className="mb-[0px] text-[#0b0917] text-[15px] leading-[24px]">
                       🚀 <strong>Seamless Experience</strong>
                       <br />
-                      <span className="text-[#64748b]">
-                        Easy browsing, secure checkout, and reliable delivery
-                      </span>
+                      <span className="text-[#64748b]">Easy browsing, secure checkout, and reliable delivery</span>
                     </Text>
                   </Column>
                 </Row>
@@ -151,8 +126,7 @@ const VerificationEmail = (props: { verificationUrl: string }) => {
                   Ready to start shopping smarter? 🛒
                 </Text>
                 <Text className="mb-[0px] text-[#64748b] text-[14px] leading-[22px]">
-                  Once verified, you'll have instant access to our entire
-                  collection of premium refurbished devices.
+                  Once verified, you'll have instant access to our entire collection of premium refurbished devices.
                 </Text>
               </Section>
             </Section>
@@ -166,10 +140,7 @@ const VerificationEmail = (props: { verificationUrl: string }) => {
                   </Text>
                   <Text className="mb-[16px] text-[#64748b] text-[14px] leading-[20px]">
                     Our support team is here for you at{" "}
-                    <Link
-                      className="font-medium text-[#4A3AFF] no-underline"
-                      href="mailto:support@foneflip.com"
-                    >
+                    <Link className="font-medium text-[#4A3AFF] no-underline" href="mailto:support@foneflip.com">
                       support@foneflip.com
                     </Link>
                   </Text>
@@ -195,17 +166,14 @@ const VerificationEmail = (props: { verificationUrl: string }) => {
 
               <Row>
                 <Column className="text-center">
-                  <Text className="m-0 mb-[8px] text-[#64748b] text-[12px] leading-[18px]">
-                    Gubaiba, Dubai, UAE
-                  </Text>
+                  <Text className="m-0 mb-[8px] text-[#64748b] text-[12px] leading-[18px]">Gubaiba, Dubai, UAE</Text>
                   <Text className="m-0 mb-[12px] text-[#64748b] text-[12px] leading-[18px]">
                     © 2025 Foneflip. All rights reserved.
                   </Text>
                   <Text className="m-0 text-[#64748b] text-[11px] leading-[16px]">
-                    This email may contain confidential or promotional content
-                    for the intended recipient. Product info may change without
-                    notice. By reading, you agree to Foneflip's Terms and
-                    Policies. If received in error, please delete and inform us.
+                    This email may contain confidential or promotional content for the intended recipient. Product info
+                    may change without notice. By reading, you agree to Foneflip's Terms and Policies. If received in
+                    error, please delete and inform us.
                   </Text>
                 </Column>
               </Row>
