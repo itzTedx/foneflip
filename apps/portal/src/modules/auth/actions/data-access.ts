@@ -35,6 +35,7 @@ export const PERMISSIONS = {
   collections: ["create", "update", "delete"],
   products: ["create", "update", "delete"],
   cache: ["view"],
+  vendors: ["create", "delete", "invite", "update"],
 } as const;
 
 export type Resource = keyof typeof PERMISSIONS;
