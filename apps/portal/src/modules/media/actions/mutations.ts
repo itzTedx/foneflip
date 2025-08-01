@@ -85,7 +85,8 @@ export async function getSignedURL({ file, checksum, collection }: Props) {
     signedURL = await getSignedUrl(s3, putObjectCommand, {
       expiresIn: 120,
     });
-  } catch (_err) {
+  } catch (err) {
+    console.error("Failed to generate signed URL", err);
     return { error: true, message: "Failed to generate signed URL" };
   }
 
