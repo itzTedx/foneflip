@@ -52,13 +52,15 @@ Visit: [/admin/reports](http://localhost:3000/admin/reports)
 
 - Vendor-specific views planned for future vendor dashboard integration
 
-# 🛠️ Developer To-Do – Foneflip Admin Reports Page
+---
+
+## 🛠️ Developer To-Do – Foneflip Admin Reports Page
 
 This document outlines the development tasks and checklist for building and maintaining the **Reports Page** in the Foneflip Admin Portal.
 
 ---
 
-## 🔧 Core Reports Implementation
+### 🔧 Core Reports Implementation
 
 - [ ] Create API routes to aggregate:
   - [ ] Total sales, order count, average order value
@@ -68,7 +70,7 @@ This document outlines the development tasks and checklist for building and main
 
 ---
 
-## 📊 Charts & Visualizations
+### 📊 Charts & Visualizations
 
 - [ ] Implement sales trend line chart (daily, monthly)
 - [ ] Add bar chart for top-selling products
@@ -77,7 +79,7 @@ This document outlines the development tasks and checklist for building and main
 
 ---
 
-## 🧩 Filters & Controls
+### 🧩 Filters & Controls
 
 - [ ] Date range picker (Today, Last 7 Days, Custom)
 - [ ] Vendor and category dropdown filters
@@ -85,7 +87,7 @@ This document outlines the development tasks and checklist for building and main
 
 ---
 
-## 📦 Product & Vendor Tables
+### 📦 Product & Vendor Tables
 
 - [ ] Paginated and filterable product sales table
 - [ ] Vendor performance table with expandable rows for details
@@ -93,14 +95,14 @@ This document outlines the development tasks and checklist for building and main
 
 ---
 
-## 💰 Transaction Management
+### 💰 Transaction Management
 
 - [ ] Build transaction history table (linked to payouts/refunds)
 - [ ] Add filters for transaction type, status, vendor
 
 ---
 
-## 📤 Export & Automation
+### 📤 Export & Automation
 
 - [ ] CSV export for each report section
 - [ ] PDF export for entire dashboard snapshot
@@ -108,14 +110,14 @@ This document outlines the development tasks and checklist for building and main
 
 ---
 
-## 🔐 Access & Permissions
+### 🔐 Access & Permissions
 
 - [ ] Restrict report routes to admin roles
 - [ ] Add auth check middleware for `/admin/reports`
 
 ---
 
-## 🧪 Testing
+### 🧪 Testing
 
 - [ ] Unit tests for report aggregators (sales, payouts, returns)
 - [ ] Integration tests for `/api/admin/reports/*` endpoints
@@ -123,7 +125,7 @@ This document outlines the development tasks and checklist for building and main
 
 ---
 
-## ✨ Future Improvements
+### ✨ Future Improvements
 
 - [ ] Vendor self-report view (limited metrics)
 - [ ] Custom report builder interface (select fields/date ranges)
