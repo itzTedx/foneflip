@@ -19,8 +19,9 @@ export async function getUserSessions(userId: string) {
 
   // Convert to usable sessions
   const sessions = rawSessions
-    ?.map(([, session]) => {
+    ?.map(([, result]) => {
       try {
+        const session = result as string | null;
         return session ? JSON.parse(session) : null;
       } catch {
         return null;

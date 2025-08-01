@@ -18,7 +18,6 @@ interface ErrorInfo {
   title: string;
   description: string;
   suggestions: string[];
-  severity: "low" | "medium" | "high";
   canRetry: boolean;
 }
 
@@ -46,7 +45,7 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
             "Try clicking the link directly from your email instead of copying it",
             "Contact support if you continue to have issues",
           ],
-          severity: "medium",
+
           canRetry: false,
         };
 
@@ -65,7 +64,7 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
               "Make sure you're using the most recent invitation link",
               "If you're an existing user, try logging in directly",
             ],
-            severity: "high",
+
             canRetry: false,
           };
         }
@@ -83,7 +82,7 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
               "Contact support if you need help accessing your account",
               "Check if you're already signed in on another device",
             ],
-            severity: "low",
+
             canRetry: false,
           };
         }
@@ -100,7 +99,7 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
               "Verify your email address is still authorized",
               "Contact support for assistance",
             ],
-            severity: "high",
+
             canRetry: false,
           };
         }
@@ -117,7 +116,7 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
             "Contact your administrator for assistance",
             "Try accessing the link from a different browser",
           ],
-          severity: "medium",
+
           canRetry: true,
         };
 
@@ -134,7 +133,7 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
             "Wait a few minutes and try again",
             "Contact support if the problem persists",
           ],
-          severity: "medium",
+
           canRetry: true,
         };
 
@@ -151,7 +150,7 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
             "Contact support if you need immediate assistance",
             "Try from a different network if possible",
           ],
-          severity: "medium",
+
           canRetry: true,
         };
 
@@ -170,26 +169,13 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
             "Contact support if the problem persists",
             "Try accessing the link from a different device",
           ],
-          severity: "high",
+
           canRetry: true,
         };
     }
   };
 
   const errorInfo = getErrorInfo();
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "low":
-        return "bg-info/10 text-info border-info/20";
-      case "medium":
-        return "bg-warn/10 text-warn border-warn/20";
-      case "high":
-        return "bg-destructive/10 text-destructive border-destructive/20";
-      default:
-        return "bg-muted/10 text-muted-foreground border-muted/20";
-    }
-  };
 
   return (
     <div className="relative flex min-h-screen items-center justify-center">

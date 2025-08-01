@@ -106,3 +106,4 @@ export function initAuth(options: { baseUrl: string; productionUrl: string; secr
 
 export type Auth = ReturnType<typeof initAuth>;
 export type Session = Auth["$Infer"]["Session"];
+export type ErrorCode = Auth["$ERROR_CODES"] | "UNKNOWN";
