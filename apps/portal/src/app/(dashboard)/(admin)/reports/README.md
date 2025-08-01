@@ -34,13 +34,11 @@ The Reports Page of the **Foneflip Admin Portal** offers powerful analytics and 
 - **TypeScript**
 - **Tailwind CSS** + **shadcn/ui**
 - **Drizzle ORM** with PostgreSQL
-- **Supabase** (optional for DB or auth)
 - **BullMQ** + **Redis** for heavy data processing
 - **Recharts / Chart.js / Victory** for data visualizations
-- **Framer Motion** for smooth UI animations
 
 ### Access Reports Page
-Visit: [/admin/reports](http://localhost:3000/admin/reports)
+Visit: [/reports](http://localhost:3000/reports)
 
 ## 📤 Export & Automation
 - Export any report to CSV or PDF
