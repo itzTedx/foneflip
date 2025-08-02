@@ -28,7 +28,7 @@ const VendorInvitationEmail = ({ vendorName, verificationLink, inviterName, expi
       <Preview>Join Foneflip's vendor network - Verify your account to start selling</Preview>
       <Tailwind>
         <Body className="bg-[#f2f2fa] py-[40px] font-sans">
-          <Container className="mx-auto max-w-[640px] overflow-hidden rounded-[12px] bg-white shadow-sm">
+          <Container className="mx-auto max-w-[600px] overflow-hidden rounded-[12px] bg-white shadow-sm">
             {/* Header */}
             <Section className="bg-white px-[48px] pt-[48px] pb-[32px]">
               <Img

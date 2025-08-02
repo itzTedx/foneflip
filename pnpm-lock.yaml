@@ -291,6 +291,9 @@ importers:
       '@ziron/db':
         specifier: workspace:*
         version: link:../db
+      '@ziron/email':
+        specifier: workspace:*
+        version: link:../email
       '@ziron/redis':
         specifier: workspace:*
         version: link:../redis
@@ -407,6 +410,9 @@ importers:
       '@t3-oss/env-nextjs':
         specifier: ^0.13.8
         version: 0.13.8(typescript@5.8.3)(zod@3.25.76)
+      dotenv-cli:
+        specifier: ^8.0.0
+        version: 8.0.0
       nodemailer:
         specifier: ^7.0.5
         version: 7.0.5

@@ -9,12 +9,15 @@
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev:email": "email dev --dir ./src/templates -p 3333 ",
     "export": "email export --packageManager",
-    "format": "biome format --write ./src"
+    "format": "biome format --write ./src",
+    "dx": "docker compose up -d || docker-compose up -d",
+    "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
     "@react-email/components": "^0.3.2",
     "@react-email/preview-server": "^4.2.3",
     "@t3-oss/env-nextjs": "^0.13.8",
+    "dotenv-cli": "^8.0.0",
     "nodemailer": "^7.0.5",
     "react-email": "^4.2.3"
   },

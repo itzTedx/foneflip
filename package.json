@@ -11,6 +11,7 @@
     "clean": "git clean -xdf node_modules",
     "dev": "turbo dev",
     "dev:email": "turbo -F @ziron/email dev:email",
+    "dev:email:dx": "pnpm -F @ziron/email dx",
     "lint": "turbo lint",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
     "format:fix": "turbo run format --continue",

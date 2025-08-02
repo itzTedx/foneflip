@@ -19,6 +19,7 @@ export type TokenValidationType = z.infer<typeof tokenValidationSchema>;
 
 // Accept invitation schema
 export const acceptInvitationSchema = z.object({
+  id: z.string().min(1),
   token: z.string().min(1),
   name: z.string().min(1),
   email: z.email().max(255),
