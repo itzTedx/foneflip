@@ -13,6 +13,7 @@ import { VendorRegistrationFormData, vendorRegistrationSchema } from "@ziron/val
 
 import { PasswordInput } from "@/components/ui/password-input";
 import { authClient } from "@/lib/auth/client";
+import { signUpEmailAction } from "@/modules/auth/actions/mutations";
 
 import { InvitationType } from "../../types";
 
@@ -36,9 +37,7 @@ export default function VendorRegisterForm({ invitation }: Props) {
   async function onSubmit(data: VendorRegistrationFormData) {
     startEmailTransition(async () => {
       try {
-        const result = { success: true, error: null };
-        // const result = await signUpEmailAction(data);
-
+        const result = await signUpEmailAction(data);
         if (result.error) {
           toast.error(result.error);
           return;
@@ -51,7 +50,7 @@ export default function VendorRegisterForm({ invitation }: Props) {
             fetchOptions: {
               onSuccess: () => {
                 toast.success("Account created successfully! Please check your email for verification.");
-                router.push(`/onboarding/verification?email=${data.email}`);
+                router.push(`/onboarding/verification?email=${encodeURIComponent(data.email)}`);
               },
               onError: (error) => {
                 toast.error(error.error.message);

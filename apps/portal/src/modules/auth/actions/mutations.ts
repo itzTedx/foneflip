@@ -81,14 +81,14 @@ export async function signUpEmailAction(formData: unknown) {
   }
 }
 
+export const emailOTPSchema = z.object({
+  email: z.email(),
+  otp: z.string().length(6),
+});
+
 export async function verifyEmailOTPAction(formData: unknown) {
   try {
-    const { data, error, success } = z
-      .object({
-        email: z.email(),
-        otp: z.string().min(6),
-      })
-      .safeParse(formData);
+    const { data, error, success } = emailOTPSchema.safeParse(formData);
 
     if (!success) {
       return { error: error.issues[0]?.message ?? "Invalid data" };
@@ -152,12 +152,12 @@ export async function verifyEmailOTPAction(formData: unknown) {
   }
 }
 
+const emailSchema = z.object({
+  email: z.email(),
+});
+
 export async function resendEmailOTPAction(formData: unknown) {
-  const { data, error, success } = z
-    .object({
-      email: z.email(),
-    })
-    .safeParse(formData);
+  const { data, error, success } = emailSchema.safeParse(formData);
 
   if (!success) {
     return { error: error.issues[0]?.message ?? "Invalid data" };

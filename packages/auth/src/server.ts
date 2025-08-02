@@ -7,6 +7,7 @@ import { admin as adminPlugin, emailOTP, organization, twoFactor } from "better-
 import { db } from "@ziron/db";
 import redis from "@ziron/redis";
 
+import { OTP_EXPIRES_IN, OTP_EXPIRES_IN_MS } from "./data/constants";
 import { sendOTPEmail } from "./email/email-otp";
 import { ac, admin, dev, user, vendor } from "./permission";
 
@@ -74,25 +75,31 @@ export function initAuth(options: {
       nextCookies(),
       twoFactor(),
       emailOTP({
-        expiresIn: 300,
+        expiresIn: OTP_EXPIRES_IN_MS,
 
         async sendVerificationOTP({ email, otp, type }) {
-          // Query the database to get user information
-          const user = await db.query.users.findFirst({
-            where: (users, { eq }) => eq(users.email, email),
-            columns: {
-              id: true,
-              email: true,
-              name: true,
-            },
-          });
+          try {
+            // Query the database to get user information
+            const user = await db.query.users.findFirst({
+              where: (users, { eq }) => eq(users.email, email),
+              columns: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            });
 
-          await sendOTPEmail({
-            to: email,
-            otp,
-            type: type,
-            name: user?.name ?? email.split("@")[0],
-          });
+            await sendOTPEmail({
+              to: email,
+              otp,
+              type: type,
+              name: user?.name ?? email.split("@")[0],
+              expiresIn: OTP_EXPIRES_IN,
+            });
+          } catch (error) {
+            console.error("Failed to send OTP email:", error);
+            throw new Error("Failed to send verification email");
+          }
         },
       }),
     ],

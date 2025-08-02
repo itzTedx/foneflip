@@ -49,8 +49,12 @@ async function verifyAndUseInvitation(token: string) {
         expiresAt: null,
         updatedAt: new Date(),
       })
-      .where(eq(vendorInvitations.id, invitation.id))
+      .where(and(eq(vendorInvitations.id, invitation.id), isNull(vendorInvitations.usedAt)))
       .returning();
+
+    if (!updated) {
+      throw new InvitationError("Invitation has already been used", 409);
+    }
 
     log.success("Marked invitation as used", { id: invitation.id });
 

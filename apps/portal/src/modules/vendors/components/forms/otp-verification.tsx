@@ -23,11 +23,10 @@ import { z } from "@ziron/validators";
 import { resendEmailOTPAction, verifyEmailOTPAction } from "@/modules/auth/actions/mutations";
 
 const otpSchema = z.object({
-  otp: z.string().min(6, {
-    message: "Your one-time password must be 6 characters.",
+  otp: z.string().length(6, {
+    message: "Your one-time password must be exactly 6 characters.",
   }),
 });
-
 interface Props {
   email: string;
 }
@@ -54,7 +53,9 @@ export function OtpVerificationForm({ email }: Props) {
 
       if (result.error) {
         // Check if OTP is expired and show resend option
-        if (result.error.includes("expired") || result.error.includes("OTP_EXPIRED") || result.code === "OTP_EXPIRED") {
+        const isExpired =
+          result.error.includes("expired") || result.error.includes("OTP_EXPIRED") || result.code === "OTP_EXPIRED";
+        if (isExpired) {
           setShowResendOption(true);
           toast.error("OTP has expired. Please request a new one.");
         } else {
@@ -62,7 +63,7 @@ export function OtpVerificationForm({ email }: Props) {
         }
       } else {
         toast.success("Email Verified");
-        router.push(`/vendor/onboarding/personal-info?email=${email}`);
+        router.push(`/onboarding/info?email=${email}`);
       }
     });
   }
@@ -80,8 +81,10 @@ export function OtpVerificationForm({ email }: Props) {
         form.reset(); // Clear the form
       }
     } catch (error) {
-      toast.error("Failed to resend OTP. Please try again.");
-      console.error(error);
+      const errorMessage =
+        error instanceof Error ? `Failed to resend OTP: ${error.message}` : "Failed to resend OTP. Please try again.";
+      toast.error(errorMessage);
+      console.error("Resend OTP error:", error);
     } finally {
       setIsResending(false);
     }

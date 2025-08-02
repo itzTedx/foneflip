@@ -7,6 +7,7 @@ import { and, desc, eq, gt, isNull, or } from "drizzle-orm";
 import { db } from "@ziron/db";
 import { vendorInvitations } from "@ziron/db/schema";
 
+import { createLog } from "@/lib/utils";
 import { CACHE_TAGS } from "@/modules/cache";
 import { CACHE_DURATIONS } from "@/modules/cache/constants";
 
@@ -22,13 +23,15 @@ export type InvitationResponse<T = unknown> =
       error: string;
     };
 
+const log = createLog("Vendor");
+
 // Get invitation by token with caching and proper error handling
 export const getInvitationByToken = async (token: string) =>
   cache(
     async (): Promise<InvitationResponse<InvitationType>> => {
       try {
         // Validate token input
-        if (!token || typeof token !== "string" || token.trim().length === 0) {
+        if (!token || typeof token !== "string" || token.trim().length === 0 || token.length > 512) {
           return {
             success: false,
             error: "Invalid invitation token provided",
@@ -58,7 +61,7 @@ export const getInvitationByToken = async (token: string) =>
         };
       } catch (error) {
         // Log the error for debugging
-        console.error("Error in getInvitationByToken:", error);
+        log.error("Error in getInvitationByToken:", error);
 
         // Return structured error response
         return {

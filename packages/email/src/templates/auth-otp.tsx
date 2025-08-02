@@ -19,9 +19,10 @@ interface Props {
   otp: string;
   type: "sign-in" | "email-verification" | "forget-password";
   link?: string;
+  expiresIn?: number;
 }
 
-const OTPEmail = ({ username, otp, type, link }: Props) => {
+const OTPEmail = ({ username, otp, type, link, expiresIn }: Props) => {
   // Dynamic content based on type
   const getContent = () => {
     switch (type) {
@@ -100,8 +101,8 @@ const OTPEmail = ({ username, otp, type, link }: Props) => {
               </Section>
 
               <Text className="mt-0 mb-[20px] text-[#0b0917] text-[16px] leading-[24px]">
-                This code will expire in <strong>10 minutes</strong>. If you didn't request this verification, please
-                ignore this email or contact our support team.
+                This code will expire in <strong>{expiresIn} minutes</strong>. If you didn't request this verification,
+                please ignore this email or contact our support team.
               </Text>
 
               {type === "email-verification" && (
@@ -189,7 +190,7 @@ const OTPEmail = ({ username, otp, type, link }: Props) => {
 OTPEmail.PreviewProps = {
   username: "Sarah",
   otp: "847392",
-  type: "verification",
+  type: "email-verification",
+  expiresIn: 10,
 };
-
 export default OTPEmail;

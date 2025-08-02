@@ -2,6 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { IconPhone } from "@tabler/icons-react";
 import { AlertCircle, Clock, Shield, XCircle } from "lucide-react";
@@ -24,10 +25,15 @@ interface ErrorInfo {
 type SearchParams = Promise<{ [key: string]: string | undefined }>;
 
 export default function VerifyErrorPage({ searchParams }: { searchParams: SearchParams }) {
+  const router = useRouter();
   const searchParam = use(searchParams);
   const errorType = searchParam.type;
   const errorMessage = searchParam.message;
   const errorStatus = searchParam.status;
+
+  const handleRetry = () => {
+    router.refresh();
+  };
 
   const getErrorInfo = (): ErrorInfo => {
     switch (errorType) {
@@ -226,8 +232,8 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
             {/* Action Buttons */}
             <div className="mt-6 grid grid-cols-2 gap-3">
               {errorInfo.canRetry && (
-                <Button asChild className="w-full">
-                  <Link href={window.location.href}>Try Again</Link>
+                <Button className="w-full" onClick={handleRetry}>
+                  Try Again
                 </Button>
               )}
 
