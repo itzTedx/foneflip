@@ -23,14 +23,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@ziron/ui/table";
 import { cn } from "@ziron/utils";
 
-import { User } from "@/modules/collections/types";
-
+import { InvitationType } from "../../types";
 import { columns } from "./columns";
 import { DataTableHeader } from "./header";
 import { TablePagination } from "./pagination";
 
 interface Props {
-  data: User[];
+  data: InvitationType[];
   initialPageSize?: number;
 }
 
@@ -49,7 +48,7 @@ export default function UsersTable({ data, initialPageSize }: Props) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [sorting, setSorting] = useState<SortingState>([
     {
-      id: "name",
+      id: "createdAt",
       desc: false,
     },
   ]);
@@ -116,7 +115,7 @@ export default function UsersTable({ data, initialPageSize }: Props) {
   });
 
   return (
-    <div className="space-y-4 px-4 md:px-6">
+    <div className="space-y-4">
       <DataTableHeader data={data} table={table} />
 
       {/* Table */}

@@ -81,7 +81,7 @@ export async function signUpEmailAction(formData: unknown) {
   }
 }
 
-export const emailOTPSchema = z.object({
+const emailOTPSchema = z.object({
   email: z.email(),
   otp: z.string().length(6),
 });

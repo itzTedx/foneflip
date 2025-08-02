@@ -2,7 +2,8 @@
 
 import { addHours } from "date-fns";
 
-import { db } from "@ziron/db";
+import { and, db, eq } from "@ziron/db";
+import { vendorInvitations } from "@ziron/db/schema";
 import { sendEmail } from "@ziron/email";
 import VerificationEmail from "@ziron/email/templates/onboarding/token-verification";
 import { invitationSchema, z } from "@ziron/validators";
@@ -118,6 +119,81 @@ export async function sendInvitation(formData: unknown) {
       success: false,
       error: "INTERNAL_SERVER_ERROR",
       message: "Failed to send invitation",
+    };
+  }
+}
+
+export async function revokeInvitation(invitationId: string) {
+  const { res, session } = await hasPermission({
+    permissions: {
+      vendors: ["invite"],
+    },
+  });
+
+  if (!res.success) {
+    return {
+      success: false,
+      error: "UNAUTHORIZED",
+      message: "You are not authorized to revoke invitations",
+    };
+  }
+
+  try {
+    const [updated] = await db
+      .update(vendorInvitations)
+      .set({
+        revokedAt: new Date(),
+        status: "revoked",
+        updatedAt: new Date(),
+      })
+      .where(eq(vendorInvitations.id, invitationId))
+      .returning();
+
+    if (!updated) {
+      return {
+        success: false,
+        error: "NOT_FOUND",
+        message: "Invitation not found",
+      };
+    }
+
+    log.success("Revoked invitation", { id: invitationId });
+    return createSuccessResponse(updated, "Invitation revoked successfully");
+  } catch (error) {
+    log.error("Failed to revoke invitation", error);
+    return {
+      success: false,
+      error: "INTERNAL_SERVER_ERROR",
+      message: "Failed to revoke invitation",
+    };
+  }
+}
+
+export async function updateExpiredInvitations() {
+  try {
+    const [updated] = await db
+      .update(vendorInvitations)
+      .set({
+        status: "expired",
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(vendorInvitations.status, "pending")
+          // Add condition for expired invitations
+          // This would need to be implemented based on your business logic
+        )
+      )
+      .returning();
+
+    log.success("Updated expired invitations", { invitationId: updated?.id });
+    return createSuccessResponse(updated, "Expired invitations updated successfully");
+  } catch (error) {
+    log.error("Failed to update expired invitations", error);
+    return {
+      success: false,
+      error: "INTERNAL_SERVER_ERROR",
+      message: "Failed to update expired invitations",
     };
   }
 }

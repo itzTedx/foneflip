@@ -16,9 +16,9 @@ import {
   DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 
-import { User } from "@/modules/collections/types";
+import { InvitationType } from "../../types";
 
-export function RowActions({ row }: { row: Row<User> }) {
+export function RowActions({ row }: { row: Row<InvitationType> }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

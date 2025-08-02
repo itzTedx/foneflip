@@ -4,12 +4,12 @@ import { ChevronFirstIcon, ChevronLastIcon, ChevronLeftIcon, ChevronRightIcon } 
 import { Button } from "@ziron/ui/button";
 import { Pagination, PaginationContent, PaginationItem } from "@ziron/ui/pagination";
 
-import { User } from "@/modules/collections/types";
+import { InvitationType } from "../../types";
 
 // import { Item } from "./columns";
 
 interface Props {
-  table: Table<User>;
+  table: Table<InvitationType>;
 }
 
 export const TablePagination = ({ table }: Props) => {

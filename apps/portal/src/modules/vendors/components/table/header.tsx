@@ -28,13 +28,11 @@ import { Label } from "@ziron/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@ziron/ui/popover";
 import { cn } from "@ziron/utils";
 
-import { User } from "@/modules/collections/types";
-
-// import { Item } from "./columns";
+import { InvitationType } from "../../types";
 
 interface Props {
-  table: Table<User>;
-  data: User[];
+  table: Table<InvitationType>;
+  data: InvitationType[];
 }
 export const DataTableHeader = ({ table, data }: Props) => {
   const id = useId();
@@ -47,31 +45,31 @@ export const DataTableHeader = ({ table, data }: Props) => {
     table.resetRowSelection();
   };
 
-  // Get unique role values
-  const uniqueRoleValues = useMemo(() => {
-    const roleColumn = table.getColumn("role");
+  // Get unique status values
+  const uniqueStatusValues = useMemo(() => {
+    const statusColumn = table.getColumn("status");
 
-    if (!roleColumn) return [];
+    if (!statusColumn) return [];
 
-    const values = Array.from(roleColumn.getFacetedUniqueValues().keys());
+    const values = Array.from(statusColumn.getFacetedUniqueValues().keys());
 
     return values.sort();
-  }, [table.getColumn("role")?.getFacetedUniqueValues()]);
+  }, [table.getColumn("status")?.getFacetedUniqueValues()]);
 
-  // Get counts for each role
-  const roleCounts = useMemo(() => {
-    const roleColumn = table.getColumn("role");
-    if (!roleColumn) return new Map();
-    return roleColumn.getFacetedUniqueValues();
-  }, [table.getColumn("role")?.getFacetedUniqueValues()]);
+  // Get counts for each status
+  const statusCounts = useMemo(() => {
+    const statusColumn = table.getColumn("status");
+    if (!statusColumn) return new Map();
+    return statusColumn.getFacetedUniqueValues();
+  }, [table.getColumn("status")?.getFacetedUniqueValues()]);
 
-  const selectedRoles = useMemo(() => {
-    const filterValue = table.getColumn("role")?.getFilterValue() as string[];
+  const selectedStatus = useMemo(() => {
+    const filterValue = table.getColumn("status")?.getFilterValue() as string[];
     return filterValue ?? [];
-  }, [table.getColumn("role")?.getFilterValue()]);
+  }, [table.getColumn("status")?.getFilterValue()]);
 
-  const handleRoleChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn("role")?.getFilterValue() as string[];
+  const handleStatusChange = (checked: boolean, value: string) => {
+    const filterValue = table.getColumn("status")?.getFilterValue() as string[];
     const newFilterValue = filterValue ? [...filterValue] : [];
 
     if (checked) {
@@ -83,7 +81,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
       }
     }
 
-    table.getColumn("role")?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
+    table.getColumn("status")?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
   };
 
   return (
@@ -93,23 +91,23 @@ export const DataTableHeader = ({ table, data }: Props) => {
         <div className="relative">
           <Input
             aria-label="Filter by name or email"
-            className={cn("peer min-w-60 ps-9", Boolean(table.getColumn("name")?.getFilterValue()) && "pe-9")}
+            className={cn("peer min-w-60 ps-9", Boolean(table.getColumn("vendorName")?.getFilterValue()) && "pe-9")}
             id={`${id}-input`}
-            onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
+            onChange={(e) => table.getColumn("vendorName")?.setFilterValue(e.target.value)}
             placeholder="Filter by name or email..."
             ref={inputRef}
             type="text"
-            value={(table.getColumn("name")?.getFilterValue() ?? "") as string}
+            value={(table.getColumn("vendorName")?.getFilterValue() ?? "") as string}
           />
           <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
             <ListFilterIcon aria-hidden="true" size={16} />
           </div>
-          {Boolean(table.getColumn("name")?.getFilterValue()) && (
+          {Boolean(table.getColumn("vendorName")?.getFilterValue()) && (
             <button
               aria-label="Clear filter"
               className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-[color,box-shadow] hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               onClick={() => {
-                table.getColumn("name")?.setFilterValue("");
+                table.getColumn("vendorName")?.setFilterValue("");
                 if (inputRef.current) {
                   inputRef.current.focus();
                 }
@@ -119,15 +117,15 @@ export const DataTableHeader = ({ table, data }: Props) => {
             </button>
           )}
         </div>
-        {/* Filter by role */}
+        {/* Filter by status */}
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline">
               <FilterIcon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
-              Role
-              {selectedRoles.length > 0 && (
+              Status
+              {selectedStatus.length > 0 && (
                 <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">
-                  {selectedRoles.length}
+                  {selectedStatus.length}
                 </span>
               )}
             </Button>
@@ -136,15 +134,15 @@ export const DataTableHeader = ({ table, data }: Props) => {
             <div className="space-y-3">
               <div className="font-medium text-muted-foreground text-xs">Filters</div>
               <div className="space-y-3">
-                {uniqueRoleValues.map((value, i) => (
+                {uniqueStatusValues.map((value, i) => (
                   <div className="flex items-center gap-2" key={value}>
                     <Checkbox
-                      checked={selectedRoles.includes(value)}
+                      checked={selectedStatus.includes(value)}
                       id={`${id}-${i}`}
-                      onCheckedChange={(checked: boolean) => handleRoleChange(checked, value)}
+                      onCheckedChange={(checked: boolean) => handleStatusChange(checked, value)}
                     />
                     <Label className="flex grow justify-between gap-2 font-normal capitalize" htmlFor={`${id}-${i}`}>
-                      {value} <span className="ms-2 text-muted-foreground text-xs">{roleCounts.get(value)}</span>
+                      {value} <span className="ms-2 text-muted-foreground text-xs">{statusCounts.get(value)}</span>
                     </Label>
                   </div>
                 ))}

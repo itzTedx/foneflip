@@ -85,11 +85,32 @@ export const getInvitationByToken = async (token: string) =>
 export const getVendorInvitations = cache(
   async () => {
     const invitations = await db.query.vendorInvitations.findMany({
-      where: isNull(vendorInvitations.deletedAt),
       orderBy: desc(vendorInvitations.createdAt),
     });
 
-    return invitations;
+    // Add computed status field to each invitation
+    const invitationsWithStatus = invitations.map((invitation) => {
+      let status: "revoked" | "accepted" | "expired" | "pending";
+
+      if (invitation.revokedAt) {
+        status = "revoked";
+      } else if (invitation.usedAt) {
+        status = "accepted";
+      } else if (invitation.expiresAt && invitation.expiresAt < new Date()) {
+        status = "expired";
+      } else {
+        status = "pending";
+      }
+
+      return {
+        ...invitation,
+        status,
+      };
+    });
+
+    console.log(invitationsWithStatus);
+
+    return invitationsWithStatus;
   },
   [CACHE_TAGS.VENDOR_INVITATIONS],
   {

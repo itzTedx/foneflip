@@ -47,6 +47,7 @@ async function verifyAndUseInvitation(token: string) {
       .set({
         usedAt: new Date(),
         expiresAt: null,
+        status: "accepted",
         updatedAt: new Date(),
       })
       .where(and(eq(vendorInvitations.id, invitation.id), isNull(vendorInvitations.usedAt)))
