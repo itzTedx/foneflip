@@ -3,10 +3,10 @@
 import { addHours } from "date-fns";
 
 import { and, db, eq } from "@ziron/db";
-import { vendorInvitations } from "@ziron/db/schema";
+import { vendorInvitations, vendorsTable } from "@ziron/db/schema";
 import { sendEmail } from "@ziron/email";
 import VerificationEmail from "@ziron/email/templates/onboarding/token-verification";
-import { invitationSchema, z } from "@ziron/validators";
+import { invitationSchema, personalInfoSchema, z } from "@ziron/validators";
 
 import { env } from "@/lib/env/server";
 import { createLog } from "@/lib/utils";
@@ -197,3 +197,57 @@ export async function updateExpiredInvitations() {
     };
   }
 }
+
+// Update vendor personal information - Optimized with better validation
+export const updateVendorPersonalInfoAction = async (formData: unknown) => {
+  const { success, data, error } = personalInfoSchema.safeParse(formData);
+
+  if (!success) {
+    log.warn("Validation failed for updateVendorPersonalInfoAction", { error });
+    return {
+      success: false,
+      error: "Invalid data",
+      message: z.prettifyError(error),
+    };
+  }
+
+  const { fullName, mobile, whatsapp, position } = data;
+
+  try {
+    log.info("Update vendor personal info action started", { fullName });
+
+    const currentUser = await getAuthenticatedUser();
+    const { vendor } = await getCurrentUserVendor(currentUser.userId);
+
+    // Update vendor metadata with personal information
+    const updatedVendor = await db
+      .update(vendorsTable)
+      .set({
+        name: fullName,
+        mobile,
+        whatsapp,
+        position,
+
+        updatedAt: new Date(),
+      })
+      .where(eq(vendorsTable.id, vendor.id))
+      .returning();
+
+    log.success("Vendor personal info updated successfully", {
+      vendorId: vendor.id,
+      userId: currentUser.userId,
+    });
+
+    // Optimized cache revalidation. This now also revalidates the general vendors list
+    // used on admin pages, by updating the underlying "PROFILE_ONLY" strategy.
+
+    return createSuccessResponse(updatedVendor[0], "Personal information updated successfully");
+  } catch (err) {
+    log.error("Failed to update vendor personal info", err);
+    return {
+      success: false,
+      error: "Invalid data",
+      message: "Updating Vendor Information Failed",
+    };
+  }
+};

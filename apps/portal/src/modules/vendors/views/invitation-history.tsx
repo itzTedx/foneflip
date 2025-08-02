@@ -2,8 +2,8 @@ import { Suspense } from "react";
 
 import { PageHeader } from "@/components/layout/page-header";
 
-import { getVendorInvitations } from "../../actions/queries";
-import InvitationHistoryTable from "../table/client";
+import { getVendorInvitations } from "../actions/queries";
+import InvitationHistoryTable from "../components/table/client";
 
 export const InvitationHistory = () => {
   return (

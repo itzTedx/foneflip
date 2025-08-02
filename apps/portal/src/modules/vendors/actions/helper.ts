@@ -65,3 +65,12 @@ export async function createVendorInvitation(
     throw err;
   }
 }
+
+// Common error handling wrapper
+export const handleActionError = (error: unknown, actionName: string) => {
+  log.error(`${actionName} action error:`, error);
+  return {
+    success: false,
+    error: error instanceof Error ? error.message : "Unknown error occurred",
+  };
+};

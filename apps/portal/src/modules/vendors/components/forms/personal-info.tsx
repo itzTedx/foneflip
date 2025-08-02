@@ -9,16 +9,9 @@ import { Button } from "@ziron/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, useForm, zodResolver } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
-import { z } from "@ziron/validators";
+import { PersonalInfoFormData, personalInfoSchema } from "@ziron/validators";
 
-const personalInfoSchema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
-  mobile: z.string().min(7, "Mobile number must be at least 7 characters"),
-  whatsapp: z.string().optional(),
-  position: z.string().min(2, "Position must be at least 2 characters"),
-});
-
-type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
+import { updateVendorPersonalInfoAction } from "../../actions/mutation";
 
 export function PersonalInfoForm() {
   const router = useRouter();
@@ -39,8 +32,8 @@ export function PersonalInfoForm() {
       try {
         const result = await updateVendorPersonalInfoAction(data);
 
-        if (result.serverError) {
-          toast.error(result.serverError);
+        if (result.error) {
+          toast.error(result.error);
           return;
         }
 
