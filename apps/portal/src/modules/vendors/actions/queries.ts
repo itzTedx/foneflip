@@ -2,7 +2,7 @@
 
 import { unstable_cache as cache } from "next/cache";
 
-import { and, eq, gt, isNull, or } from "drizzle-orm";
+import { and, desc, eq, gt, isNull, or } from "drizzle-orm";
 
 import { db } from "@ziron/db";
 import { vendorInvitations } from "@ziron/db/schema";
@@ -77,3 +77,20 @@ export const getInvitationByToken = async (token: string) =>
       ],
     }
   )();
+
+// Get all vendor invitations with caching
+export const getVendorInvitations = cache(
+  async () => {
+    const invitations = await db.query.vendorInvitations.findMany({
+      where: isNull(vendorInvitations.deletedAt),
+      orderBy: desc(vendorInvitations.createdAt),
+    });
+
+    return invitations;
+  },
+  [CACHE_TAGS.VENDOR_INVITATIONS],
+  {
+    revalidate: CACHE_DURATIONS.MEDIUM,
+    tags: [CACHE_TAGS.VENDOR_INVITATIONS, CACHE_TAGS.VENDOR],
+  }
+);
