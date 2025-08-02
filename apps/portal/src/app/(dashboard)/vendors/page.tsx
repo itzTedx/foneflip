@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { hasPermission } from "@/modules/auth/actions/data-access";
 import { InviteModal } from "@/modules/vendors/components/invite-modal";
-import { InvitationHistory } from "@/modules/vendors/components/views/invitation-history";
+import { InvitationHistory } from "@/modules/vendors/views/invitation-history";
 
 export default async function VendorsPage() {
   await hasPermission({

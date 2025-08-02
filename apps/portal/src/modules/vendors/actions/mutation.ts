@@ -8,6 +8,7 @@ import { sendEmail } from "@ziron/email";
 import VerificationEmail from "@ziron/email/templates/onboarding/token-verification";
 import { invitationSchema, personalInfoSchema, z } from "@ziron/validators";
 
+import { getSession } from "@/lib/auth/server";
 import { env } from "@/lib/env/server";
 import { createLog } from "@/lib/utils";
 import { hasPermission } from "@/modules/auth/actions/data-access";
@@ -216,8 +217,8 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
   try {
     log.info("Update vendor personal info action started", { fullName });
 
-    const currentUser = await getAuthenticatedUser();
-    const { vendor } = await getCurrentUserVendor(currentUser.userId);
+    const session = await getSession();
+    const { vendor } = await getCurrentUserVendor(session?.user.id);
 
     // Update vendor metadata with personal information
     const updatedVendor = await db

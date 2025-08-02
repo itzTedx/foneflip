@@ -32,13 +32,8 @@ export function PersonalInfoForm() {
       try {
         const result = await updateVendorPersonalInfoAction(data);
 
-        if (result.error) {
-          toast.error(result.error);
-          return;
-        }
-
-        if (result.data?.success === false) {
-          toast.error(("error" in result.data && result.data.error) || "Failed to save personal information");
+        if (!result.success) {
+          toast.error("error" in result ? result.error : "Failed to save personal information");
           return;
         }
 

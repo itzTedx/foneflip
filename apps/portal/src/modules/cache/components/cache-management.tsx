@@ -206,7 +206,7 @@ export function CacheManagement() {
   return (
     <Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline">
+        <Button size="sm" variant="secondary">
           Dev Tools
         </Button>
       </DialogTrigger>
