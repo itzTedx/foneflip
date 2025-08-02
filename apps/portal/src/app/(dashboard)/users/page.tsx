@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
 
@@ -18,15 +19,25 @@ export const metadata: Metadata = {
  * Retrieves user data and the preferred table page size from cookies, then displays the users table along with page header and export functionality.
  */
 export default async function UsersPage() {
+  return (
+    <MainWrapper>
+      <PageHeader
+        // badge={`${users.length} Users`}
+        title="Manage Users"
+      >
+        <ExportButton />
+      </PageHeader>
+      <Suspense fallback={<div>Loading...</div>}>
+        <SuspendedTable />
+      </Suspense>
+    </MainWrapper>
+  );
+}
+
+export async function SuspendedTable() {
   const users = await getUsers();
   const cookieStore = await cookies();
   const pageSizeCookie = cookieStore.get("users_table_pageSize")?.value;
-  return (
-    <MainWrapper>
-      <PageHeader badge={`${users.length} Users`} title="Manage Users">
-        <ExportButton />
-      </PageHeader>
-      <UsersTable data={users} initialPageSize={pageSizeCookie ? Number(pageSizeCookie) : undefined} />
-    </MainWrapper>
-  );
+
+  return <UsersTable data={users} initialPageSize={pageSizeCookie ? Number(pageSizeCookie) : undefined} />;
 }

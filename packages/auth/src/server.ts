@@ -1,4 +1,4 @@
-import type { BetterAuthOptions } from "better-auth";
+import type { BetterAuthOptions, BetterAuthPlugin } from "better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -7,6 +7,8 @@ import { admin as adminPlugin, emailOTP, organization, twoFactor } from "better-
 import { db } from "@ziron/db";
 import redis from "@ziron/redis";
 
+import { OTP_EXPIRES_IN, OTP_EXPIRES_IN_MS } from "./data/constants";
+import { sendOTPEmail } from "./email/email-otp";
 import { ac, admin, dev, user, vendor } from "./permission";
 
 /**
@@ -17,7 +19,12 @@ import { ac, admin, dev, user, vendor } from "./permission";
  * @param options - Contains the base URL, production URL, and secret for authentication configuration.
  * @returns The initialized authentication instance.
  */
-export function initAuth(options: { baseUrl: string; productionUrl: string; secret: string | undefined }) {
+export function initAuth(options: {
+  baseUrl: string;
+  productionUrl: string;
+  secret: string | undefined;
+  plugins?: BetterAuthPlugin[];
+}) {
   const config = {
     database: drizzleAdapter(db, {
       provider: "pg",
@@ -68,8 +75,31 @@ export function initAuth(options: { baseUrl: string; productionUrl: string; secr
       nextCookies(),
       twoFactor(),
       emailOTP({
-        async sendVerificationOTP() {
-          // Implement the sendVerificationOTP method to send the OTP to the user's email address
+        expiresIn: OTP_EXPIRES_IN_MS,
+
+        async sendVerificationOTP({ email, otp, type }) {
+          try {
+            // Query the database to get user information
+            const user = await db.query.users.findFirst({
+              where: (users, { eq }) => eq(users.email, email),
+              columns: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            });
+
+            await sendOTPEmail({
+              to: email,
+              otp,
+              type: type,
+              name: user?.name ?? email.split("@")[0],
+              expiresIn: OTP_EXPIRES_IN,
+            });
+          } catch (error) {
+            console.error("Failed to send OTP email:", error);
+            throw new Error("Failed to send verification email");
+          }
         },
       }),
     ],
@@ -106,3 +136,4 @@ export function initAuth(options: { baseUrl: string; productionUrl: string; secr
 
 export type Auth = ReturnType<typeof initAuth>;
 export type Session = Auth["$Infer"]["Session"];
+export type ErrorCode = Auth["$ERROR_CODES"] | "UNKNOWN";

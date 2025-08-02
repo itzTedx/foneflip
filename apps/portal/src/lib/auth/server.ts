@@ -16,3 +16,4 @@ export const auth = initAuth({
 });
 
 export const getSession = cache(async () => auth.api.getSession({ headers: await headers() }));
+export type ErrorCode = keyof typeof auth.$ERROR_CODES | "UNKNOWN";

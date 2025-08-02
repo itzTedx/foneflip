@@ -1,6 +1,7 @@
 "use client";
 
-import { User } from "@/modules/collections/types";
+import React, { useId, useState } from "react";
+
 import {
   ColumnFiltersState,
   flexRender,
@@ -16,25 +17,13 @@ import {
 } from "@tanstack/react-table";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
-import React, { useId, useState } from "react";
 
 import { Label } from "@ziron/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@ziron/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@ziron/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ziron/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@ziron/ui/table";
 import { cn } from "@ziron/utils";
+
+import { User } from "@/modules/collections/types";
 
 import { columns } from "./columns";
 import { DataTableHeader } from "./header";
@@ -67,16 +56,11 @@ export default function UsersTable({ data, initialPageSize }: Props) {
 
   // nuqs pagination state (1-based for URL, 0-based for table)
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const [pageSize, setPageSize] = useQueryState(
-    "pageSize",
-    parseAsInteger.withDefault(10)
-  );
+  const [pageSize, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
 
   // On mount, if no pageSize in URL, use initialPageSize from cookie
   React.useEffect(() => {
-    const urlPageSize = new URLSearchParams(window.location.search).get(
-      "pageSize"
-    );
+    const urlPageSize = new URLSearchParams(window.location.search).get("pageSize");
     if (!urlPageSize && initialPageSize) {
       setPageSize(initialPageSize);
     }
@@ -133,66 +117,41 @@ export default function UsersTable({ data, initialPageSize }: Props) {
 
   return (
     <div className="space-y-4 px-4 md:px-6">
-      <DataTableHeader table={table} data={data} />
+      <DataTableHeader data={data} table={table} />
 
       {/* Table */}
-      <div className="bg-background overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-md border bg-background">
         <Table className="table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-card hover:bg-card">
+              <TableRow className="bg-card hover:bg-card" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      key={header.id}
-                      style={{ width: `${header.getSize()}px` }}
-                      className="h-10"
-                    >
+                    <TableHead className="h-10" key={header.id} style={{ width: `${header.getSize()}px` }}>
                       {header.isPlaceholder ? null : header.column.getCanSort() ? (
                         <div
                           className={cn(
                             header.column.getCanSort() &&
-                              "flex h-full cursor-pointer items-center justify-between gap-2 select-none"
+                              "flex h-full cursor-pointer select-none items-center justify-between gap-2"
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                           onKeyDown={(e) => {
                             // Enhanced keyboard handling for sorting
-                            if (
-                              header.column.getCanSort() &&
-                              (e.key === "Enter" || e.key === " ")
-                            ) {
+                            if (header.column.getCanSort() && (e.key === "Enter" || e.key === " ")) {
                               e.preventDefault();
                               header.column.getToggleSortingHandler()?.(e);
                             }
                           }}
                           tabIndex={header.column.getCanSort() ? 0 : undefined}
                         >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          {flexRender(header.column.columnDef.header, header.getContext())}
                           {{
-                            asc: (
-                              <ChevronUpIcon
-                                className="shrink-0 opacity-60"
-                                size={16}
-                                aria-hidden="true"
-                              />
-                            ),
-                            desc: (
-                              <ChevronDownIcon
-                                className="shrink-0 opacity-60"
-                                size={16}
-                                aria-hidden="true"
-                              />
-                            ),
+                            asc: <ChevronUpIcon aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
+                            desc: <ChevronDownIcon aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
                           }[header.column.getIsSorted() as string] ?? null}
                         </div>
                       ) : (
-                        flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )
+                        flexRender(header.column.columnDef.header, header.getContext())
                       )}
                     </TableHead>
                   );
@@ -203,26 +162,17 @@ export default function UsersTable({ data, initialPageSize }: Props) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow data-state={row.getIsSelected() && "selected"} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="last:py-0">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                    <TableCell className="last:py-0" key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell className="h-24 text-center" colSpan={columns.length}>
                   No results.
                 </TableCell>
               </TableRow>
@@ -235,19 +185,19 @@ export default function UsersTable({ data, initialPageSize }: Props) {
       <div className="flex items-center justify-between gap-8">
         {/* Results per page */}
         <div className="flex items-center gap-3">
-          <Label htmlFor={id} className="max-sm:sr-only">
+          <Label className="max-sm:sr-only" htmlFor={id}>
             Rows per page
           </Label>
           <Select
-            value={table.getState().pagination.pageSize.toString()}
             onValueChange={(value) => {
               table.setPageSize(Number(value));
             }}
+            value={table.getState().pagination.pageSize.toString()}
           >
-            <SelectTrigger id={id} className="w-fit whitespace-nowrap">
+            <SelectTrigger className="w-fit whitespace-nowrap" id={id}>
               <SelectValue placeholder="Select number of results" />
             </SelectTrigger>
-            <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
+            <SelectContent className="[&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8">
               {[5, 10, 25, 50].map((pageSize) => (
                 <SelectItem key={pageSize} value={pageSize.toString()}>
                   {pageSize}
@@ -257,30 +207,20 @@ export default function UsersTable({ data, initialPageSize }: Props) {
           </Select>
         </div>
         {/* Page number information */}
-        <div className="text-muted-foreground flex grow justify-end text-sm whitespace-nowrap">
-          <p
-            className="text-muted-foreground text-sm whitespace-nowrap"
-            aria-live="polite"
-          >
+        <div className="flex grow justify-end whitespace-nowrap text-muted-foreground text-sm">
+          <p aria-live="polite" className="whitespace-nowrap text-muted-foreground text-sm">
             <span className="text-foreground">
-              {table.getState().pagination.pageIndex *
-                table.getState().pagination.pageSize +
-                1}
-              -
+              {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
               {Math.min(
                 Math.max(
-                  table.getState().pagination.pageIndex *
-                    table.getState().pagination.pageSize +
+                  table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
                     table.getState().pagination.pageSize,
                   0
                 ),
                 table.getRowCount()
               )}
             </span>{" "}
-            of{" "}
-            <span className="text-foreground">
-              {table.getRowCount().toString()}
-            </span>
+            of <span className="text-foreground">{table.getRowCount().toString()}</span>
           </p>
         </div>
 

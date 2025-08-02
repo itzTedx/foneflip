@@ -16,6 +16,16 @@ export const CACHE_TAGS = {
   COLLECTION_DETAILS: "collection-details",
   PRODUCT: "product",
   MEDIA: "media",
+  VENDOR: "vendor",
+  VENDORS: "vendors",
+  VENDOR_INVITATIONS: "vendor-invitations",
+  VENDOR_INVITATION_BY_TOKEN: "vendor-invitation-by-token",
+  VENDOR_INVITATION_BY_EMAIL: "vendor-invitation-by-email",
+  VENDOR_PROFILE: "vendor-profile",
+  VENDOR_STATUS: "vendor-status",
+  VENDOR_DOCUMENTS: "vendor-documents",
+  VENDOR_BUSINESS: "vendor-business",
+  VENDOR_PERSONAL: "vendor-personal",
 } as const;
 
 // Redis cache keys

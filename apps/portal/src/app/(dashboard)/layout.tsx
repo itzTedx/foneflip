@@ -6,7 +6,6 @@ import { SidebarInset, SidebarProvider } from "@ziron/ui/sidebar";
 import Navbar from "@/components/layout/navbar";
 import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
 import { getSession } from "@/lib/auth/server";
-import { getMedia } from "@/modules/media/actions/queries";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -25,7 +24,7 @@ export default async function RootLayout({
   // Get session server-side
   const session = await getSession();
 
-  const data = await getMedia();
+  // const data = await getMedia();
 
   return (
     <SidebarProvider
@@ -37,7 +36,7 @@ export default async function RootLayout({
         } as React.CSSProperties
       }
     >
-      <AppSidebar session={session} variant="sidebar" />
+      <AppSidebar session={session} variant="floating" />
       <SidebarInset>
         <div className="relative flex-1">
           <Navbar session={session} />

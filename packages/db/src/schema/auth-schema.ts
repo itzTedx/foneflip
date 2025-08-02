@@ -1,13 +1,4 @@
-import {
-  boolean,
-  date,
-  index,
-  pgEnum,
-  pgTable,
-  text,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { boolean, date, index, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { vendorsTable } from "./vendor-schema";
 
@@ -54,10 +45,7 @@ export const sessions = pgTable(
     impersonatedBy: text("impersonated_by"),
     activeOrganizationId: text("active_vendors_id"),
   },
-  (table) => [
-    index("sessions_user_id_idx").on(table.userId),
-    index("sessions_token_idx").on(table.token),
-  ]
+  (table) => [index("sessions_user_id_idx").on(table.userId), index("sessions_token_idx").on(table.token)]
 );
 
 export const accounts = pgTable(
@@ -99,6 +87,7 @@ export const invitations = pgTable(
   "invitations",
   {
     id: uuid("id").primaryKey().defaultRandom().notNull(),
+    token: text("token").notNull().unique(),
     vendorsId: uuid("vendors_id")
       .notNull()
       .references(() => vendorsTable.id, { onDelete: "cascade" }),
@@ -110,7 +99,7 @@ export const invitations = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
   },
-  (table) => [index("invitations_email_idx").on(table.email)]
+  (table) => [index("invitations_email_idx").on(table.email), index("invitations_token_idx").on(table.token)]
 );
 
 export const members = pgTable("members", {

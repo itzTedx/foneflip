@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+
 import { AnimatePresence, motion, Transition } from "motion/react";
 
 import { cn } from "@ziron/utils";
@@ -33,7 +34,7 @@ type MotionHighlightContextType<T extends string> = {
 };
 
 const MotionHighlightContext = React.createContext<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: Don't care
   MotionHighlightContextType<any> | undefined
 >(undefined);
 
@@ -47,9 +48,7 @@ const MotionHighlightContext = React.createContext<
 function useMotionHighlight<T extends string>(): MotionHighlightContextType<T> {
   const context = React.useContext(MotionHighlightContext);
   if (!context) {
-    throw new Error(
-      "useMotionHighlight must be used within a MotionHighlightProvider"
-    );
+    throw new Error("useMotionHighlight must be used within a MotionHighlightProvider");
   }
   return context as unknown as MotionHighlightContextType<T>;
 }
@@ -73,37 +72,33 @@ type ParentModeMotionHighlightProps = {
   forceUpdateBounds?: boolean;
 };
 
-type ControlledParentModeMotionHighlightProps<T extends string> =
-  BaseMotionHighlightProps<T> &
-    ParentModeMotionHighlightProps & {
-      mode: "parent";
-      controlledItems: true;
-      children: React.ReactNode;
-    };
-
-type ControlledChildrenModeMotionHighlightProps<T extends string> =
-  BaseMotionHighlightProps<T> & {
-    mode?: "children" | undefined;
+type ControlledParentModeMotionHighlightProps<T extends string> = BaseMotionHighlightProps<T> &
+  ParentModeMotionHighlightProps & {
+    mode: "parent";
     controlledItems: true;
     children: React.ReactNode;
   };
 
-type UncontrolledParentModeMotionHighlightProps<T extends string> =
-  BaseMotionHighlightProps<T> &
-    ParentModeMotionHighlightProps & {
-      mode: "parent";
-      controlledItems?: false;
-      itemsClassName?: string;
-      children: React.ReactElement | React.ReactElement[];
-    };
+type ControlledChildrenModeMotionHighlightProps<T extends string> = BaseMotionHighlightProps<T> & {
+  mode?: "children" | undefined;
+  controlledItems: true;
+  children: React.ReactNode;
+};
 
-type UncontrolledChildrenModeMotionHighlightProps<T extends string> =
-  BaseMotionHighlightProps<T> & {
-    mode?: "children";
+type UncontrolledParentModeMotionHighlightProps<T extends string> = BaseMotionHighlightProps<T> &
+  ParentModeMotionHighlightProps & {
+    mode: "parent";
     controlledItems?: false;
     itemsClassName?: string;
     children: React.ReactElement | React.ReactElement[];
   };
+
+type UncontrolledChildrenModeMotionHighlightProps<T extends string> = BaseMotionHighlightProps<T> & {
+  mode?: "children";
+  controlledItems?: false;
+  itemsClassName?: string;
+  children: React.ReactElement | React.ReactElement[];
+};
 
 type MotionHighlightProps<T extends string> = React.ComponentProps<"div"> &
   (
@@ -120,10 +115,7 @@ type MotionHighlightProps<T extends string> = React.ComponentProps<"div"> &
  *
  * @returns The highlight context provider wrapping the rendered children, with animated highlight effects applied when enabled.
  */
-function MotionHighlight<T extends string>({
-  ref,
-  ...props
-}: MotionHighlightProps<T>) {
+function MotionHighlight<T extends string>({ ref, ...props }: MotionHighlightProps<T>) {
   const {
     children,
     value,
@@ -142,12 +134,9 @@ function MotionHighlight<T extends string>({
   const localRef = React.useRef<HTMLDivElement>(null);
   React.useImperativeHandle(ref, () => localRef.current as HTMLDivElement);
 
-  const [activeValue, setActiveValue] = React.useState<T | null>(
-    value ?? defaultValue ?? null
-  );
+  const [activeValue, setActiveValue] = React.useState<T | null>(value ?? defaultValue ?? null);
   const [boundsState, setBoundsState] = React.useState<Bounds | null>(null);
-  const [activeClassNameState, setActiveClassNameState] =
-    React.useState<string>("");
+  const [activeClassNameState, setActiveClassNameState] = React.useState<string>("");
 
   const safeSetActiveValue = React.useCallback(
     (id: T | null) => {
@@ -161,8 +150,7 @@ function MotionHighlight<T extends string>({
     (bounds: DOMRect) => {
       if (!localRef.current) return;
 
-      const boundsOffset = (props as ParentModeMotionHighlightProps)
-        ?.boundsOffset ?? {
+      const boundsOffset = (props as ParentModeMotionHighlightProps)?.boundsOffset ?? {
         top: 0,
         left: 0,
         width: 0,
@@ -211,9 +199,7 @@ function MotionHighlight<T extends string>({
 
     const onScroll = () => {
       if (!activeValue) return;
-      const activeEl = container.querySelector<HTMLElement>(
-        `[data-value="${activeValue}"][data-highlight="true"]`
-      );
+      const activeEl = container.querySelector<HTMLElement>(`[data-value="${activeValue}"][data-highlight="true"]`);
       if (activeEl) safeSetBounds(activeEl.getBoundingClientRect());
     };
 
@@ -226,23 +212,28 @@ function MotionHighlight<T extends string>({
       if (mode === "parent") {
         return (
           <div
-            ref={localRef}
+            className={cn("relative", (props as ParentModeMotionHighlightProps)?.containerClassName)}
             data-slot="motion-highlight-container"
-            className={cn(
-              "relative",
-              (props as ParentModeMotionHighlightProps)?.containerClassName
-            )}
+            ref={localRef}
           >
             <AnimatePresence initial={false}>
               {boundsState && (
                 <motion.div
-                  data-slot="motion-highlight"
                   animate={{
                     top: boundsState.top,
                     left: boundsState.left,
                     width: boundsState.width,
                     height: boundsState.height,
                     opacity: 1,
+                  }}
+                  className={cn("absolute z-0 bg-muted", className, activeClassNameState)}
+                  data-slot="motion-highlight"
+                  exit={{
+                    opacity: 0,
+                    transition: {
+                      ...transition,
+                      delay: (transition?.delay ?? 0) + (exitDelay ?? 0),
+                    },
                   }}
                   initial={{
                     top: boundsState.top,
@@ -251,19 +242,7 @@ function MotionHighlight<T extends string>({
                     height: boundsState.height,
                     opacity: 0,
                   }}
-                  exit={{
-                    opacity: 0,
-                    transition: {
-                      ...transition,
-                      delay: (transition?.delay ?? 0) + (exitDelay ?? 0),
-                    },
-                  }}
                   transition={transition}
-                  className={cn(
-                    "bg-muted absolute z-0",
-                    className,
-                    activeClassNameState
-                  )}
                 />
               )}
             </AnimatePresence>
@@ -274,15 +253,7 @@ function MotionHighlight<T extends string>({
 
       return children;
     },
-    [
-      mode,
-      props,
-      boundsState,
-      transition,
-      exitDelay,
-      className,
-      activeClassNameState,
-    ]
+    [mode, props, boundsState, transition, exitDelay, className, activeClassNameState]
   );
 
   return (
@@ -302,8 +273,7 @@ function MotionHighlight<T extends string>({
         clearBounds,
         activeClassName: activeClassNameState,
         setActiveClassName: setActiveClassNameState,
-        forceUpdateBounds: (props as ParentModeMotionHighlightProps)
-          ?.forceUpdateBounds,
+        forceUpdateBounds: (props as ParentModeMotionHighlightProps)?.forceUpdateBounds,
       }}
     >
       {enabled
@@ -311,10 +281,7 @@ function MotionHighlight<T extends string>({
           ? render(children)
           : render(
               React.Children.map(children, (child, index) => (
-                <MotionHighlightItem
-                  key={index}
-                  className={props?.itemsClassName}
-                >
+                <MotionHighlightItem className={props?.itemsClassName} key={index}>
                   {child}
                 </MotionHighlightItem>
               ))
@@ -335,15 +302,12 @@ function getNonOverridingDataAttributes(
   element: React.ReactElement,
   dataAttributes: Record<string, unknown>
 ): Record<string, unknown> {
-  return Object.keys(dataAttributes).reduce<Record<string, unknown>>(
-    (acc, key) => {
-      if ((element.props as Record<string, unknown>)[key] === undefined) {
-        acc[key] = dataAttributes[key];
-      }
-      return acc;
-    },
-    {}
-  );
+  return Object.keys(dataAttributes).reduce<Record<string, unknown>>((acc, key) => {
+    if ((element.props as Record<string, unknown>)[key] === undefined) {
+      acc[key] = dataAttributes[key];
+    }
+    return acc;
+  }, {});
 }
 
 type ExtendedChildProps = React.ComponentProps<"div"> & {
@@ -407,8 +371,7 @@ function MotionHighlightItem({
   } = useMotionHighlight();
 
   const element = children as React.ReactElement<ExtendedChildProps>;
-  const childValue =
-    id ?? value ?? element.props?.["data-value"] ?? element.props?.id ?? itemId;
+  const childValue = id ?? value ?? element.props?.["data-value"] ?? element.props?.id ?? itemId;
   const isActive = activeValue === childValue;
   const isDisabled = disabled === undefined ? contextDisabled : disabled;
   const itemTransition = transition ?? contextTransition;
@@ -420,9 +383,7 @@ function MotionHighlightItem({
     if (mode !== "parent") return;
     let rafId: number;
     let previousBounds: Bounds | null = null;
-    const shouldUpdateBounds =
-      forceUpdateBounds === true ||
-      (contextForceUpdateBounds && forceUpdateBounds !== false);
+    const shouldUpdateBounds = forceUpdateBounds === true || (contextForceUpdateBounds && forceUpdateBounds !== false);
 
     const updateBounds = () => {
       if (!localRef.current) return;
@@ -512,35 +473,25 @@ function MotionHighlightItem({
           <AnimatePresence initial={false}>
             {isActive && !isDisabled && (
               <motion.div
-                layoutId={`transition-background-${contextId}`}
-                data-slot="motion-highlight"
-                className={cn(
-                  "bg-muted absolute inset-0 z-0",
-                  contextClassName,
-                  activeClassName
-                )}
-                transition={itemTransition}
-                initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
+                className={cn("absolute inset-0 z-0 bg-muted", contextClassName, activeClassName)}
+                data-slot="motion-highlight"
                 exit={{
                   opacity: 0,
                   transition: {
                     ...itemTransition,
-                    delay:
-                      (itemTransition?.delay ?? 0) +
-                      (exitDelay ?? contextExitDelay ?? 0),
+                    delay: (itemTransition?.delay ?? 0) + (exitDelay ?? contextExitDelay ?? 0),
                   },
                 }}
+                initial={{ opacity: 0 }}
+                layoutId={`transition-background-${contextId}`}
+                transition={itemTransition}
                 {...dataAttributes}
               />
             )}
           </AnimatePresence>
 
-          <div
-            data-slot="motion-highlight-item"
-            className={cn("relative z-[1]", className)}
-            {...dataAttributes}
-          >
+          <div className={cn("relative z-[1]", className)} data-slot="motion-highlight-item" {...dataAttributes}>
             {children}
           </div>
         </>
@@ -559,10 +510,10 @@ function MotionHighlightItem({
 
   return enabled ? (
     <div
+      className={cn(mode === "children" && "relative", className)}
+      data-slot="motion-highlight-item-container"
       key={childValue}
       ref={localRef}
-      data-slot="motion-highlight-item-container"
-      className={cn(mode === "children" && "relative", className)}
       {...dataAttributes}
       {...props}
       {...commonHandlers}
@@ -571,25 +522,19 @@ function MotionHighlightItem({
         <AnimatePresence initial={false}>
           {isActive && !isDisabled && (
             <motion.div
-              layoutId={`transition-background-${contextId}`}
-              data-slot="motion-highlight"
-              className={cn(
-                "bg-muted absolute inset-0 z-0",
-                contextClassName,
-                activeClassName
-              )}
-              transition={itemTransition}
-              initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
+              className={cn("absolute inset-0 z-0 bg-muted", contextClassName, activeClassName)}
+              data-slot="motion-highlight"
               exit={{
                 opacity: 0,
                 transition: {
                   ...itemTransition,
-                  delay:
-                    (itemTransition?.delay ?? 0) +
-                    (exitDelay ?? contextExitDelay ?? 0),
+                  delay: (itemTransition?.delay ?? 0) + (exitDelay ?? contextExitDelay ?? 0),
                 },
               }}
+              initial={{ opacity: 0 }}
+              layoutId={`transition-background-${contextId}`}
+              transition={itemTransition}
               {...dataAttributes}
             />
           )}

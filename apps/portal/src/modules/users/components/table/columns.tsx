@@ -1,29 +1,18 @@
-import { User } from "@/modules/collections/types";
-import {
-  IconAlertHexagonFilled,
-  IconCircleCheckFilled,
-} from "@tabler/icons-react";
+import { IconAlertHexagonFilled, IconCircleCheckFilled } from "@tabler/icons-react";
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@ziron/ui/avatar";
 import { Checkbox } from "@ziron/ui/checkbox";
+import { StatusBadge, StatusBadgeDot, StatusBadgeIcon } from "@ziron/ui/status-badge";
 import { formatDate } from "@ziron/utils";
 
-import {
-  StatusBadge,
-  StatusBadgeDot,
-  StatusBadgeIcon,
-} from "@ziron/ui/status-badge";
+import { User } from "@/modules/collections/types";
+
 import { RowActions } from "./row-actions";
 
 // Custom filter function for multi-column searching
-export const multiColumnFilterFn: FilterFn<User> = (
-  row,
-  columnId,
-  filterValue
-) => {
-  const searchableRowContent =
-    `${row.original.name} ${row.original.email}`.toLowerCase();
+export const multiColumnFilterFn: FilterFn<User> = (row, columnId, filterValue) => {
+  const searchableRowContent = `${row.original.name} ${row.original.email}`.toLowerCase();
   const searchTerm = (filterValue ?? "").toLowerCase();
   return searchableRowContent.includes(searchTerm);
 };
@@ -39,19 +28,16 @@ export const columns: ColumnDef<User>[] = [
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
       />
     ),
     cell: ({ row }) => (
       <Checkbox
+        aria-label="Select row"
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
       />
     ),
     size: 18,
@@ -68,9 +54,7 @@ export const columns: ColumnDef<User>[] = [
         <div className="flex items-center gap-2 font-medium">
           <Avatar className="size-10 rounded-md">
             <AvatarImage src={avatar} />
-            <AvatarFallback className="rounded-md">
-              {name.slice(0, 1)}
-            </AvatarFallback>
+            <AvatarFallback className="rounded-md">{name.slice(0, 1)}</AvatarFallback>
           </Avatar>
           {name}
         </div>
@@ -92,13 +76,8 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const isVerified = row.getValue("emailVerified") === true;
       return (
-        <StatusBadge
-          status={isVerified ? "success" : "warn"}
-          className="capitalize"
-        >
-          <StatusBadgeIcon
-            as={isVerified ? IconCircleCheckFilled : IconAlertHexagonFilled}
-          />
+        <StatusBadge className="capitalize" status={isVerified ? "success" : "warn"}>
+          <StatusBadgeIcon as={isVerified ? IconCircleCheckFilled : IconAlertHexagonFilled} />
           {isVerified ? "Verified" : "Pending"}
         </StatusBadge>
       );
@@ -112,17 +91,9 @@ export const columns: ColumnDef<User>[] = [
       const role = row.getValue("role") as "user" | "vendor" | "admin" | "dev";
       return (
         <StatusBadge
-          status={
-            role === "admin"
-              ? "success"
-              : role === "vendor"
-                ? "info"
-                : role === "dev"
-                  ? "error"
-                  : "disabled"
-          }
-          variant="light"
           className="capitalize"
+          status={role === "admin" ? "success" : role === "vendor" ? "info" : role === "dev" ? "error" : "disabled"}
+          variant="light"
         >
           <StatusBadgeDot />
           {role}

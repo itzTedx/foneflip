@@ -75,7 +75,7 @@
 }
 
 :root {
-  --background: oklch(0.985 0 0);
+  --background: oklch(0.9849 0 0);
   --foreground: oklch(0.145 0 0);
 
   --primary: oklch(0.5173 0.272 274.81);
@@ -112,7 +112,7 @@
 
   --border: oklch(86.206% 0.00301 307.295);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: oklch(0.6551 0.1854 285.42);
 
   --chart-1: oklch(65.99% 0.19577 296.994);
   --chart-2: oklch(0.541 0.281 293.009);
@@ -121,11 +121,11 @@
   --chart-5: oklch(0.586 0.253 17.585);
   --chart-6: oklch(0.696 0.17 162.48);
 
-  --sidebar: oklch(95.509% 0.007 303.762);
+  --sidebar: oklch(94.309% 0.00011 271.152);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(100% 0 271.152);
+  --sidebar-accent: oklch(0.9851 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
@@ -166,12 +166,12 @@
   --warn: oklch(0.6512 0.1737 46.95);
   --warn-foreground: oklch(0.8754 0.0773 55.25);
 
-  --info: oklch(0.551 0.2485 273.47);
+  --info: oklch(60.096% 0.2175 273.778);
   --info-foreground: oklch(0.8402 0.0787 275.17);
 
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.4422 0.2733 277.09);
 
   --chart-1: oklch(0.541 0.281 293.009);
   --chart-2: oklch(54.723% 0.2497 281.973);
@@ -180,12 +180,12 @@
   --chart-5: oklch(0.586 0.253 17.585);
   --chart-6: oklch(0.696 0.17 162.48);
 
-  --sidebar: oklch(17.394% 0.00946 317.589);
+  --sidebar: oklch(0.1817 0.0123 292.78);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.2361 0.0097 276.66);
+  --sidebar-accent-foreground: oklch(0.973 0.0131 252.76);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
