@@ -11,10 +11,8 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@ziron/ui",
-    "utils": "@ziron/utils",
-    "hooks": "@ziron/ui/hooks",
-    "lib": "@ziron/ui/lib",
-    "ui": "@ziron/ui"
+    "components": "src/components",
+    "utils": "src/utils",
+    "hooks": "src/hooks"
   }
 }

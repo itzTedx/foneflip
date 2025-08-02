@@ -17,14 +17,15 @@ import {
 interface Props {
   username?: string;
   otp: string;
-  type: "verification" | "login" | "password-reset";
+  type: "sign-in" | "email-verification" | "forget-password";
+  link?: string;
 }
 
-const OTPEmail = ({ username, otp, type }: Props) => {
+const OTPEmail = ({ username, otp, type, link }: Props) => {
   // Dynamic content based on type
   const getContent = () => {
     switch (type) {
-      case "login":
+      case "sign-in":
         return {
           subject: "Your sign-in verification code",
           heading: "Sign In to Your Account",
@@ -32,9 +33,9 @@ const OTPEmail = ({ username, otp, type }: Props) => {
           mainText:
             "We received a request to sign in to your Foneflip account. To complete your sign-in and access your dashboard, please use the verification code below.",
           ctaText: "Continue to Dashboard",
-          ctaUrl: "https://www.foneflip.com/dashboard",
+          ctaUrl: link ?? "https://www.foneflip.com/dashboard",
         };
-      case "verification":
+      case "email-verification":
         return {
           subject: "Verify your email address",
           heading: "Verify Your Email Address",
@@ -42,9 +43,9 @@ const OTPEmail = ({ username, otp, type }: Props) => {
           mainText:
             "Thanks for joining our community of smart shoppers! To complete your account setup and start exploring quality refurbished tech devices, please verify your email address using the code below.",
           ctaText: "Complete Verification",
-          ctaUrl: "https://www.foneflip.com/verify-email",
+          ctaUrl: link ?? "https://www.foneflip.com/verify-email",
         };
-      case "password-reset":
+      case "forget-password":
         return {
           subject: "Reset your password",
           heading: "Reset Your Password",
@@ -52,7 +53,7 @@ const OTPEmail = ({ username, otp, type }: Props) => {
           mainText:
             "We received a request to reset your password for your Foneflip account. To create a new password and regain access to your account, please use the verification code below.",
           ctaText: "Reset Password",
-          ctaUrl: "https://www.foneflip.com/reset-password",
+          ctaUrl: link ?? "https://www.foneflip.com/reset-password",
         };
       default:
         return {
@@ -61,7 +62,7 @@ const OTPEmail = ({ username, otp, type }: Props) => {
           greeting: `Hi${username ? ` ${username},` : ""}`,
           mainText: "Please use the verification code below to complete your request.",
           ctaText: "Continue",
-          ctaUrl: "https://www.foneflip.com",
+          ctaUrl: link ?? "https://www.foneflip.com",
         };
     }
   };
@@ -103,7 +104,7 @@ const OTPEmail = ({ username, otp, type }: Props) => {
                 ignore this email or contact our support team.
               </Text>
 
-              {type === "verification" && (
+              {type === "email-verification" && (
                 <Text className="mt-0 mb-[30px] text-[#0b0917] text-[16px] leading-[24px]">
                   Once verified, you'll have full access to browse and purchase quality refurbished smartphones,
                   laptops, and tech accessories at unbeatable prices—helping you save money while supporting sustainable
@@ -111,14 +112,14 @@ const OTPEmail = ({ username, otp, type }: Props) => {
                 </Text>
               )}
 
-              {type === "password-reset" && (
+              {type === "forget-password" && (
                 <Text className="mt-0 mb-[30px] text-[#0b0917] text-[16px] leading-[24px]">
                   For your security, this code can only be used once. If you continue to have trouble accessing your
                   account, please reach out to our support team for assistance.
                 </Text>
               )}
 
-              {type === "login" && (
+              {type === "sign-in" && (
                 <Text className="mt-0 mb-[30px] text-[#0b0917] text-[16px] leading-[24px]">
                   Once signed in, you can continue browsing our latest deals on certified refurbished devices, track
                   your orders, and manage your account preferences.

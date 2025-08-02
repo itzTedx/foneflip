@@ -51,7 +51,7 @@ export default function VendorRegisterForm({ invitation }: Props) {
             fetchOptions: {
               onSuccess: () => {
                 toast.success("Account created successfully! Please check your email for verification.");
-                router.push(`/onboarding/verify-otp?email=${data.email}`);
+                router.push(`/onboarding/verification?email=${data.email}`);
               },
               onError: (error) => {
                 toast.error(error.error.message);

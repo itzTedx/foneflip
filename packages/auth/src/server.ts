@@ -90,7 +90,7 @@ export function initAuth(options: {
           await sendOTPEmail({
             to: email,
             otp,
-            type: type as "verification" | "login" | "password-reset",
+            type: type,
             name: user?.name ?? email.split("@")[0],
           });
         },

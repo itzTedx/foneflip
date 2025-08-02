@@ -5,18 +5,18 @@ export async function sendOTPEmail({
   to,
   otp,
   name,
-  type = "verification",
+  type = "email-verification",
 }: {
   to: string;
   otp: string;
   name?: string;
-  type: "verification" | "login" | "password-reset";
+  type: "sign-in" | "email-verification" | "forget-password";
 }) {
   const getSubject = () => {
     switch (type) {
-      case "login":
+      case "sign-in":
         return "Your FoneFlip Login Code";
-      case "password-reset":
+      case "email-verification":
         return "Reset Your FoneFlip Password";
       default:
         return "Verify Your FoneFlip Account";
