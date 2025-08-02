@@ -63,7 +63,7 @@ export function OtpVerificationForm({ email }: Props) {
         }
       } else {
         toast.success("Email Verified");
-        router.push(`/onboarding/info?email=${email}`);
+        router.push(`/onboarding/organization?userId=${result.data?.userId}`);
       }
     });
   }

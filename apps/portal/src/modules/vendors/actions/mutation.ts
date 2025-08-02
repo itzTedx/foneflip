@@ -1,19 +1,23 @@
 "use server";
 
+import { headers } from "next/headers";
+
 import { addHours } from "date-fns";
 
 import { and, db, eq } from "@ziron/db";
 import { vendorInvitations, vendorsTable } from "@ziron/db/schema";
 import { sendEmail } from "@ziron/email";
 import VerificationEmail from "@ziron/email/templates/onboarding/token-verification";
-import { invitationSchema, personalInfoSchema, z } from "@ziron/validators";
+import { slugify } from "@ziron/utils";
+import { invitationSchema, organizationSchema, personalInfoSchema, z } from "@ziron/validators";
 
-import { getSession } from "@/lib/auth/server";
+import { auth, getSession } from "@/lib/auth/server";
 import { env } from "@/lib/env/server";
 import { createLog } from "@/lib/utils";
 import { hasPermission } from "@/modules/auth/actions/data-access";
 
-import { createVendorInvitation, hasPendingInvitation } from "./helper";
+import { invalidateVendorCaches } from "./cache";
+import { createVendorInvitation, getCurrentUserVendor, hasPendingInvitation } from "./helper";
 
 const log = createLog("Vendor");
 
@@ -104,6 +108,11 @@ export async function sendInvitation(formData: unknown) {
           expiresIn: hours.toString(),
         }),
       });
+
+      // Invalidate vendor invitation caches
+      if (invitation) {
+        await invalidateVendorInvitationCaches(invitation);
+      }
     } catch (error: unknown) {
       log.error("Failed to send email", { error });
       return {
@@ -124,8 +133,23 @@ export async function sendInvitation(formData: unknown) {
   }
 }
 
+// Cache invalidation helper for vendor invitations
+async function invalidateVendorInvitationCaches(invitation: { id: string; token: string; vendorEmail: string }) {
+  try {
+    await invalidateVendorCaches(undefined, invitation.token, invitation.vendorEmail);
+
+    log.info("Invalidated vendor invitation caches", {
+      invitationId: invitation.id,
+      token: invitation.token,
+      email: invitation.vendorEmail,
+    });
+  } catch (cacheError) {
+    log.warn("Failed to invalidate vendor invitation caches", { cacheError });
+  }
+}
+
 export async function revokeInvitation(invitationId: string) {
-  const { res, session } = await hasPermission({
+  const { res } = await hasPermission({
     permissions: {
       vendors: ["invite"],
     },
@@ -157,6 +181,9 @@ export async function revokeInvitation(invitationId: string) {
         message: "Invitation not found",
       };
     }
+
+    // Invalidate vendor invitation caches
+    await invalidateVendorInvitationCaches(updated);
 
     log.success("Revoked invitation", { id: invitationId });
     return createSuccessResponse(updated, "Invitation revoked successfully");
@@ -199,6 +226,71 @@ export async function updateExpiredInvitations() {
   }
 }
 
+export async function createOrganization(formData: unknown) {
+  const { data, success, error } = organizationSchema.safeParse(formData);
+
+  if (!success) {
+    return {
+      success: false,
+      error: "Invalid data",
+      message: z.prettifyError(error),
+    };
+  }
+
+  const { name, logo, category, website, userId } = data;
+
+  try {
+    const res = await auth.api.createOrganization({
+      body: {
+        name,
+        slug: slugify(name), // required
+        logo,
+        userId,
+        keepCurrentActiveOrganization: false,
+      },
+      headers: await headers(),
+    });
+
+    if (!res) {
+      return {
+        success: false,
+        error: "Invalid data",
+        message: "Error Creating Organization",
+      };
+    }
+
+    const [updatedVendor] = await db
+      .update(vendorsTable)
+      .set({
+        businessCategory: category,
+        website,
+      })
+      .where(eq(vendorsTable.slug, slugify(name)))
+      .returning();
+
+    if (!updatedVendor) {
+      return {
+        success: false,
+        error: "VENDOR_NOT_FOUND",
+        message: "Vendor profile not found",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Organization created successfully",
+      data: updatedVendor,
+    };
+  } catch (error) {
+    log.error("Failed to create organization", error);
+    return {
+      success: false,
+      error: "INTERNAL_SERVER_ERROR",
+      message: "Failed to create organization",
+    };
+  }
+}
+
 // Update vendor personal information - Optimized with better validation
 export const updateVendorPersonalInfoAction = async (formData: unknown) => {
   const { success, data, error } = personalInfoSchema.safeParse(formData);
@@ -220,6 +312,14 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
     const session = await getSession();
     const { vendor } = await getCurrentUserVendor(session?.user.id);
 
+    if (!vendor) {
+      return {
+        success: false,
+        error: "VENDOR_NOT_FOUND",
+        message: "Vendor profile not found",
+      };
+    }
+
     // Update vendor metadata with personal information
     const updatedVendor = await db
       .update(vendorsTable)
@@ -236,7 +336,7 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
 
     log.success("Vendor personal info updated successfully", {
       vendorId: vendor.id,
-      userId: currentUser.userId,
+      userId: session?.user.id,
     });
 
     // Optimized cache revalidation. This now also revalidates the general vendors list

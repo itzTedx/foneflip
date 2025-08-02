@@ -1,5 +1,5 @@
-import { and, eq, gt, isNotNull, isNull } from "@ziron/db";
-import { vendorInvitations } from "@ziron/db/schema";
+import { and, db, eq, gt, isNotNull, isNull } from "@ziron/db";
+import { member, vendorInvitations } from "@ziron/db/schema";
 import { Trx } from "@ziron/db/types";
 
 import { createLog } from "@/lib/utils";
@@ -63,6 +63,29 @@ export async function createVendorInvitation(
   } catch (err) {
     log.error("Failed to create vendor invitation", err);
     throw err;
+  }
+}
+
+/**
+ * Get current user's vendor information
+ */
+export async function getCurrentUserVendor(userId?: string) {
+  if (!userId) {
+    return { vendor: null };
+  }
+
+  try {
+    const memberRecord = await db.query.member.findFirst({
+      where: eq(member.userId, userId),
+      with: {
+        vendor: true,
+      },
+    });
+
+    return { vendor: memberRecord?.vendor || null };
+  } catch (error) {
+    log.error("Failed to get current user vendor", error);
+    return { vendor: null };
   }
 }
 

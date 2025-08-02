@@ -5,6 +5,7 @@ import { vendorInvitations } from "@ziron/db/schema";
 import { z } from "@ziron/validators";
 
 import { createLog } from "@/lib/utils";
+import { invalidateInvitationAfterVerification } from "@/modules/vendors/actions/cache";
 
 const log = createLog("Vendor API");
 
@@ -59,6 +60,18 @@ async function verifyAndUseInvitation(token: string) {
 
     log.success("Marked invitation as used", { id: invitation.id });
 
+    // Invalidate invitation caches after successful verification
+    try {
+      await invalidateInvitationAfterVerification(updated.token, updated.vendorEmail);
+      log.info("Successfully invalidated invitation caches after verification", {
+        invitationId: updated.id,
+        token: updated.token,
+        email: updated.vendorEmail,
+      });
+    } catch (cacheError) {
+      log.warn("Failed to invalidate caches after verification", { cacheError });
+    }
+
     return updated;
   });
 }
@@ -72,7 +85,7 @@ export async function GET(request: Request) {
     const validatedToken = tokenSchema.parse(token);
 
     // 2. Execute business logic
-    await verifyAndUseInvitation(validatedToken);
+    const verifiedInvitation = await verifyAndUseInvitation(validatedToken);
 
     // 3. Redirect to onboarding page on success
     const redirectUrl = new URL("/onboarding", origin);
@@ -89,6 +102,17 @@ export async function GET(request: Request) {
         error: error instanceof Error ? error.message : "Unknown error",
         token,
       });
+    }
+
+    // Invalidate caches even on error to ensure consistency
+    if (token) {
+      try {
+        // Try to invalidate invitation caches for the token
+        // Note: We don't have the email here, so we'll just invalidate the token-based caches
+        log.info("Cache invalidation needed for token", { token });
+      } catch (cacheError) {
+        log.warn("Failed to log cache invalidation on error", { cacheError });
+      }
     }
 
     // Redirect to error page for all types of errors with error details

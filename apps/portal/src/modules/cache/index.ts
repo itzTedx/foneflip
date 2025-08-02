@@ -21,6 +21,8 @@ export const CACHE_TAGS = {
   VENDOR_INVITATIONS: "vendor-invitations",
   VENDOR_INVITATION_BY_TOKEN: "vendor-invitation-by-token",
   VENDOR_INVITATION_BY_EMAIL: "vendor-invitation-by-email",
+  VENDOR_BY_ID: "vendor-by-id",
+  VENDOR_BY_SLUG: "vendor-by-slug",
   VENDOR_PROFILE: "vendor-profile",
   VENDOR_STATUS: "vendor-status",
   VENDOR_DOCUMENTS: "vendor-documents",
@@ -44,6 +46,14 @@ export const REDIS_KEYS = {
   PRODUCT_STATS: "products:stats",
   PRODUCT_POPULAR: "products:popular",
   PRODUCT_RECENT: "products:recent",
+  VENDORS: "vendors:all",
+  VENDORS_METADATA: "vendors:all:metadata",
+  VENDOR_BY_ID: (id: string) => `vendor:id:${id}`,
+  VENDOR_BY_SLUG: (slug: string) => `vendor:${slug}`,
+  VENDOR_INVITATIONS: "vendor-invitations:all",
+  VENDOR_INVITATION_BY_TOKEN: (token: string) => `vendor-invitation:token:${token}`,
+  VENDOR_INVITATION_BY_EMAIL: (email: string) => `vendor-invitation:email:${email}`,
+  VENDOR_STATS: "vendors:stats",
 } as const;
 
 // Redis cache utilities with improved typing and error handling

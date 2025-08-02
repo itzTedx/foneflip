@@ -59,7 +59,7 @@ export function initAuth(options: {
       organization({
         schema: {
           organization: {
-            modelName: "vendors",
+            modelName: "vendorsTable",
           },
         },
       }),
@@ -105,15 +105,15 @@ export function initAuth(options: {
     ],
     secondaryStorage: {
       get: async (key) => {
-        const value = await redis.get(key);
+        const value = await redis.get(`session:${key}`);
         return value ?? null;
       },
       set: async (key, value, ttl) => {
-        if (ttl) await redis.setex(key, ttl, value);
+        if (ttl) await redis.setex(`session:${key}`, ttl, value);
         else await redis.set(key, value);
       },
       delete: async (key) => {
-        await redis.del(key);
+        await redis.del(`session:${key}`);
       },
     },
     advanced: {

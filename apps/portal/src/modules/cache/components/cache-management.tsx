@@ -103,6 +103,7 @@ export function CacheManagement() {
   const [isPendingCollections, startTransitionCollections] = useTransition();
   const [isPendingProducts, startTransitionProducts] = useTransition();
   const [isPendingMedia, startTransitionMedia] = useTransition();
+  const [isPendingVendors, startTransitionVendors] = useTransition();
   const [isPendingClear, startTransitionClear] = useTransition();
   const [lastRevalidated, setLastRevalidated] = useState<string | null>(null);
   const [stats, setStats] = useState<CacheStats | null>(null);
@@ -133,7 +134,11 @@ export function CacheManagement() {
           ? startTransitionCollections
           : type === "products"
             ? startTransitionProducts
-            : startTransitionMedia;
+            : type === "media"
+              ? startTransitionMedia
+              : type === "vendors"
+                ? startTransitionVendors
+                : startTransitionAll;
 
     startTransition(async () => {
       try {
@@ -236,7 +241,12 @@ export function CacheManagement() {
                 <Button
                   className="text-xs"
                   disabled={
-                    isPendingAll || isPendingCollections || isPendingProducts || isPendingMedia || isPendingClear
+                    isPendingAll ||
+                    isPendingCollections ||
+                    isPendingProducts ||
+                    isPendingMedia ||
+                    isPendingVendors ||
+                    isPendingClear
                   }
                   onClick={() => handleRevalidate("all")}
                   size="sm"
@@ -249,7 +259,12 @@ export function CacheManagement() {
                 <Button
                   className="text-xs"
                   disabled={
-                    isPendingAll || isPendingCollections || isPendingProducts || isPendingMedia || isPendingClear
+                    isPendingAll ||
+                    isPendingCollections ||
+                    isPendingProducts ||
+                    isPendingMedia ||
+                    isPendingVendors ||
+                    isPendingClear
                   }
                   onClick={() => handleRevalidate("collections")}
                   size="sm"
@@ -262,7 +277,12 @@ export function CacheManagement() {
                 <Button
                   className="text-xs"
                   disabled={
-                    isPendingAll || isPendingCollections || isPendingProducts || isPendingMedia || isPendingClear
+                    isPendingAll ||
+                    isPendingCollections ||
+                    isPendingProducts ||
+                    isPendingMedia ||
+                    isPendingVendors ||
+                    isPendingClear
                   }
                   onClick={() => handleRevalidate("products")}
                   size="sm"
@@ -275,7 +295,12 @@ export function CacheManagement() {
                 <Button
                   className="text-xs"
                   disabled={
-                    isPendingAll || isPendingCollections || isPendingProducts || isPendingMedia || isPendingClear
+                    isPendingAll ||
+                    isPendingCollections ||
+                    isPendingProducts ||
+                    isPendingMedia ||
+                    isPendingVendors ||
+                    isPendingClear
                   }
                   onClick={() => handleRevalidate("media")}
                   size="sm"
@@ -283,6 +308,24 @@ export function CacheManagement() {
                 >
                   <IconRefresh className={`mr-1 h-3 w-3 ${isPendingMedia ? "animate-spin" : ""}`} />
                   Media
+                </Button>
+
+                <Button
+                  className="text-xs"
+                  disabled={
+                    isPendingAll ||
+                    isPendingCollections ||
+                    isPendingProducts ||
+                    isPendingMedia ||
+                    isPendingVendors ||
+                    isPendingClear
+                  }
+                  onClick={() => handleRevalidate("vendors")}
+                  size="sm"
+                  variant="outline"
+                >
+                  <IconRefresh className={`mr-1 h-3 w-3 ${isPendingVendors ? "animate-spin" : ""}`} />
+                  Vendors
                 </Button>
               </div>
             </div>
@@ -292,7 +335,14 @@ export function CacheManagement() {
               <h4 className="font-medium text-sm">Clear All Caches</h4>
               <Button
                 className="text-xs"
-                disabled={isPendingAll || isPendingCollections || isPendingProducts || isPendingMedia || isPendingClear}
+                disabled={
+                  isPendingAll ||
+                  isPendingCollections ||
+                  isPendingProducts ||
+                  isPendingMedia ||
+                  isPendingVendors ||
+                  isPendingClear
+                }
                 onClick={handleClearAll}
                 size="sm"
                 variant="destructive"

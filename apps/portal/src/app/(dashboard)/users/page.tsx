@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { ExportButton } from "@/components/ui/action-buttons";
+import { requireUser } from "@/modules/auth/actions/data-access";
 import { getUsers } from "@/modules/users/actions/queries";
 import UsersTable from "@/modules/users/components/table/data-table";
 
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
  * Retrieves user data and the preferred table page size from cookies, then displays the users table along with page header and export functionality.
  */
 export default async function UsersPage() {
+  await requireUser();
+
   return (
     <MainWrapper>
       <PageHeader

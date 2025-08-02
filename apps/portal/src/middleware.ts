@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
 export async function middleware(request: NextRequest) {
-  const publicPaths = ["/register", "/login", "/onboarding", "/api/auth"];
+  const publicPaths = ["/register", "/login", "/onboarding", "/verify", "/api/auth"];
   const { pathname } = new URL(request.url);
 
   // Allow unauthenticated access to public paths

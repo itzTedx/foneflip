@@ -9,13 +9,16 @@ import { env } from "@/lib/env/server";
 import { CACHE_TAGS, REDIS_KEYS, redisCache } from "./index";
 import { CacheOperationResult } from "./types";
 
-export type CacheRevalidationType = "all" | "collections" | "products" | "media";
+export type CacheRevalidationType = "all" | "collections" | "products" | "media" | "vendors";
 
 interface CacheRevalidationOptions {
   type: CacheRevalidationType;
   collectionId?: string;
   slug?: string;
   productId?: string;
+  vendorId?: string;
+  invitationToken?: string;
+  invitationEmail?: string;
 }
 
 /**
@@ -32,7 +35,7 @@ export async function revalidateCache(options: CacheRevalidationOptions): Promis
   }
 
   try {
-    const { type, collectionId, slug, productId } = options;
+    const { type, collectionId, slug, productId, vendorId, invitationToken, invitationEmail } = options;
 
     switch (type) {
       case "all":
@@ -49,6 +52,10 @@ export async function revalidateCache(options: CacheRevalidationOptions): Promis
 
       case "media":
         await revalidateMediaCaches();
+        break;
+
+      case "vendors":
+        await revalidateVendorCaches(vendorId, invitationToken, invitationEmail);
         break;
 
       default:
@@ -72,7 +79,7 @@ export async function revalidateCache(options: CacheRevalidationOptions): Promis
 }
 
 /**
- * Revalidate all caches (collections, products, media)
+ * Revalidate all caches (collections, products, media, vendors)
  */
 async function revalidateAllCaches(): Promise<void> {
   // Revalidate all Next.js tags
@@ -87,6 +94,9 @@ async function revalidateAllCaches(): Promise<void> {
   revalidatePath("/products");
   revalidatePath("/products/[slug]", "page");
   revalidatePath("/media");
+  revalidatePath("/vendors");
+  revalidatePath("/vendor");
+  revalidatePath("/vendor/[slug]", "page");
 
   // Invalidate all Redis keys
   await redisCache.invalidatePattern("collection:*");
@@ -94,6 +104,8 @@ async function revalidateAllCaches(): Promise<void> {
   await redisCache.invalidatePattern("product:*");
   await redisCache.invalidatePattern("products:*");
   await redisCache.invalidatePattern("media:*");
+  await redisCache.invalidatePattern("vendor:*");
+  await redisCache.invalidatePattern("vendor-invitation:*");
 }
 
 /**
@@ -180,6 +192,57 @@ async function revalidateMediaCaches(): Promise<void> {
 
   // Invalidate Redis media keys
   await redisCache.invalidatePattern("media:*");
+}
+
+/**
+ * Revalidate vendor-related caches
+ */
+async function revalidateVendorCaches(
+  vendorId?: string,
+  invitationToken?: string,
+  invitationEmail?: string
+): Promise<void> {
+  // Revalidate Next.js vendor tags
+  revalidateTag(CACHE_TAGS.VENDOR);
+  revalidateTag(CACHE_TAGS.VENDORS);
+  revalidateTag(CACHE_TAGS.VENDOR_INVITATIONS);
+  revalidateTag(CACHE_TAGS.VENDOR_PROFILE);
+  revalidateTag(CACHE_TAGS.VENDOR_STATUS);
+  revalidateTag(CACHE_TAGS.VENDOR_DOCUMENTS);
+  revalidateTag(CACHE_TAGS.VENDOR_BUSINESS);
+  revalidateTag(CACHE_TAGS.VENDOR_PERSONAL);
+
+  if (vendorId) {
+    revalidateTag(`${CACHE_TAGS.VENDOR_BY_ID}:${vendorId}`);
+  }
+  if (invitationToken) {
+    revalidateTag(`${CACHE_TAGS.VENDOR_INVITATION_BY_TOKEN}:${invitationToken}`);
+  }
+  if (invitationEmail) {
+    revalidateTag(`${CACHE_TAGS.VENDOR_INVITATION_BY_EMAIL}:${invitationEmail}`);
+  }
+
+  // Revalidate vendor paths
+  revalidatePath("/vendors");
+  revalidatePath("/vendor");
+  revalidatePath("/vendor/[slug]", "page");
+
+  // Invalidate Redis vendor keys
+  const keysToInvalidate: string[] = [REDIS_KEYS.VENDORS, REDIS_KEYS.VENDOR_INVITATIONS];
+
+  if (vendorId) {
+    keysToInvalidate.push(REDIS_KEYS.VENDOR_BY_ID(vendorId));
+  }
+  if (invitationToken) {
+    keysToInvalidate.push(REDIS_KEYS.VENDOR_INVITATION_BY_TOKEN(invitationToken));
+  }
+  if (invitationEmail) {
+    keysToInvalidate.push(REDIS_KEYS.VENDOR_INVITATION_BY_EMAIL(invitationEmail));
+  }
+
+  await redisCache.del(...keysToInvalidate);
+  await redisCache.invalidatePattern("vendor:*");
+  await redisCache.invalidatePattern("vendor-invitation:*");
 }
 
 /**
