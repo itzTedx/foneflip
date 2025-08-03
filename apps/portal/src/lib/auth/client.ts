@@ -2,6 +2,7 @@ import {
   adminClient,
   emailOTPClient,
   inferAdditionalFields,
+  organizationClient,
   passkeyClient,
   twoFactorClient,
 } from "better-auth/client/plugins";
@@ -12,6 +13,7 @@ import { ac, admin, dev, user, vendor } from "@ziron/auth/permission";
 
 export const authClient = createAuthClient({
   plugins: [
+    organizationClient(),
     passkeyClient(),
     adminClient({
       ac,

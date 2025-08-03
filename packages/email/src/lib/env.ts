@@ -9,6 +9,7 @@ export const env = createEnv({
     SMTP_USER: z.string().min(1),
     SMTP_PASS: z.string().min(1),
     SMTP_FROM: z.string().min(1),
+    NODE_ENV: z.enum(["development", "production"]),
   },
 
   experimental__runtimeEnv: {},
