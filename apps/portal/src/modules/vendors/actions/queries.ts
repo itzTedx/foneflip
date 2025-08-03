@@ -4,8 +4,9 @@ import { unstable_cache as cache } from "next/cache";
 
 import { and, desc, eq, gt, isNull, or } from "drizzle-orm";
 
-import { vendorInvitations } from "@ziron/db/schema";
+import { vendorInvitations, vendorsTable } from "@ziron/db/schema";
 import { db } from "@ziron/db/server";
+import type { Vendor } from "@ziron/db/types";
 
 import { createLog } from "@/lib/utils";
 import { CACHE_TAGS, REDIS_KEYS, redisCache } from "@/modules/cache";
@@ -207,107 +208,6 @@ export const getPendingInvitations = cache(
   }
 );
 
-import { revalidatePath, revalidateTag } from "next/cache";
-
-// Cache invalidation functions for vendor invitations (Redis + Next.js)
-export const invalidateVendorInvitationCaches = async (token?: string, email?: string) => {
-  try {
-    // Invalidate Next.js cache tags
-    revalidateTag(CACHE_TAGS.VENDOR_INVITATIONS);
-    revalidateTag(CACHE_TAGS.VENDOR);
-    revalidateTag(CACHE_TAGS.VENDOR_INVITATION_BY_TOKEN);
-    revalidateTag(CACHE_TAGS.VENDOR_INVITATION_BY_EMAIL);
-
-    if (token) {
-      revalidateTag(`${CACHE_TAGS.VENDOR_INVITATION_BY_TOKEN}:${token}`);
-    }
-    if (email) {
-      revalidateTag(`${CACHE_TAGS.VENDOR_INVITATION_BY_EMAIL}:${email}`);
-    }
-
-    // Revalidate relevant paths
-    revalidatePath("/vendors");
-    revalidatePath("/vendor");
-    revalidatePath("/admin/vendors");
-    revalidatePath("/admin/invitations");
-
-    // Invalidate Redis caches
-    const keysToInvalidate: string[] = [REDIS_KEYS.VENDOR_INVITATIONS];
-
-    if (token) {
-      keysToInvalidate.push(REDIS_KEYS.VENDOR_INVITATION_BY_TOKEN(token));
-    }
-    if (email) {
-      keysToInvalidate.push(REDIS_KEYS.VENDOR_INVITATION_BY_EMAIL(email));
-    }
-
-    // Also invalidate pending invitations cache
-    keysToInvalidate.push(`${REDIS_KEYS.VENDOR_INVITATIONS}:pending`);
-
-    await redisCache.del(...keysToInvalidate);
-    log.info("Invalidated vendor invitation caches (Redis + Next.js + Paths)", { token, email });
-  } catch (error) {
-    log.warn("Failed to invalidate vendor invitation caches", { error });
-  }
-};
-
-// Update vendor invitation cache with new data (Redis + Next.js)
-export const updateVendorInvitationCache = async (invitation: InvitationType) => {
-  try {
-    // Update Redis caches
-    await Promise.all([
-      redisCache.set(REDIS_KEYS.VENDOR_INVITATION_BY_TOKEN(invitation.token!), invitation, CACHE_DURATIONS.MEDIUM),
-      redisCache.set(REDIS_KEYS.VENDOR_INVITATION_BY_EMAIL(invitation.vendorEmail), invitation, CACHE_DURATIONS.MEDIUM),
-    ]);
-
-    // Revalidate Next.js cache tags
-    revalidateTag(CACHE_TAGS.VENDOR_INVITATIONS);
-    revalidateTag(CACHE_TAGS.VENDOR);
-    revalidateTag(`${CACHE_TAGS.VENDOR_INVITATION_BY_TOKEN}:${invitation.token}`);
-    revalidateTag(`${CACHE_TAGS.VENDOR_INVITATION_BY_EMAIL}:${invitation.vendorEmail}`);
-
-    // Revalidate relevant paths
-    revalidatePath("/vendors");
-    revalidatePath("/vendor");
-    revalidatePath("/admin/vendors");
-    revalidatePath("/admin/invitations");
-
-    log.info("Updated vendor invitation cache (Redis + Next.js + Paths)", {
-      token: invitation.token,
-      email: invitation.vendorEmail,
-    });
-  } catch (error) {
-    log.warn("Failed to update vendor invitation cache", { error });
-  }
-};
-
-// Clear all vendor invitation caches (Redis + Next.js)
-export const clearAllVendorInvitationCaches = async () => {
-  try {
-    // Revalidate all Next.js cache tags
-    revalidateTag(CACHE_TAGS.VENDOR_INVITATIONS);
-    revalidateTag(CACHE_TAGS.VENDOR);
-    revalidateTag(CACHE_TAGS.VENDOR_INVITATION_BY_TOKEN);
-    revalidateTag(CACHE_TAGS.VENDOR_INVITATION_BY_EMAIL);
-
-    // Revalidate all relevant paths
-    revalidatePath("/vendors");
-    revalidatePath("/vendor");
-    revalidatePath("/admin/vendors");
-    revalidatePath("/admin/invitations");
-    revalidatePath("/admin");
-    revalidatePath("/");
-
-    // Invalidate all Redis patterns
-    await redisCache.invalidatePattern("vendor-invitation:*");
-    await redisCache.invalidatePattern("vendor-invitations:*");
-
-    log.info("Cleared all vendor invitation caches (Redis + Next.js + Paths)");
-  } catch (error) {
-    log.warn("Failed to clear all vendor invitation caches", { error });
-  }
-};
-
 // Get all vendors regardless of status
 export const getVendors = cache(
   async () => {
@@ -338,3 +238,78 @@ export const getVendors = cache(
     tags: [CACHE_TAGS.VENDOR, CACHE_TAGS.VENDOR_INVITATIONS],
   }
 );
+
+// Get vendor by ID with comprehensive caching (Redis + Next.js)
+export const getVendorById = async (id: string) =>
+  cache(
+    async (): Promise<InvitationResponse<Vendor>> => {
+      try {
+        // Validate ID input
+        if (!id || typeof id !== "string" || id.trim().length === 0) {
+          return {
+            success: false,
+            error: "Invalid vendor ID provided",
+          };
+        }
+
+        // Try to get from Redis cache first
+        const cachedVendor = await redisCache.get<Vendor>(REDIS_KEYS.VENDOR_BY_ID(id));
+        if (cachedVendor) {
+          log.info("Vendor found in Redis cache", { id });
+          return {
+            success: true,
+            data: cachedVendor,
+          };
+        }
+
+        const vendor = await db.query.vendorsTable.findFirst({
+          where: eq(vendorsTable.id, id),
+          with: {
+            members: {
+              with: {
+                user: {
+                  columns: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                  },
+                },
+              },
+            },
+            documents: true,
+          },
+        });
+
+        if (!vendor) {
+          return {
+            success: false,
+            error: "Vendor not found",
+          };
+        }
+
+        // Cache the vendor in Redis
+        await redisCache.set(REDIS_KEYS.VENDOR_BY_ID(id), vendor, CACHE_DURATIONS.MEDIUM);
+
+        log.info("Vendor fetched from database and cached", { id });
+        return {
+          success: true,
+          data: vendor,
+        };
+      } catch (error) {
+        // Log the error for debugging
+        log.error("Error in getVendorById:", error);
+
+        // Return structured error response
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Failed to fetch vendor",
+        };
+      }
+    },
+    [`vendor-by-id:${id}`],
+    {
+      revalidate: CACHE_DURATIONS.MEDIUM,
+      tags: [CACHE_TAGS.VENDOR_BY_ID, CACHE_TAGS.VENDOR, `${CACHE_TAGS.VENDOR_BY_ID}:${id}`],
+    }
+  )();

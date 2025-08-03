@@ -575,17 +575,18 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
     log.info("Update vendor personal info action started", { fullName });
 
     const session = await getSession();
-    const { vendor } = await getCurrentUserVendor(session?.user.id);
+    const userId = session?.user.id;
+    const { vendor } = await getCurrentUserVendor(userId);
 
     if (!vendor) {
       return createErrorResponse("VENDOR_NOT_FOUND", "Vendor profile not found");
     }
 
     // Update vendor metadata with personal information
-    const updatedVendor = await db
+    await db
       .update(vendorsTable)
       .set({
-        businessName: fullName,
+        vendorName: fullName,
         vendorNumber: mobile,
         vendorWhatsappNumber: whatsapp,
         vendorPosition: position,
@@ -596,13 +597,13 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
 
     log.success("Vendor personal info updated successfully", {
       vendorId: vendor.id,
-      userId: session?.user.id,
+      userId: userId,
     });
 
-    // Optimized cache revalidation. This now also revalidates the general vendors list
-    // used on admin pages, by updating the underlying "PROFILE_ONLY" strategy.
+    // Comprehensive cache revalidation for vendors page
     try {
       await invalidateVendorCaches(vendor.id);
+
       log.info("Revalidated vendor caches after personal info update", {
         vendorId: vendor.id,
         type: "personal_info",
@@ -611,7 +612,7 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
       log.warn("Failed to revalidate vendor caches after personal info update", { cacheError });
     }
 
-    return createSuccessResponse(updatedVendor[0], "Personal information updated successfully");
+    return createSuccessResponse(userId, "Personal information updated successfully");
   });
 };
 
@@ -700,5 +701,111 @@ export async function updateVendorDocuments(formData: unknown) {
     }
 
     return createSuccessResponse(updatedVendor, "Documents uploaded successfully");
+  });
+}
+
+// Approve vendor action
+export async function approveVendor({ vendorId }: { vendorId: string }) {
+  return withPermissionCheck({ vendors: ["update"] }, async () => {
+    return withErrorHandling("Approve vendor", async () => {
+      const session = await getSession();
+      if (!session?.user?.id) {
+        return createErrorResponse("UNAUTHORIZED", "You must be logged in to approve vendors");
+      }
+
+      // Check if vendor exists and is pending approval
+      const vendor = await db.query.vendorsTable.findFirst({
+        where: eq(vendorsTable.id, vendorId),
+      });
+
+      if (!vendor) {
+        return createErrorResponse("VENDOR_NOT_FOUND", "Vendor not found");
+      }
+
+      if (vendor.status !== "pending_approval") {
+        return createErrorResponse("VALIDATION_ERROR", "Vendor is not pending approval");
+      }
+
+      // Update vendor status to approved
+      await db
+        .update(vendorsTable)
+        .set({
+          status: "approved",
+          approvedAt: new Date(),
+          approvedBy: session.user.id,
+          updatedAt: new Date(),
+        })
+        .where(eq(vendorsTable.id, vendorId));
+
+      log.success("Vendor approved successfully", {
+        vendorId,
+        approvedBy: session.user.id,
+      });
+
+      // Revalidate vendor caches
+      try {
+        await invalidateVendorCaches(vendorId);
+        log.info("Revalidated vendor caches after approval", { vendorId, type: "approval" });
+      } catch (cacheError) {
+        log.warn("Failed to revalidate vendor caches after approval", { cacheError });
+      }
+
+      return createSuccessResponse(vendorId, "Vendor approved successfully");
+    });
+  });
+}
+
+// Reject vendor action
+export async function rejectVendor({ vendorId, reason }: { vendorId: string; reason: string }) {
+  return withPermissionCheck({ vendors: ["update"] }, async () => {
+    return withErrorHandling("Reject vendor", async () => {
+      const session = await getSession();
+      if (!session?.user?.id) {
+        return createErrorResponse("UNAUTHORIZED", "You must be logged in to reject vendors");
+      }
+
+      if (!reason || reason.trim().length === 0) {
+        return createErrorResponse("VALIDATION_ERROR", "Rejection reason is required");
+      }
+
+      // Check if vendor exists and is pending approval
+      const vendor = await db.query.vendorsTable.findFirst({
+        where: eq(vendorsTable.id, vendorId),
+      });
+
+      if (!vendor) {
+        return createErrorResponse("VENDOR_NOT_FOUND", "Vendor not found");
+      }
+
+      if (vendor.status !== "pending_approval") {
+        return createErrorResponse("VALIDATION_ERROR", "Vendor is not pending approval");
+      }
+
+      // Update vendor status to rejected
+      await db
+        .update(vendorsTable)
+        .set({
+          status: "rejected",
+          rejectionReason: reason.trim(),
+          updatedAt: new Date(),
+        })
+        .where(eq(vendorsTable.id, vendorId));
+
+      log.success("Vendor rejected successfully", {
+        vendorId,
+        rejectedBy: session.user.id,
+        reason: reason.trim(),
+      });
+
+      // Revalidate vendor caches
+      try {
+        await invalidateVendorCaches(vendorId);
+        log.info("Revalidated vendor caches after rejection", { vendorId, type: "rejection" });
+      } catch (cacheError) {
+        log.warn("Failed to revalidate vendor caches after rejection", { cacheError });
+      }
+
+      return createSuccessResponse(vendorId, "Vendor rejected successfully");
+    });
   });
 }

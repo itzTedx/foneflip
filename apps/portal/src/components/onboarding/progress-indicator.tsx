@@ -5,7 +5,7 @@ import { IconCheck } from "@tabler/icons-react";
 import { Badge } from "@ziron/ui/badge";
 import { Progress } from "@ziron/ui/progress";
 
-import { useOnboarding } from "@/hooks/use-onboarding";
+import { useOnboarding } from "@/modules/onboarding";
 
 interface OnboardingStep {
   name: "registration" | "verification" | "organization" | "documents" | "complete";

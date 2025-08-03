@@ -6,7 +6,7 @@ import { IconRefresh } from "@ziron/ui/assets/icons";
 import { Button } from "@ziron/ui/button";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
 
-import { clearAllVendorInvitationCaches } from "../../actions/queries";
+import { clearAllVendorInvitationCaches } from "../../actions/cache";
 
 export const RefreshButton = () => {
   const [isPending, startTransition] = useTransition();

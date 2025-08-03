@@ -13,7 +13,7 @@ import { DocumentsFormData, documentsSchema } from "@ziron/validators";
 import { useOnboarding } from "@/modules/onboarding";
 
 import { updateVendorDocuments } from "../../actions/mutation";
-import { DocumentUpload } from "./document-upload";
+import { DocumentUpload } from "../ui/document-upload";
 
 interface Props {
   userId: string;

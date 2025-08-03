@@ -4,6 +4,7 @@ import { IconLogoMono } from "@ziron/ui/assets/logo";
 import { Card, CardContent } from "@ziron/ui/card";
 
 import { BackgroundPattern } from "@/components/background-pattern";
+import { OnboardingProgressIndicator } from "@/components/onboarding/progress-indicator";
 import { getInvitationByToken } from "@/modules/vendors/actions/queries";
 import VendorRegisterForm from "@/modules/vendors/components/forms/registration-form";
 
@@ -52,7 +53,7 @@ export default async function VendorOnboardingPage({ searchParams }: { searchPar
   return (
     <div className="relative flex h-full items-center justify-center">
       <div className="flex flex-1 flex-col items-center justify-center">
-        <Card className="relative overflow-hidden rounded-2xl p-0 sm:mx-auto sm:w-full sm:max-w-md">
+        <Card className="relative overflow-hidden rounded-2xl p-0 sm:mx-auto sm:w-full sm:max-w-4xl">
           <BackgroundPattern />
           <CardContent className="z-10 p-6 px-9">
             <div className="mx-auto grid size-12 place-content-center rounded-full border-background border-t bg-gradient-to-tr from-primary to-brand-secondary shadow-lg shadow-primary/30 dark:border-foreground/60">
@@ -63,6 +64,12 @@ export default async function VendorOnboardingPage({ searchParams }: { searchPar
             <p className="mx-auto max-w-[30ch] text-balance text-center font-light text-muted-foreground text-xs">
               Become part of Foneflip&apos;s trusted UAE-based vendor network.
             </p>
+
+            {/* Progress Indicator */}
+            <div className="mt-6 mb-8">
+              <OnboardingProgressIndicator className="mb-6" currentStep="registration" userId="temp-user-id" />
+            </div>
+
             <VendorRegisterForm invitation={res.data} />
           </CardContent>
         </Card>

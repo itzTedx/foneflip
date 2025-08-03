@@ -2,6 +2,7 @@ import { IconLogoMono } from "@ziron/ui/assets/logo";
 import { Card, CardContent } from "@ziron/ui/card";
 
 import { BackgroundPattern } from "@/components/background-pattern";
+import { PersonalInfoForm } from "@/modules/vendors/components/forms/personal-info";
 
 export default function VendorInfoPage() {
   return (
@@ -17,7 +18,7 @@ export default function VendorInfoPage() {
             <p className="mx-auto max-w-[40ch] text-balance text-center font-light text-muted-foreground text-sm">
               We&apos;ve sent you a verification otp to your email. Please verify to continue onboarding.
             </p>
-            FORM
+            <PersonalInfoForm />
           </CardContent>
         </Card>
       </div>

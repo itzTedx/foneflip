@@ -41,7 +41,7 @@ export function PersonalInfoForm() {
 
         form.reset();
         toast.success("Personal information saved successfully");
-        router.push("/vendor/onboarding/business-info");
+        router.push(`/onboarding/organization?userId=${result.data}`);
       } catch (err) {
         console.error("Failed to save personal information:", err);
         toast.error("An unexpected error occurred. Please check your connection and try again.");
