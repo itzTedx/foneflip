@@ -59,6 +59,7 @@ export async function upsertProduct(formData: unknown) {
     });
     vendorId = memberRecord?.vendorId;
   }
+  log.info("Vendor Id:", { vendorId });
 
   try {
     const product = await db.transaction(async (tx) => {

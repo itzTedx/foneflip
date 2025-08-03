@@ -1,24 +1,9 @@
-"use client";
-
-import dynamic from "next/dynamic";
-
 import { getCollections } from "../actions/queries";
 import { CollectionsEmptyState } from "./empty-state";
-
-const CollectionListSortable = dynamic(
-  () =>
-    import("@/modules/collections/components/sortable-collections").then(
-      (mod) => mod.CollectionListSortable
-    ),
-  { ssr: false }
-);
+import { CollectionListSortable } from "./sortable-collections";
 
 // Main collections content component
-export function CollectionsContent({
-  collections,
-}: {
-  collections: Awaited<ReturnType<typeof getCollections>>;
-}) {
+export function CollectionsContent({ collections }: { collections: Awaited<ReturnType<typeof getCollections>> }) {
   if (collections.length === 0) {
     return <CollectionsEmptyState />;
   }

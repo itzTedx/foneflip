@@ -62,6 +62,9 @@ export function initAuth(options: {
         schema: {
           organization: {
             modelName: "vendorsTable",
+            fields: {
+              name: "businessName",
+            },
           },
         },
       }),

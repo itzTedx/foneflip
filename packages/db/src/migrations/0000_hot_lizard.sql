@@ -1,12 +1,4 @@
-CREATE TYPE "public"."roles" AS ENUM('user', 'vendor', 'admin', 'dev');--> statement-breakpoint
-CREATE TYPE "public"."collection_status" AS ENUM('active', 'archived', 'draft');--> statement-breakpoint
-CREATE TYPE "public"."product_condition" AS ENUM('pristine', 'excellent', 'good', 'new');--> statement-breakpoint
-CREATE TYPE "public"."product_status" AS ENUM('active', 'archived', 'draft');--> statement-breakpoint
-CREATE TYPE "public"."invitation_status" AS ENUM('pending', 'accepted', 'expired', 'revoked');--> statement-breakpoint
-CREATE TYPE "public"."organization_roles" AS ENUM('owner', 'admin', 'member');--> statement-breakpoint
-CREATE TYPE "public"."vendor_document_format" AS ENUM('pdf', 'jpg', 'png');--> statement-breakpoint
-CREATE TYPE "public"."vendor_document_type" AS ENUM('trade_license', 'emirates_id_front', 'emirates_id_back', 'signature_stamp');--> statement-breakpoint
-CREATE TYPE "public"."vendor_status" AS ENUM('onboarding', 'pending_approval', 'approved', 'rejected', 'suspended', 'active');--> statement-breakpoint
+
 CREATE TABLE "accounts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"account_id" text NOT NULL,
@@ -25,12 +17,14 @@ CREATE TABLE "accounts" (
 --> statement-breakpoint
 CREATE TABLE "invitations" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"token" text NOT NULL,
 	"vendors_id" uuid NOT NULL,
 	"email" text NOT NULL,
 	"role" "roles" DEFAULT 'user',
 	"status" text DEFAULT 'pending' NOT NULL,
 	"expires_at" timestamp NOT NULL,
-	"inviter_id" uuid NOT NULL
+	"inviter_id" uuid NOT NULL,
+	CONSTRAINT "invitations_token_unique" UNIQUE("token")
 );
 --> statement-breakpoint
 CREATE TABLE "members" (
@@ -39,6 +33,21 @@ CREATE TABLE "members" (
 	"user_id" uuid NOT NULL,
 	"role" text DEFAULT 'member' NOT NULL,
 	"created_at" timestamp NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "passkeys" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text,
+	"public_key" text NOT NULL,
+	"user_id" uuid NOT NULL,
+	"credential_id" text NOT NULL,
+	"counter" integer NOT NULL,
+	"device_type" text,
+	"backed_up" boolean DEFAULT false,
+	"transports" text,
+	"created_at" timestamp NOT NULL,
+	"aaguid" text,
+	CONSTRAINT "passkeys_credential_id_unique" UNIQUE("credential_id")
 );
 --> statement-breakpoint
 CREATE TABLE "sessions" (
@@ -100,15 +109,15 @@ CREATE TABLE "collection_media" (
 CREATE TABLE "collection_settings" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"collection_id" uuid NOT NULL,
-	"status" "collection_status" DEFAULT 'draft',
+	"status" "collection_status" DEFAULT 'draft' NOT NULL,
 	"featured" boolean DEFAULT false NOT NULL,
-	"layout" varchar DEFAULT 'grid',
-	"show_label" boolean DEFAULT true,
-	"show_banner" boolean DEFAULT false,
+	"layout" varchar DEFAULT 'grid' NOT NULL,
+	"show_label" boolean DEFAULT true NOT NULL,
+	"show_banner" boolean DEFAULT false NOT NULL,
 	"show_in_nav" boolean DEFAULT true NOT NULL,
-	"tags" text[],
-	"internal_notes" text,
-	"custom_cta" varchar,
+	"tags" text[] DEFAULT '{}' NOT NULL,
+	"internal_notes" text DEFAULT '' NOT NULL,
+	"custom_cta" varchar DEFAULT '' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"deleted_at" timestamp,
@@ -138,6 +147,7 @@ CREATE TABLE "media" (
 	"height" integer,
 	"file_size" integer,
 	"blur_data" text,
+	"key" text,
 	"user_id" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
@@ -170,13 +180,13 @@ CREATE TABLE "product_attributes" (
 --> statement-breakpoint
 CREATE TABLE "product_deliveries" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"weight" numeric,
+	"weight" varchar,
 	"package_size" text,
 	"cod" boolean DEFAULT false,
 	"returnable" boolean DEFAULT false,
 	"returnable_period" integer,
 	"express_delivery" boolean DEFAULT false,
-	"delivery_fees" varchar DEFAULT 'free'
+	"delivery_fees" varchar DEFAULT '0'
 );
 --> statement-breakpoint
 CREATE TABLE "product_images" (
@@ -310,6 +320,7 @@ CREATE TABLE "vendor_invitations" (
 	"invitation_token" varchar(128) NOT NULL,
 	"sent_by_admin_id" uuid,
 	"invitation_type" varchar(50) DEFAULT 'onboarding' NOT NULL,
+	"status" "invitation_status" DEFAULT 'pending' NOT NULL,
 	"expires_at" timestamp with time zone,
 	"used_at" timestamp with time zone,
 	"revoked_at" timestamp with time zone,
@@ -321,17 +332,17 @@ CREATE TABLE "vendor_invitations" (
 --> statement-breakpoint
 CREATE TABLE "vendors" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"vendor_name" varchar(100) NOT NULL,
+	"business_name" varchar(100),
 	"vendor_email" varchar(255),
 	"slug" text NOT NULL,
 	"logo" varchar(255),
-	"vendor_number" varchar(20),
-	"vendor_whatsapp_number" varchar(20),
-	"vendor_position" varchar(50),
-	"business_name" varchar(255),
 	"description" text,
 	"website" varchar(255),
 	"business_category" varchar(100),
+	"vendor_name" varchar(255),
+	"vendor_number" varchar(20),
+	"vendor_whatsapp_number" varchar(20),
+	"vendor_position" varchar(50),
 	"monthly_estimated_sales" integer,
 	"trade_license_number" varchar(20),
 	"support_email" varchar(255),
@@ -354,6 +365,7 @@ ALTER TABLE "invitations" ADD CONSTRAINT "invitations_vendors_id_vendors_id_fk" 
 ALTER TABLE "invitations" ADD CONSTRAINT "invitations_inviter_id_users_id_fk" FOREIGN KEY ("inviter_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "members" ADD CONSTRAINT "members_vendors_id_vendors_id_fk" FOREIGN KEY ("vendors_id") REFERENCES "public"."vendors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "members" ADD CONSTRAINT "members_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "passkeys" ADD CONSTRAINT "passkeys_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "two_factors" ADD CONSTRAINT "two_factors_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "collection_media" ADD CONSTRAINT "collection_media_collection_id_collections_id_fk" FOREIGN KEY ("collection_id") REFERENCES "public"."collections"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -374,18 +386,28 @@ ALTER TABLE "product_variants" ADD CONSTRAINT "product_variants_product_id_produ
 ALTER TABLE "products" ADD CONSTRAINT "products_collection_id_collections_id_fk" FOREIGN KEY ("collection_id") REFERENCES "public"."collections"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "products" ADD CONSTRAINT "products_seo_id_seo_meta_id_fk" FOREIGN KEY ("seo_id") REFERENCES "public"."seo_meta"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "products" ADD CONSTRAINT "products_delivery_id_product_deliveries_id_fk" FOREIGN KEY ("delivery_id") REFERENCES "public"."product_deliveries"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "products" ADD CONSTRAINT "products_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "products" ADD CONSTRAINT "products_vendor_id_vendors_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendors"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "products" ADD CONSTRAINT "products_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "products" ADD CONSTRAINT "products_vendor_id_vendors_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "member" ADD CONSTRAINT "member_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "member" ADD CONSTRAINT "member_vendor_id_vendors_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "vendor_documents" ADD CONSTRAINT "vendor_documents_vendor_id_vendors_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "vendor_invitations" ADD CONSTRAINT "vendor_invitations_sent_by_admin_id_users_id_fk" FOREIGN KEY ("sent_by_admin_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "vendors" ADD CONSTRAINT "vendors_approved_by_users_id_fk" FOREIGN KEY ("approved_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "accounts_user_id_idx" ON "accounts" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "invitations_email_idx" ON "invitations" USING btree ("email");--> statement-breakpoint
+CREATE INDEX "invitations_token_idx" ON "invitations" USING btree ("token");--> statement-breakpoint
+CREATE INDEX "passkeys_user_id_idx" ON "passkeys" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "passkeys_credential_id_idx" ON "passkeys" USING btree ("credential_id");--> statement-breakpoint
+CREATE INDEX "sessions_user_id_idx" ON "sessions" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "sessions_token_idx" ON "sessions" USING btree ("token");--> statement-breakpoint
+CREATE INDEX "two_factors_secret_idx" ON "two_factors" USING btree ("secret");--> statement-breakpoint
+CREATE INDEX "users_email_idx" ON "users" USING btree ("email");--> statement-breakpoint
+CREATE INDEX "verifications_identifier_idx" ON "verifications" USING btree ("identifier");--> statement-breakpoint
 CREATE INDEX "collection_media_collection_id_idx" ON "collection_media" USING btree ("collection_id");--> statement-breakpoint
 CREATE INDEX "collection_media_media_id_idx" ON "collection_media" USING btree ("media_id");--> statement-breakpoint
 CREATE INDEX "collection_media_type_idx" ON "collection_media" USING btree ("type");--> statement-breakpoint
 CREATE INDEX "collection_settings_collection_id_idx" ON "collection_settings" USING btree ("collection_id");--> statement-breakpoint
-CREATE INDEX "collections_slug_idx" ON "collections" USING btree ("slug");--> statement-breakpoint
+CREATE UNIQUE INDEX "collections_slug_idx" ON "collections" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "collections_seo_id_idx" ON "collections" USING btree ("seo_id");--> statement-breakpoint
 CREATE INDEX "media_url_idx" ON "media" USING btree ("url");--> statement-breakpoint
 CREATE INDEX "attribute_options_attribute_id_idx" ON "product_attribute_options" USING btree ("attribute_id");--> statement-breakpoint
@@ -394,9 +416,8 @@ CREATE INDEX "product_specifications_product_id_idx" ON "product_specifications"
 CREATE INDEX "variant_options_variant_id_idx" ON "product_variant_options" USING btree ("variant_id");--> statement-breakpoint
 CREATE INDEX "variant_options_option_id_idx" ON "product_variant_options" USING btree ("option_id");--> statement-breakpoint
 CREATE INDEX "products_slug_idx" ON "products" USING btree ("slug");--> statement-breakpoint
+CREATE INDEX "products_id_idx" ON "products" USING btree ("id");--> statement-breakpoint
 CREATE INDEX "products_collection_id_idx" ON "products" USING btree ("collection_id");--> statement-breakpoint
-CREATE INDEX "products_brand_idx" ON "products" USING btree ("brand");--> statement-breakpoint
-CREATE INDEX "products_condition_idx" ON "products" USING btree ("condition");--> statement-breakpoint
 CREATE INDEX "products_user_id_idx" ON "products" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "products_vendor_id_idx" ON "products" USING btree ("vendor_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_member_user_vendor" ON "member" USING btree ("user_id","vendor_id");--> statement-breakpoint
@@ -409,8 +430,7 @@ CREATE INDEX "idx_vendor_documents_document_format" ON "vendor_documents" USING 
 CREATE INDEX "idx_vendor_invitations_vendor_email" ON "vendor_invitations" USING btree ("vendor_email");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_vendor_invitations_token" ON "vendor_invitations" USING btree ("invitation_token");--> statement-breakpoint
 CREATE INDEX "idx_vendor_invitations_expires_at" ON "vendor_invitations" USING btree ("expires_at");--> statement-breakpoint
-CREATE INDEX "idx_vendor_invitations_sent_by_admin_id" ON "vendor_invitations" USING btree ("sent_by_admin_id");--> statement-breakpoint
 CREATE INDEX "idx_vendor_invitations_deleted_at" ON "vendor_invitations" USING btree ("deleted_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_vendors_slug" ON "vendors" USING btree ("slug");--> statement-breakpoint
-CREATE INDEX "idx_vendors_name" ON "vendors" USING btree ("vendor_name");--> statement-breakpoint
+CREATE INDEX "idx_vendors_business_name" ON "vendors" USING btree ("business_name");--> statement-breakpoint
 CREATE INDEX "idx_vendors_status" ON "vendors" USING btree ("status");

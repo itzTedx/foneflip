@@ -47,18 +47,18 @@ export const vendorsTable = pgTable(
   "vendors",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    name: varchar("name", { length: 100 }).notNull(),
-    email: varchar("email", { length: 255 }),
+    businessName: varchar("business_name", { length: 100 }),
+    vendorEmail: varchar("vendor_email", { length: 255 }),
     slug: text("slug").notNull().unique(),
     logo: varchar("logo", { length: 255 }),
     description: text("description"),
     website: varchar("website", { length: 255 }),
-    category: varchar("category", { length: 100 }),
+    businessCategory: varchar("business_category", { length: 100 }),
 
     vendorName: varchar("vendor_name", { length: 255 }),
-    mobile: varchar("number", { length: 20 }),
-    whatsapp: varchar("whatsapp_number", { length: 20 }),
-    position: varchar("position", { length: 50 }),
+    vendorNumber: varchar("vendor_number", { length: 20 }),
+    vendorWhatsappNumber: varchar("vendor_whatsapp_number", { length: 20 }),
+    vendorPosition: varchar("vendor_position", { length: 50 }),
 
     monthlyEstimatedSales: integer("monthly_estimated_sales"),
     tradeLicenseNumber: varchar("trade_license_number", { length: 20 }),
@@ -80,7 +80,7 @@ export const vendorsTable = pgTable(
   },
   (table) => [
     uniqueIndex("idx_vendors_slug").on(table.slug),
-    index("idx_vendors_name").on(table.name),
+    index("idx_vendors_business_name").on(table.businessName),
     index("idx_vendors_status").on(table.status),
   ]
 );

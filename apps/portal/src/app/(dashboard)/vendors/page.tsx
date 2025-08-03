@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { Badge } from "@ziron/ui/badge";
 
 import { OnboardingDataDisplay } from "@/components/debug/onboarding-data-display";
@@ -5,7 +7,9 @@ import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { hasPermission } from "@/modules/auth/actions/data-access";
+import { getVendors } from "@/modules/vendors/actions/queries";
 import { InviteModal } from "@/modules/vendors/components/ui/invite-modal";
+import { VendorCard } from "@/modules/vendors/components/ui/vendor-card";
 import { InvitationHistory } from "@/modules/vendors/views/invitation-history";
 
 export default async function VendorsPage() {
@@ -57,20 +61,9 @@ export default async function VendorsPage() {
         </TabsList>
 
         <TabsContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" value="all">
-          {/* {allVendors.length === 0 ? (
-            <div className="col-span-full flex flex-col items-center justify-center py-12">
-              <IconEmpty className="mb-4 size-60" />
-              <div className="text-lg text-muted-foreground">No vendors found.</div>
-              <Button asChild className="mt-4">
-                <Link href="/vendors/invite?new=true">
-                  <IconVendors className="mr-2 h-4 w-4" />
-                  Invite your first vendor
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            allVendors.map((vendor) => <VendorCard key={vendor.id} vendor={vendor} />)
-          )} */}
+          <Suspense fallback={<div>Loading...</div>}>
+            <SuspendedVendors />
+          </Suspense>
         </TabsContent>
         <TabsContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" value="pending">
           <div className="col-span-full">
@@ -111,4 +104,10 @@ export default async function VendorsPage() {
       </Tabs>
     </MainWrapper>
   );
+}
+
+async function SuspendedVendors() {
+  const vendors = await getVendors();
+
+  return vendors.map((vendor) => <VendorCard key={vendor.id} vendor={vendor} />);
 }

@@ -307,3 +307,34 @@ export const clearAllVendorInvitationCaches = async () => {
     log.warn("Failed to clear all vendor invitation caches", { error });
   }
 };
+
+// Get all vendors regardless of status
+export const getVendors = cache(
+  async () => {
+    const vendors = await db.query.vendorsTable.findMany({
+      orderBy: (vendors, { desc }) => desc(vendors.createdAt),
+      with: {
+        members: {
+          with: {
+            user: {
+              columns: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+          },
+        },
+        documents: true,
+      },
+    });
+
+    return vendors;
+  },
+  [CACHE_TAGS.VENDOR, "all"],
+  {
+    revalidate: CACHE_DURATIONS.MEDIUM,
+    tags: [CACHE_TAGS.VENDOR, CACHE_TAGS.VENDOR_INVITATIONS],
+  }
+);

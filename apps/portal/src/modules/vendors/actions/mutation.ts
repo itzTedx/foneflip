@@ -406,7 +406,7 @@ export async function createOrganization(formData: unknown) {
     const [updatedVendor] = await db
       .update(vendorsTable)
       .set({
-        category,
+        businessCategory: category,
         website,
       })
       .where(eq(vendorsTable.id, vendor.id))
@@ -445,10 +445,10 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
     const updatedVendor = await db
       .update(vendorsTable)
       .set({
-        name: fullName,
-        mobile,
-        whatsapp,
-        position,
+        businessName: fullName,
+        vendorNumber: mobile,
+        vendorWhatsappNumber: whatsapp,
+        vendorPosition: position,
         updatedAt: new Date(),
       })
       .where(eq(vendorsTable.id, vendor.id))

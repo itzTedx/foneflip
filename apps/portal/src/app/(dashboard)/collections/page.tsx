@@ -5,7 +5,7 @@ import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { AddButton } from "@/components/ui/action-buttons";
 import { hasPermission } from "@/modules/auth/actions/data-access";
-import { getCollections } from "@/modules/collections/actions/queries";
+import { getCollections, getCollectionsCount } from "@/modules/collections/actions/queries";
 import { CollectionsContent } from "@/modules/collections/components/collections-content";
 import { ExportCsvButton } from "@/modules/collections/components/export-csv-button";
 
@@ -14,11 +14,6 @@ export const metadata: Metadata = {
   description: "Organize your products into collections.",
 };
 
-/**
- * Renders the Collections page, verifying user permissions and displaying a list of collections with related actions.
- *
- * Checks if the user has permission to create, delete, and update collections, fetches the collections data, and displays the page with options to export or add collections.
- */
 export default async function CollectionsPage() {
   await hasPermission({
     permissions: {
@@ -26,17 +21,36 @@ export default async function CollectionsPage() {
     },
   });
 
-  const collections = await getCollections();
-
   return (
     <MainWrapper>
-      <PageHeader badge={`${collections.length} Collections`} title="Collections">
-        <ExportCsvButton />
-        <AddButton href="/collections/new" title="Collection" />
-      </PageHeader>
-      <Suspense>
-        <CollectionsContent collections={collections} />
+      <Suspense
+        fallback={
+          <PageHeader badge={"Collections"} title="Collections">
+            <ExportCsvButton />
+            <AddButton href="/collections/new" title="Collection" />
+          </PageHeader>
+        }
+      >
+        <SuspendedCollectionsCount />
+      </Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+        <SuspendedCollections />
       </Suspense>
     </MainWrapper>
+  );
+}
+
+async function SuspendedCollections() {
+  const collections = await getCollections();
+  return <CollectionsContent collections={collections} />;
+}
+
+async function SuspendedCollectionsCount() {
+  const count = await getCollectionsCount();
+  return (
+    <PageHeader badge={`${count} Collections`} title="Collections">
+      <ExportCsvButton />
+      <AddButton href="/collections/new" title="Collection" />
+    </PageHeader>
   );
 }

@@ -1,0 +1,13 @@
+{
+  "root": false,
+  "extends": "//",
+
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "style": {
+        "noProcessEnv": "off"
+      }
+    }
+  }
+}

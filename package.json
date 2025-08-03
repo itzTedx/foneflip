@@ -18,12 +18,15 @@
     "db:generate": "pnpm -F @ziron/db generate",
     "db:migrate": "turbo -F @ziron/db migrate",
     "db:studio": "turbo -F @ziron/db studio",
+    "db:reset": "pnpm -F @ziron/docker reset-db && pnpm db:migrate",
     "auth:generate": "pnpm -F @ziron/auth generate",
     "ui-add": "turbo run ui-add",
-    "docker": "pnpm --filter @ziron/docker"
+    "docker": "pnpm --filter @ziron/docker",
+    "docker:up": "pnpm -F @ziron/docker up",
+    "docker:down": "pnpm -F @ziron/docker down"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.3",
+    "@biomejs/biome": "catalog:",
     "@turbo/gen": "^2.5.5",
     "@ziron/eslint-config": "workspace:*",
     "@ziron/prettier-config": "workspace:*",

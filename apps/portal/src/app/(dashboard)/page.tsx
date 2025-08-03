@@ -21,7 +21,7 @@ export default async function Page() {
           </p>
         </div>
         <div className="flex items-center justify-between gap-2 md:justify-start">
-          <CreateBaseVendor />
+          <CreateBaseVendor userId={session.user.id} />
           <Button className="px-3" size="sm">
             Add Product
           </Button>

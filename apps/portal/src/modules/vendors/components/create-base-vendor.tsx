@@ -7,20 +7,23 @@ import { toast } from "sonner";
 import { Button } from "@ziron/ui/button";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
 
-import { authClient } from "@/lib/auth/client";
+import { createOrganization } from "../actions/mutation";
 
-export const CreateBaseVendor = () => {
+export const CreateBaseVendor = ({ userId }: { userId: string }) => {
   const [isPending, startTransition] = useTransition();
 
   const handleCreateOrganization = () => {
     startTransition(async () => {
-      const { data, error } = await authClient.organization.create({
-        name: "Foneflip", // required
-        slug: "foneflip", // required
+      const { error, message, data } = await createOrganization({
+        name: "Foneflip",
+        slug: "foneflip",
+        userId,
+        category: "Reseller",
+        website: "https://foneflip.com",
       });
 
       if (error) {
-        toast.error(error.message);
+        toast.error(message);
         return;
       }
 

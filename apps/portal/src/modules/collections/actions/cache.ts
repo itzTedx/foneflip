@@ -28,6 +28,7 @@ export const CACHE_DURATIONS = {
 // Redis cache keys
 export const REDIS_KEYS = {
   COLLECTIONS: "collections:all",
+  COLLECTIONS_COUNT: "collections:count",
   COLLECTION_BY_SLUG: (slug: string) => `collection:${slug}`,
   COLLECTION_BY_ID: (id: string) => `collection:id:${id}`,
   COLLECTION_STATS: "collections:stats",
@@ -230,7 +231,7 @@ export const invalidateCollectionCaches = async (collectionId?: string, slug?: s
   revalidateCollectionCaches(collectionId, slug);
 
   // Invalidate Redis caches
-  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS];
+  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_SLUG(slug));
@@ -326,8 +327,8 @@ export const updateCollectionCache = async (
       ]);
     }
 
-    // Always invalidate the collections list cache
-    await redisCache.del(REDIS_KEYS.COLLECTIONS);
+    // Always invalidate the collections list cache and count
+    await redisCache.del(REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT);
   } catch (error) {
     console.error("Failed to update collection cache:", error);
     // Don't throw - cache updates should not break the main operation
@@ -336,7 +337,7 @@ export const updateCollectionCache = async (
 
 // Cache invalidation functions
 export const invalidateCollectionCache = async (slug?: string, id?: string) => {
-  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS];
+  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_SLUG(slug));

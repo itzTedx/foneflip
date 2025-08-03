@@ -45,9 +45,10 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@biomejs/biome": "catalog:",
     "@types/pg": "^8.15.4",
+    "@types/node": "^20",
     "@ziron/eslint-config": "workspace:*",
-    "@ziron/prettier-config": "workspace:*",
     "@ziron/tsconfig": "workspace:*",
     "concurrently": "^9.2.0",
     "dotenv-cli": "^8.0.0",
@@ -56,6 +57,5 @@
     "prettier": "catalog:",
     "tsx": "^4.20.3",
     "typescript": "catalog:"
-  },
-  "prettier": "@ziron/prettier-config"
+  }
 }

@@ -33,6 +33,7 @@ export const CACHE_TAGS = {
 // Redis cache keys
 export const REDIS_KEYS = {
   COLLECTIONS: "collections:all",
+  COLLECTIONS_COUNT: "collections:count",
   COLLECTIONS_METADATA: "collections:all:metadata",
   COLLECTION_BY_SLUG: (slug: string) => `collection:${slug}`,
   COLLECTION_BY_ID: (id: string) => `collection:id:${id}`,
@@ -252,7 +253,7 @@ export const invalidateCollectionCaches = async (collectionId?: string, slug?: s
   revalidateCollectionCaches(collectionId, slug);
 
   // Invalidate Redis caches
-  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS];
+  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_SLUG(slug));
