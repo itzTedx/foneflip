@@ -1,6 +1,6 @@
 import { unstable_cache as cache } from "next/cache";
 
-import { db, desc, eq } from "@ziron/db";
+import { and, db, desc, eq, isNull, sql } from "@ziron/db";
 import { productSettingsTable, productsTable } from "@ziron/db/schema";
 
 import { getSession } from "@/lib/auth/server";
@@ -211,6 +211,7 @@ export const getProducts = cache(
             collection: true,
             delivery: true,
             images: { with: { media: true } },
+            vendor: true,
           },
           orderBy: desc(productsTable.createdAt),
         });
@@ -298,6 +299,61 @@ export const getProductById = cache(
   [CACHE_TAGS.PRODUCT_BY_ID, "id"],
   {
     tags: [CACHE_TAGS.PRODUCT_BY_ID, CACHE_TAGS.PRODUCT, CACHE_TAGS.COLLECTION, CACHE_TAGS.MEDIA],
+    revalidate: CACHE_DURATIONS.MEDIUM,
+  }
+);
+
+export const getProductsCount = cache(
+  async (options: { currentUserId?: string; currentUserRole?: string } = {}) => {
+    // If no options provided, get current user context from session
+    const userContext = Object.keys(options).length === 0 ? await getCurrentUserContext() : options;
+
+    const { currentUserId, currentUserRole } = userContext;
+
+    return withCacheMonitoring(
+      async () => {
+        try {
+          // Try Redis first
+          const cached = await redisCache.get<number>(REDIS_KEYS.PRODUCTS_COUNT);
+          if (cached) {
+            return cached;
+          }
+        } catch (error) {
+          console.error("Error fetching products count from Redis", error);
+        }
+
+        // Build where conditions with role-based filtering
+        let whereCondition: ReturnType<typeof isNull> | ReturnType<typeof and> = isNull(productsTable.deletedAt);
+
+        // Role-based filtering
+        if (currentUserRole === "admin" || currentUserRole === "dev") {
+          // Admins can see all products - no additional filtering needed
+        } else if (currentUserRole === "vendor" && currentUserId) {
+          // Vendors can only see their own products
+          whereCondition = and(isNull(productsTable.deletedAt), eq(productsTable.userId, currentUserId));
+        } else if (currentUserId) {
+          // Regular users can only see their own products
+          whereCondition = and(isNull(productsTable.deletedAt), eq(productsTable.userId, currentUserId));
+        }
+
+        const countResult = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(productsTable)
+          .where(whereCondition)
+          .then((result) => result[0]?.count ?? 0);
+
+        // Cache the result
+        await redisCache.set(REDIS_KEYS.PRODUCTS_COUNT, countResult, CACHE_DURATIONS.MEDIUM);
+
+        return countResult;
+      },
+      REDIS_KEYS.PRODUCTS_COUNT,
+      false // This is a miss since we're fetching fresh data
+    );
+  },
+  ["get-products-count"],
+  {
+    tags: [CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT],
     revalidate: CACHE_DURATIONS.MEDIUM,
   }
 );

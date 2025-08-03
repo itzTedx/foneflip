@@ -1,20 +1,22 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 
 import { Button } from "@ziron/ui/button";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
 
-import { createOrganization } from "../actions/mutation";
+import { createAdminOrganization } from "../actions/mutation";
 
 export const CreateBaseVendor = ({ userId }: { userId: string }) => {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const handleCreateOrganization = () => {
+  const handleCreateAdminOrganization = () => {
     startTransition(async () => {
-      const { error, message, data } = await createOrganization({
+      const { error, message, data } = await createAdminOrganization({
         name: "Foneflip",
         slug: "foneflip",
         userId,
@@ -27,14 +29,17 @@ export const CreateBaseVendor = ({ userId }: { userId: string }) => {
         return;
       }
 
-      toast.success("Organization created successfully");
-      console.log(data);
+      toast.success("Admin organization created successfully");
+      console.log("Admin organization data:", data);
+
+      // Redirect to admin dashboard or organization management
+      router.push("/dashboard");
     });
   };
 
   return (
-    <Button onClick={handleCreateOrganization} size="sm" variant="secondary">
-      <LoadingSwap isLoading={isPending}>Create Organization</LoadingSwap>
+    <Button onClick={handleCreateAdminOrganization} size="sm" variant="secondary">
+      <LoadingSwap isLoading={isPending}>Create Admin Organization</LoadingSwap>
     </Button>
   );
 };

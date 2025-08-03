@@ -49,11 +49,7 @@ export const ProductBadges = ({ data }: { data: ProductQueryResult }) => (
         {data.collection?.title}
       </TooltipBadge>
     )}
-    {/* <TooltipBadge tooltip={`Seller: ${data?.vendor?.businessName}`}>
-        
-          {data?.vendor?.businessName}
-       
-      </TooltipBadge> */}
+    <TooltipBadge tooltip={`Seller: ${data?.vendor?.businessName}`}>{data?.vendor?.businessName}</TooltipBadge>
     {data.settings && data?.settings?.tags && data?.settings?.tags?.length > 0 && (
       <TooltipBadge className="z-10" tooltip={data.settings.tags.join(", ")} variant="secondary">
         +{data.settings.tags.length}

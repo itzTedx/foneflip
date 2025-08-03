@@ -7,7 +7,7 @@ import { cn } from "@ziron/utils";
 export const InfoTooltip = ({ info }: { info: React.ReactNode }) => {
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger tabIndex={-1}>
         <IconInfoCircle className="size-2 text-muted-foreground md:size-3" />
       </TooltipTrigger>
       <TooltipContent>{info}</TooltipContent>

@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { addHours } from "date-fns";
 
 import { and, db, eq, lt } from "@ziron/db";
-import { vendorDocumentsTable, vendorInvitations, vendorsTable } from "@ziron/db/schema";
+import { member, users, vendorDocumentsTable, vendorInvitations, vendorsTable } from "@ziron/db/schema";
 import { sendEmail } from "@ziron/email";
 import VerificationEmail from "@ziron/email/templates/onboarding/token-verification";
 import { slugify } from "@ziron/utils";
@@ -40,6 +40,7 @@ type ErrorType =
   | "ALREADY_EXISTS"
   | "INTERNAL_SERVER_ERROR"
   | "VENDOR_NOT_FOUND"
+  | "USER_NOT_FOUND"
   | "EMAIL_ALREADY_INVITED"
   | "INVALID_EXPIRATION"
   | "EMAIL_SEND_FAILED"
@@ -417,6 +418,126 @@ export async function createOrganization(formData: unknown) {
     }
 
     return createSuccessResponse(updatedVendor, "Organization created successfully");
+  });
+}
+
+export async function createAdminOrganization(formData: unknown) {
+  const { data, success, error } = organizationSchema.safeParse(formData);
+
+  if (!success) {
+    return handleValidationError(error);
+  }
+
+  return withErrorHandling("Create admin organization", async () => {
+    const { name, logo, category, website, userId } = data;
+
+    // First, update the user's role to admin
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        role: "admin",
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+
+    if (!updatedUser) {
+      return createErrorResponse("USER_NOT_FOUND", "User not found");
+    }
+
+    // Create the organization
+    const res = await auth.api.createOrganization({
+      body: {
+        name,
+        slug: slugify(name),
+        logo,
+        userId,
+        keepCurrentActiveOrganization: false,
+      },
+      headers: await headers(),
+    });
+
+    if (!res) {
+      return createErrorResponse("ORGANIZATION_CREATION_FAILED", "Error Creating Admin Organization");
+    }
+
+    // Check if vendor already exists by slug
+    let vendor = await db.query.vendorsTable.findFirst({
+      where: (v, { eq }) => eq(v.slug, slugify(name)),
+    });
+
+    if (!vendor) {
+      // Create a new vendor profile for admin
+      const [newVendor] = await db
+        .insert(vendorsTable)
+        .values({
+          businessName: name,
+          slug: slugify(name),
+          logo,
+          website,
+          businessCategory: category,
+          status: "approved", // Admin vendors are automatically approved
+          approvedAt: new Date(),
+          approvedBy: userId, // Self-approved for admin
+        })
+        .returning();
+
+      vendor = newVendor;
+    } else {
+      // Update existing vendor profile to admin status
+      const [updatedVendor] = await db
+        .update(vendorsTable)
+        .set({
+          businessName: name,
+          businessCategory: category,
+          website,
+          status: "approved",
+          approvedAt: new Date(),
+          approvedBy: userId,
+          updatedAt: new Date(),
+        })
+        .where(eq(vendorsTable.id, vendor.id))
+        .returning();
+
+      vendor = updatedVendor;
+    }
+
+    if (!vendor) {
+      return createErrorResponse("VENDOR_NOT_FOUND", "Failed to create or update vendor profile");
+    }
+
+    // Check if member relationship already exists
+    const existingMember = await db.query.member.findFirst({
+      where: (m, { and, eq }) => and(eq(m.userId, userId), eq(m.vendorId, vendor.id)),
+    });
+
+    if (!existingMember) {
+      // Create member relationship with owner role
+      await db.insert(member).values({
+        userId,
+        vendorId: vendor.id,
+        role: "owner",
+      });
+    } else if (existingMember.role !== "owner") {
+      // Update existing member to owner role
+      await db.update(member).set({ role: "owner" }).where(eq(member.id, existingMember.id));
+    }
+
+    // Get the current member relationship for the response
+    const currentMember = await db.query.member.findFirst({
+      where: (m, { and, eq }) => and(eq(m.userId, userId), eq(m.vendorId, vendor.id)),
+    });
+
+    return createSuccessResponse(
+      {
+        vendor: {
+          ...vendor,
+          members: currentMember ? [currentMember] : [],
+        },
+        user: updatedUser,
+      },
+      "Admin organization created successfully"
+    );
   });
 }
 

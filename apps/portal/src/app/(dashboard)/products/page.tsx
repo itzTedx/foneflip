@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -10,7 +11,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { AddButton } from "@/components/ui/action-buttons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { hasPermission } from "@/modules/auth/actions/data-access";
-import { getProducts } from "@/modules/products/actions/queries";
+import { getProducts, getProductsCount } from "@/modules/products/actions/queries";
 import { ProductCard } from "@/modules/products/components/ui/product-card";
 
 export const metadata: Metadata = {
@@ -25,7 +26,6 @@ export default async function ProductsPage() {
     },
   });
 
-  const products = await getProducts();
   return (
     <MainWrapper>
       <PageHeader title="Products">
@@ -39,7 +39,10 @@ export default async function ProductsPage() {
               className="relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:bg-primary"
               value="all"
             >
-              All <Badge>{products.length}</Badge>
+              All
+              <Suspense>
+                <SuspendedProductsCount />
+              </Suspense>
             </TabsTrigger>
             {/* <TabsTrigger
               value="published"
@@ -77,19 +80,31 @@ export default async function ProductsPage() {
         </div>
 
         <TabsContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3" value="all">
-          {products.length === 0 ? (
-            <div className="col-span-full flex flex-col items-center justify-center py-12">
-              <IconEmpty className="size-60" />
-              <div className="mb-3 text-lg text-muted-foreground">No products found.</div>
-              <Button asChild>
-                <Link href="/products/new">Create your first product</Link>
-              </Button>
-            </div>
-          ) : (
-            products.map((product) => <ProductCard data={product} key={product.id} />)
-          )}
+          <Suspense fallback={<div>Loading...</div>}>
+            <SuspendedProducts />
+          </Suspense>
         </TabsContent>
       </Tabs>
     </MainWrapper>
   );
+}
+
+async function SuspendedProducts() {
+  const products = await getProducts();
+  return products.length === 0 ? (
+    <div className="col-span-full flex flex-col items-center justify-center py-12">
+      <IconEmpty className="size-60" />
+      <div className="mb-3 text-lg text-muted-foreground">No products found.</div>
+      <Button asChild>
+        <Link href="/products/new">Create your first product</Link>
+      </Button>
+    </div>
+  ) : (
+    products.map((product) => <ProductCard data={product} key={product.id} />)
+  );
+}
+
+async function SuspendedProductsCount() {
+  const count = await getProductsCount();
+  return <Badge>{count}</Badge>;
 }

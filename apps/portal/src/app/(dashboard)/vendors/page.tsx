@@ -1,7 +1,5 @@
 import { Suspense } from "react";
 
-import { Badge } from "@ziron/ui/badge";
-
 import { OnboardingDataDisplay } from "@/components/debug/onboarding-data-display";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
@@ -31,7 +29,7 @@ export default async function VendorsPage() {
               className="relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:bg-primary"
               value="all"
             >
-              All <Badge>0{/* {allVendors.length} */}</Badge>
+              All
             </TabsTrigger>
             <TabsTrigger
               className="relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:bg-primary"

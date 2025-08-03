@@ -12,6 +12,7 @@ import { Product } from "../types";
 export const REDIS_KEYS = {
   PRODUCTS: "products:all",
   PRODUCTS_METADATA: "products:all:metadata",
+  PRODUCTS_COUNT: "products:count",
   PRODUCT_BY_SLUG: (slug: string) => `product:${slug}`,
   PRODUCT_BY_ID: (id: string) => `product:id:${id}`,
   PRODUCT_STATS: "products:stats",
@@ -70,8 +71,8 @@ export const updateProductCache = async (product: Product, operation: "create" |
       ]);
     }
 
-    // Always invalidate the product list cache
-    await redisCache.del(REDIS_KEYS.PRODUCTS);
+    // Always invalidate the product list cache and count cache
+    await redisCache.del(REDIS_KEYS.PRODUCTS, REDIS_KEYS.PRODUCTS_COUNT);
   } catch (error) {
     console.error("Failed to update product cache:", error);
     // Don't throw - cache updates should not break the main operation
@@ -86,7 +87,7 @@ export const invalidateProductCaches = async (productId?: string, slug?: string)
   revalidateProductCaches(productId, slug);
 
   // Invalidate Redis caches
-  const keysToInvalidate: string[] = [REDIS_KEYS.PRODUCTS];
+  const keysToInvalidate: string[] = [REDIS_KEYS.PRODUCTS, REDIS_KEYS.PRODUCTS_COUNT];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.PRODUCT_BY_SLUG(slug));
