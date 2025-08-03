@@ -18,7 +18,7 @@ const buttonVariants = cva(
         outline:
           "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary:
-          "inset-shadow-[0_2px_4px_0] inset-shadow-secondary-foreground/10 bg-gradient-to-t from-secondary to-secondary/60 text-secondary-foreground shadow-xs hover:bg-secondary/80",
+          "inset-shadow-[0_2px_4px_0] inset-shadow-secondary-foreground/5 bg-gradient-to-t from-secondary to-secondary/60 text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
       },
@@ -37,15 +37,6 @@ const buttonVariants = cva(
   }
 );
 
-/**
- * Renders a customizable button with variant and size options, supporting both native button and slot rendering.
- *
- * If `asChild` is true, renders as a slot component for flexible composition; otherwise, renders a standard `<button>`. Styling is controlled via `variant` and `size` props, with additional classes merged from `className`.
- *
- * @param asChild - If true, renders as a slot component instead of a native button
- * @param variant - Visual style variant of the button
- * @param size - Size variant of the button
- */
 function Button({
   className,
   variant,

@@ -18,6 +18,7 @@
     "db:generate": "pnpm -F @ziron/db generate",
     "db:migrate": "turbo -F @ziron/db migrate",
     "db:studio": "turbo -F @ziron/db studio",
+    "auth:generate": "pnpm -F @ziron/auth generate",
     "ui-add": "turbo run ui-add",
     "docker": "pnpm --filter @ziron/docker"
   },

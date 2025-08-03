@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin, emailOTP, organization, twoFactor } from "better-auth/plugins";
+import { passkey } from "better-auth/plugins/passkey";
 
 import { db } from "@ziron/db";
 import redis from "@ziron/redis";
@@ -56,6 +57,7 @@ export function initAuth(options: {
     },
 
     plugins: [
+      passkey(),
       organization({
         schema: {
           organization: {
