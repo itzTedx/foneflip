@@ -85,6 +85,7 @@ export const getInvitationByToken = async (token: string) =>
 export const getVendorInvitations = cache(
   async () => {
     const invitations = await db.query.vendorInvitations.findMany({
+      where: isNull(vendorInvitations.deletedAt),
       orderBy: desc(vendorInvitations.createdAt),
     });
 
@@ -108,8 +109,7 @@ export const getVendorInvitations = cache(
       };
     });
 
-    console.log(invitationsWithStatus);
-
+    log.info("Retrieved vendor invitations", { count: invitationsWithStatus.length });
     return invitationsWithStatus;
   },
   [CACHE_TAGS.VENDOR_INVITATIONS],

@@ -4,133 +4,205 @@ import { headers } from "next/headers";
 
 import { addHours } from "date-fns";
 
-import { and, db, eq } from "@ziron/db";
-import { vendorInvitations, vendorsTable } from "@ziron/db/schema";
+import { and, db, eq, lt } from "@ziron/db";
+import { vendorDocumentsTable, vendorInvitations, vendorsTable } from "@ziron/db/schema";
 import { sendEmail } from "@ziron/email";
 import VerificationEmail from "@ziron/email/templates/onboarding/token-verification";
 import { slugify } from "@ziron/utils";
-import { invitationSchema, organizationSchema, personalInfoSchema, z } from "@ziron/validators";
+import { documentsSchema, invitationSchema, organizationSchema, personalInfoSchema, z } from "@ziron/validators";
 
 import { auth, getSession } from "@/lib/auth/server";
 import { env } from "@/lib/env/server";
 import { createLog } from "@/lib/utils";
 import { hasPermission } from "@/modules/auth/actions/data-access";
 
+import { InvitationType } from "../types";
+import { mapMimeTypeToDbFormat } from "../utils/detect-file-type";
 import { invalidateVendorCaches } from "./cache";
 import { createVendorInvitation, getCurrentUserVendor, hasPendingInvitation } from "./helper";
 
 const log = createLog("Vendor");
 
-// Common success response wrapper
-const createSuccessResponse = <T>(data: T, message: string) => ({
+// Centralized response handling system
+interface ActionResponse<T = unknown> {
+  success: boolean;
+  message?: string;
+  data?: T;
+  error?: string;
+}
+
+type ErrorType =
+  | "UNAUTHORIZED"
+  | "UNAUTHENTICATED"
+  | "VALIDATION_ERROR"
+  | "NOT_FOUND"
+  | "ALREADY_EXISTS"
+  | "INTERNAL_SERVER_ERROR"
+  | "VENDOR_NOT_FOUND"
+  | "EMAIL_ALREADY_INVITED"
+  | "INVALID_EXPIRATION"
+  | "EMAIL_SEND_FAILED"
+  | "DOCUMENT_UPLOAD_FAILED"
+  | "ORGANIZATION_CREATION_FAILED";
+
+// Centralized success response creator
+const createSuccessResponse = <T>(data: T, message: string): ActionResponse<T> => ({
   success: true,
   message,
   data,
 });
 
-export async function sendInvitation(formData: unknown) {
-  const { res, session } = await hasPermission({
-    permissions: {
-      vendors: ["invite"],
-    },
-  });
+// Centralized error response creator
+const createErrorResponse = (error: ErrorType, message: string, data?: unknown): ActionResponse => ({
+  success: false,
+  error,
+  message,
+  data,
+});
+
+// Centralized validation error handler
+const handleValidationError = (error: z.ZodError): ActionResponse => {
+  log.warn("Validation failed", { error });
+  return createErrorResponse("VALIDATION_ERROR", z.prettifyError(error));
+};
+
+// Centralized permission check wrapper
+const withPermissionCheck = async <T>(
+  permissions: { vendors: ("create" | "update" | "delete" | "invite")[] },
+  action: () => Promise<ActionResponse<T>>
+): Promise<ActionResponse<T>> => {
+  const { res } = await hasPermission({ permissions });
 
   if (!res.success) {
-    return {
-      success: false,
-      error: "UNAUTHORIZED",
-      message: "You are not authorized to invite vendors",
-    };
+    return createErrorResponse("UNAUTHORIZED", "You are not authorized to perform this action") as ActionResponse<T>;
   }
 
-  log.info("Received send invitation request", { formData });
+  return action();
+};
 
-  const { success, data, error } = invitationSchema.safeParse(formData);
-
-  if (!success) {
-    log.warn("Validation failed for sendInvitation", { error });
-    return {
-      success: false,
-      error: "Invalid data",
-      message: z.prettifyError(error),
-    };
-  }
-
+// Centralized error handler wrapper
+const withErrorHandling = async <T>(
+  actionName: string,
+  action: () => Promise<ActionResponse<T>>
+): Promise<ActionResponse<T>> => {
   try {
-    const { email, name, expiresIn } = data;
-    log.info("Send invitation action started", { email, expiresIn });
-
-    // Calculate expiry time with validation
-    const expiryMap = {
-      "1h": 1,
-      "24h": 24,
-      "48h": 48,
-    } as const;
-
-    const hours = expiryMap[expiresIn as keyof typeof expiryMap];
-    if (!hours) {
-      log.warn("Invalid expiresIn value, defaulting to 1 hour", { expiresIn });
-      return {
-        success: false,
-        error: "VALIDATION_ERROR",
-        message: "Invalid expiration time",
-      };
-    }
-    const expiresAt = addHours(new Date(), hours);
-    const invitation = await db.transaction(async (trx) => {
-      // Check if email already has a pending invitation
-      const hasPending = await hasPendingInvitation(trx, email);
-      if (hasPending) {
-        throw new Error("Email already has a pending invitation");
-      }
-
-      // Create new invitation
-      const newInvitation = await createVendorInvitation(trx, {
-        name,
-        vendorEmail: email,
-        expiresAt,
-        sentByAdminId: session.user.id,
-        invitationType: "onboarding",
-      });
-
-      log.success("Transaction completed for invitation", newInvitation?.id);
-      return newInvitation;
-    });
-
-    try {
-      await sendEmail({
-        email,
-        subject: "Invitation to become a vendor on Foneflip",
-        react: VerificationEmail({
-          vendorName: name,
-          verificationLink: `${env.BETTER_AUTH_URL}/verify?token=${invitation?.token}`,
-          inviterName: session.user.name,
-          expiresIn: hours.toString(),
-        }),
-      });
-
-      // Invalidate vendor invitation caches
-      if (invitation) {
-        await invalidateVendorInvitationCaches(invitation);
-      }
-    } catch (error: unknown) {
-      log.error("Failed to send email", { error });
-      return {
-        success: false,
-        error: "INTERNAL_SERVER_ERROR",
-        message: "Failed to send invitation",
-      };
-    }
-
-    return createSuccessResponse(invitation, `Invitation sent to ${email}`);
+    return await action();
   } catch (error) {
-    log.error("Send invitation action failed", error);
-    return {
-      success: false,
-      error: "INTERNAL_SERVER_ERROR",
-      message: "Failed to send invitation",
-    };
+    log.error(`${actionName} failed`, error);
+    return createErrorResponse(
+      "INTERNAL_SERVER_ERROR",
+      error instanceof Error ? error.message : "An unexpected error occurred"
+    ) as ActionResponse<T>;
   }
+};
+
+export async function sendInvitation(formData: unknown) {
+  return withPermissionCheck({ vendors: ["invite"] }, async () => {
+    log.info("Received send invitation request", { formData });
+
+    const { success, data, error } = invitationSchema.safeParse(formData);
+    if (!success) {
+      return handleValidationError(error);
+    }
+
+    return withErrorHandling("Send invitation", async () => {
+      const { email, name, expiresIn } = data;
+      log.info("Send invitation action started", { email, expiresIn });
+
+      // Calculate expiry time with validation
+      const expiryMap = {
+        "1h": 1,
+        "24h": 24,
+        "48h": 48,
+      } as const;
+
+      const hours = expiryMap[expiresIn as keyof typeof expiryMap];
+      if (!hours) {
+        log.warn("Invalid expiresIn value", { expiresIn });
+        return createErrorResponse("INVALID_EXPIRATION", "Invalid expiration time");
+      }
+
+      const expiresAt = addHours(new Date(), hours);
+      const { session } = await hasPermission({ permissions: { vendors: ["invite"] } });
+
+      let invitation: InvitationType | undefined;
+
+      try {
+        // Create invitation in database
+        invitation = await db.transaction(async (trx) => {
+          // Check if email already has a pending invitation
+          const hasPending = await hasPendingInvitation(trx, email);
+          if (hasPending) {
+            throw new Error("Email already has a pending invitation");
+          }
+
+          // Create new invitation
+          const newInvitation = await createVendorInvitation(trx, {
+            name,
+            vendorEmail: email,
+            expiresAt,
+            sentByAdminId: session.user.id,
+            invitationType: "onboarding",
+          });
+
+          log.success("Transaction completed for invitation", newInvitation?.id);
+          return newInvitation;
+        });
+
+        // Send email
+        await sendEmail({
+          email,
+          subject: "Invitation to become a vendor on Foneflip",
+          react: VerificationEmail({
+            vendorName: name,
+            verificationLink: `${env.BETTER_AUTH_URL}/verify?token=${invitation?.token}`,
+            inviterName: session.user.name,
+            expiresIn: hours.toString(),
+          }),
+        });
+
+        // Invalidate vendor invitation caches
+        if (invitation?.id && invitation?.token && invitation?.vendorEmail) {
+          await invalidateVendorInvitationCaches({
+            id: invitation.id,
+            token: invitation.token,
+            vendorEmail: invitation.vendorEmail,
+          });
+        }
+      } catch (error: unknown) {
+        log.error("Failed to send email", { error });
+
+        // Rollback: Update invitation status to revoked if email failed
+        if (invitation?.id) {
+          try {
+            await db
+              .update(vendorInvitations)
+              .set({
+                status: "revoked",
+                revokedAt: new Date(),
+                updatedAt: new Date(),
+              })
+              .where(eq(vendorInvitations.id, invitation.id));
+
+            log.warn("Rolled back invitation due to email failure", {
+              invitationId: invitation.id,
+              email,
+              error: error instanceof Error ? error.message : "Unknown error",
+            });
+          } catch (rollbackError) {
+            log.error("Failed to rollback invitation after email failure", {
+              invitationId: invitation.id,
+              rollbackError,
+            });
+          }
+        }
+
+        return createErrorResponse("EMAIL_SEND_FAILED", "Failed to send invitation");
+      }
+
+      return createSuccessResponse(invitation, `Invitation sent to ${email}`);
+    });
+  });
 }
 
 // Cache invalidation helper for vendor invitations
@@ -149,56 +221,33 @@ async function invalidateVendorInvitationCaches(invitation: { id: string; token:
 }
 
 export async function revokeInvitation(invitationId: string) {
-  const { res } = await hasPermission({
-    permissions: {
-      vendors: ["invite"],
-    },
+  return withPermissionCheck({ vendors: ["invite"] }, async () => {
+    return withErrorHandling("Revoke invitation", async () => {
+      const [updated] = await db
+        .update(vendorInvitations)
+        .set({
+          revokedAt: new Date(),
+          status: "revoked",
+          updatedAt: new Date(),
+        })
+        .where(eq(vendorInvitations.id, invitationId))
+        .returning();
+
+      if (!updated) {
+        return createErrorResponse("NOT_FOUND", "Invitation not found");
+      }
+
+      // Invalidate vendor invitation caches
+      await invalidateVendorInvitationCaches(updated);
+
+      log.success("Revoked invitation", { id: invitationId });
+      return createSuccessResponse(updated, "Invitation revoked successfully");
+    });
   });
-
-  if (!res.success) {
-    return {
-      success: false,
-      error: "UNAUTHORIZED",
-      message: "You are not authorized to revoke invitations",
-    };
-  }
-
-  try {
-    const [updated] = await db
-      .update(vendorInvitations)
-      .set({
-        revokedAt: new Date(),
-        status: "revoked",
-        updatedAt: new Date(),
-      })
-      .where(eq(vendorInvitations.id, invitationId))
-      .returning();
-
-    if (!updated) {
-      return {
-        success: false,
-        error: "NOT_FOUND",
-        message: "Invitation not found",
-      };
-    }
-
-    // Invalidate vendor invitation caches
-    await invalidateVendorInvitationCaches(updated);
-
-    log.success("Revoked invitation", { id: invitationId });
-    return createSuccessResponse(updated, "Invitation revoked successfully");
-  } catch (error) {
-    log.error("Failed to revoke invitation", error);
-    return {
-      success: false,
-      error: "INTERNAL_SERVER_ERROR",
-      message: "Failed to revoke invitation",
-    };
-  }
 }
 
 export async function updateExpiredInvitations() {
-  try {
+  return withErrorHandling("Update expired invitations", async () => {
     const [updated] = await db
       .update(vendorInvitations)
       .set({
@@ -207,8 +256,8 @@ export async function updateExpiredInvitations() {
       })
       .where(
         and(
-          eq(vendorInvitations.status, "pending")
-          // Add condition for expired invitations
+          eq(vendorInvitations.status, "pending"),
+          lt(vendorInvitations.expiresAt, new Date())
           // This would need to be implemented based on your business logic
         )
       )
@@ -216,30 +265,19 @@ export async function updateExpiredInvitations() {
 
     log.success("Updated expired invitations", { invitationId: updated?.id });
     return createSuccessResponse(updated, "Expired invitations updated successfully");
-  } catch (error) {
-    log.error("Failed to update expired invitations", error);
-    return {
-      success: false,
-      error: "INTERNAL_SERVER_ERROR",
-      message: "Failed to update expired invitations",
-    };
-  }
+  });
 }
 
 export async function createOrganization(formData: unknown) {
   const { data, success, error } = organizationSchema.safeParse(formData);
 
   if (!success) {
-    return {
-      success: false,
-      error: "Invalid data",
-      message: z.prettifyError(error),
-    };
+    return handleValidationError(error);
   }
 
-  const { name, logo, category, website, userId } = data;
+  return withErrorHandling("Create organization", async () => {
+    const { name, logo, category, website, userId } = data;
 
-  try {
     const res = await auth.api.createOrganization({
       body: {
         name,
@@ -252,43 +290,31 @@ export async function createOrganization(formData: unknown) {
     });
 
     if (!res) {
-      return {
-        success: false,
-        error: "Invalid data",
-        message: "Error Creating Organization",
-      };
+      return createErrorResponse("ORGANIZATION_CREATION_FAILED", "Error Creating Organization");
+    }
+
+    // Get the current user's vendor information using the helper function
+    const { vendor } = await getCurrentUserVendor(userId);
+
+    if (!vendor) {
+      return createErrorResponse("VENDOR_NOT_FOUND", "Vendor profile not found");
     }
 
     const [updatedVendor] = await db
       .update(vendorsTable)
       .set({
-        businessCategory: category,
+        category,
         website,
       })
-      .where(eq(vendorsTable.slug, slugify(name)))
+      .where(eq(vendorsTable.id, vendor.id))
       .returning();
 
     if (!updatedVendor) {
-      return {
-        success: false,
-        error: "VENDOR_NOT_FOUND",
-        message: "Vendor profile not found",
-      };
+      return createErrorResponse("VENDOR_NOT_FOUND", "Vendor profile not found");
     }
 
-    return {
-      success: true,
-      message: "Organization created successfully",
-      data: updatedVendor,
-    };
-  } catch (error) {
-    log.error("Failed to create organization", error);
-    return {
-      success: false,
-      error: "INTERNAL_SERVER_ERROR",
-      message: "Failed to create organization",
-    };
-  }
+    return createSuccessResponse(updatedVendor, "Organization created successfully");
+  });
 }
 
 // Update vendor personal information - Optimized with better validation
@@ -297,27 +323,19 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
 
   if (!success) {
     log.warn("Validation failed for updateVendorPersonalInfoAction", { error });
-    return {
-      success: false,
-      error: "Invalid data",
-      message: z.prettifyError(error),
-    };
+    return handleValidationError(error);
   }
 
-  const { fullName, mobile, whatsapp, position } = data;
+  return withErrorHandling("Update vendor personal info", async () => {
+    const { fullName, mobile, whatsapp, position } = data;
 
-  try {
     log.info("Update vendor personal info action started", { fullName });
 
     const session = await getSession();
     const { vendor } = await getCurrentUserVendor(session?.user.id);
 
     if (!vendor) {
-      return {
-        success: false,
-        error: "VENDOR_NOT_FOUND",
-        message: "Vendor profile not found",
-      };
+      return createErrorResponse("VENDOR_NOT_FOUND", "Vendor profile not found");
     }
 
     // Update vendor metadata with personal information
@@ -328,7 +346,6 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
         mobile,
         whatsapp,
         position,
-
         updatedAt: new Date(),
       })
       .where(eq(vendorsTable.id, vendor.id))
@@ -343,12 +360,93 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
     // used on admin pages, by updating the underlying "PROFILE_ONLY" strategy.
 
     return createSuccessResponse(updatedVendor[0], "Personal information updated successfully");
-  } catch (err) {
-    log.error("Failed to update vendor personal info", err);
-    return {
-      success: false,
-      error: "Invalid data",
-      message: "Updating Vendor Information Failed",
-    };
-  }
+  });
 };
+
+// Update vendor documents - Optimized with better validation
+export async function updateVendorDocuments(formData: unknown) {
+  const { success, data, error } = documentsSchema.safeParse(formData);
+
+  if (!success) {
+    log.warn("Validation failed for updateVendorDocuments", { error });
+    return handleValidationError(error);
+  }
+
+  return withErrorHandling("Update vendor documents", async () => {
+    const { tradeLicense, emiratesIdFront, emiratesIdBack } = data;
+
+    log.info("Update vendor documents action started");
+
+    if (!tradeLicense || !emiratesIdFront || !emiratesIdBack) {
+      throw new Error("Trade license and Emirates ID (front and back) are required.");
+    }
+
+    const session = await getSession();
+    if (!session?.user?.id) {
+      return createErrorResponse("UNAUTHORIZED", "You must be logged in to update documents");
+    }
+
+    const { vendor } = await getCurrentUserVendor(session.user.id);
+    if (!vendor) {
+      return createErrorResponse("VENDOR_NOT_FOUND", "Vendor profile not found");
+    }
+
+    await db.transaction(async (trx) => {
+      // Delete existing documents for this vendor
+      await trx.delete(vendorDocumentsTable).where(eq(vendorDocumentsTable.vendorId, vendor.id));
+
+      // Prepare documents to insert
+      const documentsToInsert: (typeof vendorDocumentsTable.$inferInsert)[] = [
+        {
+          vendorId: vendor.id,
+          documentType: "trade_license",
+          url: tradeLicense.url,
+          documentFormat: mapMimeTypeToDbFormat(tradeLicense.type),
+        },
+        {
+          vendorId: vendor.id,
+          documentType: "emirates_id_front",
+          url: emiratesIdFront.url,
+          documentFormat: mapMimeTypeToDbFormat(emiratesIdFront.type),
+        },
+        {
+          vendorId: vendor.id,
+          documentType: "emirates_id_back",
+          url: emiratesIdBack.url,
+          documentFormat: mapMimeTypeToDbFormat(emiratesIdBack.type),
+        },
+      ];
+
+      // Insert all documents
+      if (documentsToInsert.length > 0) {
+        await trx.insert(vendorDocumentsTable).values(documentsToInsert);
+      }
+
+      // Update vendor status to pending approval
+      await trx
+        .update(vendorsTable)
+        .set({ status: "pending_approval", updatedAt: new Date() })
+        .where(eq(vendorsTable.id, vendor.id));
+    });
+
+    // Fetch updated vendor data
+    const updatedVendor = await db.query.vendorsTable.findFirst({
+      where: eq(vendorsTable.id, vendor.id),
+    });
+
+    log.success("Vendor documents updated successfully", {
+      vendorId: vendor.id,
+      userId: session.user.id,
+    });
+
+    // Revalidate vendor document caches
+    try {
+      await invalidateVendorCaches(vendor.id);
+      log.info("Revalidated vendor document caches", { vendorId: vendor.id, type: "documents" });
+    } catch (cacheError) {
+      log.warn("Failed to revalidate vendor document caches", { cacheError });
+    }
+
+    return createSuccessResponse(updatedVendor, "Documents uploaded successfully");
+  });
+}

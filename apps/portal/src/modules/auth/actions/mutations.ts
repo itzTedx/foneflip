@@ -58,19 +58,6 @@ export async function signUpEmailAction(formData: unknown) {
           return { error: "Invalid email address" };
         case "INVALID_PASSWORD":
           return { error: "Password does not meet requirements" };
-        case "USER_NOT_FOUND":
-          return { error: "User not found" };
-        case "EMAIL_NOT_VERIFIED":
-          return { error: "Email not verified" };
-        case "INVALID_TOKEN":
-          return { error: "Invalid or expired token" };
-
-        case "INVALID_OTP":
-          return { error: "Invalid or expired OTP" };
-        case "OTP_EXPIRED":
-          return { error: "OTP has expired" };
-        case "TOO_MANY_ATTEMPTS":
-          return { error: "Too many attempts. Please wait before trying again" };
 
         default:
           return { error: err.message || "An unexpected error occurred" };
@@ -127,7 +114,7 @@ export async function verifyEmailOTPAction(formData: unknown) {
 
       switch (errCode) {
         case "INVALID_OTP":
-          return { error: "Invalid or expired OTP", code: "OTP_EXPIRED" };
+          return { error: "Invalid or expired OTP", code: "INVALID_OTP" };
         case "OTP_EXPIRED":
           return { error: "OTP has expired", code: "OTP_EXPIRED" };
         case "USER_NOT_FOUND":

@@ -12,6 +12,7 @@ import { LoadingSwap } from "@ziron/ui/loading-swap";
 import { VendorRegistrationFormData, vendorRegistrationSchema } from "@ziron/validators";
 
 import { PasswordInput } from "@/components/ui/password-input";
+import { useOnboarding } from "@/hooks/use-onboarding";
 import { authClient } from "@/lib/auth/client";
 import { signUpEmailAction } from "@/modules/auth/actions/mutations";
 
@@ -24,6 +25,7 @@ interface Props {
 export default function VendorRegisterForm({ invitation }: Props) {
   const router = useRouter();
   const [emailPending, startEmailTransition] = useTransition();
+  const { saveData, isLoading: isOnboardingLoading } = useOnboarding(invitation.id);
 
   const form = useForm<VendorRegistrationFormData>({
     resolver: zodResolver(vendorRegistrationSchema),
@@ -44,6 +46,15 @@ export default function VendorRegisterForm({ invitation }: Props) {
         }
 
         if (result.success) {
+          // Save registration data
+          await saveData({
+            registration: {
+              name: data.name,
+              email: data.email,
+              invitationToken: invitation.token,
+            },
+          });
+
           await authClient.emailOtp.sendVerificationOtp({
             email: data.email,
             type: "email-verification",
@@ -104,15 +115,15 @@ export default function VendorRegisterForm({ invitation }: Props) {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <PasswordInput id="password" onChange={field.onChange} placeholder="Password" value={field.value} />
+                  <PasswordInput placeholder="Enter your password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button className="w-full" disabled={emailPending} type="submit">
-            <LoadingSwap isLoading={emailPending}>Continue</LoadingSwap>
+          <Button className="w-full" disabled={emailPending || isOnboardingLoading} type="submit">
+            <LoadingSwap isLoading={emailPending || isOnboardingLoading}>Create Account</LoadingSwap>
           </Button>
         </div>
       </form>

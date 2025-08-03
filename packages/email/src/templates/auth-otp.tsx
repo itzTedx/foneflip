@@ -101,10 +101,15 @@ const OTPEmail = ({ username, otp, type, link, expiresIn }: Props) => {
               </Section>
 
               <Text className="mt-0 mb-[20px] text-[#0b0917] text-[16px] leading-[24px]">
-                This code will expire in <strong>{expiresIn} minutes</strong>. If you didn't request this verification,
-                please ignore this email or contact our support team.
+                {expiresIn ? (
+                  <>
+                    This code will expire in <strong>{expiresIn} minutes</strong>.{" "}
+                  </>
+                ) : (
+                  <>This code will expire soon. </>
+                )}
+                If you didn't request this verification, please ignore this email or contact our support team.
               </Text>
-
               {type === "email-verification" && (
                 <Text className="mt-0 mb-[30px] text-[#0b0917] text-[16px] leading-[24px]">
                   Once verified, you'll have full access to browse and purchase quality refurbished smartphones,

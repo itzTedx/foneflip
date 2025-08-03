@@ -19,6 +19,5 @@ export const InvitationHistory = () => {
 
 async function SuspendedTable() {
   const invitations = await getVendorInvitations();
-  console.log(invitations);
   return <InvitationHistoryTable data={invitations} />;
 }

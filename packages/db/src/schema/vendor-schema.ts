@@ -47,19 +47,19 @@ export const vendorsTable = pgTable(
   "vendors",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    name: varchar("vendor_name", { length: 100 }).notNull(),
-    email: varchar("vendor_email", { length: 255 }),
+    name: varchar("name", { length: 100 }).notNull(),
+    email: varchar("email", { length: 255 }),
     slug: text("slug").notNull().unique(),
     logo: varchar("logo", { length: 255 }),
-
-    mobile: varchar("vendor_number", { length: 20 }),
-    whatsapp: varchar("vendor_whatsapp_number", { length: 20 }),
-    position: varchar("vendor_position", { length: 50 }),
-
-    businessName: varchar("business_name", { length: 255 }),
     description: text("description"),
     website: varchar("website", { length: 255 }),
-    businessCategory: varchar("business_category", { length: 100 }),
+    category: varchar("category", { length: 100 }),
+
+    vendorName: varchar("vendor_name", { length: 255 }),
+    mobile: varchar("number", { length: 20 }),
+    whatsapp: varchar("whatsapp_number", { length: 20 }),
+    position: varchar("position", { length: 50 }),
+
     monthlyEstimatedSales: integer("monthly_estimated_sales"),
     tradeLicenseNumber: varchar("trade_license_number", { length: 20 }),
 

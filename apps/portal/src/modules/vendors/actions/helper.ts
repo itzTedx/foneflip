@@ -1,5 +1,5 @@
 import { and, db, eq, gt, isNotNull, isNull } from "@ziron/db";
-import { member, vendorInvitations } from "@ziron/db/schema";
+import { vendorInvitations } from "@ziron/db/schema";
 import { Trx } from "@ziron/db/types";
 
 import { createLog } from "@/lib/utils";
@@ -76,13 +76,18 @@ export async function getCurrentUserVendor(userId?: string) {
 
   try {
     const memberRecord = await db.query.member.findFirst({
-      where: eq(member.userId, userId),
-      with: {
-        vendor: true,
-      },
+      where: (member, { eq }) => eq(member.userId, userId),
     });
 
-    return { vendor: memberRecord?.vendor || null };
+    if (!memberRecord) {
+      throw new Error("No vendor membership found for current user");
+    }
+
+    const vendor = await db.query.vendorsTable.findFirst({
+      where: (vendors, { eq }) => eq(vendors.id, memberRecord.vendorId),
+    });
+
+    return { vendor };
   } catch (error) {
     log.error("Failed to get current user vendor", error);
     return { vendor: null };

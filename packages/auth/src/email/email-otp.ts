@@ -5,7 +5,7 @@ export async function sendOTPEmail({
   to,
   otp,
   name,
-  type = "email-verification",
+  type,
   expiresIn,
 }: {
   to: string;
@@ -27,9 +27,14 @@ export async function sendOTPEmail({
     }
   };
 
-  await sendEmail({
-    email: to,
-    subject: getSubject(),
-    react: VendorOTPEmail({ otp, username: name, type, expiresIn }),
-  });
+  try {
+    await sendEmail({
+      email: to,
+      subject: getSubject(),
+      react: VendorOTPEmail({ otp, username: name, type, expiresIn }),
+    });
+  } catch (error) {
+    console.error(`Failed to send OTP email to ${to}:`, error);
+    throw new Error("Failed to send verification email");
+  }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
@@ -13,6 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { OrganizationFormData, organizationSchema } from "@ziron/validators";
 
 import { InfoTooltip } from "@/components/ui/tooltip";
+import { useOnboarding } from "@/hooks/use-onboarding";
+import { useVendorStorage } from "@/hooks/use-vendor-storage";
+import { useSession } from "@/lib/auth/client";
 
 import { createOrganization } from "../../actions/mutation";
 
@@ -23,6 +26,10 @@ interface Props {
 export const OrganizationForm = ({ userId }: Props) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const { data: session } = useSession();
+  const { vendorData, saveData, isLoading: isStorageLoading } = useVendorStorage(userId);
+  const { saveData: saveOnboardingData, isLoading: isOnboardingLoading } = useOnboarding(userId);
+
   const form = useForm<OrganizationFormData>({
     resolver: zodResolver(organizationSchema),
     defaultValues: {
@@ -34,15 +41,55 @@ export const OrganizationForm = ({ userId }: Props) => {
     },
   });
 
+  // Load existing vendor data from IndexedDB on component mount
+  useEffect(() => {
+    if (vendorData) {
+      form.reset({
+        userId,
+        category: vendorData.category,
+        logo: vendorData.logoUrl,
+        name: vendorData.organizationName,
+        website: vendorData.website || "",
+      });
+    }
+  }, [vendorData, form]);
+
   function onSubmit(data: OrganizationFormData) {
     startTransition(async () => {
-      const result = await createOrganization(data);
+      try {
+        // Save to vendor storage
+        await saveData({
+          userId,
+          username: session?.user?.name,
+          email: session?.user?.email,
+          organizationName: data.name,
+          category: data.category!,
+          logoUrl: data.logo,
+          website: data.website,
+        });
 
-      if (!result.success) {
-        toast.error(result.message);
-      } else {
-        toast.success(result.message);
-        router.push("/vendor/onboarding/documents");
+        // Save to onboarding data
+        await saveOnboardingData({
+          organization: {
+            name: data.name,
+            category: data.category!,
+            website: data.website,
+            logoUrl: data.logo,
+          },
+        });
+
+        // Submit to server
+        const result = await createOrganization(data);
+
+        if (!result.success) {
+          toast.error(result.message);
+        } else {
+          toast.success(result.message);
+          router.push("/onboarding/organization/documents");
+        }
+      } catch (error) {
+        console.error("Failed to save vendor data:", error);
+        toast.error("Failed to save vendor data locally");
       }
     });
   }
@@ -103,8 +150,8 @@ export const OrganizationForm = ({ userId }: Props) => {
           )}
         />
 
-        <Button className="w-full" disabled={isPending} type="submit">
-          <LoadingSwap isLoading={isPending}>Continue</LoadingSwap>
+        <Button className="w-full" disabled={isPending || isStorageLoading || isOnboardingLoading} type="submit">
+          <LoadingSwap isLoading={isPending || isStorageLoading || isOnboardingLoading}>Continue</LoadingSwap>
         </Button>
       </form>
     </Form>

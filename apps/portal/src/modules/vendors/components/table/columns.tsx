@@ -67,7 +67,7 @@ export const columns: ColumnDef<InvitationType>[] = [
     header: "Expires In",
     accessorKey: "expiresAt",
     cell: ({ row }) => (
-      <dt className={cn(["Active", "Expired"].includes(row.getValue("status") as string) && "sr-only")}>
+      <dt className={cn(["accepted", "expired", "revoked"].includes(row.getValue("status") as string) && "sr-only")}>
         {getTimeUntilExpiry(row.getValue("expiresAt") as Date)}
       </dt>
     ),

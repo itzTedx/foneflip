@@ -17,6 +17,15 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
+// Verify SMTP connection on startup
+transporter.verify((error) => {
+  if (error) {
+    console.error("SMTP configuration error:", error);
+  } else {
+    console.log("SMTP server is ready to send emails");
+  }
+});
+
 type SendEmailOptions =
   | {
       email: string;

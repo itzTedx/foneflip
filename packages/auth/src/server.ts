@@ -93,12 +93,12 @@ export function initAuth(options: {
               to: email,
               otp,
               type: type,
-              name: user?.name ?? email.split("@")[0],
+              name: user?.name ?? "User",
               expiresIn: OTP_EXPIRES_IN,
             });
           } catch (error) {
-            console.error("Failed to send OTP email:", error);
-            throw new Error("Failed to send verification email");
+            console.error("Failed to send OTP email:", error instanceof Error ? error.message : "Unknown error");
+            throw error instanceof Error ? error : new Error("Failed to send verification email");
           }
         },
       }),
@@ -110,7 +110,7 @@ export function initAuth(options: {
       },
       set: async (key, value, ttl) => {
         if (ttl) await redis.setex(`session:${key}`, ttl, value);
-        else await redis.set(key, value);
+        else await redis.set(`session:${key}`, value);
       },
       delete: async (key) => {
         await redis.del(`session:${key}`);

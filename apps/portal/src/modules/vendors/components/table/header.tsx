@@ -41,10 +41,10 @@ export const DataTableHeader = ({ table, data }: Props) => {
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows;
     const updatedData = data.filter((item) => !selectedRows.some((row) => row.original.id === item.id));
+    // TODO: Implement actual deletion logic - call API endpoint or update parent state
     // setData(updatedData);
     table.resetRowSelection();
   };
-
   // Get unique status values
   const uniqueStatusValues = useMemo(() => {
     const statusColumn = table.getColumn("status");
@@ -54,8 +54,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
     const values = Array.from(statusColumn.getFacetedUniqueValues().keys());
 
     return values.sort();
-  }, [table.getColumn("status")?.getFacetedUniqueValues()]);
-
+  }, [table]);
   // Get counts for each status
   const statusCounts = useMemo(() => {
     const statusColumn = table.getColumn("status");
@@ -66,8 +65,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
   const selectedStatus = useMemo(() => {
     const filterValue = table.getColumn("status")?.getFilterValue() as string[];
     return filterValue ?? [];
-  }, [table.getColumn("status")?.getFilterValue()]);
-
+  }, [table]);
   const handleStatusChange = (checked: boolean, value: string) => {
     const filterValue = table.getColumn("status")?.getFilterValue() as string[];
     const newFilterValue = filterValue ? [...filterValue] : [];

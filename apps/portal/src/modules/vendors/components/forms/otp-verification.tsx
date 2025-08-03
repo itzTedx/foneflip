@@ -20,6 +20,7 @@ import { LoadingSwap } from "@ziron/ui/loading-swap";
 import { toast } from "@ziron/ui/sonner";
 import { z } from "@ziron/validators";
 
+import { useOnboarding } from "@/hooks/use-onboarding";
 import { resendEmailOTPAction, verifyEmailOTPAction } from "@/modules/auth/actions/mutations";
 
 const otpSchema = z.object({
@@ -27,6 +28,7 @@ const otpSchema = z.object({
     message: "Your one-time password must be exactly 6 characters.",
   }),
 });
+
 interface Props {
   email: string;
 }
@@ -36,6 +38,7 @@ export function OtpVerificationForm({ email }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isResending, setIsResending] = useState(false);
   const [showResendOption, setShowResendOption] = useState(false);
+  const { saveData, isLoading: isOnboardingLoading } = useOnboarding(email);
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
@@ -46,24 +49,37 @@ export function OtpVerificationForm({ email }: Props) {
 
   function onSubmit(data: z.infer<typeof otpSchema>) {
     startTransition(async () => {
-      const result = await verifyEmailOTPAction({
-        email,
-        otp: data.otp,
-      });
+      try {
+        const result = await verifyEmailOTPAction({
+          email,
+          otp: data.otp,
+        });
 
-      if (result.error) {
-        // Check if OTP is expired and show resend option
-        const isExpired =
-          result.error.includes("expired") || result.error.includes("OTP_EXPIRED") || result.code === "OTP_EXPIRED";
-        if (isExpired) {
-          setShowResendOption(true);
-          toast.error("OTP has expired. Please request a new one.");
+        if (result.error) {
+          // Check if OTP is expired and show resend option
+          const isExpired =
+            result.error.includes("expired") || result.error.includes("OTP_EXPIRED") || result.code === "OTP_EXPIRED";
+          if (isExpired) {
+            setShowResendOption(true);
+            toast.error("OTP has expired. Please request a new one.");
+          } else {
+            toast.error(result.error);
+          }
         } else {
-          toast.error(result.error);
+          // Save verification data
+          await saveData({
+            verification: {
+              email,
+              verifiedAt: new Date().toISOString(),
+            },
+          });
+
+          toast.success("Email Verified");
+          router.push(`/onboarding/organization?userId=${result.data?.userId}`);
         }
-      } else {
-        toast.success("Email Verified");
-        router.push(`/onboarding/organization?userId=${result.data?.userId}`);
+      } catch (error) {
+        toast.error("An unexpected error occurred. Please try again.");
+        console.error("OTP verification error:", error);
       }
     });
   }
@@ -98,8 +114,8 @@ export function OtpVerificationForm({ email }: Props) {
           name="otp"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="sr-only">One-Time Password</FormLabel>
-              <FormControl className="space-y-2">
+              <FormLabel className="sr-only">One-time password</FormLabel>
+              <FormControl>
                 <div className="flex flex-col items-center">
                   <InputOTP maxLength={6} {...field}>
                     <InputOTPGroup>
@@ -116,21 +132,21 @@ export function OtpVerificationForm({ email }: Props) {
                   </InputOTP>
                 </div>
               </FormControl>
-              <FormDescription>Please enter the one-time password sent to your email.</FormDescription>
+              <FormDescription>We&apos;ve sent a one-time password to your email address.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button className="w-full" disabled={isPending} type="submit">
-          <LoadingSwap isLoading={isPending}>Continue</LoadingSwap>
+        <Button className="w-full" disabled={isPending || isOnboardingLoading} type="submit">
+          <LoadingSwap isLoading={isPending || isOnboardingLoading}>Verify Email</LoadingSwap>
         </Button>
 
         {showResendOption && (
-          <div className="w-full space-y-2">
-            <p className="text-center text-muted-foreground text-sm">Didn't receive the code or it expired?</p>
-            <Button className="w-full" disabled={isResending} onClick={handleResendOTP} type="button" variant="outline">
-              <LoadingSwap isLoading={isResending}>{isResending ? "Sending..." : "Resend OTP"}</LoadingSwap>
+          <div className="text-center">
+            <p className="mb-2 text-muted-foreground text-sm">Didn&apos;t receive the code?</p>
+            <Button disabled={isResending} onClick={handleResendOTP} size="sm" type="button" variant="outline">
+              <LoadingSwap isLoading={isResending}>Resend OTP</LoadingSwap>
             </Button>
           </div>
         )}

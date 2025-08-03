@@ -34,15 +34,14 @@ interface Props {
 }
 
 /**
- * Renders a paginated, sortable, filterable, and column-configurable table of users with persistent pagination state.
+ * Renders a paginated, sortable, filterable, and column-configurable table of vendor invitations with persistent pagination state.
  *
- * Displays user data in a table with support for sorting, filtering, column visibility toggling, and pagination. Pagination state is synchronized with URL query parameters and persisted in a cookie for consistent user experience across sessions and shared URLs.
+ * Displays vendor invitation data in a table with support for sorting, filtering, column visibility toggling, and pagination. Pagination state is synchronized with URL query parameters and persisted in a cookie for consistent user experience across sessions and shared URLs.
  *
- * @param data - The array of user objects to display in the table.
+ * @param data - The array of vendor invitation objects to display in the table.
  * @param initialPageSize - Optional initial number of rows per page if not specified in the URL.
- * @returns The rendered user table component.
- */
-export default function UsersTable({ data, initialPageSize }: Props) {
+ * @returns The rendered vendor invitations table component.
+ */ export default function UsersTable({ data, initialPageSize }: Props) {
   const id = useId();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -68,7 +67,7 @@ export default function UsersTable({ data, initialPageSize }: Props) {
 
   // When pageSize changes, set cookie using document.cookie
   React.useEffect(() => {
-    document.cookie = `users_table_pageSize=${pageSize}; path=/; max-age=${60 * 60 * 24 * 365}`;
+    document.cookie = `vendor_invitations_table_pageSize=${pageSize}; path=/; max-age=${60 * 60 * 24 * 365}`;
   }, [pageSize]);
 
   // Sync TanStack Table pagination with nuqs

@@ -1,23 +1,16 @@
 "use client";
 
-import { authClient } from "@/lib/auth/client";
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { APIError } from "better-auth/api";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-
 import { toast } from "sonner";
 
 import { Session } from "@ziron/auth";
 import { IconSaveFilled } from "@ziron/ui/assets/icons";
+import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@ziron/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
 import {
   Form,
   FormControl,
@@ -31,9 +24,10 @@ import {
 } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
-
-import { Badge } from "@ziron/ui/badge";
 import { formatDate, formatUserAgent } from "@ziron/utils";
+
+import { authClient } from "@/lib/auth/client";
+
 import { AvatarUpload } from "./_components/avatar-upload";
 import { ProfileFormType, profileSchema } from "./profile-schema";
 import { getSessionIcon } from "./utils";
@@ -52,14 +46,6 @@ interface Props {
   }[];
 }
 
-/**
- * Renders a user profile settings form with editable profile information, security options, and session management.
- *
- * Displays and allows updating of the user's name and avatar, shows the email address, and provides controls for changing the password and managing two-factor authentication (UI only). Lists all active sessions, enabling the user to log out from individual sessions or from all other devices.
- *
- * @param initialData - The current session and user data used to populate the form.
- * @param sessions - An array of active session objects for the user, used to display recent login activity and manage session revocation.
- */
 export function ProfileForm({ initialData, sessions }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isRevokePending, startRevokeTransition] = useTransition();
@@ -131,13 +117,10 @@ export function ProfileForm({ initialData, sessions }: Props) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="px-2 text-lg font-medium">Profile Settings</h2>
+          <h2 className="px-2 font-medium text-lg">Profile Settings</h2>
 
           <Button type="submit">
-            <LoadingSwap
-              isLoading={isPending}
-              className="flex items-center justify-center gap-1"
-            >
+            <LoadingSwap className="flex items-center justify-center gap-1" isLoading={isPending}>
               <IconSaveFilled className="-ms-0.5" />
               Update profile
             </LoadingSwap>
@@ -147,9 +130,7 @@ export function ProfileForm({ initialData, sessions }: Props) {
           <Card className="break-inside-avoid">
             <CardHeader>
               <CardTitle>Profile</CardTitle>
-              <CardDescription>
-                This is how others will see you on the site.
-              </CardDescription>
+              <CardDescription>This is how others will see you on the site.</CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-3 items-center justify-center gap-3">
               <div className="col-span-2 space-y-4">
@@ -186,7 +167,7 @@ export function ProfileForm({ initialData, sessions }: Props) {
                 render={() => (
                   <FormItem>
                     <FormControl>
-                      <AvatarUpload form={form} avatar={avatar ?? null} />
+                      <AvatarUpload avatar={avatar ?? null} form={form} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -198,17 +179,13 @@ export function ProfileForm({ initialData, sessions }: Props) {
           <Card className="break-inside-avoid">
             <CardHeader>
               <CardTitle>Security</CardTitle>
-              <CardDescription>
-                Manage your account security settings.
-              </CardDescription>
+              <CardDescription>Manage your account security settings.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <h3 className="font-medium">Change Password</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Set a new password for your account.
-                  </p>
+                  <p className="text-muted-foreground text-sm">Set a new password for your account.</p>
                 </div>
                 <Button type="button" variant="outline">
                   Change Password
@@ -220,12 +197,8 @@ export function ProfileForm({ initialData, sessions }: Props) {
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        Two-Factor Authentication
-                      </FormLabel>
-                      <p className="text-muted-foreground text-sm">
-                        Add an extra layer of security to your account.
-                      </p>
+                      <FormLabel className="text-base">Two-Factor Authentication</FormLabel>
+                      <p className="text-muted-foreground text-sm">Add an extra layer of security to your account.</p>
                     </div>
                     <FormControl>
                       {/* <Switch
@@ -249,18 +222,16 @@ export function ProfileForm({ initialData, sessions }: Props) {
             <CardHeader className="flex items-center justify-between">
               <div>
                 <CardTitle>Recent Login Activity</CardTitle>
-                <CardDescription>
-                  A log of your recent login activity.
-                </CardDescription>
+                <CardDescription>A log of your recent login activity.</CardDescription>
               </div>
               <Button
-                type="button"
-                variant="outline"
-                size="sm"
                 disabled={isRevokePending}
                 onClick={handleRevokeOtherSessions}
+                size="sm"
+                type="button"
+                variant="outline"
               >
-                <LoadingSwap isLoading={isRevokePending} className="text-xs">
+                <LoadingSwap className="text-xs" isLoading={isRevokePending}>
                   Logout from other devices
                 </LoadingSwap>
               </Button>
@@ -288,16 +259,14 @@ export function ProfileForm({ initialData, sessions }: Props) {
                     </div>
                     {session.id !== initialData.session.id && (
                       <Button
-                        type="button"
-                        size="sm"
-                        variant="destructive"
                         className="ml-auto"
                         disabled={isRevokeOthersPending}
                         onClick={() => handleRevokeSession(session.token)}
+                        size="sm"
+                        type="button"
+                        variant="destructive"
                       >
-                        <LoadingSwap isLoading={isRevokeOthersPending}>
-                          Logout
-                        </LoadingSwap>
+                        <LoadingSwap isLoading={isRevokeOthersPending}>Logout</LoadingSwap>
                       </Button>
                     )}
                   </div>

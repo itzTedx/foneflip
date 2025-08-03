@@ -1,11 +1,13 @@
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { and, db, eq, gt, isNull, or } from "@ziron/db";
 import { vendorInvitations } from "@ziron/db/schema";
 import { z } from "@ziron/validators";
 
+import { storeError } from "@/lib/error-handler";
 import { createLog } from "@/lib/utils";
-import { invalidateInvitationAfterVerification } from "@/modules/vendors/actions/cache";
+import { invalidateInvitationAfterVerification, invalidateVendorCaches } from "@/modules/vendors/actions/cache";
 
 const log = createLog("Vendor API");
 
@@ -79,6 +81,8 @@ async function verifyAndUseInvitation(token: string) {
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const token = searchParams.get("token");
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent");
 
   try {
     // 1. Validate input
@@ -92,14 +96,26 @@ export async function GET(request: Request) {
     redirectUrl.searchParams.set("token", validatedToken);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
-    // 4. Handle errors gracefully - redirect to error page for all errors
+    // 4. Handle errors gracefully with secure error storage
+    let errorType: "validation" | "invitation" | "server" = "server";
+    let errorMessage = "An unexpected error occurred";
+    let errorStatus: number | undefined;
+    let errorDetails: string | undefined;
+
     if (error instanceof z.ZodError) {
-      log.warn("Validation error", { token, error: error.issues[0]?.message });
+      errorType = "validation";
+      errorMessage = "Invalid token format";
+      errorDetails = error.issues[0]?.message;
+      log.warn("Validation error", { token, error: errorDetails });
     } else if (error instanceof InvitationError) {
+      errorType = "invitation";
+      errorMessage = error.message;
+      errorStatus = error.status;
       log.warn(error.message, { token, status: error.status });
     } else {
+      errorMessage = error instanceof Error ? error.message : "Unknown error";
       log.error("Failed to verify invitation", {
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: errorMessage,
         token,
       });
     }
@@ -109,27 +125,19 @@ export async function GET(request: Request) {
       try {
         // Try to invalidate invitation caches for the token
         // Note: We don't have the email here, so we'll just invalidate the token-based caches
-        log.info("Cache invalidation needed for token", { token });
+        await invalidateVendorCaches(undefined, token, undefined);
+        log.info("Successfully invalidated token-based caches on error", { token });
       } catch (cacheError) {
-        log.warn("Failed to log cache invalidation on error", { cacheError });
+        log.warn("Failed to invalidate caches on error", { cacheError, token });
       }
     }
 
-    // Redirect to error page for all types of errors with error details
-    const errorUrl = new URL("/verify/error", origin);
+    // Store error securely and get error ID
+    const errorId = storeError(errorType, errorMessage, errorDetails, errorStatus, "medium", userAgent || undefined);
 
-    // Add error information to URL parameters
-    if (error instanceof z.ZodError) {
-      errorUrl.searchParams.set("type", "validation");
-      errorUrl.searchParams.set("message", error.issues[0]?.message || "Invalid token format");
-    } else if (error instanceof InvitationError) {
-      errorUrl.searchParams.set("type", "invitation");
-      errorUrl.searchParams.set("message", error.message);
-      errorUrl.searchParams.set("status", error.status.toString());
-    } else {
-      errorUrl.searchParams.set("type", "server");
-      errorUrl.searchParams.set("message", "An unexpected error occurred. Please try again later.");
-    }
+    // Redirect to error page with only the error ID
+    const errorUrl = new URL("/verify/error", origin);
+    errorUrl.searchParams.set("id", errorId);
 
     return NextResponse.redirect(errorUrl);
   }

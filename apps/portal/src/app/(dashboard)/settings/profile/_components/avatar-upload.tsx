@@ -1,29 +1,19 @@
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+
+import { ArrowLeftIcon, XIcon, ZoomInIcon, ZoomOutIcon } from "lucide-react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@ziron/ui/avatar";
+import { Button } from "@ziron/ui/button";
+import { Cropper, CropperCropArea, CropperDescription, CropperImage } from "@ziron/ui/cropper";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@ziron/ui/dialog";
+import { useFormContext } from "@ziron/ui/form";
+import { LoadingSwap } from "@ziron/ui/loading-swap";
+import { Slider } from "@ziron/ui/slider";
+
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { getSignedURL } from "@/modules/media/actions/mutations";
 import { computeSHA256 } from "@/modules/media/utils/compute-sha256";
 import { deleteAvatar } from "@/modules/users/actions/mutation";
-import { ArrowLeftIcon, XIcon, ZoomInIcon, ZoomOutIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@ziron/ui/avatar";
-import { Button } from "@ziron/ui/button";
-import {
-  Cropper,
-  CropperCropArea,
-  CropperDescription,
-  CropperImage,
-} from "@ziron/ui/cropper";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@ziron/ui/dialog";
-import { useFormContext } from "@ziron/ui/form";
-import { LoadingSwap } from "@ziron/ui/loading-swap";
-import { Slider } from "@ziron/ui/slider";
 
 import { ProfileFormType } from "../profile-schema";
 
@@ -106,15 +96,7 @@ export const AvatarUpload = ({ form, avatar }: Props) => {
   const [isPending, startTransition] = useTransition();
   const [
     { files, isDragging },
-    {
-      handleDragEnter,
-      handleDragLeave,
-      handleDragOver,
-      handleDrop,
-      openFileDialog,
-      removeFile,
-      getInputProps,
-    },
+    { handleDragEnter, handleDragLeave, handleDragOver, handleDrop, openFileDialog, removeFile, getInputProps },
   ] = useFileUpload({
     accept: "image/*",
   });
@@ -261,70 +243,56 @@ export const AvatarUpload = ({ form, avatar }: Props) => {
       <div className="relative inline-flex">
         {/* Drop area - uses finalImageUrl */}
         <button
-          className="border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50 focus-visible:border-ring focus-visible:ring-ring/50 relative flex size-32 items-center justify-center overflow-hidden rounded-full border-2 border-dashed transition-colors outline-none focus-visible:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-50"
-          type="button"
+          aria-label={finalImageUrl ? "Change image" : "Upload image"}
+          className="relative flex size-32 items-center justify-center overflow-hidden rounded-full border-2 border-input border-dashed outline-none transition-colors hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-disabled:pointer-events-none has-disabled:opacity-50 data-[dragging=true]:bg-accent/50"
+          data-dragging={isDragging || undefined}
           onClick={openFileDialog}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          data-dragging={isDragging || undefined}
-          aria-label={finalImageUrl ? "Change image" : "Upload image"}
+          type="button"
         >
-          <Avatar className="bg-accent/30 size-full p-2">
-            <AvatarImage src={finalImageUrl ?? undefined} alt="User avatar" />
-            <AvatarFallback className="text-sm font-medium">
-              Upload
-            </AvatarFallback>
+          <Avatar className="size-full bg-accent/30 p-2">
+            <AvatarImage alt="User avatar" src={finalImageUrl ?? undefined} />
+            <AvatarFallback className="font-medium text-sm">Upload</AvatarFallback>
           </Avatar>
         </button>
         {/* Remove button - depends on finalImageUrl */}
         {finalImageUrl && (
           <Button
+            aria-label="Remove image"
+            className="absolute top-2 right-2 size-6 rounded-full border-2 shadow-none"
             onClick={handleRemoveFinalImage}
             size="btn"
             variant="destructive"
-            className="absolute top-2 right-2 size-6 rounded-full border-2 shadow-none"
-            aria-label="Remove image"
           >
             <XIcon className="size-3.5" />
           </Button>
         )}
-        <input
-          {...getInputProps()}
-          className="sr-only"
-          aria-label="Upload image file"
-          tabIndex={-1}
-        />
+        <input {...getInputProps()} aria-label="Upload image file" className="sr-only" tabIndex={-1} />
       </div>
 
       {/* Cropper Dialog - Use isDialogOpen for open prop */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
         <DialogContent className="gap-0 p-0 sm:max-w-140 *:[button]:hidden">
-          <DialogDescription className="sr-only">
-            Crop image dialog
-          </DialogDescription>
+          <DialogDescription className="sr-only">Crop image dialog</DialogDescription>
           <DialogHeader className="contents space-y-0 text-left">
             <DialogTitle className="flex items-center justify-between border-b p-4 text-base">
               <div className="flex items-center gap-2">
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
+                  aria-label="Cancel"
                   className="-my-1 opacity-60"
                   onClick={() => setIsDialogOpen(false)}
-                  aria-label="Cancel"
+                  size="icon"
+                  type="button"
+                  variant="ghost"
                 >
                   <ArrowLeftIcon aria-hidden="true" />
                 </Button>
                 <span>Crop image</span>
               </div>
-              <Button
-                className="-my-1"
-                onClick={handleApply}
-                disabled={!previewUrl || isPending}
-                autoFocus
-              >
+              <Button autoFocus className="-my-1" disabled={!previewUrl || isPending} onClick={handleApply}>
                 <LoadingSwap isLoading={isPending}>Apply</LoadingSwap>
               </Button>
             </DialogTitle>
@@ -333,9 +301,9 @@ export const AvatarUpload = ({ form, avatar }: Props) => {
             <Cropper
               className="h-96 sm:h-120"
               image={previewUrl}
-              zoom={zoom}
               onCropChange={handleCropChange}
               onZoomChange={setZoom}
+              zoom={zoom}
             >
               <CropperDescription />
               <CropperImage />
@@ -344,25 +312,19 @@ export const AvatarUpload = ({ form, avatar }: Props) => {
           )}
           <DialogFooter className="border-t px-4 py-6">
             <div className="mx-auto flex w-full max-w-80 items-center gap-4">
-              <ZoomOutIcon
-                className="size-3.5 shrink-0 opacity-60"
-                aria-hidden="true"
-              />
+              <ZoomOutIcon aria-hidden="true" className="size-3.5 shrink-0 opacity-60" />
               <Slider
-                showTooltip
-                tooltipContent={(value) => `${value}x`}
-                defaultValue={[1]}
-                value={[zoom]}
-                min={1}
-                max={3}
-                step={0.1}
-                onValueChange={(value) => setZoom(value[0]!)}
                 aria-label="Zoom slider"
+                defaultValue={[1]}
+                max={3}
+                min={1}
+                onValueChange={(value) => setZoom(value[0]!)}
+                showTooltip
+                step={0.1}
+                tooltipContent={(value) => `${value}x`}
+                value={[zoom]}
               />
-              <ZoomInIcon
-                className="size-3.5 shrink-0 opacity-60"
-                aria-hidden="true"
-              />
+              <ZoomInIcon aria-hidden="true" className="size-3.5 shrink-0 opacity-60" />
             </div>
           </DialogFooter>
         </DialogContent>

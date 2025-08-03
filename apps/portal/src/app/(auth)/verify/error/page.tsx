@@ -11,6 +11,14 @@ import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
 import { Card, CardContent } from "@ziron/ui/card";
 
+import {
+  type ErrorType,
+  getErrorDisplayInfo,
+  getErrorSuggestions,
+  getErrorInfo as getStoredErrorInfo,
+  getUserFriendlyMessage,
+} from "@/lib/error-handler";
+
 interface ErrorInfo {
   type: string;
   message: string;
@@ -27,157 +35,107 @@ type SearchParams = Promise<{ [key: string]: string | undefined }>;
 export default function VerifyErrorPage({ searchParams }: { searchParams: SearchParams }) {
   const router = useRouter();
   const searchParam = use(searchParams);
-  const errorType = searchParam.type;
-  const errorMessage = searchParam.message;
-  const errorStatus = searchParam.status;
+  const errorId = searchParam.id;
 
   const handleRetry = () => {
     router.refresh();
   };
 
   const getErrorInfo = (): ErrorInfo => {
-    switch (errorType) {
+    // If no error ID, show generic error
+    if (!errorId) {
+      return {
+        type: "server",
+        message: "No error information available",
+        icon: <AlertCircle className="h-8 w-8 text-destructive" />,
+        title: "Server Error",
+        description:
+          "We encountered an unexpected error while processing your verification. Our team has been notified.",
+        suggestions: [
+          "Please try again in a few moments",
+          "Check your internet connection",
+          "Contact support if the problem persists",
+          "Try accessing the link from a different device",
+        ],
+        canRetry: true,
+      };
+    }
+
+    // Get error information from secure storage
+    const errorData = getStoredErrorInfo(errorId);
+
+    if (!errorData) {
+      return {
+        type: "server",
+        message: "Error information not found",
+        icon: <AlertCircle className="h-8 w-8 text-destructive" />,
+        title: "Server Error",
+        description:
+          "We encountered an unexpected error while processing your verification. Our team has been notified.",
+        suggestions: [
+          "Please try again in a few moments",
+          "Check your internet connection",
+          "Contact support if the problem persists",
+          "Try accessing the link from a different device",
+        ],
+        canRetry: true,
+      };
+    }
+
+    // Get display information based on error type
+    const displayInfo = getErrorDisplayInfo(errorData.type, errorData.status);
+    const userFriendlyMessage = getUserFriendlyMessage(errorData.type, errorData.status);
+    const suggestions = getErrorSuggestions(errorData.type, errorData.status);
+
+    // Map icon string to component
+    const getIconComponent = (iconName: string) => {
+      switch (iconName) {
+        case "XCircle":
+          return <XCircle className="h-8 w-8 text-warn" />;
+        case "Clock":
+          return <Clock className="h-8 w-8 text-destructive" />;
+        case "Shield":
+          return <Shield className="h-8 w-8 text-info" />;
+        case "AlertCircle":
+        default:
+          return <AlertCircle className="h-8 w-8 text-destructive" />;
+      }
+    };
+
+    return {
+      type: errorData.type,
+      message: userFriendlyMessage,
+      status: errorData.status?.toString(),
+      icon: getIconComponent(displayInfo.icon),
+      title: displayInfo.title,
+      description: getErrorDescription(errorData.type, errorData.status),
+      suggestions,
+      canRetry: displayInfo.canRetry,
+    };
+  };
+
+  const getErrorDescription = (type: ErrorType, status?: number): string => {
+    switch (type) {
       case "validation":
-        return {
-          type: "validation",
-          message: errorMessage || "Invalid token format",
-          icon: <XCircle className="h-8 w-8 text-warn" />,
-          title: "Invalid Verification Link",
-          description:
-            "The verification link you're trying to use is not properly formatted or is missing required information.",
-          suggestions: [
-            "Check that you copied the entire link from your email",
-            "Make sure there are no extra spaces or characters in the URL",
-            "Try clicking the link directly from your email instead of copying it",
-            "Contact support if you continue to have issues",
-          ],
-
-          canRetry: false,
-        };
-
+        return "The verification link you're trying to use is not properly formatted or is missing required information.";
       case "invitation":
-        if (errorStatus === "404") {
-          return {
-            type: "expired",
-            message: errorMessage || "Invalid or expired token",
-            icon: <Clock className="h-8 w-8 text-destructive" />,
-            title: "Invitation Expired",
-            description:
-              "This invitation link has expired or is no longer valid. Invitation links typically expire after 24 hours for security reasons.",
-            suggestions: [
-              "Check if you received a more recent invitation email",
-              "Contact your administrator to request a new invitation",
-              "Make sure you're using the most recent invitation link",
-              "If you're an existing user, try logging in directly",
-            ],
-
-            canRetry: false,
-          };
+        if (status === 404) {
+          return "This invitation link has expired or is no longer valid. Invitation links typically expire after 24 hours for security reasons.";
         }
-        if (errorStatus === "409") {
-          return {
-            type: "used",
-            message: errorMessage || "Invitation has already been used",
-            icon: <Shield className="h-8 w-8 text-info" />,
-            title: "Already Verified",
-            description:
-              "This invitation has already been used to verify your account. You may already have access to the system.",
-            suggestions: [
-              "Try logging in with your email and password",
-              "If you forgot your password, use the password reset feature",
-              "Contact support if you need help accessing your account",
-              "Check if you're already signed in on another device",
-            ],
-
-            canRetry: false,
-          };
+        if (status === 409) {
+          return "This invitation has already been used to verify your account. You may already have access to the system.";
         }
-        if (errorStatus === "403") {
-          return {
-            type: "revoked",
-            message: errorMessage || "Invitation has been revoked",
-            icon: <AlertCircle className="h-8 w-8 text-destructive" />,
-            title: "Invitation Revoked",
-            description: "This invitation has been revoked by your administrator and is no longer valid.",
-            suggestions: [
-              "Contact your administrator to request a new invitation",
-              "Check if there are any account restrictions in place",
-              "Verify your email address is still authorized",
-              "Contact support for assistance",
-            ],
-
-            canRetry: false,
-          };
+        if (status === 403) {
+          return "This invitation has been revoked by your administrator and is no longer valid.";
         }
-        return {
-          type: "invitation",
-          message: errorMessage || "Invitation error",
-          icon: <AlertCircle className="h-8 w-8 text-destructive" />,
-          title: "Invitation Error",
-          description:
-            "There was an issue processing your invitation. This could be due to a temporary system problem or invalid invitation data.",
-          suggestions: [
-            "Try refreshing the page and clicking the link again",
-            "Check if your invitation email is still valid",
-            "Contact your administrator for assistance",
-            "Try accessing the link from a different browser",
-          ],
-
-          canRetry: true,
-        };
-
+        return "There was an issue processing your invitation. This could be due to a temporary system problem or invalid invitation data.";
       case "network":
-        return {
-          type: "network",
-          message: errorMessage || "Network connection error",
-          icon: <AlertCircle className="h-8 w-8 text-warn" />,
-          title: "Connection Error",
-          description: "We're having trouble connecting to our servers. This is usually a temporary issue.",
-          suggestions: [
-            "Check your internet connection",
-            "Try refreshing the page",
-            "Wait a few minutes and try again",
-            "Contact support if the problem persists",
-          ],
-
-          canRetry: true,
-        };
-
+        return "We're having trouble connecting to our servers. This is usually a temporary issue.";
       case "rate_limit":
-        return {
-          type: "rate_limit",
-          message: errorMessage || "Too many verification attempts",
-          icon: <Clock className="h-8 w-8 text-warn" />,
-          title: "Too Many Attempts",
-          description: "You've made too many verification attempts. Please wait before trying again.",
-          suggestions: [
-            "Wait 15 minutes before trying again",
-            "Check if you're using the correct invitation link",
-            "Contact support if you need immediate assistance",
-            "Try from a different network if possible",
-          ],
-
-          canRetry: true,
-        };
-
+        return "You've made too many verification attempts. Please wait before trying again.";
       case "server":
       default:
-        return {
-          type: "server",
-          message: errorMessage || "An unexpected error occurred",
-          icon: <AlertCircle className="h-8 w-8 text-destructive" />,
-          title: "Server Error",
-          description:
-            "We encountered an unexpected error while processing your verification. Our team has been notified.",
-          suggestions: [
-            "Please try again in a few moments",
-            "Check your internet connection",
-            "Contact support if the problem persists",
-            "Try accessing the link from a different device",
-          ],
-
-          canRetry: true,
-        };
+        return "We encountered an unexpected error while processing your verification. Our team has been notified.";
     }
   };
 
@@ -204,9 +162,14 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
 
             {/* Error Type and Severity */}
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-              {errorType && (
+              {errorInfo.type && (
                 <Badge className="text-xs capitalize" variant="secondary">
-                  {errorType}
+                  {errorInfo.type}
+                </Badge>
+              )}
+              {errorId && (
+                <Badge className="text-xs" variant="outline">
+                  ID: {errorId}
                 </Badge>
               )}
             </div>
@@ -220,14 +183,6 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
                 ))}
               </ul>
             </div>
-
-            {/* Error Details */}
-            {errorMessage && (
-              <div className="mt-4 rounded-lg border border-destructive/20 bg-destructive/5 p-3">
-                <p className="font-medium text-destructive text-sm">Error Details:</p>
-                <p className="mt-1 text-destructive/80 text-sm">{errorMessage}</p>
-              </div>
-            )}
 
             {/* Action Buttons */}
             <div className="mt-6 grid grid-cols-2 gap-3">
