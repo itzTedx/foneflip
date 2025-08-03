@@ -4,9 +4,10 @@ import { IconArrowLeft } from "@tabler/icons-react";
 
 import type { Vendor } from "@ziron/db/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@ziron/ui/avatar";
-import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
-import { cn } from "@ziron/utils";
+import { StatusBadge, StatusBadgeDot } from "@ziron/ui/status-badge";
+
+import { getStatusLabel } from "../../utils/status-label";
 
 interface Props {
   vendor: Vendor;
@@ -37,15 +38,28 @@ export function VendorProfileCard({ vendor }: Props) {
 
 // Status badge mapping
 function VendorStatusBadge({ status }: { status: string }) {
-  let variant: "default" | "secondary" | "warn" | "destructive" | "outline" | "success" = "outline";
-  const label = status.replace(/_/g, " ");
-  if (status === "approved" || status === "active") variant = "success";
-  if (status === "pending_approval") variant = "warn";
-  if (status === "rejected" || status === "suspended") variant = "destructive";
-  if (status === "onboarding") variant = "default";
   return (
-    <Badge className={cn("capitalize")} variant={variant}>
-      {label}
-    </Badge>
+    <StatusBadge
+      className="capitalize"
+      status={
+        status === "active"
+          ? "success"
+          : status === "pending_approval"
+            ? "info"
+            : status === "rejected"
+              ? "error"
+              : status === "suspended"
+                ? "warn"
+                : status === "onboarding"
+                  ? "info"
+                  : status === "approved"
+                    ? "success"
+                    : "disabled"
+      }
+      variant="light"
+    >
+      <StatusBadgeDot />
+      {getStatusLabel(status)}
+    </StatusBadge>
   );
 }

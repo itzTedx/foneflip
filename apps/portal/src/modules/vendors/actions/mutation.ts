@@ -8,6 +8,8 @@ import { member, users, vendorDocumentsTable, vendorInvitations, vendorsTable } 
 import { and, db, eq, lt } from "@ziron/db/server";
 import { sendEmail } from "@ziron/email";
 import VerificationEmail from "@ziron/email/templates/onboarding/token-verification";
+import VendorApprovalEmail from "@ziron/email/templates/onboarding/vendor-approval";
+import VendorRejectionEmail from "@ziron/email/templates/onboarding/vendor-rejection";
 import { slugify } from "@ziron/utils";
 import { documentsSchema, invitationSchema, organizationSchema, personalInfoSchema, z } from "@ziron/validators";
 
@@ -20,7 +22,7 @@ import { InvitationType } from "../types";
 import { mapMimeTypeToDbFormat } from "../utils/detect-file-type";
 import { publishInvitationUpdateRedundant } from "../utils/invitation-updates";
 import { invalidateVendorCaches } from "./cache";
-import { createVendorInvitation, getCurrentUserVendor, hasPendingInvitation } from "./helper";
+import { createVendorInvitation, getCurrentUserVendor, getVendorById, hasPendingInvitation } from "./helper";
 
 const log = createLog("Vendor");
 
@@ -714,9 +716,7 @@ export async function approveVendor({ vendorId }: { vendorId: string }) {
       }
 
       // Check if vendor exists and is pending approval
-      const vendor = await db.query.vendorsTable.findFirst({
-        where: eq(vendorsTable.id, vendorId),
-      });
+      const { vendor } = await getVendorById(vendorId);
 
       if (!vendor) {
         return createErrorResponse("VENDOR_NOT_FOUND", "Vendor not found");
@@ -750,6 +750,24 @@ export async function approveVendor({ vendorId }: { vendorId: string }) {
         log.warn("Failed to revalidate vendor caches after approval", { cacheError });
       }
 
+      // Send approval email to the vendor
+      if (vendor.email) {
+        try {
+          await sendEmail({
+            email: vendor.email,
+            subject: "Your Vendor Account on Foneflip is Approved!",
+            react: VendorApprovalEmail({
+              businessName: vendor.businessName || "",
+            }),
+          });
+          log.info("Sent vendor approval email", { vendorId, email: vendor.email });
+        } catch (emailError) {
+          log.warn("Failed to send vendor approval email", { vendorId, email: vendor.email, emailError });
+        }
+      } else {
+        log.warn("No email found for vendor, skipping approval email", { vendorId });
+      }
+
       return createSuccessResponse(vendorId, "Vendor approved successfully");
     });
   });
@@ -769,9 +787,7 @@ export async function rejectVendor({ vendorId, reason }: { vendorId: string; rea
       }
 
       // Check if vendor exists and is pending approval
-      const vendor = await db.query.vendorsTable.findFirst({
-        where: eq(vendorsTable.id, vendorId),
-      });
+      const { vendor } = await getVendorById(vendorId);
 
       if (!vendor) {
         return createErrorResponse("VENDOR_NOT_FOUND", "Vendor not found");
@@ -803,6 +819,25 @@ export async function rejectVendor({ vendorId, reason }: { vendorId: string; rea
         log.info("Revalidated vendor caches after rejection", { vendorId, type: "rejection" });
       } catch (cacheError) {
         log.warn("Failed to revalidate vendor caches after rejection", { cacheError });
+      }
+
+      // Send rejection email to the vendor
+      if (vendor.email) {
+        try {
+          await sendEmail({
+            email: vendor.email,
+            subject: "Your Vendor Account on Foneflip is Rejected",
+            react: VendorRejectionEmail({
+              businessName: vendor.businessName || "",
+              reason: reason.trim(),
+            }),
+          });
+          log.info("Sent vendor rejection email", { vendorId, email: vendor.email });
+        } catch (emailError) {
+          log.warn("Failed to send vendor rejection email", { vendorId, email: vendor.email, emailError });
+        }
+      } else {
+        log.warn("No email found for vendor, skipping rejection email", { vendorId });
       }
 
       return createSuccessResponse(vendorId, "Vendor rejected successfully");

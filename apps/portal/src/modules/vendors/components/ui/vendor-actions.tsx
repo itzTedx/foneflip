@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconAlertTriangle, IconCheck, IconX } from "@tabler/icons-react";
 import { toast } from "sonner";
 
 import type { Vendor } from "@ziron/db/types";
@@ -89,6 +89,7 @@ function RejectModal({
     <ResponsiveModal
       closeModal={onOpenChange}
       description="Provide a reason for rejection."
+      icon={<IconAlertTriangle className="size-6 text-destructive" />}
       isOpen={open}
       title="Reject Vendor"
     >

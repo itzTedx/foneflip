@@ -94,6 +94,46 @@ export async function getCurrentUserVendor(userId?: string) {
   }
 }
 
+/**
+ * Get vendor information by vendor ID
+ */
+export async function getVendorById(vendorId: string) {
+  try {
+    const vendor = await db.query.vendorsTable.findFirst({
+      where: (vendors, { eq }) => eq(vendors.id, vendorId),
+    });
+
+    if (!vendor) {
+      return { vendor: null };
+    }
+
+    // Get the vendor's email by finding the member relationship and user
+    const memberRecord = await db.query.member.findFirst({
+      where: (member, { eq }) => eq(member.vendorId, vendorId),
+    });
+
+    let vendorEmail: string | undefined | null = vendor.vendorEmail;
+
+    if (!vendorEmail && memberRecord) {
+      // If no vendorEmail in vendor table, get it from the user
+      const user = await db.query.users.findFirst({
+        where: (users, { eq }) => eq(users.id, memberRecord.userId),
+      });
+      vendorEmail = user?.email;
+    }
+
+    return {
+      vendor: {
+        ...vendor,
+        email: vendorEmail,
+      },
+    };
+  } catch (error) {
+    log.error("Failed to get vendor by ID", error);
+    return { vendor: null };
+  }
+}
+
 // Common error handling wrapper
 export const handleActionError = (error: unknown, actionName: string) => {
   log.error(`${actionName} action error:`, error);

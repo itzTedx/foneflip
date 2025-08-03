@@ -165,7 +165,7 @@ export function VendorDetails({ vendor }: Props) {
                 <h3 className="mb-1 font-semibold text-destructive text-xs" id="rejection-reason-heading">
                   Rejection Reason
                 </h3>
-                <div className="rounded bg-destructive/10 p-2 font-medium text-destructive">
+                <div className="rounded bg-destructive/10 p-2 font-medium text-destructive-foreground">
                   {vendor.rejectionReason}
                 </div>
               </section>
