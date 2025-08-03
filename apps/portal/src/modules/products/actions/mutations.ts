@@ -46,6 +46,20 @@ export async function upsertProduct(formData: unknown) {
     };
   }
 
+  let vendorId = data.vendorId;
+  if (!vendorId && session.user?.role === "vendor") {
+    const memberRecord = await db.query.member.findFirst({
+      where: (m, { eq }) => eq(m.userId, session.user.id),
+    });
+    vendorId = memberRecord?.vendorId;
+  }
+  if ((!vendorId && session.user?.role === "admin") || session.user?.role === "dev") {
+    const memberRecord = await db.query.member.findFirst({
+      where: (m, { eq }) => eq(m.userId, session.user.id),
+    });
+    vendorId = memberRecord?.vendorId;
+  }
+
   try {
     const product = await db.transaction(async (tx) => {
       const uniqueSlug = await createProductSlug({
@@ -75,7 +89,7 @@ export async function upsertProduct(formData: unknown) {
         sellingPrice: data.price.selling,
         originalPrice: data.price.original,
         userId: session.user.id,
-        vendorId: null,
+        vendorId,
       };
 
       const savedProduct = await upsertProductData(tx, {

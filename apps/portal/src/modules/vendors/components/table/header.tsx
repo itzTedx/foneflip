@@ -26,28 +26,27 @@ interface Props {
 export const DataTableHeader = ({ table }: Props) => {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const statusColumn = useMemo(() => table.getColumn("status"), [table]);
 
   // Get unique status values
   const uniqueStatusValues = useMemo(() => {
-    const statusColumn = table.getColumn("status");
-
     if (!statusColumn) return [];
 
     const values = Array.from(statusColumn.getFacetedUniqueValues().keys());
 
     return values.sort();
-  }, [table]);
+  }, [statusColumn]);
   // Get counts for each status
   const statusCounts = useMemo(() => {
-    const statusColumn = table.getColumn("status");
     if (!statusColumn) return new Map();
     return statusColumn.getFacetedUniqueValues();
-  }, [table.getColumn("status")?.getFacetedUniqueValues()]);
+  }, [statusColumn]);
 
   const selectedStatus = useMemo(() => {
     const filterValue = table.getColumn("status")?.getFilterValue() as string[];
     return filterValue ?? [];
   }, [table]);
+
   const handleStatusChange = (checked: boolean, value: string) => {
     const filterValue = table.getColumn("status")?.getFilterValue() as string[];
     const newFilterValue = filterValue ? [...filterValue] : [];

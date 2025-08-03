@@ -26,7 +26,7 @@ export const columns: ColumnDef<InvitationType>[] = [
   {
     header: "Name",
     accessorKey: "vendorName",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("vendorName")}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.original.vendorName}</div>,
     size: 80,
     filterFn: multiColumnFilterFn,
     enableHiding: false,
@@ -40,7 +40,7 @@ export const columns: ColumnDef<InvitationType>[] = [
     header: "Status",
     accessorKey: "status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const status = row.original.status;
       return (
         <StatusBadge
           className="capitalize"
@@ -68,7 +68,7 @@ export const columns: ColumnDef<InvitationType>[] = [
     accessorKey: "expiresAt",
     cell: ({ row }) => (
       <dt className={cn(["accepted", "expired", "revoked"].includes(row.getValue("status") as string) && "sr-only")}>
-        {getTimeUntilExpiry(row.getValue("expiresAt") as Date)}
+        {getTimeUntilExpiry(row.original.expiresAt)}
       </dt>
     ),
     size: 60,

@@ -1,6 +1,6 @@
 import { formatDate } from "@ziron/utils";
 
-export function getTimeUntilExpiry(expiresAt: Date | null): string {
+export function getTimeUntilExpiry(expiresAt?: Date | null): string {
   if (!expiresAt) return "No expiration"; // For used invitations
   const now = new Date();
   const expiry = new Date(expiresAt);

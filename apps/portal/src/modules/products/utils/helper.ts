@@ -50,7 +50,7 @@ export const productFormDefaultValues: ProductFormType = {
 
   settings: {
     productId: undefined,
-    status: "draft",
+    status: "active",
     visible: true,
     allowReviews: true,
     allowBackorders: false,

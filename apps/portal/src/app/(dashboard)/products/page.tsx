@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { IconEmpty } from "@ziron/ui/assets/empty";
 import { Badge } from "@ziron/ui/badge";
+import { Button } from "@ziron/ui/button";
 
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
@@ -77,12 +78,12 @@ export default async function ProductsPage() {
 
         <TabsContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3" value="all">
           {products.length === 0 ? (
-            <div className="col-span-full py-8 text-center text-muted-foreground">
-              <IconEmpty />
-              No products found.{" "}
-              <Link className="text-primary hover:underline" href="/products/new">
-                Create your first product
-              </Link>
+            <div className="col-span-full flex flex-col items-center justify-center py-12">
+              <IconEmpty className="size-60" />
+              <div className="mb-3 text-lg text-muted-foreground">No products found.</div>
+              <Button asChild>
+                <Link href="/products/new">Create your first product</Link>
+              </Button>
             </div>
           ) : (
             products.map((product) => <ProductCard data={product} key={product.id} />)

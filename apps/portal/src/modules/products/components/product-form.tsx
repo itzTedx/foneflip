@@ -123,7 +123,6 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
    * Handles form submission for the product form.
    */
   function onSubmit(values: ProductFormType) {
-    console.log(values);
     startTransition(async () => {
       const res = await upsertProduct(values);
       if (!res.success) {

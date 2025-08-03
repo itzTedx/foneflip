@@ -34,15 +34,7 @@ interface Props {
   initialPageSize?: number;
 }
 
-/**
- * Renders a paginated, sortable, filterable, and column-configurable table of vendor invitations with persistent pagination state and real-time updates.
- *
- * Displays vendor invitation data in a table with support for sorting, filtering, column visibility toggling, and pagination. Pagination state is synchronized with URL query parameters and persisted in a cookie for consistent user experience across sessions and shared URLs. Real-time updates are provided via WebSocket for live status changes.
- *
- * @param data - The array of vendor invitation objects to display in the table.
- * @param initialPageSize - Optional initial number of rows per page if not specified in the URL.
- * @returns The rendered vendor invitations table component.
- */ export default function UsersTable({ data, initialPageSize }: Props) {
+export default function UsersTable({ data, initialPageSize }: Props) {
   const id = useId();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
