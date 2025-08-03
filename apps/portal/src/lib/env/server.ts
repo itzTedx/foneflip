@@ -19,7 +19,8 @@ export const env = createEnv({
     REDIS_PORT: z.string().min(1),
     REDIS_PASSWORD: z.string().min(1),
 
-    PRODUCTION_URL: z.url(),
+    PRODUCTION_URL: z.string().min(1),
+    WS_SERVER_URL: z.string().min(1),
 
     AWS_BUCKET_NAME: z.string().min(1),
     AWS_BUCKET_REGION: z.string().min(1),
@@ -39,5 +40,6 @@ export const env = createEnv({
   },
   emptyStringAsUndefined: true,
 
+  // biome-ignore lint/style/noProcessEnv: Required for t3-env configuration
   experimental__runtimeEnv: process.env,
 });

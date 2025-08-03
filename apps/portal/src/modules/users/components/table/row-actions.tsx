@@ -16,20 +16,15 @@ import {
   DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
 
-import { Item } from "./columns";
+import { User } from "@/modules/collections/types";
 
-export function RowActions({ row }: { row: Row<Item> }) {
+export function RowActions({ row }: { row: Row<User> }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex justify-end">
-          <Button
-            size="icon"
-            variant="ghost"
-            className="shadow-none"
-            aria-label="Edit item"
-          >
-            <EllipsisIcon size={16} aria-hidden="true" />
+          <Button aria-label="Edit item" className="shadow-none" size="icon" variant="ghost">
+            <EllipsisIcon aria-hidden="true" size={16} />
           </Button>
         </div>
       </DropdownMenuTrigger>

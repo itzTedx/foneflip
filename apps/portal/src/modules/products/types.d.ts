@@ -11,6 +11,7 @@ import {
   productVariantOptionsTable,
   productVariantsTable,
 } from "@ziron/db/schema";
+import { Vendor } from "@ziron/db/types";
 
 import { Collection, Media, Seo } from "../collections/types";
 
@@ -37,6 +38,7 @@ export type ProductQueryResult = Product & {
   collection?: Collection | null;
   delivery?: ProductDelivery | null;
   images?: (ProductImage & { media: Media })[];
+  vendor?: Vendor | null;
 };
 
 export type ProductUpsertType = InferInsertModel<typeof productsTable>;

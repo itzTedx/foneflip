@@ -80,3 +80,5 @@ export interface CacheError {
   error: string;
   timestamp: Date;
 }
+
+export type CollectionStatus = "active" | "archived" | "draft";

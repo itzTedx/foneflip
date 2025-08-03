@@ -1,6 +1,5 @@
 "use server";
 
-import { asc, db, desc, eq, isNull } from "@ziron/db";
 import {
   collectionMediaTable,
   collectionSettingsTable,
@@ -8,6 +7,7 @@ import {
   collectionsTable,
   seoTable,
 } from "@ziron/db/schema";
+import { asc, db, desc, eq, isNull } from "@ziron/db/server";
 import { slugify } from "@ziron/utils";
 import { collectionSchema, z } from "@ziron/validators";
 

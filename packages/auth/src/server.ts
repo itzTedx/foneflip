@@ -1,12 +1,15 @@
-import type { BetterAuthOptions } from "better-auth";
+import type { BetterAuthOptions, BetterAuthPlugin } from "better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin, emailOTP, organization, twoFactor } from "better-auth/plugins";
+import { passkey } from "better-auth/plugins/passkey";
 
-import { db } from "@ziron/db";
+import { db } from "@ziron/db/server";
 import redis from "@ziron/redis";
 
+import { OTP_EXPIRES_IN, OTP_EXPIRES_IN_MS } from "./data/constants";
+import { sendOTPEmail } from "./email/email-otp";
 import { ac, admin, dev, user, vendor } from "./permission";
 
 /**
@@ -17,7 +20,12 @@ import { ac, admin, dev, user, vendor } from "./permission";
  * @param options - Contains the base URL, production URL, and secret for authentication configuration.
  * @returns The initialized authentication instance.
  */
-export function initAuth(options: { baseUrl: string; productionUrl: string; secret: string | undefined }) {
+export function initAuth(options: {
+  baseUrl: string;
+  productionUrl: string;
+  secret: string | undefined;
+  plugins?: BetterAuthPlugin[];
+}) {
   const config = {
     database: drizzleAdapter(db, {
       provider: "pg",
@@ -49,10 +57,14 @@ export function initAuth(options: { baseUrl: string; productionUrl: string; secr
     },
 
     plugins: [
+      passkey(),
       organization({
         schema: {
           organization: {
-            modelName: "vendors",
+            modelName: "vendorsTable",
+            fields: {
+              name: "businessName",
+            },
           },
         },
       }),
@@ -68,22 +80,45 @@ export function initAuth(options: { baseUrl: string; productionUrl: string; secr
       nextCookies(),
       twoFactor(),
       emailOTP({
-        async sendVerificationOTP() {
-          // Implement the sendVerificationOTP method to send the OTP to the user's email address
+        expiresIn: OTP_EXPIRES_IN_MS,
+
+        async sendVerificationOTP({ email, otp, type }) {
+          try {
+            // Query the database to get user information
+            const user = await db.query.users.findFirst({
+              where: (users, { eq }) => eq(users.email, email),
+              columns: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            });
+
+            await sendOTPEmail({
+              to: email,
+              otp,
+              type: type,
+              name: user?.name ?? "User",
+              expiresIn: OTP_EXPIRES_IN,
+            });
+          } catch (error) {
+            console.error("Failed to send OTP email:", error instanceof Error ? error.message : "Unknown error");
+            throw error instanceof Error ? error : new Error("Failed to send verification email");
+          }
         },
       }),
     ],
     secondaryStorage: {
       get: async (key) => {
-        const value = await redis.get(key);
+        const value = await redis.get(`session:${key}`);
         return value ?? null;
       },
       set: async (key, value, ttl) => {
-        if (ttl) await redis.setex(key, ttl, value);
-        else await redis.set(key, value);
+        if (ttl) await redis.setex(`session:${key}`, ttl, value);
+        else await redis.set(`session:${key}`, value);
       },
       delete: async (key) => {
-        await redis.del(key);
+        await redis.del(`session:${key}`);
       },
     },
     advanced: {
@@ -106,3 +141,4 @@ export function initAuth(options: { baseUrl: string; productionUrl: string; secr
 
 export type Auth = ReturnType<typeof initAuth>;
 export type Session = Auth["$Infer"]["Session"];
+export type ErrorCode = Auth["$ERROR_CODES"] | "UNKNOWN";

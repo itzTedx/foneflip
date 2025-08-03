@@ -4,6 +4,8 @@ import { auth, getSession } from "@/lib/auth/server";
 
 import "server-only";
 
+import { PERMISSIONS } from "@ziron/auth/permission";
+
 export async function requireUser() {
   const session = await getSession();
 
@@ -30,12 +32,6 @@ export async function requireAdmin() {
     };
   }
 }
-
-export const PERMISSIONS = {
-  collections: ["create", "update", "delete"],
-  products: ["create", "update", "delete"],
-  cache: ["view"],
-} as const;
 
 export type Resource = keyof typeof PERMISSIONS;
 export type ActionFor<R extends Resource> = (typeof PERMISSIONS)[R][number];

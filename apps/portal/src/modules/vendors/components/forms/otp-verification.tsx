@@ -1,0 +1,156 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+
+import { Button } from "@ziron/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useForm,
+  zodResolver,
+} from "@ziron/ui/form";
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@ziron/ui/input-otp";
+import { LoadingSwap } from "@ziron/ui/loading-swap";
+import { toast } from "@ziron/ui/sonner";
+import { z } from "@ziron/validators";
+
+import { resendEmailOTPAction, verifyEmailOTPAction } from "@/modules/auth/actions/mutations";
+import { useOnboarding } from "@/modules/onboarding";
+
+const otpSchema = z.object({
+  otp: z.string().length(6, {
+    message: "Your one-time password must be exactly 6 characters.",
+  }),
+});
+
+interface Props {
+  email: string;
+}
+
+export function OtpVerificationForm({ email }: Props) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [isResending, setIsResending] = useState(false);
+  const [showResendOption, setShowResendOption] = useState(false);
+  const { saveData, isLoading: isOnboardingLoading } = useOnboarding(email);
+
+  const form = useForm<z.infer<typeof otpSchema>>({
+    resolver: zodResolver(otpSchema),
+    defaultValues: {
+      otp: "",
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof otpSchema>) {
+    startTransition(async () => {
+      try {
+        const result = await verifyEmailOTPAction({
+          email,
+          otp: data.otp,
+        });
+
+        if (result.error) {
+          // Check if OTP is expired and show resend option
+          const isExpired =
+            result.code === "OTP_EXPIRED" || (result.error && /expired|OTP_EXPIRED/i.test(result.error));
+          if (isExpired) {
+            setShowResendOption(true);
+            toast.error("OTP has expired. Please request a new one.");
+          } else {
+            toast.error(result.error);
+          }
+        } else {
+          // Save verification data
+          await saveData({
+            verification: {
+              email,
+              verifiedAt: new Date().toISOString(),
+            },
+          });
+
+          toast.success("Email Verified");
+          router.push(`/onboarding/organization?userId=${result.data?.userId}`);
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred. Please try again.");
+        console.error("OTP verification error:", error);
+      }
+    });
+  }
+
+  async function handleResendOTP() {
+    setIsResending(true);
+    try {
+      const result = await resendEmailOTPAction({ email });
+
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("New OTP sent to your email");
+        setShowResendOption(false);
+        form.reset(); // Clear the form
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? `Failed to resend OTP: ${error.message}` : "Failed to resend OTP. Please try again.";
+      toast.error(errorMessage);
+      console.error("Resend OTP error:", error);
+    } finally {
+      setIsResending(false);
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form className="mt-8 flex w-full flex-col items-center space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField
+          control={form.control}
+          name="otp"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="sr-only">One-time password</FormLabel>
+              <FormControl>
+                <div className="flex flex-col items-center">
+                  <InputOTP maxLength={6} {...field}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+              </FormControl>
+              <FormDescription>We&apos;ve sent a one-time password to your email address.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button className="w-full" disabled={isPending || isOnboardingLoading} type="submit">
+          <LoadingSwap isLoading={isPending || isOnboardingLoading}>Verify Email</LoadingSwap>
+        </Button>
+
+        {showResendOption && (
+          <div className="text-center">
+            <p className="mb-2 text-muted-foreground text-sm">Didn&apos;t receive the code?</p>
+            <Button disabled={isResending} onClick={handleResendOTP} size="sm" type="button" variant="outline">
+              <LoadingSwap isLoading={isResending}>Resend OTP</LoadingSwap>
+            </Button>
+          </div>
+        )}
+      </form>
+    </Form>
+  );
+}

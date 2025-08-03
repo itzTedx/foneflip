@@ -1,1 +1,0 @@
-ALTER TABLE "product_deliveries" ALTER COLUMN "delivery_fees" SET DEFAULT '0';

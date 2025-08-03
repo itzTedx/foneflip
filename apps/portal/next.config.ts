@@ -1,14 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: [
-    "@ziron/ui",
-    "@ziron/seo",
-    "@ziron/db",
-    "@ziron/auth",
-    "@ziron/redis",
-    "@ziron/utils",
-  ],
+  transpilePackages: ["@ziron/ui", "@ziron/seo", "@ziron/db", "@ziron/auth", "@ziron/redis", "@ziron/utils"],
 
   images: {
     remotePatterns: [{ hostname: "foneflip-local.s3.us-east-1.amazonaws.com" }],

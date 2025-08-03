@@ -9,9 +9,12 @@ import { Button } from "@ziron/ui/button";
 import { Input } from "@ziron/ui/input";
 import { Label } from "@ziron/ui/label";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
+import { Separator } from "@ziron/ui/separator";
 
 import { PasswordInput } from "@/components/ui/password-input";
 import { signIn } from "@/lib/auth/client";
+
+import { PasskeyButton } from "./passkey-button";
 
 export function LoginForm() {
   const router = useRouter();
@@ -66,6 +69,18 @@ export function LoginForm() {
         <Button className="w-full" disabled={isPending} type="submit">
           <LoadingSwap isLoading={isPending}>Login</LoadingSwap>
         </Button>
+        <div className="flex items-center justify-center gap-2">
+          <Separator className="!w-auto grow" />
+          <span className="shrink-0 text-muted-foreground text-sm">Or continue with</span>{" "}
+          <Separator className="!w-auto grow" />
+        </div>
+        <PasskeyButton
+          email={email}
+          onSuccess={() => {
+            toast.success("Signed in...");
+            router.push("/");
+          }}
+        />
       </div>
     </form>
   );

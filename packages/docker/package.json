@@ -3,8 +3,14 @@
   "private": true,
   "scripts": {
     "dev": "pnpm with-env docker-compose up ",
-    "db:reset": "docker compose rm --force --stop postgres && docker compose up -d",
-    "with-env": "dotenv -e ../../.env --"
+    "with-env": "dotenv -e ../../.env --",
+    "up": "docker-compose --env-file ../../.env up -d",
+    "down": "docker-compose --env-file ../../.env down",
+    "restart": "docker-compose --env-file ../../.env restart",
+    "logs": "docker-compose --env-file ../../.env logs -f",
+    "postgres": "docker-compose --env-file ../../.env up -d postgres",
+    "redis": "docker-compose --env-file ../../.env up -d redis",
+    "db:reset": "docker-compose --env-file ../../.env down postgres && docker volume rm docker_pg-data && docker-compose --env-file ../../.env up -d postgres"
   },
   "devDependencies": {
     "dotenv-cli": "^8.0.0"

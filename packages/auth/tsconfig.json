@@ -1,5 +1,5 @@
 {
-  "extends": "@ziron/tsconfig/base.json",
+  "extends": "@ziron/tsconfig/react-library.json",
   "include": ["src", "*.ts"],
   "exclude": ["node_modules"]
 }

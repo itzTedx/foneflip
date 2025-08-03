@@ -16,19 +16,10 @@ import { users } from "./auth-schema";
 import { baseSchema } from "./base-schema";
 
 // Organization roles enum
-export const organizationRolesEnum = pgEnum("organization_roles", [
-  "owner",
-  "admin",
-  "member",
-]);
+export const organizationRolesEnum = pgEnum("organization_roles", ["owner", "admin", "member"]);
 
 // Invitation status enum
-export const invitationStatusEnum = pgEnum("invitation_status", [
-  "pending",
-  "accepted",
-  "expired",
-  "revoked",
-]);
+export const invitationStatusEnum = pgEnum("invitation_status", ["pending", "accepted", "expired", "revoked"]);
 
 // Vendor status enum
 export const vendorStatusEnum = pgEnum("vendor_status", [
@@ -49,30 +40,26 @@ export const vendorDocumentTypeEnum = pgEnum("vendor_document_type", [
 ]);
 
 // Document format enum for vendors
-export const vendorDocumentFormatEnum = pgEnum("vendor_document_format", [
-  "pdf",
-  "jpg",
-  "png",
-]);
+export const vendorDocumentFormatEnum = pgEnum("vendor_document_format", ["pdf", "jpg", "png"]);
 
 // Vendors table
 export const vendorsTable = pgTable(
   "vendors",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    name: varchar("vendor_name", { length: 100 }).notNull(),
-    email: varchar("vendor_email", { length: 255 }),
+    businessName: varchar("business_name", { length: 100 }),
+    vendorEmail: varchar("vendor_email", { length: 255 }),
     slug: text("slug").notNull().unique(),
     logo: varchar("logo", { length: 255 }),
-
-    mobile: varchar("vendor_number", { length: 20 }),
-    whatsapp: varchar("vendor_whatsapp_number", { length: 20 }),
-    position: varchar("vendor_position", { length: 50 }),
-
-    businessName: varchar("business_name", { length: 255 }),
     description: text("description"),
     website: varchar("website", { length: 255 }),
     businessCategory: varchar("business_category", { length: 100 }),
+
+    vendorName: varchar("vendor_name", { length: 255 }),
+    vendorNumber: varchar("vendor_number", { length: 20 }),
+    vendorWhatsappNumber: varchar("vendor_whatsapp_number", { length: 20 }),
+    vendorPosition: varchar("vendor_position", { length: 50 }),
+
     monthlyEstimatedSales: integer("monthly_estimated_sales"),
     tradeLicenseNumber: varchar("trade_license_number", { length: 20 }),
 
@@ -91,11 +78,11 @@ export const vendorsTable = pgTable(
     metadata: jsonb("metadata"), // JSON string for additional metadata
     ...baseSchema,
   },
-  (table) => ({
-    slugIdx: uniqueIndex("idx_vendors_slug").on(table.slug),
-    nameIdx: index("idx_vendors_name").on(table.name),
-    statusIdx: index("idx_vendors_status").on(table.status),
-  })
+  (table) => [
+    uniqueIndex("idx_vendors_slug").on(table.slug),
+    index("idx_vendors_business_name").on(table.businessName),
+    index("idx_vendors_status").on(table.status),
+  ]
 );
 
 // Vendor Documents table
@@ -111,17 +98,11 @@ export const vendorDocumentsTable = pgTable(
     url: varchar("url", { length: 255 }).notNull(),
     ...baseSchema,
   },
-  (table) => ({
-    vendorDocVendorIdIdx: index("idx_vendor_documents_vendor_id").on(
-      table.vendorId
-    ),
-    vendorDocTypeIdx: index("idx_vendor_documents_document_type").on(
-      table.documentType
-    ),
-    vendorDocFormatIdx: index("idx_vendor_documents_document_format").on(
-      table.documentFormat
-    ),
-  })
+  (table) => [
+    index("idx_vendor_documents_vendor_id").on(table.vendorId),
+    index("idx_vendor_documents_document_type").on(table.documentType),
+    index("idx_vendor_documents_document_format").on(table.documentFormat),
+  ]
 );
 
 // Member table - links users to vendors
@@ -138,15 +119,12 @@ export const member = pgTable(
     role: organizationRolesEnum("role").notNull().default("member"),
     ...baseSchema,
   },
-  (table) => ({
-    userVendorIdx: uniqueIndex("idx_member_user_vendor").on(
-      table.userId,
-      table.vendorId
-    ),
-    userIdIdx: index("idx_member_user_id").on(table.userId),
-    vendorIdIdx: index("idx_member_vendor_id").on(table.vendorId),
-    roleIdx: index("idx_member_role").on(table.role),
-  })
+  (table) => [
+    uniqueIndex("idx_member_user_vendor").on(table.userId, table.vendorId),
+    index("idx_member_user_id").on(table.userId),
+    index("idx_member_vendor_id").on(table.vendorId),
+    index("idx_member_role").on(table.role),
+  ]
 );
 
 // Legacy vendor invitations table (keeping for backward compatibility)
@@ -160,29 +138,20 @@ export const vendorInvitations = pgTable(
     sentByAdminId: uuid("sent_by_admin_id").references(() => users.id, {
       onDelete: "set null",
     }),
-    invitationType: varchar("invitation_type", { length: 50 })
-      .notNull()
-      .default("onboarding"),
+    invitationType: varchar("invitation_type", { length: 50 }).notNull().default("onboarding"),
+    status: invitationStatusEnum("status").default("pending").notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
     usedAt: timestamp("used_at", { withTimezone: true }),
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
     ...baseSchema,
   },
-  (table) => ({
-    vendorEmailIdx: index("idx_vendor_invitations_vendor_email").on(
-      table.vendorEmail
-    ),
-    tokenIdx: uniqueIndex("idx_vendor_invitations_token").on(table.token),
-    expiresAtIdx: index("idx_vendor_invitations_expires_at").on(
-      table.expiresAt
-    ),
-    sentByAdminIdx: index("idx_vendor_invitations_sent_by_admin_id").on(
-      table.sentByAdminId
-    ),
-    deletedAtIdx: index("idx_vendor_invitations_deleted_at").on(
-      table.deletedAt
-    ),
-  })
+  (table) => [
+    index("idx_vendor_invitations_vendor_email").on(table.vendorEmail),
+    uniqueIndex("idx_vendor_invitations_token").on(table.token),
+    index("idx_vendor_invitations_expires_at").on(table.expiresAt),
+
+    index("idx_vendor_invitations_deleted_at").on(table.deletedAt),
+  ]
 );
 
 // Relations
@@ -202,22 +171,16 @@ export const memberRelations = relations(member, ({ one }) => ({
   }),
 }));
 
-export const vendorDocumentsRelations = relations(
-  vendorDocumentsTable,
-  ({ one }) => ({
-    vendor: one(vendorsTable, {
-      fields: [vendorDocumentsTable.vendorId],
-      references: [vendorsTable.id],
-    }),
-  })
-);
+export const vendorDocumentsRelations = relations(vendorDocumentsTable, ({ one }) => ({
+  vendor: one(vendorsTable, {
+    fields: [vendorDocumentsTable.vendorId],
+    references: [vendorsTable.id],
+  }),
+}));
 
-export const vendorInvitationsRelations = relations(
-  vendorInvitations,
-  ({ one }) => ({
-    sentByAdmin: one(users, {
-      fields: [vendorInvitations.sentByAdminId],
-      references: [users.id],
-    }),
-  })
-);
+export const vendorInvitationsRelations = relations(vendorInvitations, ({ one }) => ({
+  sentByAdmin: one(users, {
+    fields: [vendorInvitations.sentByAdminId],
+    references: [users.id],
+  }),
+}));

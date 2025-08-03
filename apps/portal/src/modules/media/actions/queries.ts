@@ -2,8 +2,8 @@
 
 import { unstable_cache as cache } from "next/cache";
 
-import { db, desc, eq, sql } from "@ziron/db";
 import { mediaTable } from "@ziron/db/schema";
+import { db, desc, eq, sql } from "@ziron/db/server";
 
 import { getSession } from "@/lib/auth/server";
 

@@ -16,11 +16,24 @@ export const CACHE_TAGS = {
   COLLECTION_DETAILS: "collection-details",
   PRODUCT: "product",
   MEDIA: "media",
+  VENDOR: "vendor",
+  VENDORS: "vendors",
+  VENDOR_INVITATIONS: "vendor-invitations",
+  VENDOR_INVITATION_BY_TOKEN: "vendor-invitation-by-token",
+  VENDOR_INVITATION_BY_EMAIL: "vendor-invitation-by-email",
+  VENDOR_BY_ID: "vendor-by-id",
+  VENDOR_BY_SLUG: "vendor-by-slug",
+  VENDOR_PROFILE: "vendor-profile",
+  VENDOR_STATUS: "vendor-status",
+  VENDOR_DOCUMENTS: "vendor-documents",
+  VENDOR_BUSINESS: "vendor-business",
+  VENDOR_PERSONAL: "vendor-personal",
 } as const;
 
 // Redis cache keys
 export const REDIS_KEYS = {
   COLLECTIONS: "collections:all",
+  COLLECTIONS_COUNT: "collections:count",
   COLLECTIONS_METADATA: "collections:all:metadata",
   COLLECTION_BY_SLUG: (slug: string) => `collection:${slug}`,
   COLLECTION_BY_ID: (id: string) => `collection:id:${id}`,
@@ -34,6 +47,14 @@ export const REDIS_KEYS = {
   PRODUCT_STATS: "products:stats",
   PRODUCT_POPULAR: "products:popular",
   PRODUCT_RECENT: "products:recent",
+  VENDORS: "vendors:all",
+  VENDORS_METADATA: "vendors:all:metadata",
+  VENDOR_BY_ID: (id: string) => `vendor:id:${id}`,
+  VENDOR_BY_SLUG: (slug: string) => `vendor:${slug}`,
+  VENDOR_INVITATIONS: "vendor-invitations:all",
+  VENDOR_INVITATION_BY_TOKEN: (token: string) => `vendor-invitation:token:${token}`,
+  VENDOR_INVITATION_BY_EMAIL: (email: string) => `vendor-invitation:email:${email}`,
+  VENDOR_STATS: "vendors:stats",
 } as const;
 
 // Redis cache utilities with improved typing and error handling
@@ -232,7 +253,7 @@ export const invalidateCollectionCaches = async (collectionId?: string, slug?: s
   revalidateCollectionCaches(collectionId, slug);
 
   // Invalidate Redis caches
-  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS];
+  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_SLUG(slug));

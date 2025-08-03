@@ -1,14 +1,7 @@
-import { User } from "@/modules/collections/types";
-import { Table } from "@tanstack/react-table";
-import {
-  CircleAlertIcon,
-  CircleXIcon,
-  Columns3Icon,
-  FilterIcon,
-  ListFilterIcon,
-  TrashIcon,
-} from "lucide-react";
 import { useId, useMemo, useRef } from "react";
+
+import { Table } from "@tanstack/react-table";
+import { CircleAlertIcon, CircleXIcon, Columns3Icon, FilterIcon, ListFilterIcon, TrashIcon } from "lucide-react";
 
 import {
   AlertDialog,
@@ -35,6 +28,8 @@ import { Label } from "@ziron/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@ziron/ui/popover";
 import { cn } from "@ziron/utils";
 
+import { User } from "@/modules/collections/types";
+
 // import { Item } from "./columns";
 
 interface Props {
@@ -47,9 +42,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows;
-    const updatedData = data.filter(
-      (item) => !selectedRows.some((row) => row.original.id === item.id)
-    );
+    const updatedData = data.filter((item) => !selectedRows.some((row) => row.original.id === item.id));
     // setData(updatedData);
     table.resetRowSelection();
   };
@@ -90,9 +83,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
       }
     }
 
-    table
-      .getColumn("role")
-      ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
+    table.getColumn("role")?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
   };
 
   return (
@@ -101,27 +92,22 @@ export const DataTableHeader = ({ table, data }: Props) => {
         {/* Filter by name or email */}
         <div className="relative">
           <Input
-            id={`${id}-input`}
-            ref={inputRef}
-            className={cn(
-              "peer min-w-60 ps-9",
-              Boolean(table.getColumn("name")?.getFilterValue()) && "pe-9"
-            )}
-            value={(table.getColumn("name")?.getFilterValue() ?? "") as string}
-            onChange={(e) =>
-              table.getColumn("name")?.setFilterValue(e.target.value)
-            }
-            placeholder="Filter by name or email..."
-            type="text"
             aria-label="Filter by name or email"
+            className={cn("peer min-w-60 ps-9", Boolean(table.getColumn("name")?.getFilterValue()) && "pe-9")}
+            id={`${id}-input`}
+            onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
+            placeholder="Filter by name or email..."
+            ref={inputRef}
+            type="text"
+            value={(table.getColumn("name")?.getFilterValue() ?? "") as string}
           />
-          <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-            <ListFilterIcon size={16} aria-hidden="true" />
+          <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+            <ListFilterIcon aria-hidden="true" size={16} />
           </div>
           {Boolean(table.getColumn("name")?.getFilterValue()) && (
             <button
-              className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Clear filter"
+              className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-[color,box-shadow] hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               onClick={() => {
                 table.getColumn("name")?.setFilterValue("");
                 if (inputRef.current) {
@@ -129,7 +115,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
                 }
               }}
             >
-              <CircleXIcon size={16} aria-hidden="true" />
+              <CircleXIcon aria-hidden="true" size={16} />
             </button>
           )}
         </div>
@@ -137,42 +123,28 @@ export const DataTableHeader = ({ table, data }: Props) => {
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline">
-              <FilterIcon
-                className="-ms-1 opacity-60"
-                size={16}
-                aria-hidden="true"
-              />
+              <FilterIcon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
               Role
               {selectedRoles.length > 0 && (
-                <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
+                <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">
                   {selectedRoles.length}
                 </span>
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto min-w-36 p-3" align="start">
+          <PopoverContent align="start" className="w-auto min-w-36 p-3">
             <div className="space-y-3">
-              <div className="text-muted-foreground text-xs font-medium">
-                Filters
-              </div>
+              <div className="font-medium text-muted-foreground text-xs">Filters</div>
               <div className="space-y-3">
                 {uniqueRoleValues.map((value, i) => (
-                  <div key={value} className="flex items-center gap-2">
+                  <div className="flex items-center gap-2" key={value}>
                     <Checkbox
-                      id={`${id}-${i}`}
                       checked={selectedRoles.includes(value)}
-                      onCheckedChange={(checked: boolean) =>
-                        handleRoleChange(checked, value)
-                      }
+                      id={`${id}-${i}`}
+                      onCheckedChange={(checked: boolean) => handleRoleChange(checked, value)}
                     />
-                    <Label
-                      htmlFor={`${id}-${i}`}
-                      className="flex grow justify-between gap-2 font-normal capitalize"
-                    >
-                      {value}{" "}
-                      <span className="text-muted-foreground ms-2 text-xs">
-                        {roleCounts.get(value)}
-                      </span>
+                    <Label className="flex grow justify-between gap-2 font-normal capitalize" htmlFor={`${id}-${i}`}>
+                      {value} <span className="ms-2 text-muted-foreground text-xs">{roleCounts.get(value)}</span>
                     </Label>
                   </div>
                 ))}
@@ -184,11 +156,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
-              <Columns3Icon
-                className="-ms-1 opacity-60"
-                size={16}
-                aria-hidden="true"
-              />
+              <Columns3Icon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
               View
             </Button>
           </DropdownMenuTrigger>
@@ -200,12 +168,10 @@ export const DataTableHeader = ({ table, data }: Props) => {
               .map((column) => {
                 return (
                   <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
+                    className="capitalize"
+                    key={column.id}
+                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     onSelect={(event) => event.preventDefault()}
                   >
                     {column.id}
@@ -221,13 +187,9 @@ export const DataTableHeader = ({ table, data }: Props) => {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="ml-auto" variant="outline">
-                <TrashIcon
-                  className="-ms-1 opacity-60"
-                  size={16}
-                  aria-hidden="true"
-                />
+                <TrashIcon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
                 Delete
-                <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
+                <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">
                   {table.getSelectedRowModel().rows.length}
                 </span>
               </Button>
@@ -235,28 +197,22 @@ export const DataTableHeader = ({ table, data }: Props) => {
             <AlertDialogContent>
               <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
                 <div
-                  className="flex size-9 shrink-0 items-center justify-center rounded-full border"
                   aria-hidden="true"
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full border"
                 >
                   <CircleAlertIcon className="opacity-80" size={16} />
                 </div>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete{" "}
-                    {table.getSelectedRowModel().rows.length} selected{" "}
-                    {table.getSelectedRowModel().rows.length === 1
-                      ? "row"
-                      : "rows"}
-                    .
+                    This action cannot be undone. This will permanently delete {table.getSelectedRowModel().rows.length}{" "}
+                    selected {table.getSelectedRowModel().rows.length === 1 ? "row" : "rows"}.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
               </div>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteRows}>
-                  Delete
-                </AlertDialogAction>
+                <AlertDialogAction onClick={handleDeleteRows}>Delete</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

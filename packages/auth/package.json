@@ -14,14 +14,15 @@
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "format": "biome format --write ./src",
     "lint": "eslint",
-    "generate": "dotenv -e ../../.env -- pnpx @better-auth/cli generate --output ../db/src/auth-schema.ts --config ./src/index.ts",
+    "generate": "dotenv -e ../../.env -- pnpx @better-auth/cli generate --output ../db/src/auth-schema.ts --config ./src/server.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@better-auth/expo": "1.2.9",
     "@t3-oss/env-nextjs": "^0.13.6",
-    "@ziron/redis": "workspace:*",
     "@ziron/db": "workspace:*",
+    "@ziron/email": "workspace:*",
+    "@ziron/redis": "workspace:*",
     "better-auth": "1.2.9",
     "next": "^15.3.5",
     "react": "catalog:react19",
@@ -30,12 +31,11 @@
   },
   "devDependencies": {
     "@types/react": "catalog:react19",
-    "@ziron/eslint-config": "workspace:*",
-    "@ziron/prettier-config": "workspace:*",
     "@ziron/tsconfig": "workspace:*",
+    "dotenv-cli": "^8.0.0",
     "eslint": "catalog:",
     "prettier": "catalog:",
+    "server-only": "^0.0.1",
     "typescript": "catalog:"
-  },
-  "prettier": "@ziron/prettier-config"
+  }
 }

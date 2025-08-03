@@ -19,7 +19,7 @@ import {
 } from "@tabler/icons-react";
 
 import { Session } from "@ziron/auth";
-import { IconProducts, IconVendors } from "@ziron/ui/assets/icons";
+import { IconChevronDoubleRight, IconProducts, IconVendors } from "@ziron/ui/assets/icons";
 import { LayoutDashboardIcon } from "@ziron/ui/assets/icons/layout-dashboard";
 import { IconLogo, LogoWordMark } from "@ziron/ui/assets/logo";
 import {
@@ -46,12 +46,12 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@ziron/ui/sidebar";
+import { cn } from "@ziron/utils";
 
 import { canAccessSettings, UserRole } from "@/lib/auth/access-control";
 
 import { NavDocuments } from "./nav-documents";
 import { NavMain } from "./nav-main";
-import { NavStorefront } from "./nav-storefront";
 
 // Define navigation items with role restrictions
 const getNavigationData = (userRole: UserRole) => {
@@ -207,7 +207,7 @@ function SidebarContentWrapper({
       <SidebarSeparator />
       <SidebarContent className="no-scrollbar">
         <SidebarGroup>
-          <SidebarGroupContent className="flex flex-col gap-2">
+          <SidebarGroupContent className="mt-1 flex flex-col gap-1">
             <SidebarMenu>
               <SidebarMenuItem>
                 <DropdownMenu>
@@ -248,14 +248,21 @@ function SidebarContentWrapper({
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarSeparator />
+        {/* <SidebarSeparator /> */}
         <NavMain items={navMain} />
         <NavDocuments items={documents} />
-        <NavStorefront items={storefront} />
+        {/* <NavStorefront items={storefront} /> */}
       </SidebarContent>
       <SidebarFooter>
-        {showSettings && (
-          <SidebarMenu>
+        {/* <div className="p-1.5">
+          <div className="relative flex h-40 flex-col justify-between truncate rounded-md border bg-sidebar-accent p-3 text-muted-foreground text-sm">
+            <div className="-top-1/2 absolute left-0 h-1/4 w-full translate-y-1/2 rounded-full bg-gradient-to-l from-primary to-brand-secondary blur-xl" />
+            Live Website
+            <Button variant="destructive">Visit</Button>
+          </div>
+        </div> */}
+        <SidebarMenu>
+          {showSettings && (
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link href="/settings">
@@ -264,16 +271,19 @@ function SidebarContentWrapper({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          </SidebarMenu>
-        )}
-        <SidebarMenu>
+          )}
+
           <SidebarMenuItem className="flex w-full items-center gap-2">
-            <SidebarMenuButton
-              asChild
-              className="justify-start font-normal text-muted-foreground"
-              tooltip="Toggle Sidebar"
-            >
-              <SidebarTrigger />
+            <SidebarMenuButton asChild>
+              <SidebarTrigger className="justify-start md:w-full">
+                <IconChevronDoubleRight
+                  className={cn(
+                    "fill-foreground transition-transform",
+                    state === "expanded" ? "rotate-180" : "rotate-0"
+                  )}
+                />
+                <span className="truncate">Collapse Sidebar</span>
+              </SidebarTrigger>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

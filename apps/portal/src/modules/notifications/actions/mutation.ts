@@ -1,7 +1,7 @@
 "use server";
 
-import { db, eq } from "@ziron/db";
 import { notificationsTable } from "@ziron/db/schema";
+import { db, eq } from "@ziron/db/server";
 
 export async function markAllNotificationsAsRead(userId: string) {
   return await db

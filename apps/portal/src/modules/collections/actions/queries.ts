@@ -1,7 +1,7 @@
 import { unstable_cache as cache } from "next/cache";
 
-import { asc, db, eq, isNull } from "@ziron/db";
 import { collectionsTable } from "@ziron/db/schema";
+import { asc, db, eq, isNull, sql } from "@ziron/db/server";
 
 import { CACHE_TAGS, REDIS_KEYS, redisCache } from "@/modules/cache";
 
@@ -75,6 +75,40 @@ export const getCollections = cache(
     );
   },
   ["get-collections"],
+  {
+    tags: [CACHE_TAGS.COLLECTIONS],
+    revalidate: CACHE_DURATIONS.LONG,
+  }
+);
+
+export const getCollectionsCount = cache(
+  async (): Promise<number> => {
+    return withCacheMonitoring(
+      async () => {
+        // Try Redis first
+        const cached = await redisCache.get<number>(REDIS_KEYS.COLLECTIONS_COUNT);
+        if (cached) {
+          return cached;
+        }
+
+        // Fallback to database
+        const result = await db
+          .select({ count: sql<number>`count(1)` })
+          .from(collectionsTable)
+          .where(isNull(collectionsTable.deletedAt));
+
+        const count = result[0]?.count ?? 0;
+
+        // Cache the result
+        await redisCache.set(REDIS_KEYS.COLLECTIONS_COUNT, count, CACHE_DURATIONS.LONG);
+
+        return count;
+      },
+      REDIS_KEYS.COLLECTIONS_COUNT,
+      false // This is a miss since we're fetching fresh data
+    );
+  },
+  ["get-collections-count"],
   {
     tags: [CACHE_TAGS.COLLECTIONS],
     revalidate: CACHE_DURATIONS.LONG,

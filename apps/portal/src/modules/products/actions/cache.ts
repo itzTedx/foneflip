@@ -12,8 +12,10 @@ import { Product } from "../types";
 export const REDIS_KEYS = {
   PRODUCTS: "products:all",
   PRODUCTS_METADATA: "products:all:metadata",
+  PRODUCTS_COUNT: "products:count",
   PRODUCT_BY_SLUG: (slug: string) => `product:${slug}`,
   PRODUCT_BY_ID: (id: string) => `product:id:${id}`,
+  PRODUCTS_BY_VENDOR: (vendorId: string) => `products:vendor:${vendorId}`,
   PRODUCT_STATS: "products:stats",
   PRODUCT_POPULAR: "products:popular",
   PRODUCT_RECENT: "products:recent",
@@ -28,6 +30,7 @@ export const CACHE_TAGS = {
   PRODUCT_ARCHIVED: "product-archived",
   PRODUCT_BY_SLUG: "product-by-slug",
   PRODUCT_BY_ID: "product-by-id",
+  PRODUCTS_BY_VENDOR: "products-by-vendor",
   PRODUCT_DETAILS: "product-details",
   COLLECTION: "collection",
   MEDIA: "media",
@@ -41,6 +44,7 @@ export const revalidateProductCaches = (productId?: string, slug?: string) => {
   revalidateTag(CACHE_TAGS.PRODUCT_ACTIVE);
   revalidateTag(CACHE_TAGS.PRODUCT_ARCHIVED);
   revalidateTag(CACHE_TAGS.PRODUCT_DETAILS);
+  revalidateTag(CACHE_TAGS.PRODUCTS_BY_VENDOR);
   revalidateTag(CACHE_TAGS.MEDIA);
   revalidateTag(CACHE_TAGS.COLLECTION);
 
@@ -70,8 +74,8 @@ export const updateProductCache = async (product: Product, operation: "create" |
       ]);
     }
 
-    // Always invalidate the product list cache
-    await redisCache.del(REDIS_KEYS.PRODUCTS);
+    // Always invalidate the product list cache and count cache
+    await redisCache.del(REDIS_KEYS.PRODUCTS, REDIS_KEYS.PRODUCTS_COUNT);
   } catch (error) {
     console.error("Failed to update product cache:", error);
     // Don't throw - cache updates should not break the main operation
@@ -86,7 +90,7 @@ export const invalidateProductCaches = async (productId?: string, slug?: string)
   revalidateProductCaches(productId, slug);
 
   // Invalidate Redis caches
-  const keysToInvalidate: string[] = [REDIS_KEYS.PRODUCTS];
+  const keysToInvalidate: string[] = [REDIS_KEYS.PRODUCTS, REDIS_KEYS.PRODUCTS_COUNT];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.PRODUCT_BY_SLUG(slug));

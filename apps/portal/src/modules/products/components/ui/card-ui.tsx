@@ -39,24 +39,26 @@ export const PriceDisplay = ({
 
 export const ProductBadges = ({ data }: { data: ProductQueryResult }) => (
   <div className="flex flex-wrap items-center gap-2">
-    {data.condition && <TooltipBadge tooltip={`Condition: ${data.condition}`}>{data.condition}</TooltipBadge>}
+    {data.condition && (
+      <TooltipBadge className="z-10" tooltip={`Condition: ${data.condition}`}>
+        {data.condition}
+      </TooltipBadge>
+    )}
     {data.collection && (
-      <TooltipBadge tooltip={`Collection: ${data.collection?.title}`} variant="secondary">
+      <TooltipBadge className="z-10" tooltip={`Collection: ${data.collection?.title}`} variant="secondary">
         {data.collection?.title}
       </TooltipBadge>
     )}
-    {/* <TooltipBadge tooltip={`Seller: ${data?.vendor?.businessName}`}>
-        
-          {data?.vendor?.businessName}
-       
-      </TooltipBadge> */}
+    {data?.vendor && (
+      <TooltipBadge tooltip={`Seller: ${data?.vendor?.businessName}`}>{data?.vendor?.businessName}</TooltipBadge>
+    )}
     {data.settings && data?.settings?.tags && data?.settings?.tags?.length > 0 && (
-      <TooltipBadge tooltip={data.settings.tags.join(", ")} variant="secondary">
+      <TooltipBadge className="z-10" tooltip={data.settings.tags.join(", ")} variant="secondary">
         +{data.settings.tags.length}
       </TooltipBadge>
     )}
     {data.delivery?.expressDelivery && (
-      <TooltipBadge tooltip={"Express Delivery"} variant="warn">
+      <TooltipBadge className="z-10" tooltip={"Express Delivery"} variant="warn">
         <IconBolt className="!size-2.5" />
         Express
       </TooltipBadge>
