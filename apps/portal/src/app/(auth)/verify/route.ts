@@ -8,6 +8,7 @@ import { z } from "@ziron/validators";
 import { storeError } from "@/lib/error-handler";
 import { createLog } from "@/lib/utils";
 import { invalidateInvitationAfterVerification, invalidateVendorCaches } from "@/modules/vendors/actions/cache";
+import { publishInvitationUpdateRedundant } from "@/modules/vendors/utils/invitation-updates";
 
 const log = createLog("Vendor API");
 
@@ -72,6 +73,22 @@ async function verifyAndUseInvitation(token: string) {
       });
     } catch (cacheError) {
       log.warn("Failed to invalidate caches after verification", { cacheError });
+    }
+
+    // Publish real-time update
+    try {
+      await publishInvitationUpdateRedundant({
+        invitationId: updated.id,
+        status: "accepted",
+        usedAt: updated.usedAt,
+        expiresAt: updated.expiresAt,
+      });
+      log.info("Successfully published real-time invitation update", {
+        invitationId: updated.id,
+        status: "accepted",
+      });
+    } catch (updateError) {
+      log.warn("Failed to publish real-time invitation update", { updateError });
     }
 
     return updated;

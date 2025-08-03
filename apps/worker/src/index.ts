@@ -4,6 +4,7 @@ import { JobType, QUEUE_NAME } from "@ziron/queue";
 import redis from "@ziron/redis";
 
 import { deleteSoftDeletedCollections } from "./jobs/collections";
+import { updateExpiredInvitations } from "./jobs/invitations";
 import { deleteOldNotifications, deleteSoftDeletedNotifications, runNotification } from "./jobs/notifications";
 import { deleteSoftDeletedProducts } from "./jobs/products";
 
@@ -13,6 +14,7 @@ const runners = {
   deleteSoftDeletedNotifications,
   [JobType.DeleteSoftDeletedCollections]: deleteSoftDeletedCollections,
   [JobType.DeleteSoftDeletedProducts]: deleteSoftDeletedProducts,
+  [JobType.UpdateExpiredInvitations]: updateExpiredInvitations,
 };
 
 const queue = new Queue(QUEUE_NAME, { connection: redis });
@@ -66,6 +68,20 @@ const queue = new Queue(QUEUE_NAME, { connection: redis });
     { pattern: "0 3 * * *" }, // every day at 3:00 AM
     {
       name: JobType.DeleteSoftDeletedProducts,
+      data: {},
+      opts: {
+        removeOnComplete: true,
+        removeOnFail: true,
+      },
+    }
+  );
+
+  // Schedule update of expired invitations every hour
+  await queue.upsertJobScheduler(
+    "update-expired-invitations-scheduler",
+    { pattern: "0 * * * *" }, // every hour
+    {
+      name: JobType.UpdateExpiredInvitations,
       data: {},
       opts: {
         removeOnComplete: true,

@@ -1,19 +1,8 @@
 import { useId, useMemo, useRef } from "react";
 
 import { Table } from "@tanstack/react-table";
-import { CircleAlertIcon, CircleXIcon, Columns3Icon, FilterIcon, ListFilterIcon, TrashIcon } from "lucide-react";
+import { CircleXIcon, Columns3Icon, FilterIcon, ListFilterIcon } from "lucide-react";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@ziron/ui/alert-dialog";
 import { Button } from "@ziron/ui/button";
 import { Checkbox } from "@ziron/ui/checkbox";
 import {
@@ -32,19 +21,12 @@ import { InvitationType } from "../../types";
 
 interface Props {
   table: Table<InvitationType>;
-  data: InvitationType[];
+  // data: InvitationType[];
 }
-export const DataTableHeader = ({ table, data }: Props) => {
+export const DataTableHeader = ({ table }: Props) => {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleDeleteRows = () => {
-    const selectedRows = table.getSelectedRowModel().rows;
-    const updatedData = data.filter((item) => !selectedRows.some((row) => row.original.id === item.id));
-    // TODO: Implement actual deletion logic - call API endpoint or update parent state
-    // setData(updatedData);
-    table.resetRowSelection();
-  };
   // Get unique status values
   const uniqueStatusValues = useMemo(() => {
     const statusColumn = table.getColumn("status");
@@ -177,43 +159,7 @@ export const DataTableHeader = ({ table, data }: Props) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex items-center gap-3">
-        {/* Delete button */}
-        {table.getSelectedRowModel().rows.length > 0 && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button className="ml-auto" variant="outline">
-                <TrashIcon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
-                Delete
-                <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">
-                  {table.getSelectedRowModel().rows.length}
-                </span>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                <div
-                  aria-hidden="true"
-                  className="flex size-9 shrink-0 items-center justify-center rounded-full border"
-                >
-                  <CircleAlertIcon className="opacity-80" size={16} />
-                </div>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete {table.getSelectedRowModel().rows.length}{" "}
-                    selected {table.getSelectedRowModel().rows.length === 1 ? "row" : "rows"}.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-              </div>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteRows}>Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
-      </div>
+      <div className="flex items-center gap-3" />
     </div>
   );
 };

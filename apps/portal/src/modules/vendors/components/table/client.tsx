@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@ziron/ui/table";
 import { cn } from "@ziron/utils";
 
+import { useInvitationData } from "../../hooks/use-invitation-updates";
 import { InvitationType } from "../../types";
 import { columns } from "./columns";
 import { DataTableHeader } from "./header";
@@ -34,9 +35,9 @@ interface Props {
 }
 
 /**
- * Renders a paginated, sortable, filterable, and column-configurable table of vendor invitations with persistent pagination state.
+ * Renders a paginated, sortable, filterable, and column-configurable table of vendor invitations with persistent pagination state and real-time updates.
  *
- * Displays vendor invitation data in a table with support for sorting, filtering, column visibility toggling, and pagination. Pagination state is synchronized with URL query parameters and persisted in a cookie for consistent user experience across sessions and shared URLs.
+ * Displays vendor invitation data in a table with support for sorting, filtering, column visibility toggling, and pagination. Pagination state is synchronized with URL query parameters and persisted in a cookie for consistent user experience across sessions and shared URLs. Real-time updates are provided via WebSocket for live status changes.
  *
  * @param data - The array of vendor invitation objects to display in the table.
  * @param initialPageSize - Optional initial number of rows per page if not specified in the URL.
@@ -48,9 +49,12 @@ interface Props {
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: "createdAt",
-      desc: false,
+      desc: true,
     },
   ]);
+
+  // Real-time data updates
+  const { data: realTimeData, isConnected } = useInvitationData(data);
 
   // nuqs pagination state (1-based for URL, 0-based for table)
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
@@ -93,7 +97,7 @@ interface Props {
   }, [pagination.pageIndex, pagination.pageSize]);
 
   const table = useReactTable({
-    data,
+    data: realTimeData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -115,7 +119,7 @@ interface Props {
 
   return (
     <div className="space-y-4">
-      <DataTableHeader data={data} table={table} />
+      <DataTableHeader table={table} />
 
       {/* Table */}
       <div className="overflow-hidden rounded-md border bg-background">

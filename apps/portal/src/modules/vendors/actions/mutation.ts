@@ -18,6 +18,7 @@ import { hasPermission } from "@/modules/auth/actions/data-access";
 
 import { InvitationType } from "../types";
 import { mapMimeTypeToDbFormat } from "../utils/detect-file-type";
+import { publishInvitationUpdateRedundant } from "../utils/invitation-updates";
 import { invalidateVendorCaches } from "./cache";
 import { createVendorInvitation, getCurrentUserVendor, hasPendingInvitation } from "./helper";
 
@@ -149,6 +150,27 @@ export async function sendInvitation(formData: unknown) {
           return newInvitation;
         });
 
+        // Optimistic cache update
+        if (invitation) {
+          try {
+            await updateVendorInvitationCache({
+              id: invitation.id!,
+              token: invitation.token!,
+              vendorEmail: invitation.vendorEmail,
+              name: invitation.vendorName || "",
+              expiresAt: invitation.expiresAt || new Date(),
+              status: invitation.status || "pending",
+            });
+            log.info("Updated vendor invitation cache optimistically", {
+              invitationId: invitation.id,
+              token: invitation.token,
+              email: invitation.vendorEmail,
+            });
+          } catch (cacheError) {
+            log.warn("Failed to update vendor invitation cache optimistically", { cacheError });
+          }
+        }
+
         // Send email
         await sendEmail({
           email,
@@ -161,13 +183,27 @@ export async function sendInvitation(formData: unknown) {
           }),
         });
 
-        // Invalidate vendor invitation caches
+        // Comprehensive cache invalidation after successful email send
         if (invitation?.id && invitation?.token && invitation?.vendorEmail) {
-          await invalidateVendorInvitationCaches({
-            id: invitation.id,
-            token: invitation.token,
-            vendorEmail: invitation.vendorEmail,
-          });
+          try {
+            // Invalidate vendor invitation caches
+            await invalidateVendorInvitationCaches({
+              id: invitation.id,
+              token: invitation.token,
+              vendorEmail: invitation.vendorEmail,
+            });
+
+            // Also invalidate general vendor caches since this affects the vendor ecosystem
+            await invalidateVendorCaches();
+
+            log.info("Successfully invalidated all vendor-related caches", {
+              invitationId: invitation.id,
+              token: invitation.token,
+              email: invitation.vendorEmail,
+            });
+          } catch (cacheError) {
+            log.warn("Failed to invalidate vendor caches after successful invitation", { cacheError });
+          }
         }
       } catch (error: unknown) {
         log.error("Failed to send email", { error });
@@ -220,6 +256,37 @@ async function invalidateVendorInvitationCaches(invitation: { id: string; token:
   }
 }
 
+// Optimistic cache update for vendor invitations
+async function updateVendorInvitationCache(invitation: {
+  id: string;
+  token: string;
+  vendorEmail: string;
+  name: string;
+  expiresAt: Date;
+  status: string;
+}) {
+  try {
+    const { redisCache, REDIS_KEYS } = await import("@/modules/cache");
+
+    // Update invitation-specific caches
+    await Promise.all([
+      redisCache.set(REDIS_KEYS.VENDOR_INVITATION_BY_TOKEN(invitation.token), invitation, 3600), // 1 hour TTL
+      redisCache.set(REDIS_KEYS.VENDOR_INVITATION_BY_EMAIL(invitation.vendorEmail), invitation, 3600),
+    ]);
+
+    // Invalidate the general invitations list cache
+    await redisCache.del(REDIS_KEYS.VENDOR_INVITATIONS);
+
+    log.info("Updated vendor invitation cache optimistically", {
+      invitationId: invitation.id,
+      token: invitation.token,
+      email: invitation.vendorEmail,
+    });
+  } catch (cacheError) {
+    log.warn("Failed to update vendor invitation cache optimistically", { cacheError });
+  }
+}
+
 export async function revokeInvitation(invitationId: string) {
   return withPermissionCheck({ vendors: ["invite"] }, async () => {
     return withErrorHandling("Revoke invitation", async () => {
@@ -237,8 +304,30 @@ export async function revokeInvitation(invitationId: string) {
         return createErrorResponse("NOT_FOUND", "Invitation not found");
       }
 
-      // Invalidate vendor invitation caches
-      await invalidateVendorInvitationCaches(updated);
+      // Comprehensive cache invalidation
+      try {
+        // Invalidate vendor invitation caches
+        await invalidateVendorInvitationCaches(updated);
+
+        // Also invalidate general vendor caches since this affects the vendor ecosystem
+        await invalidateVendorCaches();
+
+        log.info("Successfully invalidated all vendor-related caches after revocation", {
+          invitationId: updated.id,
+          token: updated.token,
+          email: updated.vendorEmail,
+        });
+      } catch (cacheError) {
+        log.warn("Failed to invalidate vendor caches after revocation", { cacheError });
+      }
+
+      // Publish real-time update
+      await publishInvitationUpdateRedundant({
+        invitationId: updated.id,
+        status: "revoked",
+        revokedAt: updated.revokedAt,
+        expiresAt: updated.expiresAt,
+      });
 
       log.success("Revoked invitation", { id: invitationId });
       return createSuccessResponse(updated, "Invitation revoked successfully");
@@ -262,6 +351,20 @@ export async function updateExpiredInvitations() {
         )
       )
       .returning();
+
+    if (updated) {
+      // Invalidate vendor invitation caches for the updated invitation
+      try {
+        await invalidateVendorInvitationCaches(updated);
+        log.info("Invalidated vendor invitation caches for expired invitation", {
+          invitationId: updated.id,
+          token: updated.token,
+          email: updated.vendorEmail,
+        });
+      } catch (cacheError) {
+        log.warn("Failed to invalidate vendor invitation caches for expired invitation", { cacheError });
+      }
+    }
 
     log.success("Updated expired invitations", { invitationId: updated?.id });
     return createSuccessResponse(updated, "Expired invitations updated successfully");

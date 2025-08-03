@@ -11,12 +11,14 @@ export enum JobType {
   Notification = "notification",
   DeleteSoftDeletedCollections = "delete-soft-deleted-collections",
   DeleteSoftDeletedProducts = "delete-soft-deleted-products",
+  UpdateExpiredInvitations = "update-expired-invitations",
 }
 
 export type JobData = {
   [JobType.Notification]: { userId: string; type: string; message: string };
   [JobType.DeleteSoftDeletedCollections]: object;
   [JobType.DeleteSoftDeletedProducts]: object;
+  [JobType.UpdateExpiredInvitations]: object;
 };
 
 export async function enqueue<T extends JobType>(type: T, data: JobData[T]) {
