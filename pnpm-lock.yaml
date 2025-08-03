@@ -272,6 +272,9 @@ importers:
       '@ziron/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript
+      dotenv-cli:
+        specifier: ^8.0.0
+        version: 8.0.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.2

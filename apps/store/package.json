@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm with-env next dev --turbopack",
+    "dev": "pnpm with-env next dev --turbopack --port 3001",
     "build": "pnpm with-env next build",
     "start": "pnpm with-env next start",
     "lint": "next lint",
@@ -19,11 +19,10 @@
     "@ziron/ui": "workspace:*",
     "@ziron/utils": "workspace:*",
     "better-auth": "1.2.9",
-
+    "next": "15.4.5",
     "pg": "^8.16.3",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
-    "next": "15.4.5",
     "sonner": "^2.0.6"
   },
   "devDependencies": {
@@ -31,6 +30,7 @@
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@ziron/tsconfig": "workspace:*",
+    "dotenv-cli": "^8.0.0",
     "typescript": "catalog:"
   }
 }
