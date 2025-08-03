@@ -19,7 +19,6 @@ export const CreateBaseVendor = ({ userId }: CreateBaseVendorProps) => {
   if (!userId || typeof userId !== "string") {
     throw new Error("Valid userId is required");
   }
-  // …rest of your handler/UI code…  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   const handleCreateAdminOrganization = () => {

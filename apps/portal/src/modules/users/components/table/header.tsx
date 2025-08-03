@@ -42,11 +42,10 @@ export const DataTableHeader = ({ table, data }: Props) => {
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows;
-    const updatedData = data.filter((item) => !selectedRows.some((row) => row.original.id === item.id));
-    // setData(updatedData);
+    // Call the actual delete mutation/action here
+    // Example: await deleteUsers(selectedRows.map(row => row.original.id));
     table.resetRowSelection();
   };
-
   // Get unique role values
   const uniqueRoleValues = useMemo(() => {
     const roleColumn = table.getColumn("role");

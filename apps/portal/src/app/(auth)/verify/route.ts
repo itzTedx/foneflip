@@ -150,7 +150,14 @@ export async function GET(request: Request) {
     }
 
     // Store error securely and get error ID
-    const errorId = storeError(errorType, errorMessage, errorDetails, errorStatus, "medium", userAgent || undefined);
+    const errorId = await storeError(
+      errorType,
+      errorMessage,
+      errorDetails,
+      errorStatus,
+      "medium",
+      userAgent || undefined
+    );
 
     // Redirect to error page with only the error ID
     const errorUrl = new URL("/verify/error", origin);

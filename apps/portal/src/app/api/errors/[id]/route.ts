@@ -10,7 +10,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: "Error ID is required" }, { status: 400 });
     }
 
-    const errorInfo = getErrorInfo(errorId);
+    const errorInfo = await getErrorInfo(errorId);
 
     if (!errorInfo) {
       return NextResponse.json({ error: "Error information not found" }, { status: 404 });

@@ -23,7 +23,15 @@ export default async function UsersPage() {
 
   return (
     <MainWrapper>
-      <PageHeader badge={<Suspense>{SuspendedUsersCount()}</Suspense>} title="Manage Users">
+      <PageHeader
+        badge={
+          <Suspense>
+            <SuspendedUsersCount />
+          </Suspense>
+        }
+        title="Manage Users"
+      >
+        {" "}
         <ExportButton />
       </PageHeader>
       <Suspense fallback={<div>Loading...</div>}>
