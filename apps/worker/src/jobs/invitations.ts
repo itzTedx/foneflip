@@ -1,5 +1,5 @@
-import { and, db, eq, isNull, lt } from "@ziron/db";
 import { vendorInvitations } from "@ziron/db/schema";
+import { and, db, eq, isNull, lt } from "@ziron/db/server";
 import { enqueue, JobType } from "@ziron/queue";
 
 import { publishInvitationUpdateRedundant } from "../../../portal/src/modules/vendors/utils/invitation-updates";

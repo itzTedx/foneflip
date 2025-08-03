@@ -13,9 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { OrganizationFormData, organizationSchema } from "@ziron/validators";
 
 import { InfoTooltip } from "@/components/ui/tooltip";
-import { useOnboarding } from "@/hooks/use-onboarding";
 import { useVendorStorage } from "@/hooks/use-vendor-storage";
 import { useSession } from "@/lib/auth/client";
+import { useOnboarding } from "@/modules/onboarding";
 
 import { createOrganization } from "../../actions/mutation";
 

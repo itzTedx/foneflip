@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { and, db, eq, gt, isNull, or } from "@ziron/db";
 import { vendorInvitations } from "@ziron/db/schema";
+import { and, db, eq, gt, isNull, or } from "@ziron/db/server";
 import { z } from "@ziron/validators";
 
 import { storeError } from "@/lib/error-handler";

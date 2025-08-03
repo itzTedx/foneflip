@@ -20,8 +20,8 @@ import { LoadingSwap } from "@ziron/ui/loading-swap";
 import { toast } from "@ziron/ui/sonner";
 import { z } from "@ziron/validators";
 
-import { useOnboarding } from "@/hooks/use-onboarding";
 import { resendEmailOTPAction, verifyEmailOTPAction } from "@/modules/auth/actions/mutations";
+import { useOnboarding } from "@/modules/onboarding";
 
 const otpSchema = z.object({
   otp: z.string().length(6, {

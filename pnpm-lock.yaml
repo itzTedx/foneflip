@@ -303,9 +303,6 @@ importers:
       better-auth:
         specifier: 1.2.9
         version: 1.2.9
-      dotenv-cli:
-        specifier: ^8.0.0
-        version: 8.0.0
       next:
         specifier: ^15.3.5
         version: 15.3.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -322,15 +319,12 @@ importers:
       '@types/react':
         specifier: catalog:react19
         version: 19.1.8
-      '@ziron/eslint-config':
-        specifier: workspace:*
-        version: link:../../tooling/eslint
-      '@ziron/prettier-config':
-        specifier: workspace:*
-        version: link:../../tooling/prettier
       '@ziron/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript
+      dotenv-cli:
+        specifier: ^8.0.0
+        version: 8.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.20.1(jiti@2.4.2)

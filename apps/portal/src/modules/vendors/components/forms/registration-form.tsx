@@ -12,9 +12,9 @@ import { LoadingSwap } from "@ziron/ui/loading-swap";
 import { VendorRegistrationFormData, vendorRegistrationSchema } from "@ziron/validators";
 
 import { PasswordInput } from "@/components/ui/password-input";
-import { useOnboarding } from "@/hooks/use-onboarding";
 import { authClient } from "@/lib/auth/client";
 import { signUpEmailAction } from "@/modules/auth/actions/mutations";
+import { useOnboarding } from "@/modules/onboarding";
 
 import { InvitationType } from "../../types";
 

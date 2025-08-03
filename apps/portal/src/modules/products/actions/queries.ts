@@ -1,7 +1,7 @@
 import { unstable_cache as cache } from "next/cache";
 
-import { and, db, desc, eq, isNull, sql } from "@ziron/db";
 import { productSettingsTable, productsTable } from "@ziron/db/schema";
+import { and, db, desc, eq, isNull, sql } from "@ziron/db/server";
 
 import { getSession } from "@/lib/auth/server";
 import { redisCache } from "@/modules/cache";

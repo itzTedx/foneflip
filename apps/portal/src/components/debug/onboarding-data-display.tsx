@@ -7,9 +7,8 @@ import { Button } from "@ziron/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ziron/ui/tabs";
 
-import { useOnboarding } from "@/hooks/use-onboarding";
-import { clearOnboardingData } from "@/lib/storage/onboarding-storage";
 import { clearAllVendorData, getAllVendorData, VendorData } from "@/lib/storage/vendor-storage";
+import { clearOnboardingData, useOnboarding } from "@/modules/onboarding";
 
 interface OnboardingDataDisplayProps {
   userId: string;

@@ -4,8 +4,8 @@ import { headers } from "next/headers";
 
 import { addHours } from "date-fns";
 
-import { and, db, eq, lt } from "@ziron/db";
 import { member, users, vendorDocumentsTable, vendorInvitations, vendorsTable } from "@ziron/db/schema";
+import { and, db, eq, lt } from "@ziron/db/server";
 import { sendEmail } from "@ziron/email";
 import VerificationEmail from "@ziron/email/templates/onboarding/token-verification";
 import { slugify } from "@ziron/utils";
@@ -396,13 +396,16 @@ export async function createOrganization(formData: unknown) {
       return createErrorResponse("ORGANIZATION_CREATION_FAILED", "Error Creating Organization");
     }
 
-    // Get the current user's vendor information using the helper function
-    const { vendor } = await getCurrentUserVendor(userId);
+    // Find the vendor that was just created by the organization name
+    const vendor = await db.query.vendorsTable.findFirst({
+      where: (v, { eq }) => eq(v.slug, slugify(name)),
+    });
 
     if (!vendor) {
       return createErrorResponse("VENDOR_NOT_FOUND", "Vendor profile not found");
     }
 
+    // Update vendor with additional information
     const [updatedVendor] = await db
       .update(vendorsTable)
       .set({
@@ -414,6 +417,23 @@ export async function createOrganization(formData: unknown) {
 
     if (!updatedVendor) {
       return createErrorResponse("VENDOR_NOT_FOUND", "Vendor profile not found");
+    }
+
+    // Check if member relationship already exists
+    const existingMember = await db.query.member.findFirst({
+      where: (m, { and, eq }) => and(eq(m.userId, userId), eq(m.vendorId, vendor.id)),
+    });
+
+    if (!existingMember) {
+      // Create member relationship with owner role
+      await db.insert(member).values({
+        userId,
+        vendorId: vendor.id,
+        role: "owner",
+      });
+    } else if (existingMember.role !== "owner") {
+      // Update existing member to owner role
+      await db.update(member).set({ role: "owner" }).where(eq(member.id, existingMember.id));
     }
 
     return createSuccessResponse(updatedVendor, "Organization created successfully");

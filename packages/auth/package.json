@@ -31,14 +31,11 @@
   },
   "devDependencies": {
     "@types/react": "catalog:react19",
-    "@ziron/eslint-config": "workspace:*",
-    "@ziron/prettier-config": "workspace:*",
     "@ziron/tsconfig": "workspace:*",
     "dotenv-cli": "^8.0.0",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "server-only": "^0.0.1",
     "typescript": "catalog:"
-  },
-  "prettier": "@ziron/prettier-config"
+  }
 }

@@ -16,7 +16,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@ziron/ui/dropdown-menu";
-import { cn, formatDate, pluralize } from "@ziron/utils";
+import { StatusBadge, StatusBadgeDot } from "@ziron/ui/status-badge";
+import { formatDate, pluralize } from "@ziron/utils";
 
 import { TooltipBadge } from "@/components/ui/tooltip";
 
@@ -26,23 +27,6 @@ interface VendorCardProps {
 }
 
 export const VendorCard = ({ vendor, showActions = true }: VendorCardProps) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending_approval":
-        return "bg-yellow-100 text-yellow-800 ";
-      case "approved":
-        return "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200";
-      case "rejected":
-        return "bg-red-100 text-red-800 ";
-      case "suspended":
-        return "bg-orange-100 text-orange-800 ";
-      case "active":
-        return "bg-blue-100 text-blue-800 ";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-muted dark:text-muted-foreground";
-    }
-  };
-
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "pending_approval":
@@ -62,8 +46,9 @@ export const VendorCard = ({ vendor, showActions = true }: VendorCardProps) => {
     }
   };
 
+  const status = vendor.status;
   // Check if vendor needs verification
-  const needsVerification = vendor.status === "pending_approval";
+  const needsVerification = status === "pending_approval";
 
   return (
     <Card className="relative overflow-hidden transition-[border-color] duration-300 hover:border-primary/50">
@@ -168,9 +153,28 @@ export const VendorCard = ({ vendor, showActions = true }: VendorCardProps) => {
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Badge className={cn(getStatusColor(vendor.status))} variant="outline">
+            <StatusBadge
+              className="capitalize"
+              status={
+                status === "active"
+                  ? "success"
+                  : status === "pending_approval"
+                    ? "info"
+                    : status === "rejected"
+                      ? "error"
+                      : status === "suspended"
+                        ? "warn"
+                        : status === "onboarding"
+                          ? "info"
+                          : status === "approved"
+                            ? "success"
+                            : "disabled"
+              }
+              variant="light"
+            >
+              <StatusBadgeDot />
               {getStatusLabel(vendor.status)}
-            </Badge>
+            </StatusBadge>
           </div>
           <p className="font-light text-muted-foreground text-xs">
             {formatDate(vendor.createdAt, {

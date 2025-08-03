@@ -1,5 +1,5 @@
-import { and, db, eq, gt, isNotNull, isNull } from "@ziron/db";
 import { vendorInvitations } from "@ziron/db/schema";
+import { and, db, eq, gt, isNotNull, isNull } from "@ziron/db/server";
 import { Trx } from "@ziron/db/types";
 
 import { createLog } from "@/lib/utils";

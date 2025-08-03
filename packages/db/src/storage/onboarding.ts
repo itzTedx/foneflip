@@ -1,4 +1,5 @@
-import { createStorage } from "./indexdb-client";
+import type { StorageFactory } from "../indexdb/factory";
+import { DatabaseManager } from "../indexdb/manager";
 
 export const ORGANIZATION_CATEGORIES = ["Retailer", "Wholesaler", "Reseller"] as const;
 export type OrganizationCategory = (typeof ORGANIZATION_CATEGORIES)[number];
@@ -52,40 +53,47 @@ export interface OnboardingData {
   createdAt: string;
   updatedAt: string;
 }
-// Create onboarding storage instances
-const onboardingStepsStorage = createStorage<OnboardingStep>({
-  dbName: "onboarding-steps-db",
-  version: 1,
-  storeName: "steps",
-  keyPath: "stepId",
-  indexes: [
-    { name: "userId", keyPath: "userId" },
-    { name: "stepName", keyPath: "stepName" },
-    { name: "status", keyPath: "status" },
-  ],
-});
 
-const onboardingProgressStorage = createStorage<OnboardingProgress>({
-  dbName: "onboarding-progress-db",
-  version: 1,
-  storeName: "progress",
-  keyPath: "userId",
-  indexes: [
-    { name: "currentStep", keyPath: "currentStep" },
-    { name: "progress", keyPath: "progress" },
-  ],
-});
+// Optimized storage instances using the centralized manager
+let stepsStorage: StorageFactory<OnboardingStep> | null = null;
+let progressStorage: StorageFactory<OnboardingProgress> | null = null;
+let dataStorage: StorageFactory<OnboardingData> | null = null;
 
-const onboardingDataStorage = createStorage<OnboardingData>({
-  dbName: "onboarding-data-db",
-  version: 1,
-  storeName: "data",
-  keyPath: "userId",
-  indexes: [
-    { name: "createdAt", keyPath: "createdAt" },
-    { name: "updatedAt", keyPath: "updatedAt" },
-  ],
-});
+async function getStepsStorage(): Promise<StorageFactory<OnboardingStep>> {
+  if (!stepsStorage) {
+    const manager = DatabaseManager.getInstance();
+    await manager.initialize();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const config = DatabaseManager.STORAGE_CONFIGS.onboarding.steps as unknown as any;
+    stepsStorage = await manager.createStorage<OnboardingStep>(config);
+  }
+  return stepsStorage;
+}
+
+async function getProgressStorage(): Promise<StorageFactory<OnboardingProgress>> {
+  if (!progressStorage) {
+    const manager = DatabaseManager.getInstance();
+    await manager.initialize();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const config = DatabaseManager.STORAGE_CONFIGS.onboarding.progress as unknown as any;
+    progressStorage = await manager.createStorage<OnboardingProgress>(config);
+  }
+  return progressStorage;
+}
+
+async function getDataStorage(): Promise<StorageFactory<OnboardingData>> {
+  if (!dataStorage) {
+    const manager = DatabaseManager.getInstance();
+    await manager.initialize();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const config = DatabaseManager.STORAGE_CONFIGS.onboarding.data as unknown as any;
+    dataStorage = await manager.createStorage<OnboardingData>(config);
+  }
+  return dataStorage;
+}
 
 // Step management functions
 export async function createStep(
@@ -93,10 +101,11 @@ export async function createStep(
   stepName: OnboardingStep["stepName"],
   data?: Record<string, unknown>
 ): Promise<string> {
+  const storage = await getStepsStorage();
   const stepId = crypto.randomUUID();
   const now = new Date().toISOString();
 
-  await onboardingStepsStorage.save({
+  await storage.save({
     stepId,
     userId,
     stepName,
@@ -113,12 +122,13 @@ export async function updateStep(
   stepId: string,
   updates: Partial<Omit<OnboardingStep, "stepId" | "userId" | "createdAt">>
 ): Promise<void> {
-  const existingStep = await onboardingStepsStorage.get(stepId);
+  const storage = await getStepsStorage();
+  const existingStep = await storage.get(stepId);
   if (!existingStep) {
     throw new Error("Step not found");
   }
 
-  await onboardingStepsStorage.update(stepId, {
+  await storage.update(stepId, {
     ...updates,
     updatedAt: new Date().toISOString(),
   });
@@ -134,7 +144,8 @@ export async function completeStep(stepId: string, data?: Record<string, unknown
 }
 
 export async function getUserSteps(userId: string): Promise<OnboardingStep[]> {
-  return await onboardingStepsStorage.getByIndex("userId", userId);
+  const storage = await getStepsStorage();
+  return await storage.getByIndex("userId", userId);
 }
 
 export async function getStepByUserAndName(
@@ -147,9 +158,10 @@ export async function getStepByUserAndName(
 
 // Progress management functions
 export async function initializeProgress(userId: string): Promise<void> {
+  const storage = await getProgressStorage();
   const now = new Date().toISOString();
 
-  await onboardingProgressStorage.save({
+  await storage.save({
     userId,
     currentStep: "registration",
     completedSteps: [],
@@ -165,9 +177,10 @@ export async function updateProgress(
   currentStep: OnboardingStep["stepName"],
   completedSteps: OnboardingStep["stepName"][]
 ): Promise<void> {
+  const storage = await getProgressStorage();
   const progress = Math.round((completedSteps.length / 4) * 100);
 
-  await onboardingProgressStorage.update(userId, {
+  await storage.update(userId, {
     currentStep,
     completedSteps,
     progress,
@@ -176,21 +189,23 @@ export async function updateProgress(
 }
 
 export async function getProgress(userId: string): Promise<OnboardingProgress | null> {
-  return await onboardingProgressStorage.get(userId);
+  const storage = await getProgressStorage();
+  return await storage.get(userId);
 }
 
 // Data management functions
 export async function saveOnboardingData(userId: string, data: Partial<OnboardingData>): Promise<void> {
-  const existingData = await onboardingDataStorage.get(userId);
+  const storage = await getDataStorage();
+  const existingData = await storage.get(userId);
   const now = new Date().toISOString();
 
   if (existingData) {
-    await onboardingDataStorage.update(userId, {
+    await storage.update(userId, {
       ...data,
       updatedAt: now,
     });
   } else {
-    await onboardingDataStorage.save({
+    await storage.save({
       userId,
       ...data,
       createdAt: now,
@@ -200,19 +215,21 @@ export async function saveOnboardingData(userId: string, data: Partial<Onboardin
 }
 
 export async function getOnboardingData(userId: string): Promise<OnboardingData | null> {
-  return await onboardingDataStorage.get(userId);
+  const storage = await getDataStorage();
+  return await storage.get(userId);
 }
 
 export async function updateOnboardingData(
   userId: string,
   updates: Partial<Omit<OnboardingData, "userId" | "createdAt">>
 ): Promise<void> {
+  const storage = await getDataStorage();
   const existingData = await getOnboardingData(userId);
   if (!existingData) {
     throw new Error("Onboarding data not found");
   }
 
-  await onboardingDataStorage.update(userId, {
+  await storage.update(userId, {
     ...updates,
     updatedAt: new Date().toISOString(),
   });
@@ -248,11 +265,39 @@ export async function getCompletedSteps(userId: string): Promise<OnboardingStep[
 
 export async function clearOnboardingData(userId: string): Promise<void> {
   // Clear all onboarding data for a user
+  const stepsStorage = await getStepsStorage();
+  const progressStorage = await getProgressStorage();
+  const dataStorage = await getDataStorage();
+
   const steps = await getUserSteps(userId);
-  for (const step of steps) {
-    await onboardingStepsStorage.delete(step.stepId);
+  const stepIds = steps.map((step) => step.stepId);
+
+  if (stepIds.length > 0) {
+    await stepsStorage.batchDelete(stepIds);
   }
 
-  await onboardingProgressStorage.delete(userId);
-  await onboardingDataStorage.delete(userId);
+  await progressStorage.delete(userId);
+  await dataStorage.delete(userId);
+}
+
+// Health check and maintenance
+export async function healthCheck(): Promise<boolean> {
+  try {
+    const manager = DatabaseManager.getInstance();
+    const health = await manager.healthCheck();
+    return health.healthy;
+  } catch {
+    return false;
+  }
+}
+
+export async function clearCache(): Promise<void> {
+  const manager = DatabaseManager.getInstance();
+  // Clear cache by getting stats (this will trigger cache cleanup)
+  manager.getStats();
+}
+
+export function getStats(): { managers: number; storages: number; isInitialized: boolean } {
+  const manager = DatabaseManager.getInstance();
+  return manager.getStats();
 }

@@ -10,7 +10,7 @@ import { Form, FormField, FormItem, FormMessage, useForm, zodResolver } from "@z
 import { LoadingSwap } from "@ziron/ui/loading-swap";
 import { DocumentsFormData, documentsSchema } from "@ziron/validators";
 
-import { useOnboarding } from "@/hooks/use-onboarding";
+import { useOnboarding } from "@/modules/onboarding";
 
 import { updateVendorDocuments } from "../../actions/mutation";
 import { DocumentUpload } from "./document-upload";

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
-import { db } from "@ziron/db";
 import { collectionSettingsTable, collectionsTable, seoTable } from "@ziron/db/schema";
+import { db } from "@ziron/db/server";
 import redis from "@ziron/redis";
 import { slugify } from "@ziron/utils";
 import { CollectionDraftFormType, CollectionFormType } from "@ziron/validators";

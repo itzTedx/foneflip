@@ -1,4 +1,4 @@
-import { createStorage } from "./indexdb-client";
+import { createStorage } from "@ziron/db";
 
 export interface VendorData {
   userId: string;

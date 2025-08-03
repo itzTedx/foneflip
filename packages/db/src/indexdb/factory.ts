@@ -80,6 +80,33 @@ export class StorageFactory<T> {
   async count(): Promise<number> {
     return await this.dbManager.count(this.storeName);
   }
+
+  // Batch operations for better performance
+  async batchSave(dataArray: T[]): Promise<void> {
+    await this.dbManager.batchPut(this.storeName, dataArray);
+  }
+
+  async batchDelete(keys: (string | number)[]): Promise<void> {
+    await this.dbManager.batchDelete(this.storeName, keys);
+  }
+
+  // Health check and maintenance
+  async healthCheck(): Promise<boolean> {
+    return await this.dbManager.healthCheck();
+  }
+
+  async clearCache(): Promise<void> {
+    await this.dbManager.clearCache();
+  }
+
+  getCacheStats(): { size: number; maxSize: number } {
+    return this.dbManager.getCacheStats();
+  }
+
+  // Close the database connection
+  async close(): Promise<void> {
+    await this.dbManager.closeDB();
+  }
 }
 
 // Helper function to create storage instances

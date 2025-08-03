@@ -1,11 +1,12 @@
 "use server";
 
-import { requireUser } from "@/modules/auth/actions/data-access";
-import { deleteMediaFromS3 } from "@/modules/media/actions/mutations";
 import { revalidatePath } from "next/cache";
 
-import { db, eq } from "@ziron/db";
 import { users } from "@ziron/db/schema";
+import { db, eq } from "@ziron/db/server";
+
+import { requireUser } from "@/modules/auth/actions/data-access";
+import { deleteMediaFromS3 } from "@/modules/media/actions/mutations";
 
 export async function deleteAvatar() {
   const session = await requireUser();

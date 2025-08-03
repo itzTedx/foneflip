@@ -1,7 +1,7 @@
 "use server";
 
-import { db, eq } from "@ziron/db";
 import { productsTable } from "@ziron/db/schema";
+import { db, eq } from "@ziron/db/server";
 import { slugify } from "@ziron/utils";
 import { productSchema, z } from "@ziron/validators";
 

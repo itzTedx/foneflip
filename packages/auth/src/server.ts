@@ -5,7 +5,7 @@ import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin, emailOTP, organization, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 
-import { db } from "@ziron/db";
+import { db } from "@ziron/db/server";
 import redis from "@ziron/redis";
 
 import { OTP_EXPIRES_IN, OTP_EXPIRES_IN_MS } from "./data/constants";

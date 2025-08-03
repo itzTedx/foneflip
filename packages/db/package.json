@@ -8,6 +8,10 @@
       "types": "./src/index.ts",
       "default": "./dist/index.js"
     },
+    "./server": {
+      "types": "./src/server.ts",
+      "default": "./dist/server.js"
+    },
     "./schema": {
       "types": "./src/schema.ts",
       "default": "./dist/schema.js"
@@ -19,6 +23,10 @@
     "./indexdb": {
       "types": "./src/indexdb/index.ts",
       "default": "./dist/indexdb/index.js"
+    },
+    "./storage": {
+      "types": "./src/storage/index.ts",
+      "default": "./dist/storage/index.js"
     }
   },
   "license": "MIT",

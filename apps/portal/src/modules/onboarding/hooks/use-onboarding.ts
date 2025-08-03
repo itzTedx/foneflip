@@ -11,12 +11,10 @@ import {
   getStepByUserAndName,
   initializeProgress,
   isStepCompleted,
-  OnboardingData,
-  OnboardingProgress,
-  OnboardingStep,
   saveOnboardingData,
   updateProgress,
-} from "@/lib/storage/onboarding-storage";
+} from "../storage";
+import type { OnboardingData, OnboardingProgress, OnboardingStep } from "../types";
 
 export function useOnboarding(userId?: string) {
   const [progress, setProgress] = useState<OnboardingProgress | null>(null);

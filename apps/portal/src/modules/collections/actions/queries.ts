@@ -1,7 +1,7 @@
 import { unstable_cache as cache } from "next/cache";
 
-import { asc, db, eq, isNull, sql } from "@ziron/db";
 import { collectionsTable } from "@ziron/db/schema";
+import { asc, db, eq, isNull, sql } from "@ziron/db/server";
 
 import { CACHE_TAGS, REDIS_KEYS, redisCache } from "@/modules/cache";
 

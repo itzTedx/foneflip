@@ -1,5 +1,5 @@
-import { and, db, eq, isNull, lt } from "@ziron/db";
 import { notificationsTable } from "@ziron/db/schema";
+import { and, db, eq, isNull, lt } from "@ziron/db/server";
 import { JobData, JobType } from "@ziron/queue";
 import redis from "@ziron/redis";
 import { NotificationPayloadSchema } from "@ziron/validators";
@@ -50,8 +50,5 @@ export const deleteSoftDeletedNotifications = async () => {
     .delete(notificationsTable)
     .where(lt(notificationsTable.deletedAt, SIXTY_DAYS_AGO))
     .returning();
-  console.log(
-    "Hard-deleted notifications soft-deleted over 2 months ago:",
-    result
-  );
+  console.log("Hard-deleted notifications soft-deleted over 2 months ago:", result);
 };

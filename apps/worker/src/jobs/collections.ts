@@ -1,5 +1,5 @@
-import { db, eq, lt } from "@ziron/db";
 import { collectionsTable, users } from "@ziron/db/schema";
+import { db, eq, lt } from "@ziron/db/server";
 import { enqueue, JobType } from "@ziron/queue";
 
 export const deleteSoftDeletedCollections = async () => {

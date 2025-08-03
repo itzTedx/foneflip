@@ -1,6 +1,5 @@
 import { eq, inArray } from "drizzle-orm";
 
-import { db } from "@ziron/db";
 import {
   collectionsTable,
   mediaTable,
@@ -15,6 +14,7 @@ import {
   productVariantsTable,
   seoTable,
 } from "@ziron/db/schema";
+import { db } from "@ziron/db/server";
 import { slugify } from "@ziron/utils";
 import { ProductDraftFormType, ProductFormType } from "@ziron/validators";
 

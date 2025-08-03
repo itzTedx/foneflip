@@ -4,8 +4,8 @@ import { unstable_cache as cache } from "next/cache";
 
 import { and, desc, eq, gt, isNull, or } from "drizzle-orm";
 
-import { db } from "@ziron/db";
 import { vendorInvitations } from "@ziron/db/schema";
+import { db } from "@ziron/db/server";
 
 import { createLog } from "@/lib/utils";
 import { CACHE_TAGS, REDIS_KEYS, redisCache } from "@/modules/cache";
