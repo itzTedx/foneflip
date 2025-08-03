@@ -41,6 +41,12 @@ export class IndexedDBManager {
 
       request.onsuccess = () => resolve(request.result);
 
+      request.onblocked = () => {
+        const error = new Error("Database upgrade blocked by other connections") as IndexedDBError;
+        error.code = "DB_BLOCKED";
+        reject(error);
+      };
+
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
 
@@ -58,7 +64,6 @@ export class IndexedDBManager {
       };
     });
   }
-
   async closeDB(db: IDBDatabase): Promise<void> {
     db.close();
   }

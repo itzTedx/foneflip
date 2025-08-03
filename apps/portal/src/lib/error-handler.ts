@@ -36,7 +36,17 @@ function cleanupOldErrors() {
 
 // Generate a secure error ID
 function generateErrorId(): string {
-  return `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  // Use cryptographically secure random values
+  const randomBytes = new Uint8Array(6); // 6 bytes for 9 characters in base36
+  crypto.getRandomValues(randomBytes);
+
+  // Convert to base36 string and ensure it's exactly 9 characters
+  const randomString = Array.from(randomBytes)
+    .map((byte) => byte.toString(36).padStart(2, "0"))
+    .join("")
+    .substring(0, 9);
+
+  return `err_${Date.now()}_${randomString}`;
 }
 
 // Store error information securely

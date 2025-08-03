@@ -64,7 +64,7 @@ const VendorInvitationEmail = ({ vendorName, verificationLink, inviterName, expi
               </Text>
 
               {/* CTA Section */}
-              <Section className="mb-[40px] rounded-[12px] border border-[#e2e8f0] border-solid bg-[#f8fafc] p-[40px] text-center ">
+              <Section className="mb-[40px] rounded-[12px] border border-[#e2e8f0] border-solid bg-[#f8fafc] p-[40px] text-center">
                 <Heading className="mt-0 mb-[12px] font-bold text-[#0b0917] text-[24px]">Ready to get started?</Heading>
 
                 <Text className="mt-0 mb-[24px] text-[#666666] text-[16px] leading-[24px]">
@@ -230,6 +230,6 @@ VendorInvitationEmail.PreviewProps = {
   vendorName: "TechHub Solutions",
   verificationLink: "https://www.foneflip.com/vendor/verify?token=abc123xyz789",
   inviterName: "Sarah from Foneflip",
+  expiresIn: "24",
 };
-
 export default VendorInvitationEmail;

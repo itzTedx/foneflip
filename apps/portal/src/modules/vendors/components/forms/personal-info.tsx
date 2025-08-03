@@ -33,19 +33,21 @@ export function PersonalInfoForm() {
         const result = await updateVendorPersonalInfoAction(data);
 
         if (!result.success) {
-          toast.error("error" in result ? result.error : "Failed to save personal information");
+          const errorMessage =
+            "error" in result ? result.error : "Failed to save personal information. Please try again.";
+          toast.error(errorMessage);
           return;
         }
 
+        form.reset();
         toast.success("Personal information saved successfully");
         router.push("/vendor/onboarding/business-info");
       } catch (err) {
         console.error("Failed to save personal information:", err);
-        toast.error("Failed to save personal information");
+        toast.error("An unexpected error occurred. Please check your connection and try again.");
       }
     });
   }
-
   return (
     <Form {...form}>
       <form className="mt-8 flex w-full flex-col items-center space-y-6" onSubmit={form.handleSubmit(onSubmit)}>

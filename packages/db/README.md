@@ -67,14 +67,15 @@ This will:
 ## Environment Variables
 
 Required environment variables in `.env`:
+
+> **Security Note**: Never commit `.env` files containing production credentials to version control. Use secure secret management solutions for production deployments.
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `DB_HOST` - Database host (default: localhost)
 - `DB_PORT` - Database port (default: 5432)
 - `DB_USER` - Database user (default: postgres)
 - `DB_PASSWORD` - Database password
-- `DB_NAME` - Database name (default: foneflip)
-
-## Database Schema
+- `DB_NAME` - Database name (default: foneflip)## Database Schema
 
 The database schema is defined in `src/schema.ts` and includes:
 - User management tables

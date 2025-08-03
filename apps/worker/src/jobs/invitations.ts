@@ -48,15 +48,20 @@ export const updateExpiredInvitations = async () => {
           console.error(`Failed to publish real-time update for invitation ${updated.id}:`, updateError);
         }
 
-        // Send notification to admin (optional)
-        try {
-          await enqueue(JobType.Notification, {
-            userId: updated.sentByAdminId || "admin", // You might want to adjust this based on your user management
-            type: "invitation_expired",
-            message: `Invitation for ${updated.vendorEmail} has expired`,
-          });
-        } catch (notificationError) {
-          console.error(`Failed to send notification for expired invitation ${updated.id}:`, notificationError);
+        // Send notification to admin if sentByAdminId exists
+        if (updated.sentByAdminId) {
+          try {
+            await enqueue(JobType.Notification, {
+              userId: updated.sentByAdminId,
+              type: "invitation_expired",
+              message: `Invitation for ${updated.vendorEmail} has expired`,
+            });
+            console.log(`Sent notification for expired invitation ${updated.id} to admin ${updated.sentByAdminId}`);
+          } catch (notificationError) {
+            console.error(`Failed to send notification for expired invitation ${updated.id}:`, notificationError);
+          }
+        } else {
+          console.log(`Skipping notification for expired invitation ${updated.id} - no sentByAdminId found`);
         }
       }
     }

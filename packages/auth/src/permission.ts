@@ -27,7 +27,7 @@ export const vendor = ac.newRole({
 export const admin = ac.newRole({
   collections: ["create", "update", "delete"],
   products: ["create", "update", "delete"],
-  vendors: ["create", "delete", "invite"],
+  vendors: ["create", "update", "delete", "invite"],
   ...adminAc.statements,
 });
 

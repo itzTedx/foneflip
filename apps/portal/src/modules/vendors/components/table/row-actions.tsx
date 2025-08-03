@@ -34,10 +34,16 @@ export function RowActions({ row, onResendInvite, onRevokeInvite }: RowActionsPr
     const baseUrl = env.NEXT_PUBLIC_BASE_URL || window.location.origin;
     const inviteUrl = `${baseUrl}/verify?token=${token}`;
 
-    navigator.clipboard.writeText(inviteUrl);
-    toast.success("Invitation URL copied to clipboard");
+    navigator.clipboard
+      .writeText(inviteUrl)
+      .then(() => {
+        toast.success("Invitation URL copied to clipboard");
+      })
+      .catch((error) => {
+        console.error("Failed to copy to clipboard:", error);
+        toast.error("Failed to copy invitation URL");
+      });
   };
-
   const handleResend = async () => {
     if (onResendInvite) {
       await onResendInvite({

@@ -34,9 +34,7 @@ export async function signUpEmailAction(formData: unknown) {
 
     log.success("Vendor account created successfully", {
       userId: result.user.id,
-      email: result.user.email,
     });
-
     return {
       success: true,
       error: null,
@@ -95,7 +93,6 @@ export async function verifyEmailOTPAction(formData: unknown) {
 
     log.success("Email OTP verified successfully", {
       userId: result.user.id,
-      email: result.user.email,
     });
 
     return {
@@ -161,9 +158,7 @@ export async function resendEmailOTPAction(formData: unknown) {
 
     // If user already exists, this will trigger a new OTP
     if (res.success) {
-      log.success("Email OTP resent successfully", {
-        email: data.email,
-      });
+      log.success("Email OTP resent successfully");
 
       return {
         success: true,

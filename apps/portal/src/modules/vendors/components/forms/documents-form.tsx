@@ -40,6 +40,7 @@ export function DocumentsForm({ userId }: Props) {
 
         if (!result.success) {
           toast.error(result.message);
+          return;
         }
 
         // Save documents data
@@ -52,14 +53,18 @@ export function DocumentsForm({ userId }: Props) {
         });
 
         toast.success("Documents uploaded successfully!");
-        router.push("/onboarding/success");
+        try {
+          router.push("/onboarding/success");
+        } catch (navError) {
+          console.error("Navigation failed:", navError);
+          toast.error("Upload successful, but navigation failed. Please refresh the page.");
+        }
       } catch (error) {
         console.error("Failed to save documents:", error);
         toast.error("Failed to save documents");
       }
     });
   }
-
   return (
     <Form {...form}>
       <form className="mt-8 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
@@ -75,6 +80,9 @@ export function DocumentsForm({ userId }: Props) {
                     description="Upload a clear image of the front side of your Emirates ID"
                     label="Emirates ID Front"
                     name="emiratesIdFront"
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                    value={field.value}
                   />
                   <FormMessage />
                 </FormItem>
@@ -91,6 +99,9 @@ export function DocumentsForm({ userId }: Props) {
                     description="Upload a clear image of the back side of your Emirates ID"
                     label="Emirates ID Back"
                     name="emiratesIdBack"
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                    value={field.value}
                   />
                   <FormMessage />
                 </FormItem>
@@ -107,6 +118,9 @@ export function DocumentsForm({ userId }: Props) {
                   description="Upload your trade license document (PDF or image)"
                   label="Trade License"
                   name="tradeLicense"
+                  onBlur={field.onBlur}
+                  onChange={field.onChange}
+                  value={field.value}
                 />
                 <FormMessage />
               </FormItem>

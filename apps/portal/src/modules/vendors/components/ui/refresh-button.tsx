@@ -12,7 +12,13 @@ export const RefreshButton = () => {
   const [isPending, startTransition] = useTransition();
   const onRefresh = () => {
     startTransition(async () => {
-      await clearAllVendorInvitationCaches();
+      try {
+        await clearAllVendorInvitationCaches();
+        // Optional: Add success toast notification
+      } catch (error) {
+        console.error("Failed to clear vendor invitation caches:", error);
+        // Optional: Add error toast notification
+      }
     });
   };
   return (

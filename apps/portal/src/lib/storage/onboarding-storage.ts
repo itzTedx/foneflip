@@ -1,9 +1,15 @@
 import { createStorage } from "./indexdb-client";
 
+export const ORGANIZATION_CATEGORIES = ["Retailer", "Wholesaler", "Reseller"] as const;
+export type OrganizationCategory = (typeof ORGANIZATION_CATEGORIES)[number];
+
+export const ONBOARDING_STEPS = ["registration", "verification", "organization", "documents"] as const;
+export type OnboardingStepName = (typeof ONBOARDING_STEPS)[number];
+
 export interface OnboardingStep {
   stepId: string;
   userId: string;
-  stepName: "registration" | "verification" | "organization" | "documents" | "complete";
+  stepName: OnboardingStepName | "complete";
   status: "pending" | "in_progress" | "completed" | "failed";
   data?: Record<string, unknown>;
   completedAt?: string;
@@ -34,7 +40,7 @@ export interface OnboardingData {
   };
   organization?: {
     name: string;
-    category: "Retailer" | "Wholesaler" | "Reseller";
+    category: OrganizationCategory;
     website?: string;
     logoUrl?: string;
   };
@@ -46,7 +52,6 @@ export interface OnboardingData {
   createdAt: string;
   updatedAt: string;
 }
-
 // Create onboarding storage instances
 const onboardingStepsStorage = createStorage<OnboardingStep>({
   dbName: "onboarding-steps-db",

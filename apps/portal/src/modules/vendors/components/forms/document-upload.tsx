@@ -20,6 +20,9 @@ interface Props {
   description?: string;
   accept?: string;
   maxSize?: number; // in bytes
+  onChange?: (value: DocumentsFormData[keyof DocumentsFormData]) => void;
+  onBlur?: () => void;
+  value?: DocumentsFormData[keyof DocumentsFormData];
 }
 
 export function DocumentUpload({
@@ -28,6 +31,9 @@ export function DocumentUpload({
   description,
   accept = "application/pdf,image/*",
   maxSize = 10 * 1024 * 1024,
+  onChange,
+  onBlur,
+  value,
 }: Props) {
   const [isPending, startTransition] = useTransition();
   const form = useFormContext<DocumentsFormData>();
@@ -42,7 +48,7 @@ export function DocumentUpload({
   });
 
   const file = files[0];
-  const currentValue = form.watch(name);
+  const currentValue = value || form.watch(name);
 
   const handleUpload = useCallback(async () => {
     if (!file) return;
@@ -77,10 +83,12 @@ export function DocumentUpload({
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
               form.clearErrors(name);
-              form.setValue(name, {
+              const newValue = {
                 url: url.split("?")[0] ?? "",
                 type: (file.file as File).type,
-              });
+              };
+              form.setValue(name, newValue);
+              onChange?.(newValue);
             } else {
               form.setError(name, { message: "Upload failed" });
             }
@@ -98,14 +106,15 @@ export function DocumentUpload({
         form.setError(name, { message: "Upload failed" });
       }
     });
-  }, [file, form, name]);
+  }, [file, form, name, onChange]);
 
   const handleRemove = useCallback(() => {
     if (file) {
       removeFile(file.id);
     }
     form.setValue(name, undefined);
-  }, [file, form, name, removeFile]);
+    onChange?.(undefined);
+  }, [file, form, name, removeFile, onChange]);
 
   // Auto-upload when file is selected
   useEffect(() => {

@@ -10,8 +10,16 @@ import { LoadingSwap } from "@ziron/ui/loading-swap";
 
 import { createAdminOrganization } from "../actions/mutation";
 
-export const CreateBaseVendor = ({ userId }: { userId: string }) => {
+interface CreateBaseVendorProps {
+  userId: string;
+}
+
+export const CreateBaseVendor = ({ userId }: CreateBaseVendorProps) => {
   const [isPending, startTransition] = useTransition();
+  if (!userId || typeof userId !== "string") {
+    throw new Error("Valid userId is required");
+  }
+  // …rest of your handler/UI code…  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   const handleCreateAdminOrganization = () => {

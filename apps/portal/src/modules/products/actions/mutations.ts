@@ -47,20 +47,17 @@ export async function upsertProduct(formData: unknown) {
   }
 
   let vendorId = data.vendorId;
-  if (!vendorId && session.user?.role === "vendor") {
-    const memberRecord = await db.query.member.findFirst({
-      where: (m, { eq }) => eq(m.userId, session.user.id),
-    });
-    vendorId = memberRecord?.vendorId;
-  }
-  if ((!vendorId && session.user?.role === "admin") || session.user?.role === "dev") {
-    const memberRecord = await db.query.member.findFirst({
-      where: (m, { eq }) => eq(m.userId, session.user.id),
-    });
-    vendorId = memberRecord?.vendorId;
+  if (!vendorId && ["vendor", "admin", "dev"].includes(session.user?.role || "")) {
+    try {
+      const memberRecord = await db.query.member.findFirst({
+        where: (m, { eq }) => eq(m.userId, session.user.id),
+      });
+      vendorId = memberRecord?.vendorId;
+    } catch (error) {
+      log.error("Failed to fetch member record", { error, userId: session.user.id });
+    }
   }
   log.info("Vendor Id:", { vendorId });
-
   try {
     const product = await db.transaction(async (tx) => {
       const uniqueSlug = await createProductSlug({

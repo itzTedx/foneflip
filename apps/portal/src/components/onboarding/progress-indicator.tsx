@@ -73,9 +73,7 @@ export function OnboardingProgressIndicator({ userId, currentStep, className = "
         <h3 className="font-medium text-sm">Onboarding Progress</h3>
         <Badge variant="secondary">{progressPercentage}% Complete</Badge>
       </div>
-
       <Progress className="h-2" value={progressPercentage} />
-
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {ONBOARDING_STEPS.map((step, index) => {
           const isCompleted = completedSteps.includes(step.name);
@@ -118,13 +116,12 @@ export function OnboardingProgressIndicator({ userId, currentStep, className = "
           );
         })}
       </div>
-
       {progress && (
         <div className="text-muted-foreground text-xs">
-          <p>Started: {new Date(progress.startedAt).toLocaleDateString()}</p>
-          <p>Last updated: {new Date(progress.lastUpdatedAt).toLocaleDateString()}</p>
+          {progress.startedAt && <p>Started: {new Date(progress.startedAt).toLocaleDateString()}</p>}
+          {progress.lastUpdatedAt && <p>Last updated: {new Date(progress.lastUpdatedAt).toLocaleDateString()}</p>}
         </div>
-      )}
+      )}{" "}
     </div>
   );
 }

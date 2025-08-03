@@ -34,7 +34,7 @@ export async function sendOTPEmail({
       react: VendorOTPEmail({ otp, username: name, type, expiresIn }),
     });
   } catch (error) {
-    console.error(`Failed to send OTP email to ${to}:`, error);
+    console.error("Failed to send OTP email:", error instanceof Error ? error.message : error);
     throw new Error("Failed to send verification email");
   }
 }

@@ -63,7 +63,7 @@ export const OrganizationForm = ({ userId }: Props) => {
           username: session?.user?.name,
           email: session?.user?.email,
           organizationName: data.name,
-          category: data.category!,
+          category: data.category,
           logoUrl: data.logo,
           website: data.website,
         });
@@ -89,7 +89,11 @@ export const OrganizationForm = ({ userId }: Props) => {
         }
       } catch (error) {
         console.error("Failed to save vendor data:", error);
-        toast.error("Failed to save vendor data locally");
+        if (error instanceof Error) {
+          toast.error(`Failed to save vendor data: ${error.message}`);
+        } else {
+          toast.error("Failed to save vendor data. Please try again.");
+        }
       }
     });
   }
@@ -117,7 +121,7 @@ export const OrganizationForm = ({ userId }: Props) => {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Business Category</FormLabel>
-              <Select defaultValue={field.value} onValueChange={field.onChange}>
+              <Select defaultValue="Retailer" onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Business Category" />

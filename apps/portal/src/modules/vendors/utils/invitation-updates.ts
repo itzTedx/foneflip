@@ -27,7 +27,8 @@ export async function publishInvitationUpdate(update: InvitationUpdate) {
  */
 export async function publishInvitationUpdateViaHTTP(update: InvitationUpdate) {
   try {
-    const response = await fetch("http://localhost:4000/invitation-update", {
+    const wsServerUrl = "http://localhost:4000";
+    const response = await fetch(`${wsServerUrl}/invitation-update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

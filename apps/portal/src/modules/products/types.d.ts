@@ -11,6 +11,7 @@ import {
   productVariantOptionsTable,
   productVariantsTable,
 } from "@ziron/db/schema";
+import { Vendor } from "@ziron/db/types";
 
 import { Collection, Media, Seo } from "../collections/types";
 

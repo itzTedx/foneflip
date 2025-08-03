@@ -155,11 +155,9 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted/50">
               {errorInfo.icon}
             </div>
-
             {/* Header */}
             <h3 className="text-center font-semibold text-foreground text-lg">{errorInfo.title}</h3>
             <p className="mx-auto max-w-sm text-center text-muted-foreground text-sm">{errorInfo.description}</p>
-
             {/* Error Type and Severity */}
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
               {errorInfo.type && (
@@ -173,7 +171,6 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
                 </Badge>
               )}
             </div>
-
             {/* Suggestions */}
             <div className="mt-6 rounded-lg bg-muted/30 p-4">
               <h4 className="mb-2 font-medium text-foreground text-sm">What you can try:</h4>
@@ -183,9 +180,8 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
                 ))}
               </ul>
             </div>
-
             {/* Action Buttons */}
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className={`mt-6 grid gap-3 ${errorInfo.canRetry ? "grid-cols-3" : "grid-cols-2"}`}>
               {errorInfo.canRetry && (
                 <Button className="w-full" onClick={handleRetry}>
                   Try Again

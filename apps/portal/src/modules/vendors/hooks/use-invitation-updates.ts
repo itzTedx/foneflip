@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { io, Socket } from "socket.io-client";
 
@@ -65,8 +65,7 @@ export function useInvitationUpdates({ userId, invitationIds = [], onUpdate }: U
         });
       }
     };
-  }, [userId, invitationIds.join(","), onUpdate]);
-
+  }, [userId, useMemo(() => [...invitationIds].sort(), [invitationIds]), onUpdate]);
   // Cleanup on unmount
   useEffect(() => {
     return () => {

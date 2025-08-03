@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ziron/ui/tabs";
 
 import { useOnboarding } from "@/hooks/use-onboarding";
 import { clearOnboardingData } from "@/lib/storage/onboarding-storage";
-import { clearAllVendorData, getAllVendorData } from "@/lib/storage/vendor-storage";
+import { clearAllVendorData, getAllVendorData, VendorData } from "@/lib/storage/vendor-storage";
 
 interface OnboardingDataDisplayProps {
   userId: string;
@@ -18,7 +18,7 @@ interface OnboardingDataDisplayProps {
 export function OnboardingDataDisplay({ userId }: OnboardingDataDisplayProps) {
   const { progress, onboardingData, currentStep, isLoading, error, resetOnboarding } = useOnboarding(userId);
 
-  const [vendorData, setVendorData] = useState<any[]>([]);
+  const [vendorData, setVendorData] = useState<VendorData[]>([]);
   const [isLoadingVendors, setIsLoadingVendors] = useState(false);
 
   const loadVendorData = async () => {
@@ -185,19 +185,16 @@ export function OnboardingDataDisplay({ userId }: OnboardingDataDisplayProps) {
                     <h4 className="font-semibold">Documents Data</h4>
                     <div className="rounded bg-muted p-3 text-sm">
                       <p>
-                        <strong>Business License:</strong> {onboardingData.documents.businessLicense || "N/A"}
+                        <strong>Business License:</strong> {onboardingData.documents.tradeLicense || "N/A"}
                       </p>
                       <p>
                         <strong>Trade License:</strong> {onboardingData.documents.tradeLicense || "N/A"}
                       </p>
                       <p>
-                        <strong>Tax Certificate:</strong> {onboardingData.documents.taxCertificate || "N/A"}
+                        <strong>Emirates ID Front:</strong> {onboardingData.documents.emiratesIdFront || "N/A"}
                       </p>
                       <p>
-                        <strong>Bank Statement:</strong> {onboardingData.documents.bankStatement || "N/A"}
-                      </p>
-                      <p>
-                        <strong>ID Document:</strong> {onboardingData.documents.idDocument || "N/A"}
+                        <strong>Emirates ID Back:</strong> {onboardingData.documents.emiratesIdBack || "N/A"}
                       </p>
                     </div>
                   </div>

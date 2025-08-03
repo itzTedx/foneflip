@@ -22,8 +22,6 @@ export default async function VerificationPage({ searchParams }: { searchParams:
     redirect(`/onboarding/organization?userId=${session.user.id}`);
   }
 
-  console.log(session?.user);
-
   return (
     <div className="relative flex h-full items-center justify-center">
       <div className="flex flex-1 flex-col items-center justify-center">

@@ -7,7 +7,7 @@ import { initAuth } from "@ziron/auth";
 
 import { env } from "@/lib/env/server";
 
-const baseUrl = "http://localhost:3000";
+const baseUrl = env.PRODUCTION_URL;
 
 export const auth = initAuth({
   baseUrl,

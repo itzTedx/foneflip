@@ -338,7 +338,7 @@ export async function revokeInvitation(invitationId: string) {
 
 export async function updateExpiredInvitations() {
   return withErrorHandling("Update expired invitations", async () => {
-    const [updated] = await db
+    const updated = await db
       .update(vendorInvitations)
       .set({
         status: "expired",
@@ -353,22 +353,21 @@ export async function updateExpiredInvitations() {
       )
       .returning();
 
-    if (updated) {
-      // Invalidate vendor invitation caches for the updated invitation
+    if (updated.length > 0) {
+      // Invalidate vendor invitation caches for all updated invitations
       try {
-        await invalidateVendorInvitationCaches(updated);
-        log.info("Invalidated vendor invitation caches for expired invitation", {
-          invitationId: updated.id,
-          token: updated.token,
-          email: updated.vendorEmail,
+        await Promise.all(updated.map((invitation) => invalidateVendorInvitationCaches(invitation)));
+        log.info("Invalidated vendor invitation caches for expired invitations", {
+          count: updated.length,
+          invitationIds: updated.map((inv) => inv.id),
         });
       } catch (cacheError) {
-        log.warn("Failed to invalidate vendor invitation caches for expired invitation", { cacheError });
+        log.warn("Failed to invalidate vendor invitation caches for expired invitations", { cacheError });
       }
     }
 
-    log.success("Updated expired invitations", { invitationId: updated?.id });
-    return createSuccessResponse(updated, "Expired invitations updated successfully");
+    log.success("Updated expired invitations", { count: updated.length, invitationIds: updated.map((inv) => inv.id) });
+    return createSuccessResponse(updated, `Expired invitations updated successfully (${updated.length} invitations)`);
   });
 }
 
@@ -582,6 +581,15 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
 
     // Optimized cache revalidation. This now also revalidates the general vendors list
     // used on admin pages, by updating the underlying "PROFILE_ONLY" strategy.
+    try {
+      await invalidateVendorCaches(vendor.id);
+      log.info("Revalidated vendor caches after personal info update", {
+        vendorId: vendor.id,
+        type: "personal_info",
+      });
+    } catch (cacheError) {
+      log.warn("Failed to revalidate vendor caches after personal info update", { cacheError });
+    }
 
     return createSuccessResponse(updatedVendor[0], "Personal information updated successfully");
   });

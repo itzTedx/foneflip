@@ -58,7 +58,7 @@ export function OtpVerificationForm({ email }: Props) {
         if (result.error) {
           // Check if OTP is expired and show resend option
           const isExpired =
-            result.error.includes("expired") || result.error.includes("OTP_EXPIRED") || result.code === "OTP_EXPIRED";
+            result.code === "OTP_EXPIRED" || (result.error && /expired|OTP_EXPIRED/i.test(result.error));
           if (isExpired) {
             setShowResendOption(true);
             toast.error("OTP has expired. Please request a new one.");
