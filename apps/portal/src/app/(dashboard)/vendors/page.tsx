@@ -5,7 +5,7 @@ import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { hasPermission } from "@/modules/auth/actions/data-access";
-import { InviteModal } from "@/modules/vendors/components/invite-modal";
+import { InviteModal } from "@/modules/vendors/components/ui/invite-modal";
 import { InvitationHistory } from "@/modules/vendors/views/invitation-history";
 
 export default async function VendorsPage() {

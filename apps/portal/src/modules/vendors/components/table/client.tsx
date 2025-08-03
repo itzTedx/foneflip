@@ -54,7 +54,7 @@ interface Props {
   ]);
 
   // Real-time data updates
-  const { data: realTimeData, isConnected } = useInvitationData(data);
+  const { data: realTimeData } = useInvitationData(data);
 
   // nuqs pagination state (1-based for URL, 0-based for table)
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));

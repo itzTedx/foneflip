@@ -31,7 +31,7 @@ export default async function ProductsPage() {
         <AddButton href="/products/new" title="Product" />
       </PageHeader>
 
-      <Tabs className="mt-3 w-full px-6" defaultValue="all">
+      <Tabs className="w-full px-6" defaultValue="all">
         <TabsList className="flex h-auto w-full justify-between rounded-none border-b bg-transparent p-0">
           <div>
             <TabsTrigger

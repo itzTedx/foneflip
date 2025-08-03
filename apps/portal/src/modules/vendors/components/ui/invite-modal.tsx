@@ -6,7 +6,7 @@ import { IconVendors } from "@ziron/ui/assets/icons";
 import { Button } from "@ziron/ui/button";
 import { ResponsiveModal } from "@ziron/ui/responsive-modal";
 
-import InviteForm from "./invitation-form";
+import InviteForm from "../invitation-form";
 
 export const InviteModal = () => {
   const [open, setOpen] = useQueryState("new", parseAsBoolean.withDefault(false));
