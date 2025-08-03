@@ -208,33 +208,57 @@ export const getPendingInvitations = cache(
   }
 );
 
-// Get all vendors regardless of status
+// Get all vendors regardless of status with comprehensive caching (Redis + Next.js)
 export const getVendors = cache(
-  async () => {
-    const vendors = await db.query.vendorsTable.findMany({
-      orderBy: (vendors, { desc }) => desc(vendors.createdAt),
-      with: {
-        members: {
-          with: {
-            user: {
-              columns: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
+  async (): Promise<Vendor[]> => {
+    try {
+      // Try to get from Redis cache first
+      const cachedVendors = await redisCache.get<Vendor[]>(REDIS_KEYS.VENDORS);
+      if (cachedVendors) {
+        log.info("Vendors found in Redis cache", { count: cachedVendors.length });
+        return cachedVendors;
+      }
+
+      const vendors = await db.query.vendorsTable.findMany({
+        orderBy: (vendors, { desc }) => desc(vendors.createdAt),
+        with: {
+          members: {
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  emailVerified: true,
+                  image: true,
+                  role: true,
+                  banned: true,
+                  banReason: true,
+                  banExpires: true,
+                  twoFactorEnabled: true,
+                  createdAt: true,
+                  updatedAt: true,
+                },
               },
             },
           },
+          documents: true,
         },
-        documents: true,
-      },
-    });
+      });
 
-    return vendors;
+      // Cache the result in Redis
+      await redisCache.set(REDIS_KEYS.VENDORS, vendors, CACHE_DURATIONS.LONG);
+
+      log.info("Vendors fetched from database and cached", { count: vendors.length });
+      return vendors;
+    } catch (error) {
+      log.error("Failed to get vendors", { error });
+      return [];
+    }
   },
   [CACHE_TAGS.VENDOR, "all"],
   {
-    revalidate: CACHE_DURATIONS.MEDIUM,
+    revalidate: CACHE_DURATIONS.LONG,
     tags: [CACHE_TAGS.VENDOR, CACHE_TAGS.VENDOR_INVITATIONS],
   }
 );
@@ -255,7 +279,6 @@ export const getVendorById = async (id: string) =>
         // Try to get from Redis cache first
         const cachedVendor = await redisCache.get<Vendor>(REDIS_KEYS.VENDOR_BY_ID(id));
         if (cachedVendor) {
-          log.info("Vendor found in Redis cache", { id });
           return {
             success: true,
             data: cachedVendor,
@@ -272,7 +295,15 @@ export const getVendorById = async (id: string) =>
                     id: true,
                     name: true,
                     email: true,
+                    emailVerified: true,
+                    image: true,
                     role: true,
+                    banned: true,
+                    banReason: true,
+                    banExpires: true,
+                    twoFactorEnabled: true,
+                    createdAt: true,
+                    updatedAt: true,
                   },
                 },
               },
@@ -291,7 +322,6 @@ export const getVendorById = async (id: string) =>
         // Cache the vendor in Redis
         await redisCache.set(REDIS_KEYS.VENDOR_BY_ID(id), vendor, CACHE_DURATIONS.MEDIUM);
 
-        log.info("Vendor fetched from database and cached", { id });
         return {
           success: true,
           data: vendor,

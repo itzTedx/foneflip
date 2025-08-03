@@ -63,7 +63,7 @@ export const VendorCard = ({ vendor, showActions = true }: VendorCardProps) => {
               {vendor.businessName}
               {needsVerification && (
                 <SimpleTooltip tooltip="Verify documents">
-                  <IconAlertTriangle className="mt-0.5 size-3 shrink-0 text-yellow-600" />
+                  <IconAlertTriangle className="mt-0.5 size-3 shrink-0 text-warn" />
                 </SimpleTooltip>
               )}
             </h2>
@@ -77,7 +77,7 @@ export const VendorCard = ({ vendor, showActions = true }: VendorCardProps) => {
                 <DropdownMenuContent>
                   <DropdownMenuGroup>
                     <DropdownMenuItem asChild>
-                      <Link href={`/vendors/${vendor.slug}`}>
+                      <Link href={`/vendors/${vendor.id}?title=${encodeURIComponent(vendor.businessName ?? "")}`}>
                         <IconEdit aria-hidden="true" className="opacity-60" size={16} />
                         <span>View Details</span>
                       </Link>

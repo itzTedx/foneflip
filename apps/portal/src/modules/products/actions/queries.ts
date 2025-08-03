@@ -357,3 +357,73 @@ export const getProductsCount = cache(
     revalidate: CACHE_DURATIONS.MEDIUM,
   }
 );
+
+export const getProductsByVendorId = cache(
+  async (vendorId: string): Promise<ProductQueryResult[]> => {
+    if (!vendorId) {
+      return [];
+    }
+
+    return withCacheMonitoring(
+      async () => {
+        try {
+          // Try Redis first
+          const cached = await redisCache.get<ProductQueryResult[]>(REDIS_KEYS.PRODUCTS_BY_VENDOR(vendorId));
+          if (cached) {
+            return cached;
+          }
+        } catch (error) {
+          console.error("Error fetching products by vendor from Redis", error);
+        }
+
+        // Fallback to database
+        const products = await db.query.productsTable.findMany({
+          where: and(eq(productsTable.vendorId, vendorId), isNull(productsTable.deletedAt)),
+          with: {
+            seo: true,
+            settings: true,
+            attributes: {
+              with: {
+                options: true,
+              },
+            },
+            specifications: true,
+            variants: {
+              with: {
+                options: {
+                  with: {
+                    option: {
+                      with: {
+                        attribute: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            collection: true,
+            delivery: true,
+            images: { with: { media: true } },
+          },
+          orderBy: desc(productsTable.createdAt),
+        });
+
+        // Cache the result (don't fail if cache write fails)
+        try {
+          await redisCache.set(REDIS_KEYS.PRODUCTS_BY_VENDOR(vendorId), products, CACHE_DURATIONS.MEDIUM);
+        } catch (error) {
+          console.error("Redis cache write error:", error);
+        }
+
+        return products;
+      },
+      REDIS_KEYS.PRODUCTS_BY_VENDOR(vendorId),
+      false // This is a miss since we're fetching fresh data from database
+    );
+  },
+  ["products-by-vendor"],
+  {
+    tags: [CACHE_TAGS.PRODUCTS_BY_VENDOR, CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT, CACHE_TAGS.MEDIA],
+    revalidate: CACHE_DURATIONS.MEDIUM,
+  }
+);

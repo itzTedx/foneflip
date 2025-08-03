@@ -3,10 +3,13 @@ import { notFound } from "next/navigation";
 
 import { IconSettings2 } from "@tabler/icons-react";
 
+import { IconEmpty } from "@ziron/ui/assets/empty";
 import { Button } from "@ziron/ui/button";
 
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getProductsByVendorId } from "@/modules/products/actions/queries";
+import { ProductCard } from "@/modules/products/components/ui/product-card";
 import { getVendorById } from "@/modules/vendors/actions/queries";
 import { VendorProfileCard } from "@/modules/vendors/components/ui/profile-card";
 import VendorActions from "@/modules/vendors/components/ui/vendor-actions";
@@ -45,6 +48,8 @@ export default async function VendorDashboard({ params }: { params: Params }) {
   if (!vendor.success || !vendor.data) {
     return notFound();
   }
+
+  const products = await getProductsByVendorId(id);
 
   return (
     <MainWrapper className="px-4 md:px-6">
@@ -92,28 +97,14 @@ export default async function VendorDashboard({ params }: { params: Params }) {
           <PersonalInfoCard vendor={vendor.data} />
         </TabsContent>
         <TabsContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3" value="products">
-          {/* {products.length === 0 ? (
+          {products.length === 0 ? (
             <div className="col-span-full flex flex-col items-center justify-center py-12">
               <IconEmpty className="mb-4 size-60" />
-              <div className="text-muted-foreground text-lg">
-                No products found.
-              </div>
+              <div className="text-lg text-muted-foreground">No products found.</div>
             </div>
           ) : (
-            products.map((product) => (
-              <ProductCard
-                data={{
-                  ...product,
-                  vendor: {
-                    businessName: vendor.businessName,
-                    slug: vendor.slug,
-                  },
-                }}
-                key={product.id}
-                showAction={false}
-              />
-            ))
-          )} */}
+            products.map((product) => <ProductCard data={product} key={product.id} showAction={false} />)
+          )}
         </TabsContent>
       </Tabs>
     </MainWrapper>

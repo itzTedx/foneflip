@@ -726,16 +726,26 @@ export async function approveVendor({ vendorId }: { vendorId: string }) {
         return createErrorResponse("VALIDATION_ERROR", "Vendor is not pending approval");
       }
 
+      await db.transaction(async (trx) => {
+        const [updated] = await trx
+          .update(vendorsTable)
+          .set({
+            status: "approved",
+            approvedAt: new Date(),
+            approvedBy: session.user.id,
+            updatedAt: new Date(),
+          })
+          .where(eq(vendorsTable.id, vendorId))
+          .returning();
+
+        if (updated) {
+          await trx.update(users).set({ role: "vendor" }).where(eq(users.id, updated.id));
+        }
+
+        return updated;
+      });
+
       // Update vendor status to approved
-      await db
-        .update(vendorsTable)
-        .set({
-          status: "approved",
-          approvedAt: new Date(),
-          approvedBy: session.user.id,
-          updatedAt: new Date(),
-        })
-        .where(eq(vendorsTable.id, vendorId));
 
       log.success("Vendor approved successfully", {
         vendorId,

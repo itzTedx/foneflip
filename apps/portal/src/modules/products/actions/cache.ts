@@ -15,6 +15,7 @@ export const REDIS_KEYS = {
   PRODUCTS_COUNT: "products:count",
   PRODUCT_BY_SLUG: (slug: string) => `product:${slug}`,
   PRODUCT_BY_ID: (id: string) => `product:id:${id}`,
+  PRODUCTS_BY_VENDOR: (vendorId: string) => `products:vendor:${vendorId}`,
   PRODUCT_STATS: "products:stats",
   PRODUCT_POPULAR: "products:popular",
   PRODUCT_RECENT: "products:recent",
@@ -29,6 +30,7 @@ export const CACHE_TAGS = {
   PRODUCT_ARCHIVED: "product-archived",
   PRODUCT_BY_SLUG: "product-by-slug",
   PRODUCT_BY_ID: "product-by-id",
+  PRODUCTS_BY_VENDOR: "products-by-vendor",
   PRODUCT_DETAILS: "product-details",
   COLLECTION: "collection",
   MEDIA: "media",
@@ -42,6 +44,7 @@ export const revalidateProductCaches = (productId?: string, slug?: string) => {
   revalidateTag(CACHE_TAGS.PRODUCT_ACTIVE);
   revalidateTag(CACHE_TAGS.PRODUCT_ARCHIVED);
   revalidateTag(CACHE_TAGS.PRODUCT_DETAILS);
+  revalidateTag(CACHE_TAGS.PRODUCTS_BY_VENDOR);
   revalidateTag(CACHE_TAGS.MEDIA);
   revalidateTag(CACHE_TAGS.COLLECTION);
 
