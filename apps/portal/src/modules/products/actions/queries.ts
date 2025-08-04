@@ -38,7 +38,7 @@ export const existingProduct = cache(
 
       // Cache the result
       if (product) {
-        await redisCache.set(REDIS_KEYS.PRODUCT_BY_SLUG(slug), product, CACHE_DURATIONS.MEDIUM);
+        await redisCache.set(REDIS_KEYS.PRODUCT_BY_SLUG(slug), product, CACHE_DURATIONS.LONG);
       }
 
       return product;
@@ -47,7 +47,7 @@ export const existingProduct = cache(
   ["existing-product"],
   {
     tags: [CACHE_TAGS.PRODUCT_BY_SLUG],
-    revalidate: CACHE_DURATIONS.MEDIUM,
+    revalidate: CACHE_DURATIONS.LONG,
   }
 );
 
@@ -144,7 +144,7 @@ export const fetchProducts = cache(
   },
   [CACHE_TAGS.PRODUCTS, "dynamic"],
   {
-    revalidate: CACHE_DURATIONS.MEDIUM,
+    revalidate: CACHE_DURATIONS.LONG,
     tags: [CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT, CACHE_TAGS.COLLECTION, CACHE_TAGS.MEDIA],
   }
 );
@@ -217,7 +217,7 @@ export const getProducts = cache(
         });
 
         // Cache the result
-        await redisCache.set(REDIS_KEYS.PRODUCTS, products, CACHE_DURATIONS.MEDIUM);
+        await redisCache.set(REDIS_KEYS.PRODUCTS, products, CACHE_DURATIONS.LONG);
 
         return products;
       },
@@ -228,7 +228,7 @@ export const getProducts = cache(
   ["get-products"],
   {
     tags: [CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT, CACHE_TAGS.COLLECTION, CACHE_TAGS.MEDIA],
-    revalidate: CACHE_DURATIONS.MEDIUM,
+    revalidate: CACHE_DURATIONS.LONG,
   }
 );
 
@@ -284,7 +284,7 @@ export const getProductById = cache(
         // Cache the result (don't fail if cache write fails)
         if (product) {
           try {
-            await redisCache.set(REDIS_KEYS.PRODUCT_BY_ID(id), product, CACHE_DURATIONS.MEDIUM);
+            await redisCache.set(REDIS_KEYS.PRODUCT_BY_ID(id), product, CACHE_DURATIONS.LONG);
           } catch (error) {
             console.error("Redis cache write error:", error);
           }
@@ -299,7 +299,7 @@ export const getProductById = cache(
   [CACHE_TAGS.PRODUCT_BY_ID, "id"],
   {
     tags: [CACHE_TAGS.PRODUCT_BY_ID, CACHE_TAGS.PRODUCT, CACHE_TAGS.COLLECTION, CACHE_TAGS.MEDIA],
-    revalidate: CACHE_DURATIONS.MEDIUM,
+    revalidate: CACHE_DURATIONS.LONG,
   }
 );
 
@@ -343,7 +343,7 @@ export const getProductsCount = cache(
           .then((result) => result[0]?.count ?? 0);
 
         // Cache the result
-        await redisCache.set(REDIS_KEYS.PRODUCTS_COUNT, countResult, CACHE_DURATIONS.MEDIUM);
+        await redisCache.set(REDIS_KEYS.PRODUCTS_COUNT, countResult, CACHE_DURATIONS.LONG);
 
         return countResult;
       },
@@ -354,7 +354,7 @@ export const getProductsCount = cache(
   ["get-products-count"],
   {
     tags: [CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT],
-    revalidate: CACHE_DURATIONS.MEDIUM,
+    revalidate: CACHE_DURATIONS.LONG,
   }
 );
 
@@ -410,7 +410,7 @@ export const getProductsByVendorId = cache(
 
         // Cache the result (don't fail if cache write fails)
         try {
-          await redisCache.set(REDIS_KEYS.PRODUCTS_BY_VENDOR(vendorId), products, CACHE_DURATIONS.MEDIUM);
+          await redisCache.set(REDIS_KEYS.PRODUCTS_BY_VENDOR(vendorId), products, CACHE_DURATIONS.LONG);
         } catch (error) {
           console.error("Redis cache write error:", error);
         }
@@ -424,6 +424,6 @@ export const getProductsByVendorId = cache(
   ["products-by-vendor"],
   {
     tags: [CACHE_TAGS.PRODUCTS_BY_VENDOR, CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT, CACHE_TAGS.MEDIA],
-    revalidate: CACHE_DURATIONS.MEDIUM,
+    revalidate: CACHE_DURATIONS.LONG,
   }
 );

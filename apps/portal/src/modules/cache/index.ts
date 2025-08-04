@@ -28,6 +28,10 @@ export const CACHE_TAGS = {
   VENDOR_DOCUMENTS: "vendor-documents",
   VENDOR_BUSINESS: "vendor-business",
   VENDOR_PERSONAL: "vendor-personal",
+  USER: "user",
+  USERS: "users",
+  USER_BY_ID: "user-by-id",
+  USER_BY_EMAIL: "user-by-email",
 } as const;
 
 // Redis cache keys
@@ -55,6 +59,12 @@ export const REDIS_KEYS = {
   VENDOR_INVITATION_BY_TOKEN: (token: string) => `vendor-invitation:token:${token}`,
   VENDOR_INVITATION_BY_EMAIL: (email: string) => `vendor-invitation:email:${email}`,
   VENDOR_STATS: "vendors:stats",
+  USERS: "users:all",
+  USERS_COUNT: "users:count",
+  USERS_METADATA: "users:all:metadata",
+  USER_BY_ID: (id: string) => `user:id:${id}`,
+  USER_BY_EMAIL: (email: string) => `user:email:${email}`,
+  USER_STATS: "users:stats",
 } as const;
 
 // Redis cache utilities with improved typing and error handling

@@ -76,7 +76,7 @@
 
 :root {
   --background: oklch(0.9849 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: oklch(14.027% 0.00224 286.01);
 
   --primary: oklch(0.5173 0.272 274.81);
   --primary-foreground: oklch(0.9313 0.0351 289.23);
@@ -134,7 +134,7 @@
 }
 
 .dark {
-  --background: oklch(14.437% 0.00924 307.85);
+  --background: oklch(0.1479 0.0077 285.76);
   --foreground: oklch(0.985 0 0);
 
   --primary: oklch(53.869% 0.24905 277.532);
@@ -154,7 +154,7 @@
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
 
-  --accent: oklch(0.269 0 0);
+  --accent: oklch(25.197% 0.00003 271.152);
   --accent-foreground: oklch(0.985 0 0);
 
   --destructive: oklch(0.6139 0.2142 22.34);

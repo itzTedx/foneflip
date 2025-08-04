@@ -45,8 +45,8 @@ export default function InviteForm({ defaultValues }: { defaultValues?: Partial<
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="space-y-4 p-4">
+      <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="space-y-4">
           <FormField
             control={form.control}
             name="name"
@@ -77,7 +77,7 @@ export default function InviteForm({ defaultValues }: { defaultValues?: Partial<
           />
         </div>
 
-        <div className="flex items-center justify-between gap-3 px-4 pt-1 pb-3">
+        <div className="flex items-center justify-between gap-3">
           <FormField
             control={form.control}
             name="expiresIn"

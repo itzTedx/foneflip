@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogContainer,
   DialogContent,
+  DialogContentContainer,
   DialogDescription,
   DialogHeader,
   DialogIcon,
@@ -78,7 +79,7 @@ export const ResponsiveModal = ({
             </DialogHeader>
           </DialogContainer>
         )}
-        {children}
+        <DialogContentContainer>{children}</DialogContentContainer>
       </DialogContent>
     </Dialog>
   );
