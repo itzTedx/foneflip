@@ -33,6 +33,7 @@ import { authClient } from "@/lib/auth/client";
 
 import { AvatarUpload } from "./_components/avatar-upload";
 import { ChangePassword } from "./_components/change-password";
+import { TwoFactor } from "./_components/two-factor";
 import { ProfileFormType, profileSchema } from "./profile-schema";
 import { getSessionIcon } from "./utils";
 
@@ -189,6 +190,7 @@ export function ProfileForm({ activeSessions, initialData }: Props) {
                     </Button>
                   </ChangePassword>
                 </div>
+                {/* <TestTwoFA session={initialData} /> */}
                 <FormField
                   control={form.control}
                   name="twoFactorEnabled"
@@ -199,16 +201,11 @@ export function ProfileForm({ activeSessions, initialData }: Props) {
                         <p className="text-muted-foreground text-sm">Add an extra layer of security to your account.</p>
                       </div>
                       <FormControl>
-                        {/* <Switch
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setIsTwoFactorModalOpen(true);
-                            } else {
-                              setIsDisableTwoFactorModalOpen(true);
-                          }
-                          }}
-                          /> */}
+                        <TwoFactor
+                          isTwoFactorEnabled={initialData.user.twoFactorEnabled}
+                          onCheckedChange={field.onChange}
+                          {...field}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
