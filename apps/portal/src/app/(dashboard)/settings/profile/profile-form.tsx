@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { UAParser } from "ua-parser-js";
 
 import { Session as SessionType } from "@ziron/auth";
+import { Alert, AlertDescription, AlertTitle } from "@ziron/ui/alert";
 import { IconSaveFilled } from "@ziron/ui/assets/icons";
 import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
@@ -31,6 +32,7 @@ import { formatDate } from "@ziron/utils";
 import { authClient } from "@/lib/auth/client";
 
 import { AvatarUpload } from "./_components/avatar-upload";
+import { ChangePassword } from "./_components/change-password";
 import { ProfileFormType, profileSchema } from "./profile-schema";
 import { getSessionIcon } from "./utils";
 
@@ -181,9 +183,11 @@ export function ProfileForm({ activeSessions, initialData }: Props) {
                     <h3 className="font-medium">Change Password</h3>
                     <p className="text-muted-foreground text-sm">Set a new password for your account.</p>
                   </div>
-                  <Button type="button" variant="outline">
-                    Change Password
-                  </Button>
+                  <ChangePassword>
+                    <Button type="button" variant="outline">
+                      Change Password
+                    </Button>
+                  </ChangePassword>
                 </div>
                 <FormField
                   control={form.control}
@@ -212,7 +216,28 @@ export function ProfileForm({ activeSessions, initialData }: Props) {
               </CardContent>
             </Card>
           </div>
-          <div>
+          <div className="space-y-3">
+            {initialData.user.emailVerified ? null : (
+              <Alert>
+                <AlertTitle>Verify Your Email Address</AlertTitle>
+                <AlertDescription className="text-muted-foreground">
+                  Please verify your email address. Check your inbox for the verification email. If you haven't received
+                  the email, click the button below to resend.
+                  <Button
+                    className="mt-2"
+                    onClick={async () => {
+                      await authClient.sendVerificationEmail({
+                        email: initialData.user.email || "",
+                      });
+                    }}
+                    size="sm"
+                    variant="secondary"
+                  >
+                    Send Verification Email
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
             <Card className="h-fit">
               <CardHeader className="flex items-center justify-between">
                 <div>
