@@ -57,7 +57,8 @@
     "remark-gfm": "^4.0.1",
     "sharp": "^0.34.3",
     "socket.io-client": "^4.8.1",
-    "sonner": "^2.0.6"
+    "sonner": "^2.0.6",
+    "ua-parser-js": "^2.0.4"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",

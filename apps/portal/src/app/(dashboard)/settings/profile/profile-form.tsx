@@ -4,9 +4,11 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { APIError } from "better-auth/api";
+import type { Session } from "better-auth/types";
 import { toast } from "sonner";
+import { UAParser } from "ua-parser-js";
 
-import { Session } from "@ziron/auth";
+import { Session as SessionType } from "@ziron/auth";
 import { IconSaveFilled } from "@ziron/ui/assets/icons";
 import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
@@ -24,7 +26,7 @@ import {
 } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { LoadingSwap } from "@ziron/ui/loading-swap";
-import { formatDate, formatUserAgent } from "@ziron/utils";
+import { formatDate } from "@ziron/utils";
 
 import { authClient } from "@/lib/auth/client";
 
@@ -33,20 +35,11 @@ import { ProfileFormType, profileSchema } from "./profile-schema";
 import { getSessionIcon } from "./utils";
 
 interface Props {
-  initialData: Session;
-  sessions: {
-    token: string;
-    expiresAt: Date;
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    userId: string;
-    ipAddress?: string | null | undefined | undefined;
-    userAgent?: string | null | undefined | undefined;
-  }[];
+  initialData: SessionType;
+  activeSessions: Session[];
 }
 
-export function ProfileForm({ initialData, sessions }: Props) {
+export function ProfileForm({ activeSessions, initialData }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isRevokePending, startRevokeTransition] = useTransition();
   const [isRevokeOthersPending, startRevokeOthersTransition] = useTransition();
@@ -109,8 +102,8 @@ export function ProfileForm({ initialData, sessions }: Props) {
 
   //   Ensure current device session is always first
   const sortedSessions = [
-    ...sessions.filter((s) => s.id === initialData.session.id),
-    ...sessions.filter((s) => s.id !== initialData.session.id),
+    ...activeSessions.filter((s) => s.token === initialData.session.token),
+    ...activeSessions.filter((s) => s.token !== initialData.session.token),
   ];
 
   return (
@@ -126,154 +119,159 @@ export function ProfileForm({ initialData, sessions }: Props) {
             </LoadingSwap>
           </Button>
         </div>
-        <div className="gap-3 space-y-3 md:columns-2">
-          <Card className="break-inside-avoid">
-            <CardHeader>
-              <CardTitle>Profile</CardTitle>
-              <CardDescription>This is how others will see you on the site.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-3 items-center justify-center gap-3">
-              <div className="col-span-2 space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your Email" {...field} disabled />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="avatarUrl"
-                render={() => (
-                  <FormItem>
-                    <FormControl>
-                      <AvatarUpload avatar={avatar ?? null} form={form} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="break-inside-avoid">
-            <CardHeader>
-              <CardTitle>Security</CardTitle>
-              <CardDescription>Manage your account security settings.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                  <h3 className="font-medium">Change Password</h3>
-                  <p className="text-muted-foreground text-sm">Set a new password for your account.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-3">
+            <Card className="h-fit">
+              <CardHeader>
+                <CardTitle>Profile</CardTitle>
+                <CardDescription>This is how others will see you on the site.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-3 items-center justify-center gap-3">
+                <div className="col-span-2 space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your Email" {...field} disabled />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-                <Button type="button" variant="outline">
-                  Change Password
-                </Button>
-              </div>
-              <FormField
-                control={form.control}
-                name="twoFactorEnabled"
-                render={({ field }) => (
-                  <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">Two-Factor Authentication</FormLabel>
-                      <p className="text-muted-foreground text-sm">Add an extra layer of security to your account.</p>
-                    </div>
-                    <FormControl>
-                      {/* <Switch
+                <FormField
+                  control={form.control}
+                  name="avatarUrl"
+                  render={() => (
+                    <FormItem>
+                      <FormControl>
+                        <AvatarUpload avatar={avatar ?? null} form={form} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            <Card className="h-fit">
+              <CardHeader>
+                <CardTitle>Security</CardTitle>
+                <CardDescription>Manage your account security settings.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <div>
+                    <h3 className="font-medium">Change Password</h3>
+                    <p className="text-muted-foreground text-sm">Set a new password for your account.</p>
+                  </div>
+                  <Button type="button" variant="outline">
+                    Change Password
+                  </Button>
+                </div>
+                <FormField
+                  control={form.control}
+                  name="twoFactorEnabled"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">Two-Factor Authentication</FormLabel>
+                        <p className="text-muted-foreground text-sm">Add an extra layer of security to your account.</p>
+                      </div>
+                      <FormControl>
+                        {/* <Switch
                         checked={field.value}
                         onCheckedChange={(checked) => {
                           if (checked) {
                             setIsTwoFactorModalOpen(true);
-                          } else {
-                            setIsDisableTwoFactorModalOpen(true);
+                            } else {
+                              setIsDisableTwoFactorModalOpen(true);
                           }
-                        }}
-                      /> */}
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="break-inside-avoid">
-            <CardHeader className="flex items-center justify-between">
-              <div>
-                <CardTitle>Recent Login Activity</CardTitle>
-                <CardDescription>A log of your recent login activity.</CardDescription>
-              </div>
-              <Button
-                disabled={isRevokePending}
-                onClick={handleRevokeOtherSessions}
-                size="sm"
-                type="button"
-                variant="outline"
-              >
-                <LoadingSwap className="text-xs" isLoading={isRevokePending}>
-                  Logout from other devices
-                </LoadingSwap>
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {sortedSessions.map((session) => (
-                  <div className="flex items-center gap-2" key={session.token}>
-                    {getSessionIcon(session.userAgent)}
-                    <div>
-                      <p className="flex items-center gap-1 text-sm">
-                        {formatUserAgent(session.userAgent)}
-                        {session.id === initialData.session.id && (
-                          <>
-                            {" • "}
-                            <Badge>This device</Badge>
-                          </>
-                        )}
-                      </p>
-                      <p className="text-muted-foreground text-xs">
-                        {formatDate(session.updatedAt ?? "", {
-                          includeTime: true,
-                        })}
-                      </p>
+                          }}
+                          /> */}
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+          </div>
+          <div>
+            <Card className="h-fit">
+              <CardHeader className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Recent Login Activity</CardTitle>
+                  <CardDescription>A log of your recent login activity.</CardDescription>
+                </div>
+                <Button
+                  disabled={isRevokeOthersPending}
+                  onClick={handleRevokeOtherSessions}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  <LoadingSwap className="text-xs" isLoading={isRevokePending}>
+                    Logout from other devices
+                  </LoadingSwap>
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {sortedSessions.map((session) => (
+                    <div className="flex items-center gap-2" key={session.token}>
+                      {getSessionIcon(session.userAgent)}
+                      <div>
+                        <p className="flex items-center gap-1.5 text-sm">
+                          {new UAParser(session.userAgent ?? "").getBrowser().name} on{" "}
+                          {new UAParser(session.userAgent ?? "").getOS().name}{" "}
+                          {new UAParser(session.userAgent ?? "").getOS().version}
+                          {session.token === initialData.session.token && (
+                            <>
+                              {" • "}
+                              <Badge>This device</Badge>
+                            </>
+                          )}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {formatDate(session.updatedAt ?? "", {
+                            includeTime: true,
+                          })}
+                        </p>
+                      </div>
+                      {session.token !== initialData.session.token && (
+                        <Button
+                          className="ml-auto"
+                          disabled={isRevokePending}
+                          onClick={() => handleRevokeSession(session.token)}
+                          size="sm"
+                          type="button"
+                          variant="destructive"
+                        >
+                          <LoadingSwap isLoading={isRevokePending}>Logout</LoadingSwap>
+                        </Button>
+                      )}
                     </div>
-                    {session.id !== initialData.session.id && (
-                      <Button
-                        className="ml-auto"
-                        disabled={isRevokeOthersPending}
-                        onClick={() => handleRevokeSession(session.token)}
-                        size="sm"
-                        type="button"
-                        variant="destructive"
-                      >
-                        <LoadingSwap isLoading={isRevokeOthersPending}>Logout</LoadingSwap>
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </form>
     </Form>
