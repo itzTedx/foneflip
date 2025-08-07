@@ -78,7 +78,7 @@ export default function VendorRegisterForm({ invitation }: Props) {
 
   return (
     <Form {...form}>
-      <form className="mt-9" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="z-10 mt-9" onSubmit={form.handleSubmit(onSubmit)}>
         <div className="grid gap-6">
           <FormField
             control={form.control}

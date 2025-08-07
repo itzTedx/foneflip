@@ -4,7 +4,7 @@ import { unstable_cache as cache } from "next/cache";
 
 import { and, desc, eq, gt, isNull, or } from "drizzle-orm";
 
-import { vendorInvitations, vendorsTable } from "@ziron/db/schema";
+import { vendorInvitations, vendors } from "@ziron/db/schema";
 import { db } from "@ziron/db/server";
 import type { Vendor } from "@ziron/db/types";
 
@@ -219,10 +219,15 @@ export const getVendors = cache(
         return cachedVendors;
       }
 
-      const vendors = await db.query.vendorsTable.findMany({
+      const vendors = await db.query.vendors.findMany({
         orderBy: (vendors, { desc }) => desc(vendors.createdAt),
         with: {
           documents: true,
+          members: {
+            with: {
+              user: true,
+            },
+          },
         },
       });
 
@@ -265,8 +270,8 @@ export const getVendorById = async (id: string) =>
           };
         }
 
-        const vendor = await db.query.vendorsTable.findFirst({
-          where: eq(vendorsTable.id, id),
+        const vendor = await db.query.vendors.findFirst({
+          where: eq(vendors.id, id),
           with: {
             members: {
               with: {

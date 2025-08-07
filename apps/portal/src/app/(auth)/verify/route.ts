@@ -78,14 +78,13 @@ async function verifyAndUseInvitation(token: string) {
     // Publish real-time update
     try {
       await publishInvitationUpdateRedundant({
+        ...updated,
+        status: "onboarding",
         invitationId: updated.id,
-        status: "accepted",
-        usedAt: updated.usedAt,
-        expiresAt: updated.expiresAt,
       });
       log.info("Successfully published real-time invitation update", {
         invitationId: updated.id,
-        status: "accepted",
+        status: updated.status,
       });
     } catch (updateError) {
       log.warn("Failed to publish real-time invitation update", { updateError });

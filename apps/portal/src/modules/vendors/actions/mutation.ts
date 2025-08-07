@@ -4,12 +4,13 @@ import { headers } from "next/headers";
 
 import { addHours } from "date-fns";
 
-import { members, users, vendorDocumentsTable, vendorInvitations, vendorsTable } from "@ziron/db/schema";
+import { members, users, vendorDocumentsTable, vendorInvitations, vendors } from "@ziron/db/schema";
 import { and, db, eq, lt } from "@ziron/db/server";
 import { sendEmail } from "@ziron/email";
 import VerificationEmail from "@ziron/email/templates/onboarding/token-verification";
 import VendorApprovalEmail from "@ziron/email/templates/onboarding/vendor-approval";
 import VendorRejectionEmail from "@ziron/email/templates/onboarding/vendor-rejection";
+import { enqueue, JobType } from "@ziron/queue";
 import { slugify } from "@ziron/utils";
 import { documentsSchema, invitationSchema, organizationSchema, personalInfoSchema, z } from "@ziron/validators";
 
@@ -399,7 +400,7 @@ export async function createOrganization(formData: unknown) {
     }
 
     // Find the vendor that was just created by the organization name
-    const vendor = await db.query.vendorsTable.findFirst({
+    const vendor = await db.query.vendors.findFirst({
       where: (v, { eq }) => eq(v.slug, slugify(name)),
     });
 
@@ -409,12 +410,12 @@ export async function createOrganization(formData: unknown) {
 
     // Update vendor with additional information
     const [updatedVendor] = await db
-      .update(vendorsTable)
+      .update(vendors)
       .set({
         businessCategory: category,
         website,
       })
-      .where(eq(vendorsTable.id, vendor.id))
+      .where(eq(vendors.id, vendor.id))
       .returning();
 
     if (!updatedVendor) {
@@ -483,14 +484,14 @@ export async function createAdminOrganization(formData: unknown) {
     }
 
     // Check if vendor already exists by slug
-    let vendor = await db.query.vendorsTable.findFirst({
+    let vendor = await db.query.vendors.findFirst({
       where: (v, { eq }) => eq(v.slug, slugify(name)),
     });
 
     if (!vendor) {
       // Create a new vendor profile for admin
       const [newVendor] = await db
-        .insert(vendorsTable)
+        .insert(vendors)
         .values({
           businessName: name,
           slug: slugify(name),
@@ -507,7 +508,7 @@ export async function createAdminOrganization(formData: unknown) {
     } else {
       // Update existing vendor profile to admin status
       const [updatedVendor] = await db
-        .update(vendorsTable)
+        .update(vendors)
         .set({
           businessName: name,
           businessCategory: category,
@@ -517,7 +518,7 @@ export async function createAdminOrganization(formData: unknown) {
           approvedBy: userId,
           updatedAt: new Date(),
         })
-        .where(eq(vendorsTable.id, vendor.id))
+        .where(eq(vendors.id, vendor.id))
         .returning();
 
       vendor = updatedVendor;
@@ -586,7 +587,7 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
 
     // Update vendor metadata with personal information
     await db
-      .update(vendorsTable)
+      .update(vendors)
       .set({
         vendorName: fullName,
         vendorNumber: mobile,
@@ -594,7 +595,7 @@ export const updateVendorPersonalInfoAction = async (formData: unknown) => {
         vendorPosition: position,
         updatedAt: new Date(),
       })
-      .where(eq(vendorsTable.id, vendor.id))
+      .where(eq(vendors.id, vendor.id))
       .returning();
 
     log.success("Vendor personal info updated successfully", {
@@ -679,14 +680,14 @@ export async function updateVendorDocuments(formData: unknown) {
 
       // Update vendor status to pending approval
       await trx
-        .update(vendorsTable)
+        .update(vendors)
         .set({ status: "pending_approval", updatedAt: new Date() })
-        .where(eq(vendorsTable.id, vendor.id));
+        .where(eq(vendors.id, vendor.id));
     });
 
     // Fetch updated vendor data
-    const updatedVendor = await db.query.vendorsTable.findFirst({
-      where: eq(vendorsTable.id, vendor.id),
+    const updatedVendor = await db.query.vendors.findFirst({
+      where: eq(vendors.id, vendor.id),
     });
 
     log.success("Vendor documents updated successfully", {
@@ -700,6 +701,27 @@ export async function updateVendorDocuments(formData: unknown) {
       log.info("Revalidated vendor document caches", { vendorId: vendor.id, type: "documents" });
     } catch (cacheError) {
       log.warn("Failed to revalidate vendor document caches", { cacheError });
+    }
+
+    // Send notifications to all admin users about the new vendor document submission
+    try {
+      const adminUsers = await db.select({ id: users.id }).from(users).where(eq(users.role, "admin"));
+
+      for (const adminUser of adminUsers) {
+        await enqueue(JobType.Notification, {
+          userId: adminUser.id,
+          type: "vendor_document_submission",
+          message: `New vendor document submission from ${vendor.businessName || vendor.slug} requires review.`,
+        });
+      }
+
+      log.info("Sent notifications to admin users", {
+        vendorId: vendor.id,
+        adminCount: adminUsers.length,
+        vendorName: vendor.businessName || vendor.slug,
+      });
+    } catch (notificationError) {
+      log.warn("Failed to send admin notifications", { notificationError });
     }
 
     return createSuccessResponse(updatedVendor, "Documents uploaded successfully");
@@ -726,20 +748,36 @@ export async function approveVendor({ vendorId }: { vendorId: string }) {
         return createErrorResponse("VALIDATION_ERROR", "Vendor is not pending approval");
       }
 
+      let vendorRole = null;
       await db.transaction(async (trx) => {
+        // Update vendor status to approved
         const [updated] = await trx
-          .update(vendorsTable)
+          .update(vendors)
           .set({
             status: "approved",
             approvedAt: new Date(),
             approvedBy: session.user.id,
             updatedAt: new Date(),
           })
-          .where(eq(vendorsTable.id, vendorId))
+          .where(eq(vendors.id, vendorId))
           .returning();
 
         if (updated) {
-          await trx.update(users).set({ role: "vendor" }).where(eq(users.id, updated.id));
+          // Find the user associated with this vendor through the members table
+          const memberRecord = await trx.query.members.findFirst({
+            where: (members, { eq }) => eq(members.vendorId, vendorId),
+          });
+
+          if (memberRecord) {
+            // Update the user's role to vendor
+            const [updatedUser] = await trx
+              .update(users)
+              .set({ role: "vendor" })
+              .where(eq(users.id, memberRecord.userId))
+              .returning();
+
+            vendorRole = updatedUser?.role;
+          }
         }
 
         return updated;
@@ -749,15 +787,32 @@ export async function approveVendor({ vendorId }: { vendorId: string }) {
 
       log.success("Vendor approved successfully", {
         vendorId,
+        status: vendorRole,
         approvedBy: session.user.id,
       });
 
-      // Revalidate vendor caches
+      // Revalidate vendor and user caches
       try {
         await invalidateVendorCaches(vendorId);
+
+        // Also invalidate user caches since we updated the user's role
+        const memberRecord = await db.query.members.findFirst({
+          where: (members, { eq }) => eq(members.vendorId, vendorId),
+        });
+
+        if (memberRecord) {
+          const { invalidateUserCaches } = await import("@/modules/users/actions/cache");
+          await invalidateUserCaches(memberRecord.userId);
+          log.info("Revalidated user caches after vendor approval", {
+            vendorId,
+            userId: memberRecord.userId,
+            type: "approval",
+          });
+        }
+
         log.info("Revalidated vendor caches after approval", { vendorId, type: "approval" });
       } catch (cacheError) {
-        log.warn("Failed to revalidate vendor caches after approval", { cacheError });
+        log.warn("Failed to revalidate caches after approval", { cacheError });
       }
 
       // Send approval email to the vendor
@@ -809,13 +864,13 @@ export async function rejectVendor({ vendorId, reason }: { vendorId: string; rea
 
       // Update vendor status to rejected
       await db
-        .update(vendorsTable)
+        .update(vendors)
         .set({
           status: "rejected",
           rejectionReason: reason.trim(),
           updatedAt: new Date(),
         })
-        .where(eq(vendorsTable.id, vendorId));
+        .where(eq(vendors.id, vendorId));
 
       log.success("Vendor rejected successfully", {
         vendorId,

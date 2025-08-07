@@ -83,7 +83,7 @@ export async function getCurrentUserVendor(userId?: string) {
       throw new Error("No vendor membership found for current user");
     }
 
-    const vendor = await db.query.vendorsTable.findFirst({
+    const vendor = await db.query.vendors.findFirst({
       where: (vendors, { eq }) => eq(vendors.id, memberRecord.vendorId),
     });
 
@@ -99,7 +99,7 @@ export async function getCurrentUserVendor(userId?: string) {
  */
 export async function getVendorById(vendorId: string) {
   try {
-    const vendor = await db.query.vendorsTable.findFirst({
+    const vendor = await db.query.vendors.findFirst({
       where: (vendors, { eq }) => eq(vendors.id, vendorId),
     });
 

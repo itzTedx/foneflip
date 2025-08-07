@@ -2,7 +2,7 @@ import redis from "@ziron/redis";
 
 interface InvitationUpdate {
   invitationId: string;
-  status: "pending" | "accepted" | "expired" | "revoked";
+  status: "pending" | "accepted" | "expired" | "revoked" | "onboarding";
   usedAt?: Date | null;
   revokedAt?: Date | null;
   expiresAt?: Date | null;

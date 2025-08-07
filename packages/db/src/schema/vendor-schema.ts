@@ -49,7 +49,7 @@ export const vendorDocumentTypeEnum = pgEnum("vendor_document_type", [
 export const vendorDocumentFormatEnum = pgEnum("vendor_document_format", ["pdf", "jpg", "png"]);
 
 // Vendors table
-export const vendorsTable = pgTable(
+export const vendors = pgTable(
   "vendors",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -98,7 +98,7 @@ export const vendorDocumentsTable = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     vendorId: uuid("vendor_id")
       .notNull()
-      .references(() => vendorsTable.id, { onDelete: "cascade" }),
+      .references(() => vendors.id, { onDelete: "cascade" }),
     documentType: vendorDocumentTypeEnum("document_type").notNull(),
     documentFormat: vendorDocumentFormatEnum("document_format").notNull(),
     url: varchar("url", { length: 255 }).notNull(),
@@ -116,19 +116,19 @@ export const members = pgTable(
   "members",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    vendorId: uuid("vendor_id")
+      .notNull()
+      .references(() => vendors.id, { onDelete: "cascade" }),
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    vendorsId: uuid("vendors_id")
-      .notNull()
-      .references(() => vendorsTable.id, { onDelete: "cascade" }),
     role: organizationRolesEnum("role").notNull().default("member"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [
-    uniqueIndex("idx_member_user_vendor").on(table.userId, table.vendorsId),
+    uniqueIndex("idx_member_user_vendor").on(table.userId, table.vendorId),
     index("idx_member_user_id").on(table.userId),
-    index("idx_member_vendor_id").on(table.vendorsId),
+    index("idx_member_vendor_id").on(table.vendorId),
     index("idx_member_role").on(table.role),
   ]
 );
@@ -161,7 +161,7 @@ export const vendorInvitations = pgTable(
 );
 
 // Relations
-export const vendorsRelations = relations(vendorsTable, ({ many }) => ({
+export const vendorsRelations = relations(vendors, ({ many }) => ({
   members: many(members),
   documents: many(vendorDocumentsTable),
 }));
@@ -171,16 +171,16 @@ export const memberRelations = relations(members, ({ one }) => ({
     fields: [members.userId],
     references: [users.id],
   }),
-  vendor: one(vendorsTable, {
-    fields: [members.vendorsId],
-    references: [vendorsTable.id],
+  vendor: one(vendors, {
+    fields: [members.vendorId],
+    references: [vendors.id],
   }),
 }));
 
 export const vendorDocumentsRelations = relations(vendorDocumentsTable, ({ one }) => ({
-  vendor: one(vendorsTable, {
+  vendor: one(vendors, {
     fields: [vendorDocumentsTable.vendorId],
-    references: [vendorsTable.id],
+    references: [vendors.id],
   }),
 }));
 

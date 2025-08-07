@@ -1,4 +1,12 @@
-
+CREATE TYPE "public"."roles" AS ENUM('user', 'vendor', 'admin', 'dev');--> statement-breakpoint
+CREATE TYPE "public"."collection_status" AS ENUM('active', 'archived', 'draft');--> statement-breakpoint
+CREATE TYPE "public"."product_condition" AS ENUM('pristine', 'excellent', 'good', 'new');--> statement-breakpoint
+CREATE TYPE "public"."product_status" AS ENUM('active', 'archived', 'draft');--> statement-breakpoint
+CREATE TYPE "public"."invitation_status" AS ENUM('pending', 'accepted', 'expired', 'revoked', 'onboarding');--> statement-breakpoint
+CREATE TYPE "public"."organization_roles" AS ENUM('owner', 'admin', 'member');--> statement-breakpoint
+CREATE TYPE "public"."vendor_document_format" AS ENUM('pdf', 'jpg', 'png');--> statement-breakpoint
+CREATE TYPE "public"."vendor_document_type" AS ENUM('trade_license', 'emirates_id_front', 'emirates_id_back', 'signature_stamp');--> statement-breakpoint
+CREATE TYPE "public"."vendor_status" AS ENUM('onboarding', 'pending_approval', 'approved', 'rejected', 'suspended', 'active');--> statement-breakpoint
 CREATE TABLE "accounts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"account_id" text NOT NULL,
@@ -25,14 +33,6 @@ CREATE TABLE "invitations" (
 	"expires_at" timestamp NOT NULL,
 	"inviter_id" uuid NOT NULL,
 	CONSTRAINT "invitations_token_unique" UNIQUE("token")
-);
---> statement-breakpoint
-CREATE TABLE "members" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"vendors_id" uuid NOT NULL,
-	"user_id" uuid NOT NULL,
-	"role" text DEFAULT 'member' NOT NULL,
-	"created_at" timestamp NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "passkeys" (
@@ -292,14 +292,12 @@ CREATE TABLE "storefront_settings" (
 	"deleted_at" timestamp
 );
 --> statement-breakpoint
-CREATE TABLE "member" (
+CREATE TABLE "members" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
-	"vendor_id" uuid NOT NULL,
+	"vendors_id" uuid NOT NULL,
 	"role" "organization_roles" DEFAULT 'member' NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"deleted_at" timestamp
+	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "vendor_documents" (
@@ -363,8 +361,6 @@ CREATE TABLE "vendors" (
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "invitations" ADD CONSTRAINT "invitations_vendors_id_vendors_id_fk" FOREIGN KEY ("vendors_id") REFERENCES "public"."vendors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "invitations" ADD CONSTRAINT "invitations_inviter_id_users_id_fk" FOREIGN KEY ("inviter_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "members" ADD CONSTRAINT "members_vendors_id_vendors_id_fk" FOREIGN KEY ("vendors_id") REFERENCES "public"."vendors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "members" ADD CONSTRAINT "members_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "passkeys" ADD CONSTRAINT "passkeys_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "two_factors" ADD CONSTRAINT "two_factors_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -388,8 +384,8 @@ ALTER TABLE "products" ADD CONSTRAINT "products_seo_id_seo_meta_id_fk" FOREIGN K
 ALTER TABLE "products" ADD CONSTRAINT "products_delivery_id_product_deliveries_id_fk" FOREIGN KEY ("delivery_id") REFERENCES "public"."product_deliveries"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "products" ADD CONSTRAINT "products_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "products" ADD CONSTRAINT "products_vendor_id_vendors_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "member" ADD CONSTRAINT "member_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "member" ADD CONSTRAINT "member_vendor_id_vendors_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "members" ADD CONSTRAINT "members_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "members" ADD CONSTRAINT "members_vendors_id_vendors_id_fk" FOREIGN KEY ("vendors_id") REFERENCES "public"."vendors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "vendor_documents" ADD CONSTRAINT "vendor_documents_vendor_id_vendors_id_fk" FOREIGN KEY ("vendor_id") REFERENCES "public"."vendors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "vendor_invitations" ADD CONSTRAINT "vendor_invitations_sent_by_admin_id_users_id_fk" FOREIGN KEY ("sent_by_admin_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "vendors" ADD CONSTRAINT "vendors_approved_by_users_id_fk" FOREIGN KEY ("approved_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -409,6 +405,7 @@ CREATE INDEX "collection_media_type_idx" ON "collection_media" USING btree ("typ
 CREATE INDEX "collection_settings_collection_id_idx" ON "collection_settings" USING btree ("collection_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "collections_slug_idx" ON "collections" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "collections_seo_id_idx" ON "collections" USING btree ("seo_id");--> statement-breakpoint
+CREATE INDEX "collections_deleted_at_idx" ON "collections" USING btree ("deleted_at");--> statement-breakpoint
 CREATE INDEX "media_url_idx" ON "media" USING btree ("url");--> statement-breakpoint
 CREATE INDEX "attribute_options_attribute_id_idx" ON "product_attribute_options" USING btree ("attribute_id");--> statement-breakpoint
 CREATE INDEX "product_settings_product_id_idx" ON "product_settings" USING btree ("product_id");--> statement-breakpoint
@@ -420,10 +417,10 @@ CREATE INDEX "products_id_idx" ON "products" USING btree ("id");--> statement-br
 CREATE INDEX "products_collection_id_idx" ON "products" USING btree ("collection_id");--> statement-breakpoint
 CREATE INDEX "products_user_id_idx" ON "products" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "products_vendor_id_idx" ON "products" USING btree ("vendor_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_member_user_vendor" ON "member" USING btree ("user_id","vendor_id");--> statement-breakpoint
-CREATE INDEX "idx_member_user_id" ON "member" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX "idx_member_vendor_id" ON "member" USING btree ("vendor_id");--> statement-breakpoint
-CREATE INDEX "idx_member_role" ON "member" USING btree ("role");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_member_user_vendor" ON "members" USING btree ("user_id","vendors_id");--> statement-breakpoint
+CREATE INDEX "idx_member_user_id" ON "members" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "idx_member_vendor_id" ON "members" USING btree ("vendors_id");--> statement-breakpoint
+CREATE INDEX "idx_member_role" ON "members" USING btree ("role");--> statement-breakpoint
 CREATE INDEX "idx_vendor_documents_vendor_id" ON "vendor_documents" USING btree ("vendor_id");--> statement-breakpoint
 CREATE INDEX "idx_vendor_documents_document_type" ON "vendor_documents" USING btree ("document_type");--> statement-breakpoint
 CREATE INDEX "idx_vendor_documents_document_format" ON "vendor_documents" USING btree ("document_format");--> statement-breakpoint

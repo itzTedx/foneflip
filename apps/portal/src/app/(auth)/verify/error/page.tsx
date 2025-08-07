@@ -10,13 +10,8 @@ import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
 import { Card, CardContent } from "@ziron/ui/card";
 
-import {
-  type ErrorType,
-  getErrorDisplayInfo,
-  getErrorInfoAction,
-  getErrorSuggestions,
-  getUserFriendlyMessage,
-} from "@/lib/error-handler";
+import { getErrorInfoAction } from "@/lib/error-handler";
+import { type ErrorType, getErrorDisplayInfo, getErrorSuggestions, getUserFriendlyMessage } from "@/lib/error-utils";
 
 interface ErrorInfo {
   type: string;

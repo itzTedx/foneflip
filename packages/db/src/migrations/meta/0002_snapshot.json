@@ -1,6 +1,6 @@
 {
-  "id": "d03ade13-4631-4fb1-8528-bcda44ea776b",
-  "prevId": "1904ef08-2685-4cae-af73-252895b1508a",
+  "id": "e35dbaed-ce51-4028-909a-71c5e12f8739",
+  "prevId": "0956d5b5-986c-463f-82ba-19f1e14ee89a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -143,8 +143,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "vendors_id": {
-          "name": "vendors_id",
+        "vendor_id": {
+          "name": "vendor_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -216,12 +216,12 @@
         }
       },
       "foreignKeys": {
-        "invitations_vendors_id_vendors_id_fk": {
-          "name": "invitations_vendors_id_vendors_id_fk",
+        "invitations_vendor_id_vendors_id_fk": {
+          "name": "invitations_vendor_id_vendors_id_fk",
           "tableFrom": "invitations",
           "tableTo": "vendors",
           "columnsFrom": [
-            "vendors_id"
+            "vendor_id"
           ],
           "columnsTo": [
             "id"
@@ -2495,14 +2495,14 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "user_id": {
-          "name": "user_id",
+        "vendor_id": {
+          "name": "vendor_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "vendor_id": {
-          "name": "vendor_id",
+        "user_id": {
+          "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -2592,12 +2592,12 @@
         }
       },
       "foreignKeys": {
-        "members_user_id_users_id_fk": {
-          "name": "members_user_id_users_id_fk",
+        "members_vendor_id_vendors_id_fk": {
+          "name": "members_vendor_id_vendors_id_fk",
           "tableFrom": "members",
-          "tableTo": "users",
+          "tableTo": "vendors",
           "columnsFrom": [
-            "user_id"
+            "vendor_id"
           ],
           "columnsTo": [
             "id"
@@ -2605,12 +2605,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "members_vendor_id_vendors_id_fk": {
-          "name": "members_vendor_id_vendors_id_fk",
+        "members_user_id_users_id_fk": {
+          "name": "members_user_id_users_id_fk",
           "tableFrom": "members",
-          "tableTo": "vendors",
+          "tableTo": "users",
           "columnsFrom": [
-            "vendor_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -3221,7 +3221,8 @@
         "pending",
         "accepted",
         "expired",
-        "revoked"
+        "revoked",
+        "onboarding"
       ]
     },
     "public.organization_roles": {

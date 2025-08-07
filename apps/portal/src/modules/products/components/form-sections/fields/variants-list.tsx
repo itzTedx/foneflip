@@ -250,13 +250,7 @@ function VariantHeader({
   );
 }
 
-function VariantContent({
-  variantIndex,
-  attrFields,
-}: {
-  variantIndex: number;
-  attrFields: Array<{ id: string; name?: string; options?: string[] }>;
-}) {
+function VariantContent({ variantIndex }: { variantIndex: number }) {
   const form = useFormContext<ProductFormType>();
   const attributes = form.watch("attributes");
   const handleGenerateSku = useCallback(
@@ -324,7 +318,7 @@ function VariantContent({
           </Button>
         </div>
         <div className="grid divide-y rounded-md border md:grid-cols-2 md:gap-3 md:divide-x">
-          {attributes?.map((attr: { name?: string; options?: string[] }, attrIndex: number) => (
+          {attributes?.map((_, attrIndex) => (
             <VariantAttribute
               attrId={`attr-${attrIndex}`}
               attrIndex={attrIndex}
@@ -438,7 +432,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
 
   // Memoize variant labels to avoid recalculating on every render
   const variantLabels = useMemo(() => {
-    return variantFields.map((field, index) => {
+    return variantFields.map((_, index) => {
       const variantAttributes = form.watch(`variants.${index}.attributes`);
       return (
         variantAttributes
@@ -501,7 +495,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
               onRemove={handleVariantRemove(index)}
               variantLabel={variantLabels[index] ?? ""}
             />
-            <VariantContent attrFields={attrFields} variantIndex={index} />
+            <VariantContent variantIndex={index} />
           </Collapsible>
         ))}
 

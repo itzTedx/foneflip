@@ -1,6 +1,6 @@
 import { boolean, date, index, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { vendorsTable } from "./vendor-schema";
+import { vendors } from "./vendor-schema";
 
 export const rolesEnum = pgEnum("roles", ["user", "vendor", "admin", "dev"]);
 
@@ -88,9 +88,9 @@ export const invitations = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom().notNull(),
     token: text("token").notNull().unique(),
-    vendorsId: uuid("vendors_id")
+    vendorId: uuid("vendor_id")
       .notNull()
-      .references(() => vendorsTable.id, { onDelete: "cascade" }),
+      .references(() => vendors.id, { onDelete: "cascade" }),
     email: text("email").notNull(),
     role: rolesEnum("role").default("user"),
     status: text("status").default("pending").notNull(),

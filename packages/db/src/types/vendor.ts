@@ -1,8 +1,13 @@
 import { InferQueryModel } from "../client";
 
 export type Vendor = InferQueryModel<
-  "vendorsTable",
+  "vendors",
   {
     documents: true;
+    members: {
+      with: {
+        user: true;
+      };
+    };
   }
 >;

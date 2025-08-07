@@ -52,7 +52,7 @@ export async function upsertProduct(formData: unknown) {
       const memberRecord = await db.query.members.findFirst({
         where: (m, { eq }) => eq(m.userId, session.user.id),
       });
-      vendorId = memberRecord?.vendorsId;
+      vendorId = memberRecord?.vendorId;
     } catch (error) {
       log.error("Failed to fetch member record", { error, userId: session.user.id });
     }

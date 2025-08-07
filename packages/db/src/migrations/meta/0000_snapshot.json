@@ -1,5 +1,5 @@
 {
-  "id": "8f11d92a-60fc-4c4c-87c2-65c36b5f9988",
+  "id": "2fab8786-b08f-47e2-ad0d-9cc010d1d8b3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -253,78 +253,6 @@
           ]
         }
       },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.members": {
-      "name": "members",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "vendors_id": {
-          "name": "vendors_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role": {
-          "name": "role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'member'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "members_vendors_id_vendors_id_fk": {
-          "name": "members_vendors_id_vendors_id_fk",
-          "tableFrom": "members",
-          "tableTo": "vendors",
-          "columnsFrom": [
-            "vendors_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "members_user_id_users_id_fk": {
-          "name": "members_user_id_users_id_fk",
-          "tableFrom": "members",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -1205,6 +1133,21 @@
           "columns": [
             {
               "expression": "seo_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "collections_deleted_at_idx": {
+          "name": "collections_deleted_at_idx",
+          "columns": [
+            {
+              "expression": "deleted_at",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2541,8 +2484,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.member": {
-      "name": "member",
+    "public.members": {
+      "name": "members",
       "schema": "",
       "columns": {
         "id": {
@@ -2558,8 +2501,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "vendor_id": {
-          "name": "vendor_id",
+        "vendors_id": {
+          "name": "vendors_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -2578,19 +2521,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {
@@ -2604,7 +2534,7 @@
               "nulls": "last"
             },
             {
-              "expression": "vendor_id",
+              "expression": "vendors_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2634,7 +2564,7 @@
           "name": "idx_member_vendor_id",
           "columns": [
             {
-              "expression": "vendor_id",
+              "expression": "vendors_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2662,9 +2592,9 @@
         }
       },
       "foreignKeys": {
-        "member_user_id_users_id_fk": {
-          "name": "member_user_id_users_id_fk",
-          "tableFrom": "member",
+        "members_user_id_users_id_fk": {
+          "name": "members_user_id_users_id_fk",
+          "tableFrom": "members",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -2675,12 +2605,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "member_vendor_id_vendors_id_fk": {
-          "name": "member_vendor_id_vendors_id_fk",
-          "tableFrom": "member",
+        "members_vendors_id_vendors_id_fk": {
+          "name": "members_vendors_id_vendors_id_fk",
+          "tableFrom": "members",
           "tableTo": "vendors",
           "columnsFrom": [
-            "vendor_id"
+            "vendors_id"
           ],
           "columnsTo": [
             "id"
@@ -3291,7 +3221,8 @@
         "pending",
         "accepted",
         "expired",
-        "revoked"
+        "revoked",
+        "onboarding"
       ]
     },
     "public.organization_roles": {

@@ -41,6 +41,7 @@ export const columns: ColumnDef<InvitationType>[] = [
     accessorKey: "status",
     cell: ({ row }) => {
       const status = row.original.status;
+      console.log("status", status);
       return (
         <StatusBadge
           className="capitalize"
@@ -49,9 +50,11 @@ export const columns: ColumnDef<InvitationType>[] = [
               ? "success"
               : status === "pending"
                 ? "info"
-                : status === "revoked"
-                  ? "error"
-                  : "disabled"
+                : status === "onboarding"
+                  ? "warn"
+                  : status === "revoked"
+                    ? "error"
+                    : "disabled"
           }
           variant="light"
         >

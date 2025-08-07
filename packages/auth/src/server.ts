@@ -82,8 +82,13 @@ export function initAuth(options: {
       passkey(),
       organization({
         schema: {
+          member: {
+            fields: {
+              organizationId: "vendorId",
+            },
+          },
           organization: {
-            modelName: "vendorsTable",
+            modelName: "vendor",
             fields: {
               name: "businessName",
             },

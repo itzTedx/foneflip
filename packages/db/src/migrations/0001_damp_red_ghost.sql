@@ -1,1 +1,0 @@
-CREATE INDEX "collections_deleted_at_idx" ON "collections" USING btree ("deleted_at");

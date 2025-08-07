@@ -18,7 +18,7 @@ import { baseSchema } from "./base-schema";
 import { collectionsTable } from "./collection-schema";
 import { mediaTable } from "./media-schema";
 import { seoTable } from "./seo-schema";
-import { vendorsTable } from "./vendor-schema";
+import { vendors } from "./vendor-schema";
 
 export const productConditionEnum = pgEnum("product_condition", ["pristine", "excellent", "good", "new"]);
 
@@ -50,7 +50,7 @@ export const productsTable = pgTable(
     userId: uuid("user_id").references(() => user.id, {
       onDelete: "cascade",
     }),
-    vendorId: uuid("vendor_id").references(() => vendorsTable.id, {
+    vendorId: uuid("vendor_id").references(() => vendors.id, {
       onDelete: "cascade",
     }),
     ...baseSchema,
@@ -217,9 +217,9 @@ export const productsRelations = relations(productsTable, ({ one, many }) => ({
     fields: [productsTable.userId],
     references: [user.id],
   }),
-  vendor: one(vendorsTable, {
+  vendor: one(vendors, {
     fields: [productsTable.vendorId],
-    references: [vendorsTable.id],
+    references: [vendors.id],
   }),
 }));
 
