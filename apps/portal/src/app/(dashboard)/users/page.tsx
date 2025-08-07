@@ -23,7 +23,14 @@ export default async function UsersPage() {
 
   return (
     <MainWrapper>
-      <PageHeader badge={<Suspense>{SuspendedUsersCount()}</Suspense>} title="Manage Users">
+      <PageHeader
+        badge={
+          <Suspense>
+            <SuspendedUsersCount />
+          </Suspense>
+        }
+        title="Manage Users"
+      >
         <ExportButton />
       </PageHeader>
       <Suspense fallback={<div>Loading...</div>}>
@@ -35,8 +42,15 @@ export default async function UsersPage() {
 
 export async function SuspendedTable() {
   const users = await getUsers();
+
   const cookieStore = await cookies();
   const pageSizeCookie = cookieStore.get("users_table_pageSize")?.value;
+  // const { users } = await auth.api.listUsers({
+  //   headers: await headers(),
+  //   query: {
+  //     limit: pageSizeCookie ? Number(pageSizeCookie) : undefined,
+  //   },
+  // });
 
   return <UsersTable data={users} initialPageSize={pageSizeCookie ? Number(pageSizeCookie) : undefined} />;
 }

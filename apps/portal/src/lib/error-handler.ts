@@ -1,3 +1,5 @@
+import redis from "@ziron/redis";
+
 import { createLog } from "@/lib/utils";
 
 const log = createLog("Error Handler");
@@ -21,18 +23,10 @@ export interface ErrorInfo {
   ip?: string;
 }
 
-// In-memory error store (in production, use Redis or database)
-const errorStore = new Map<string, ErrorInfo>();
-
-// Clean up old errors (older than 1 hour)
-function cleanupOldErrors() {
-  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-  for (const [id, error] of errorStore.entries()) {
-    if (error.timestamp < oneHourAgo) {
-      errorStore.delete(id);
-    }
-  }
-}
+// Redis key prefix for error storage
+const ERROR_KEY_PREFIX = "error:";
+// TTL for error records (1 hour in seconds)
+const ERROR_TTL = 60 * 60;
 
 // Generate a secure error ID
 function generateErrorId(): string {
@@ -49,8 +43,8 @@ function generateErrorId(): string {
   return `err_${Date.now()}_${randomString}`;
 }
 
-// Store error information securely
-export function storeError(
+// Store error information securely in Redis with TTL
+export async function storeError(
   type: ErrorType,
   message: string,
   details?: string,
@@ -58,9 +52,7 @@ export function storeError(
   severity: ErrorSeverity = "medium",
   userAgent?: string,
   ip?: string
-): string {
-  cleanupOldErrors();
-
+): Promise<string> {
   const errorId = generateErrorId();
   const errorInfo: ErrorInfo = {
     id: errorId,
@@ -74,29 +66,73 @@ export function storeError(
     ip,
   };
 
-  errorStore.set(errorId, errorInfo);
+  const redisKey = `${ERROR_KEY_PREFIX}${errorId}`;
 
-  log.info("Stored error securely", {
-    errorId,
-    type,
-    severity,
-    hasDetails: !!details,
-  });
+  try {
+    // Store error info as JSON with TTL for automatic expiration
+    await redis.setex(redisKey, ERROR_TTL, JSON.stringify(errorInfo));
 
-  return errorId;
+    log.info("Stored error securely in Redis", {
+      errorId,
+      type,
+      severity,
+      hasDetails: !!details,
+      ttl: ERROR_TTL,
+    });
+
+    return errorId;
+  } catch (error) {
+    log.error("Failed to store error in Redis", {
+      errorId,
+      type,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+
+    // Fallback: return the error ID even if storage fails
+    // In production, you might want to implement additional fallback mechanisms
+    return errorId;
+  }
 }
 
-// Retrieve error information by ID
-export function getErrorInfo(errorId: string): ErrorInfo | null {
-  const errorInfo = errorStore.get(errorId);
+// Retrieve error information by ID from Redis
+export async function getErrorInfo(errorId: string): Promise<ErrorInfo | null> {
+  const redisKey = `${ERROR_KEY_PREFIX}${errorId}`;
 
-  if (errorInfo) {
-    log.info("Retrieved error info", { errorId, type: errorInfo.type });
-  } else {
-    log.warn("Error info not found", { errorId });
+  try {
+    const errorData = await redis.get(redisKey);
+
+    if (errorData) {
+      const errorInfo: ErrorInfo = JSON.parse(errorData);
+      // Convert timestamp string back to Date object
+      errorInfo.timestamp = new Date(errorInfo.timestamp);
+
+      log.info("Retrieved error info from Redis", {
+        errorId,
+        type: errorInfo.type,
+      });
+
+      return errorInfo;
+    }
+    log.warn("Error info not found in Redis", { errorId });
+    return null;
+  } catch (error) {
+    log.error("Failed to retrieve error from Redis", {
+      errorId,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+    return null;
+  }
+}
+
+// Server action to get error information (for use in client components)
+export async function getErrorInfoAction(errorId: string) {
+  "use server";
+
+  if (!errorId) {
+    return null;
   }
 
-  return errorInfo || null;
+  return await getErrorInfo(errorId);
 }
 
 // Get user-friendly error messages based on type

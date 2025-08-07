@@ -14,7 +14,6 @@ import {
 } from "@ziron/ui/assets/icons";
 import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
-import { CardContent } from "@ziron/ui/card";
 import {
   Dialog,
   DialogContainer,
@@ -224,7 +223,7 @@ export function CacheManagement() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-1">
               Cache Management
-              <Badge className=" text-muted-foreground" variant="secondary">
+              <Badge className="text-muted-foreground" variant="secondary">
                 <IconCrownFilled /> Dev Only
               </Badge>
             </DialogTitle>
@@ -233,7 +232,7 @@ export function CacheManagement() {
         </DialogContainer>
 
         <DialogContentContainer>
-          <CardContent className="space-y-4">
+          <div className="space-y-4">
             {/* Revalidation Buttons */}
             <div className="space-y-2">
               <h4 className="font-medium text-sm">Revalidate Caches</h4>
@@ -411,7 +410,7 @@ export function CacheManagement() {
               <AlertCircle className="h-3 w-3" />
               These actions only work in development environment
             </div>
-          </CardContent>
+          </div>
         </DialogContentContainer>
       </DialogContent>
     </Dialog>

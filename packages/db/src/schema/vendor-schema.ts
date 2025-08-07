@@ -19,7 +19,13 @@ import { baseSchema } from "./base-schema";
 export const organizationRolesEnum = pgEnum("organization_roles", ["owner", "admin", "member"]);
 
 // Invitation status enum
-export const invitationStatusEnum = pgEnum("invitation_status", ["pending", "accepted", "expired", "revoked"]);
+export const invitationStatusEnum = pgEnum("invitation_status", [
+  "pending",
+  "accepted",
+  "expired",
+  "revoked",
+  "onboarding",
+]);
 
 // Vendor status enum
 export const vendorStatusEnum = pgEnum("vendor_status", [
@@ -106,23 +112,23 @@ export const vendorDocumentsTable = pgTable(
 );
 
 // Member table - links users to vendors
-export const member = pgTable(
-  "member",
+export const members = pgTable(
+  "members",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    vendorId: uuid("vendor_id")
+    vendorsId: uuid("vendors_id")
       .notNull()
       .references(() => vendorsTable.id, { onDelete: "cascade" }),
     role: organizationRolesEnum("role").notNull().default("member"),
-    ...baseSchema,
+    createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [
-    uniqueIndex("idx_member_user_vendor").on(table.userId, table.vendorId),
+    uniqueIndex("idx_member_user_vendor").on(table.userId, table.vendorsId),
     index("idx_member_user_id").on(table.userId),
-    index("idx_member_vendor_id").on(table.vendorId),
+    index("idx_member_vendor_id").on(table.vendorsId),
     index("idx_member_role").on(table.role),
   ]
 );
@@ -156,17 +162,17 @@ export const vendorInvitations = pgTable(
 
 // Relations
 export const vendorsRelations = relations(vendorsTable, ({ many }) => ({
-  members: many(member),
+  members: many(members),
   documents: many(vendorDocumentsTable),
 }));
 
-export const memberRelations = relations(member, ({ one }) => ({
+export const memberRelations = relations(members, ({ one }) => ({
   user: one(users, {
-    fields: [member.userId],
+    fields: [members.userId],
     references: [users.id],
   }),
   vendor: one(vendorsTable, {
-    fields: [member.vendorId],
+    fields: [members.vendorsId],
     references: [vendorsTable.id],
   }),
 }));

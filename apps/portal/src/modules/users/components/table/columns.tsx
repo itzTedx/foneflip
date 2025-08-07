@@ -40,7 +40,7 @@ export const columns: ColumnDef<User>[] = [
         onCheckedChange={(value) => row.toggleSelected(!!value)}
       />
     ),
-    size: 18,
+    size: 20,
     enableSorting: false,
     enableHiding: false,
   },

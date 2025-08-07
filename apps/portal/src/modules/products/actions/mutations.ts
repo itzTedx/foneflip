@@ -49,7 +49,7 @@ export async function upsertProduct(formData: unknown) {
   let vendorId = data.vendorId;
   if (!vendorId && ["vendor", "admin", "dev"].includes(session.user?.role || "")) {
     try {
-      const memberRecord = await db.query.member.findFirst({
+      const memberRecord = await db.query.members.findFirst({
         where: (m, { eq }) => eq(m.userId, session.user.id),
       });
       vendorId = memberRecord?.vendorsId;
