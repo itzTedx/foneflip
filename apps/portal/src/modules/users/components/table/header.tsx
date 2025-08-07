@@ -1,19 +1,8 @@
 import { useId, useMemo, useRef } from "react";
 
 import { Table } from "@tanstack/react-table";
-import { CircleAlertIcon, CircleXIcon, Columns3Icon, FilterIcon, ListFilterIcon, TrashIcon } from "lucide-react";
+import { CircleXIcon, Columns3Icon, FilterIcon, ListFilterIcon } from "lucide-react";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@ziron/ui/alert-dialog";
 import { Button } from "@ziron/ui/button";
 import { Checkbox } from "@ziron/ui/checkbox";
 import {
@@ -40,12 +29,6 @@ export const DataTableHeader = ({ table, data }: Props) => {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleDeleteRows = () => {
-    const selectedRows = table.getSelectedRowModel().rows;
-    // Call the actual delete mutation/action here
-    // Example: await deleteUsers(selectedRows.map(row => row.original.id));
-    table.resetRowSelection();
-  };
   // Get unique role values
   const uniqueRoleValues = useMemo(() => {
     const roleColumn = table.getColumn("role");
@@ -180,9 +163,9 @@ export const DataTableHeader = ({ table, data }: Props) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex items-center gap-3">
-        {/* Delete button */}
-        {table.getSelectedRowModel().rows.length > 0 && (
+      {/* <div className="flex items-center gap-3"> */}
+      {/* Delete button */}
+      {/* {table.getSelectedRowModel().rows.length > 0 && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="ml-auto" variant="outline">
@@ -215,8 +198,8 @@ export const DataTableHeader = ({ table, data }: Props) => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        )}
-      </div>
+        )} */}
+      {/* </div> */}
     </div>
   );
 };

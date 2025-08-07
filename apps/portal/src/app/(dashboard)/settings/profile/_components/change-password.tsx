@@ -84,9 +84,10 @@ export function ChangePassword({ children }: Props) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Confirm Password</Label>
+          <Label htmlFor="confirm-password">Confirm Password</Label>
           <PasswordInput
             autoComplete="new-password"
+            id="confirm-password"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
             placeholder="Confirm Password"
             value={confirmPassword}

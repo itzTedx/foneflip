@@ -29,11 +29,10 @@ export type CacheKey = string;
 export type CacheTTL = number;
 
 // Utility types
-export type UserIdentifier = {
+export interface UserIdentifier {
   id?: string;
   email?: string;
-};
-
+}
 export type CacheOperation = "get" | "set" | "del" | "invalidate";
 
 // Error types

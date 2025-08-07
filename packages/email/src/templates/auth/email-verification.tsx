@@ -113,13 +113,13 @@ const EmailVerification = (props: { verificationUrl: string }) => {
               </Text>
 
               <Text className="mt-0 mb-[16px] text-center text-[#0b0917] text-[12px] leading-[16px]">
-                <Link className="text-[#4A3AFF] underline" href="https://www.foneflip.com">
+                <Link className="text-[#4A3AFF] underline" href="https://www.foneflip.com/unsubscribe">
                   Unsubscribe
                 </Link>
                 {" • "}
-                <Link className="text-[#4A3AFF] underline" href="https://www.foneflip.com">
+                <Link className="text-[#4A3AFF] underline" href="https://www.foneflip.com/privacy">
                   Privacy Policy
-                </Link>
+                </Link>{" "}
               </Text>
 
               <Text className="mt-0 mb-[8px] text-center text-[#0b0917] text-[10px] leading-[14px]">

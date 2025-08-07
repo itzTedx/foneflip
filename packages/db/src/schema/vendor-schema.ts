@@ -111,18 +111,6 @@ export const vendorDocumentsTable = pgTable(
   ]
 );
 
-// export const members = pgTable("members", {
-//   id: uuid("id").primaryKey().defaultRandom().notNull(),
-//   organizationId: uuid("vendors_id")
-//     .notNull()
-//     .references(() => vendorsTable.id, { onDelete: "cascade" }),
-//   userId: uuid("user_id")
-//     .notNull()
-//     .references(() => users.id, { onDelete: "cascade" }),
-//   role: text("role").default("member").notNull(),
-//   createdAt: timestamp("created_at").notNull(),
-// });
-
 // Member table - links users to vendors
 export const members = pgTable(
   "members",
