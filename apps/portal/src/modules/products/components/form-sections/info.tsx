@@ -3,10 +3,12 @@
 import { memo } from "react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
-import { useFormContext } from "@ziron/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage, useFormContext } from "@ziron/ui/form";
 import { LabelAsterisk } from "@ziron/ui/label";
+import { cn } from "@ziron/utils";
 import { ProductFormType } from "@ziron/validators";
 
+import Editor from "@/components/editor";
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import { CollectionMetadata } from "@/modules/collections/types";
 
@@ -46,20 +48,30 @@ export const ProductInfo = memo(function ProductInfo({ collections }: Props) {
           </CardHeader>
           <CardContent className="space-y-4">
             <ProductTitleInput />
-            {/* <FormField
+            <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <MarkdownEditor {...field} markdown={field.value ?? ""} />
+                    <Editor
+                      {...field}
+                      className={cn("h-full min-h-96 w-full min-w-0 rounded-xl")}
+                      content={field.value}
+                      editable={true}
+                      editorClassName="focus:outline-hidden px-5 py-4 h-full"
+                      editorContentClassName="overflow-auto h-full prose dark:prose-invert"
+                      output="html"
+                      placeholder="Type your description here..."
+                      throttleDelay={2000}
+                    />
                   </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
-            /> */}
+            />
           </CardContent>
         </Card>
 
