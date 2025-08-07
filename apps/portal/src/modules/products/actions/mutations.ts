@@ -34,6 +34,8 @@ export async function upsertProduct(formData: unknown) {
     };
   }
 
+  //testing
+
   log.info("Received upsert request", { formData });
 
   const { success, data, error } = productSchema.safeParse(formData);
