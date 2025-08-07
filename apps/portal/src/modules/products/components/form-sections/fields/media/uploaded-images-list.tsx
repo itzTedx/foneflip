@@ -1,9 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
-import { closestCenter, DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import {
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 import { cn } from "@ziron/utils";
@@ -45,42 +54,78 @@ export function UploadedImagesList({
 }: UploadedImagesListProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  // dnd-kit sensors
+  // Simplified sensors for better compatibility
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 5,
       },
-    })
+    }),
+    useSensor(KeyboardSensor)
   );
 
-  // Drag and drop handlers
-  const onDragStart = (event: DragStartEvent) => {
+  // Memoized drag handlers for better performance
+  const onDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
-  };
+  }, []);
 
-  const onDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    setActiveId(null);
-    if (active.id !== over?.id && onReorder) {
-      const oldIndex = images.findIndex((img) => img.id === active.id);
-      const newIndex = images.findIndex((img) => img.id === over?.id);
-      if (oldIndex !== -1 && newIndex !== -1) {
-        onReorder(oldIndex, newIndex);
+  const onDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      setActiveId(null);
+
+      if (active.id !== over?.id && onReorder) {
+        const oldIndex = images.findIndex((img) => img.id === active.id);
+        const newIndex = images.findIndex((img) => img.id === over?.id);
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+          onReorder(oldIndex, newIndex);
+        }
       }
-    }
-  };
+    },
+    [images, onReorder]
+  );
 
-  const onDragCancel = () => {
+  const onDragCancel = useCallback(() => {
     setActiveId(null);
-  };
+  }, []);
 
-  // Find the active image for overlay
-  const activeImage = activeId ? images.find((img) => img.id === activeId) : undefined;
+  // Memoized items array for SortableContext
+  const sortableItems = useMemo(() => images.map((img) => img.id || String(images.indexOf(img))), [images]);
 
+  // Memoized active image for overlay
+  const activeImage = useMemo(
+    () => (activeId ? images.find((img) => img.id === activeId) : undefined),
+    [activeId, images]
+  );
+
+  // Memoized media form data conversion
+  const getMediaFormData = useCallback(
+    (image: (typeof images)[0], index: number): MediaFormType => ({
+      id: image.id || String(index),
+      file: image.file.url
+        ? {
+            url: image.file.url,
+            name: image.file.name || null,
+            size: image.file.size || null,
+          }
+        : undefined,
+      metadata: image.metadata
+        ? {
+            width: image.metadata.width || null,
+            height: image.metadata.height || null,
+            blurData: image.metadata.blurData || null,
+          }
+        : undefined,
+      isPrimary: image.isPrimary,
+    }),
+    []
+  );
+
+  // Non-drag-and-drop fallback
   if (!showDragAndDrop) {
     return (
-      <div className={cn("grid gap-3", className)}>
+      <div aria-label="Product images" className={cn("grid gap-3", className)} role="list">
         {images.map((image, index) => (
           <UploadedImageItem
             image={image}
@@ -96,50 +141,49 @@ export function UploadedImagesList({
 
   return (
     <DndContext
+      accessibility={{
+        announcements: {
+          onDragStart({ active }) {
+            return `Picked up image ${active.id}`;
+          },
+          onDragOver({ active, over }) {
+            if (over) {
+              return `Image ${active.id} is over ${over.id}`;
+            }
+            return `Image ${active.id} is no longer over a droppable area`;
+          },
+          onDragEnd({ active, over }) {
+            if (over) {
+              return `Image ${active.id} was dropped over ${over.id}`;
+            }
+            return `Image ${active.id} was dropped`;
+          },
+          onDragCancel({ active }) {
+            return `Dragging was cancelled. Image ${active.id} was dropped.`;
+          },
+        },
+      }}
       collisionDetection={closestCenter}
+      modifiers={[restrictToVerticalAxis]}
       onDragCancel={onDragCancel}
       onDragEnd={onDragEnd}
       onDragStart={onDragStart}
       sensors={sensors}
     >
-      <SortableContext
-        items={images.map((img) => img.id || String(images.indexOf(img)))}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className={cn("grid gap-3", className)}>
-          {images.map((image, index) => {
-            // Convert to MediaFormType structure
-            const mediaFormData: MediaFormType = {
-              id: image.id || String(index),
-              file: image.file.url
-                ? {
-                    url: image.file.url,
-                    name: image.file.name || null,
-                    size: image.file.size || null,
-                  }
-                : undefined,
-              metadata: image.metadata
-                ? {
-                    width: image.metadata.width || null,
-                    height: image.metadata.height || null,
-                    blurData: image.metadata.blurData || null,
-                  }
-                : undefined,
-              isPrimary: image.isPrimary,
-            };
-
-            return (
-              <SortableImageItem
-                f={mediaFormData}
-                i={index}
-                key={image.id || index}
-                remove={onRemove}
-                toggleFeaturedImage={onToggleFeatured}
-              />
-            );
-          })}
+      <SortableContext items={sortableItems} strategy={verticalListSortingStrategy}>
+        <div aria-label="Sortable product images" className={cn("grid gap-3", className)} role="list">
+          {images.map((image, index) => (
+            <SortableImageItem
+              f={getMediaFormData(image, index)}
+              i={index}
+              key={image.id || index}
+              remove={onRemove}
+              toggleFeaturedImage={onToggleFeatured}
+            />
+          ))}
         </div>
       </SortableContext>
+
       <DragOverlay>
         {activeImage ? (
           <ImagePreviewCard

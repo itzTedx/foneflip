@@ -41,6 +41,7 @@ import { computeSHA256 } from "@/modules/media/utils/compute-sha256";
 import { getImageMetadata } from "@/modules/media/utils/get-image-data";
 
 import { UploadedImagesList } from "./fields/media/uploaded-images-list";
+import { useSortableImages } from "./fields/media/use-sortable-images";
 
 /**
  * Renders the product image gallery section within a product form, providing upload, selection, preview, drag-and-drop reordering, featuring, and removal of images.
@@ -57,6 +58,9 @@ export function ProductMedia() {
     control: form.control,
     name: "images",
   });
+
+  // Use optimized sortable images hook
+  const { images, handleRemove, handleReorder, handleToggleFeatured } = useSortableImages(move);
 
   // Clear files state when images are removed
   useEffect(() => {
@@ -155,23 +159,6 @@ export function ProductMedia() {
   // Dialog state for selecting existing media
   const [_open, setOpen] = useQueryState("existing-media", parseAsBoolean);
 
-  // Toggle function
-  const toggleFeaturedImage = useCallback(
-    (index: number) => {
-      const images = form.getValues("images");
-      if (Array.isArray(images)) {
-        const isAlreadyFeatured = images[index]?.isPrimary;
-        if (isAlreadyFeatured) return;
-        const updatedImages = images.map((img, i) => ({
-          ...img,
-          isPrimary: i === index,
-        }));
-        form.setValue("images", updatedImages);
-      }
-    },
-    [form]
-  );
-
   // Memoized handleSelectMedia
   function handleSelectMedia(media: Media | Media[]) {
     const mediaArray = Array.isArray(media) ? media : [media];
@@ -192,9 +179,6 @@ export function ProductMedia() {
     setOpen(false);
     toast.success(`${mediaArray.length} image(s) selected from library`);
   }
-
-  // Always get the latest images from the form state
-  const watchedImages = form.watch("images") || [];
 
   return (
     <>
@@ -320,25 +304,10 @@ export function ProductMedia() {
             </CardHeader>
             <CardContent>
               <UploadedImagesList
-                images={watchedImages.map((img) => ({
-                  id: img.id,
-                  file: {
-                    url: img.file?.url,
-                    name: img.file?.name || undefined,
-                    size: img.file?.size || undefined,
-                  },
-                  metadata: img.metadata
-                    ? {
-                        width: img.metadata.width || undefined,
-                        height: img.metadata.height || undefined,
-                        blurData: img.metadata.blurData || undefined,
-                      }
-                    : undefined,
-                  isPrimary: img.isPrimary,
-                }))}
-                onRemove={remove}
-                onReorder={move}
-                onToggleFeatured={toggleFeaturedImage}
+                images={images}
+                onRemove={handleRemove}
+                onReorder={handleReorder}
+                onToggleFeatured={handleToggleFeatured}
               />
             </CardContent>
           </Card>

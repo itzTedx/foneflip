@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import { IconGripVertical, IconStar, IconTrash } from "@tabler/icons-react";
+import { IconStar, IconTrash } from "@tabler/icons-react";
 
 import { Button } from "@ziron/ui/button";
 import { formatFileSize } from "@ziron/utils";
@@ -38,7 +38,11 @@ export const ImagePreviewCard = ({
   dragListeners,
 }: ProductImagePreviewCardProps) => {
   return (
-    <div className="flex items-center justify-between gap-2 rounded-lg border bg-background p-1.5 pe-3">
+    <div
+      className="flex cursor-grab items-center justify-between gap-2 rounded-lg border bg-background p-1.5 pe-3 active:cursor-grabbing"
+      {...dragListeners}
+      style={{ touchAction: "none" }}
+    >
       <div className="flex items-center gap-2">
         <div className="relative aspect-square size-16 shrink-0 overflow-hidden rounded-sm border bg-card">
           <Image
@@ -83,18 +87,6 @@ export const ImagePreviewCard = ({
             variant="ghost"
           >
             <IconTrash className="size-3.5" />
-          </Button>
-          <Button
-            size="btn"
-            type="button"
-            variant="ghost"
-            {...dragListeners}
-            aria-label="Drag to reorder"
-            className="ml-2 w-auto cursor-grab text-muted-foreground/60"
-            onClick={onDrag}
-            style={{ touchAction: "none" }}
-          >
-            <IconGripVertical className="size-3.5" />
           </Button>
         </div>
       )}
