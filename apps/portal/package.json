@@ -35,7 +35,7 @@
     "@ziron/ui": "workspace:*",
     "@ziron/utils": "workspace:*",
     "@ziron/validators": "workspace:*",
-    "better-auth": "1.2.9",
+    "better-auth": "catalog:",
     "bullmq": "^5.56.3",
     "date-fns": "^4.1.0",
     "dotenv-cli": "^8.0.0",

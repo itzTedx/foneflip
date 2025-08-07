@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import React, { useCallback, useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { APIError } from "better-auth/api";
@@ -42,54 +42,195 @@ interface Props {
   activeSessions: Session[];
 }
 
-export function ProfileForm({ activeSessions, initialData }: Props) {
+// Memoized form field components to prevent re-renders during typing
+const NameField = React.memo(({ form }: { form: ReturnType<typeof useForm<ProfileFormType>> }) => (
+  <FormField
+    control={form.control}
+    name="name"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Name</FormLabel>
+        <FormControl>
+          <Input placeholder="Your name" {...field} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+));
+
+const EmailField = React.memo(({ form }: { form: ReturnType<typeof useForm<ProfileFormType>> }) => (
+  <FormField
+    control={form.control}
+    name="email"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Email</FormLabel>
+        <FormControl>
+          <Input placeholder="Your Email" {...field} disabled />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+));
+
+const AvatarField = React.memo(
+  ({ form, avatar }: { form: ReturnType<typeof useForm<ProfileFormType>>; avatar: string | null }) => (
+    <FormField
+      control={form.control}
+      name="avatarUrl"
+      render={() => (
+        <FormItem>
+          <FormControl>
+            <AvatarUpload avatar={avatar} form={form} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  )
+);
+
+const TwoFactorField = React.memo(
+  ({ form, initialData }: { form: ReturnType<typeof useForm<ProfileFormType>>; initialData: SessionType }) => (
+    <FormField
+      control={form.control}
+      name="twoFactorEnabled"
+      render={({ field }) => (
+        <FormItem className="flex items-center justify-between rounded-lg border p-4">
+          <div className="space-y-0.5">
+            <FormLabel className="text-base">Two-Factor Authentication</FormLabel>
+            <p className="text-muted-foreground text-sm">Add an extra layer of security to your account.</p>
+          </div>
+          <FormControl>
+            <TwoFactor
+              isTwoFactorEnabled={initialData.user.twoFactorEnabled}
+              onCheckedChange={field.onChange}
+              {...field}
+            />
+          </FormControl>
+        </FormItem>
+      )}
+    />
+  )
+);
+
+// Memoized session item component
+const SessionItem = React.memo(
+  ({
+    session,
+    isCurrentSession,
+    isRevokePending,
+    onRevoke,
+  }: {
+    session: Session;
+    isCurrentSession: boolean;
+    isRevokePending: boolean;
+    onRevoke: (token: string) => void;
+  }) => {
+    const uaParser = useMemo(() => new UAParser(session.userAgent ?? ""), [session.userAgent]);
+    const browser = useMemo(() => uaParser.getBrowser(), [uaParser]);
+    const os = useMemo(() => uaParser.getOS(), [uaParser]);
+
+    return (
+      <div className="flex items-center gap-2">
+        {getSessionIcon(session.userAgent)}
+        <div>
+          <p className="flex items-center gap-1.5 text-sm">
+            {browser.name} on {os.name} {os.version}
+            {isCurrentSession && (
+              <>
+                {" • "}
+                <Badge>This device</Badge>
+              </>
+            )}
+          </p>
+          <p className="text-muted-foreground text-xs">
+            {formatDate(session.updatedAt ?? "", {
+              includeTime: true,
+            })}
+          </p>
+        </div>
+        {!isCurrentSession && (
+          <Button
+            className="ml-auto"
+            disabled={isRevokePending}
+            onClick={() => onRevoke(session.token)}
+            size="sm"
+            type="button"
+            variant="destructive"
+          >
+            <LoadingSwap isLoading={isRevokePending}>Logout</LoadingSwap>
+          </Button>
+        )}
+      </div>
+    );
+  }
+);
+
+export const ProfileForm = React.memo(function ProfileForm({ activeSessions, initialData }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isRevokePending, startRevokeTransition] = useTransition();
   const [isRevokeOthersPending, startRevokeOthersTransition] = useTransition();
 
   const router = useRouter();
-  const form = useForm<ProfileFormType>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
+
+  // Memoize form default values to prevent unnecessary re-initialization
+  const formDefaultValues = useMemo(
+    () => ({
       name: initialData.user.name ?? "",
       email: initialData.user.email,
       twoFactorEnabled: initialData.user.twoFactorEnabled ?? false,
       avatarUrl: initialData.user.image ?? undefined,
-    },
+    }),
+    [initialData.user.name, initialData.user.email, initialData.user.twoFactorEnabled, initialData.user.image]
+  );
+
+  const form = useForm<ProfileFormType>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: formDefaultValues,
   });
 
   const avatar = form.watch("avatarUrl");
 
-  const onSubmit: SubmitHandler<ProfileFormType> = (data) => {
-    startTransition(async () => {
-      await authClient.updateUser({
-        image: data.avatarUrl,
-        name: data.name,
+  // Memoize the submit handler to prevent unnecessary re-renders
+  const onSubmit: SubmitHandler<ProfileFormType> = useCallback(
+    (data) => {
+      startTransition(async () => {
+        await authClient.updateUser({
+          image: data.avatarUrl,
+          name: data.name,
+        });
       });
-    });
 
-    toast.success("Profile updated successfully");
-  };
+      toast.success("Profile updated successfully");
+    },
+    [startTransition]
+  );
 
-  // Handler for revoking a session (logout)
-  const handleRevokeSession = (token: string) => {
-    startRevokeTransition(async () => {
-      try {
-        await authClient.revokeSession({ token });
-        toast.success("Logged out");
-        router.refresh();
-      } catch (error) {
-        if (error instanceof APIError) {
-          toast.error("Failed to Log out", {
-            description: error.message,
-          });
+  // Memoize session revocation handler
+  const handleRevokeSession = useCallback(
+    (token: string) => {
+      startRevokeTransition(async () => {
+        try {
+          await authClient.revokeSession({ token });
+          toast.success("Logged out");
+          router.refresh();
+        } catch (error) {
+          if (error instanceof APIError) {
+            toast.error("Failed to Log out", {
+              description: error.message,
+            });
+          }
         }
-      }
-    });
-  };
+      });
+    },
+    [startRevokeTransition, router]
+  );
 
-  // Handler for revoking all other sessions (logout from other devices)
-  const handleRevokeOtherSessions = () => {
+  // Memoize other sessions revocation handler
+  const handleRevokeOtherSessions = useCallback(() => {
     startRevokeOthersTransition(async () => {
       try {
         await authClient.revokeOtherSessions();
@@ -101,13 +242,28 @@ export function ProfileForm({ activeSessions, initialData }: Props) {
         });
       }
     });
-  };
+  }, [startRevokeOthersTransition, router]);
 
-  //   Ensure current device session is always first
-  const sortedSessions = [
-    ...activeSessions.filter((s) => s.token === initialData.session.token),
-    ...activeSessions.filter((s) => s.token !== initialData.session.token),
-  ];
+  // Memoize email verification handler
+  const handleSendVerificationEmail = useCallback(async () => {
+    await authClient.sendVerificationEmail({
+      email: initialData.user.email || "",
+      fetchOptions: {
+        onSuccess: () => {
+          toast.success("Verification email sent");
+        },
+      },
+    });
+  }, [initialData.user.email]);
+
+  // Memoize sorted sessions to prevent unnecessary re-computation
+  const sortedSessions = useMemo(
+    () => [
+      ...activeSessions.filter((s) => s.token === initialData.session.token),
+      ...activeSessions.filter((s) => s.token !== initialData.session.token),
+    ],
+    [activeSessions, initialData.session.token]
+  );
 
   return (
     <Form {...form}>
@@ -131,45 +287,10 @@ export function ProfileForm({ activeSessions, initialData }: Props) {
               </CardHeader>
               <CardContent className="grid grid-cols-3 items-center justify-center gap-3">
                 <div className="col-span-2 space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your Email" {...field} disabled />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <NameField form={form} />
+                  <EmailField form={form} />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="avatarUrl"
-                  render={() => (
-                    <FormItem>
-                      <FormControl>
-                        <AvatarUpload avatar={avatar ?? null} form={form} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <AvatarField avatar={avatar ?? null} form={form} />
               </CardContent>
             </Card>
 
@@ -190,26 +311,8 @@ export function ProfileForm({ activeSessions, initialData }: Props) {
                     </Button>
                   </ChangePassword>
                 </div>
-                {/* <TestTwoFA session={initialData} /> */}
-                <FormField
-                  control={form.control}
-                  name="twoFactorEnabled"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Two-Factor Authentication</FormLabel>
-                        <p className="text-muted-foreground text-sm">Add an extra layer of security to your account.</p>
-                      </div>
-                      <FormControl>
-                        <TwoFactor
-                          isTwoFactorEnabled={initialData.user.twoFactorEnabled}
-                          onCheckedChange={field.onChange}
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+
+                <TwoFactorField form={form} initialData={initialData} />
               </CardContent>
             </Card>
           </div>
@@ -222,12 +325,9 @@ export function ProfileForm({ activeSessions, initialData }: Props) {
                   the email, click the button below to resend.
                   <Button
                     className="mt-2"
-                    onClick={async () => {
-                      await authClient.sendVerificationEmail({
-                        email: initialData.user.email || "",
-                      });
-                    }}
+                    onClick={handleSendVerificationEmail}
                     size="sm"
+                    type="button"
                     variant="secondary"
                   >
                     Send Verification Email
@@ -256,39 +356,13 @@ export function ProfileForm({ activeSessions, initialData }: Props) {
               <CardContent>
                 <div className="space-y-4">
                   {sortedSessions.map((session) => (
-                    <div className="flex items-center gap-2" key={session.token}>
-                      {getSessionIcon(session.userAgent)}
-                      <div>
-                        <p className="flex items-center gap-1.5 text-sm">
-                          {new UAParser(session.userAgent ?? "").getBrowser().name} on{" "}
-                          {new UAParser(session.userAgent ?? "").getOS().name}{" "}
-                          {new UAParser(session.userAgent ?? "").getOS().version}
-                          {session.token === initialData.session.token && (
-                            <>
-                              {" • "}
-                              <Badge>This device</Badge>
-                            </>
-                          )}
-                        </p>
-                        <p className="text-muted-foreground text-xs">
-                          {formatDate(session.updatedAt ?? "", {
-                            includeTime: true,
-                          })}
-                        </p>
-                      </div>
-                      {session.token !== initialData.session.token && (
-                        <Button
-                          className="ml-auto"
-                          disabled={isRevokePending}
-                          onClick={() => handleRevokeSession(session.token)}
-                          size="sm"
-                          type="button"
-                          variant="destructive"
-                        >
-                          <LoadingSwap isLoading={isRevokePending}>Logout</LoadingSwap>
-                        </Button>
-                      )}
-                    </div>
+                    <SessionItem
+                      isCurrentSession={session.token === initialData.session.token}
+                      isRevokePending={isRevokePending}
+                      key={session.token}
+                      onRevoke={handleRevokeSession}
+                      session={session}
+                    />
                   ))}
                 </div>
               </CardContent>
@@ -298,4 +372,4 @@ export function ProfileForm({ activeSessions, initialData }: Props) {
       </form>
     </Form>
   );
-}
+});

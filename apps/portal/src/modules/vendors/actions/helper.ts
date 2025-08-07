@@ -75,8 +75,8 @@ export async function getCurrentUserVendor(userId?: string) {
   }
 
   try {
-    const memberRecord = await db.query.member.findFirst({
-      where: (member, { eq }) => eq(member.userId, userId),
+    const memberRecord = await db.query.members.findFirst({
+      where: (members, { eq }) => eq(members.userId, userId),
     });
 
     if (!memberRecord) {
@@ -108,8 +108,8 @@ export async function getVendorById(vendorId: string) {
     }
 
     // Get the vendor's email by finding the member relationship and user
-    const memberRecord = await db.query.member.findFirst({
-      where: (member, { eq }) => eq(member.vendorId, vendorId),
+    const memberRecord = await db.query.members.findFirst({
+      where: (members, { eq }) => eq(members.vendorId, vendorId),
     });
 
     let vendorEmail: string | undefined | null = vendor.vendorEmail;

@@ -51,7 +51,7 @@ async function verifyAndUseInvitation(token: string) {
       .set({
         usedAt: new Date(),
         expiresAt: null,
-        status: "accepted",
+        status: "onboarding",
         updatedAt: new Date(),
       })
       .where(and(eq(vendorInvitations.id, invitation.id), isNull(vendorInvitations.usedAt)))
@@ -106,7 +106,7 @@ export async function GET(request: Request) {
     const validatedToken = tokenSchema.parse(token);
 
     // 2. Execute business logic
-    const verifiedInvitation = await verifyAndUseInvitation(validatedToken);
+    await verifyAndUseInvitation(validatedToken);
 
     // 3. Redirect to onboarding page on success
     const redirectUrl = new URL("/onboarding", origin);
