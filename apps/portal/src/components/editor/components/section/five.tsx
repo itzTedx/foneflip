@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import { IconCaretUpDown, IconSeparator } from "@tabler/icons-react";
+import { IconSeparator } from "@tabler/icons-react";
 import type { Editor } from "@tiptap/react";
-import { PlusIcon, QuoteIcon } from "lucide-react";
 
+import { IconBlockQuote, IconChevronUpDown, IconPlus } from "@ziron/ui/assets/icons";
 import { toggleVariants } from "@ziron/ui/toggle";
 import { VariantProps } from "@ziron/utils";
 
@@ -20,7 +20,7 @@ const formatActions: InsertElement[] = [
   {
     value: "blockquote",
     label: "Blockquote",
-    icon: <QuoteIcon className="size-5" />,
+    icon: <IconBlockQuote className="size-3.5" />,
     action: (editor) => editor.chain().focus().toggleBlockquote().run(),
     isActive: (editor) => editor.isActive("blockquote"),
     canExecute: (editor) => editor.can().chain().focus().toggleBlockquote().run(),
@@ -29,7 +29,7 @@ const formatActions: InsertElement[] = [
   {
     value: "horizontalRule",
     label: "Divider",
-    icon: <IconSeparator className="size-5" />,
+    icon: <IconSeparator className="size-3.5" />,
     action: (editor) => editor.chain().focus().setHorizontalRule().run(),
     isActive: () => false,
     canExecute: (editor) => editor.can().chain().focus().setHorizontalRule().run(),
@@ -58,8 +58,8 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
         activeActions={activeActions}
         dropdownIcon={
           <>
-            <PlusIcon className="size-5" />
-            <IconCaretUpDown className="size-5" />
+            <IconPlus className="size-4" />
+            <IconChevronUpDown className="ml-2 size-3 text-muted-foreground" />
           </>
         }
         dropdownTooltip="Insert elements"

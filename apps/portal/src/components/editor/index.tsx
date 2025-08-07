@@ -11,7 +11,6 @@ import { MeasuredContainer } from "./components/measured-container";
 import { SectionFive } from "./components/section/five";
 import { SectionFour } from "./components/section/four";
 import { SectionOne } from "./components/section/one";
-import { SectionThree } from "./components/section/three";
 import { SectionTwo } from "./components/section/two";
 import type { UseMinimalTiptapEditorProps } from "./hooks/use-minimal-tiptap";
 import { useMinimalTiptapEditor } from "./hooks/use-minimal-tiptap";
@@ -26,25 +25,22 @@ export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, "o
 const Toolbar = ({ editor }: { editor: TiptapEditor }) => (
   <div className="flex h-12 shrink-0 overflow-x-auto border-border border-b p-2">
     <div className="flex w-max items-center gap-px">
-      <SectionOne activeLevels={[1, 2, 3, 4, 5, 6]} editor={editor} />
+      <SectionOne activeLevels={[2, 3, 4, 5, 6]} editor={editor} />
 
-      <Separator className="mx-2" orientation="vertical" />
+      <Separator className="mx-1.5" orientation="vertical" />
 
       <SectionTwo
         activeActions={["bold", "italic", "underline", "strikethrough", "code", "clearFormatting"]}
         editor={editor}
         mainActionCount={3}
+        size="sm"
       />
 
-      <Separator className="mx-2" orientation="vertical" />
-
-      <SectionThree editor={editor} />
-
-      <Separator className="mx-2" orientation="vertical" />
+      <Separator className="mx-1.5" orientation="vertical" />
 
       <SectionFour activeActions={["orderedList", "bulletList"]} editor={editor} mainActionCount={0} />
 
-      <Separator className="mx-2" orientation="vertical" />
+      <Separator className="mx-1.5" orientation="vertical" />
 
       <SectionFive activeActions={["codeBlock", "blockquote", "horizontalRule"]} editor={editor} mainActionCount={0} />
     </div>

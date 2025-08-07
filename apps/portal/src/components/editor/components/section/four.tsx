@@ -1,8 +1,8 @@
 import * as React from "react";
 
-import { IconCaretUpDown, IconList } from "@tabler/icons-react";
 import type { Editor } from "@tiptap/react";
 
+import { IconBulletList, IconChevronUpDown, IconNumberList } from "@ziron/ui/assets/icons";
 import { toggleVariants } from "@ziron/ui/toggle";
 import { VariantProps } from "@ziron/utils";
 
@@ -31,7 +31,7 @@ const formatActions: ListItem[] = [
   {
     value: "bulletList",
     label: "Bullet list",
-    icon: <IconList className="size-5" />,
+    icon: <IconBulletList className="size-4" />,
     isActive: (editor) => editor.isActive("bulletList"),
     action: (editor) => editor.chain().focus().toggleBulletList().run(),
     canExecute: (editor) => editor.can().chain().focus().toggleBulletList().run(),
@@ -52,14 +52,26 @@ export const SectionFour: React.FC<SectionFourProps> = ({
   size,
   variant,
 }) => {
+  // Determine which icon to show based on active state
+  const getActiveIcon = () => {
+    if (editor.isActive("orderedList")) {
+      return <IconNumberList />;
+    }
+    if (editor.isActive("bulletList")) {
+      return <IconBulletList className="size-4" />;
+    }
+    // Default icon when no list is active
+    return <IconBulletList className="size-4" />;
+  };
+
   return (
     <ToolbarSection
       actions={formatActions}
       activeActions={activeActions}
       dropdownIcon={
         <>
-          <IconList className="size-5" />
-          <IconCaretUpDown className="size-5" />
+          {getActiveIcon()}
+          <IconChevronUpDown className="ml-1 size-3 text-muted-foreground" />
         </>
       }
       dropdownTooltip="Lists"

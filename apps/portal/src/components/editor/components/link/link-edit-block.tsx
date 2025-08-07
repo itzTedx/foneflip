@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { Button } from "@ziron/ui/button";
+import { CardContent, CardHeader, CardTitle } from "@ziron/ui/card";
 import { Input } from "@ziron/ui/input";
 import { Label } from "@ziron/ui/label";
 import { Switch } from "@ziron/ui/switch";
@@ -41,27 +42,35 @@ export const LinkEditBlock = ({ onSave, defaultIsNewTab, defaultUrl, defaultText
 
   return (
     <div ref={formRef}>
-      <div className={cn("space-y-4", className)}>
-        <div className="space-y-1">
-          <Label>URL</Label>
-          <Input onChange={(e) => setUrl(e.target.value)} placeholder="Enter URL" required type="url" value={url} />
-        </div>
+      <CardHeader className="pb-1.5">
+        <CardTitle>Insert Link</CardTitle>
+      </CardHeader>
+      <div className={cn("space-y-1.5", className)}>
+        <CardContent className="space-y-4">
+          <div className="space-y-1.5">
+            <Label>URL</Label>
+            <Input onChange={(e) => setUrl(e.target.value)} placeholder="Enter URL" required type="url" value={url} />
+          </div>
 
-        <div className="space-y-1">
-          <Label>Display Text (optional)</Label>
-          <Input onChange={(e) => setText(e.target.value)} placeholder="Enter display text" type="text" value={text} />
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Label>Open in New Tab</Label>
-          <Switch checked={isNewTab} onCheckedChange={setIsNewTab} />
-        </div>
-
-        <div className="flex justify-end space-x-2">
-          <Button onClick={handleSave} type="button">
-            Save
-          </Button>
-        </div>
+          <div className="space-y-1.5">
+            <Label>Display Text (optional)</Label>
+            <Input
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Enter display text"
+              type="text"
+              value={text}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Label>Open in New Tab</Label>
+              <Switch checked={isNewTab} onCheckedChange={setIsNewTab} />
+            </div>
+            <Button onClick={handleSave} type="button">
+              Save
+            </Button>
+          </div>
+        </CardContent>
       </div>
     </div>
   );

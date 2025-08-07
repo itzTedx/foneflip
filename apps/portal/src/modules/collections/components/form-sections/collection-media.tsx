@@ -32,9 +32,29 @@ import { getImageMetadata } from "@/modules/media/utils/get-image-data";
 import { ImagePreview } from "./ui/image-preview";
 
 /**
+ * Formats file size in a human-readable format
+ */
+function formatFileSize(bytes: number): string {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+}
+
+/**
  * Provides a UI component for uploading, previewing, and removing a single image file (thumbnail or banner) within a form.
  *
  * Supports drag-and-drop or browsing for image selection, displays upload progress, handles file validation and errors, and integrates with form state for value and error management. Allows users to remove the uploaded image or choose from existing media.
+ *
+ * Enhanced error handling includes:
+ * - File size validation with human-readable size formatting
+ * - File type validation for image files
+ * - Network error handling with specific messages
+ * - Upload timeout handling (30 seconds)
+ * - HTTP status code specific error messages
+ * - Metadata extraction error handling
+ * - Checksum validation error handling
  *
  * @param label - The display label for the upload section.
  * @param name - The form field name, either "thumbnail" or "banner".
@@ -71,6 +91,22 @@ function MediaUploadPreview({
 
         const uploadPromises = files.map(async (file) => {
           try {
+            // Validate file size
+            if (file.size > maxSize) {
+              const errorMessage = `File size (${formatFileSize(file.size)}) exceeds the maximum allowed size of ${maxSizeMB}MB`;
+              form.setError(name, { message: errorMessage });
+              onError(file, new Error(errorMessage));
+              return;
+            }
+
+            // Validate file type
+            if (!file.type.startsWith("image/")) {
+              const errorMessage = "Invalid file type. Please upload an image file (JPEG, PNG, GIF, etc.)";
+              form.setError(name, { message: errorMessage });
+              onError(file, new Error(errorMessage));
+              return;
+            }
+
             const checksum = await computeSHA256(file);
 
             const signedUrl = await getSignedURL({
@@ -84,7 +120,9 @@ function MediaUploadPreview({
             });
 
             if (signedUrl.error !== undefined) {
-              form.setError(name, new Error(signedUrl.message));
+              form.setError(name, { message: signedUrl.message });
+              onError(file, new Error(signedUrl.message));
+              return;
             }
 
             if (signedUrl.success) {
@@ -92,12 +130,24 @@ function MediaUploadPreview({
               const key = signedUrl.success.key;
 
               // Get image metadata (blurData, width, height)
-              const metadata = await getImageMetadata(file);
+              let metadata;
+              try {
+                metadata = await getImageMetadata(file);
+              } catch (metadataError) {
+                const errorMessage = `Failed to process image metadata: ${metadataError instanceof Error ? metadataError.message : "Unknown error"}`;
+                form.setError(name, { message: errorMessage });
+                onError(file, new Error(errorMessage));
+                return;
+              }
 
               const xhr = new XMLHttpRequest();
               xhr.open("PUT", url, true);
               xhr.setRequestHeader("Content-Type", file.type);
               xhr.setRequestHeader("Content-Language", file.size.toString());
+
+              // Set timeout for upload
+              xhr.timeout = 30000; // 30 seconds
+
               xhr.upload.onprogress = (event) => {
                 if (event.lengthComputable) {
                   const progress = (event.loaded / event.total) * 100;
@@ -119,21 +169,52 @@ function MediaUploadPreview({
                       ...metadata,
                     },
                   });
+                  onSuccess(file);
                 } else {
-                  form.setError(name, new Error("Upload failed"));
+                  let errorMessage = "Upload failed";
+                  if (xhr.status === 413) {
+                    errorMessage = "File too large for upload";
+                  } else if (xhr.status === 401) {
+                    errorMessage = "Authentication failed. Please try again";
+                  } else if (xhr.status === 403) {
+                    errorMessage = "Access denied. Please check your permissions";
+                  } else if (xhr.status === 500) {
+                    errorMessage = "Server error. Please try again later";
+                  } else if (xhr.statusText) {
+                    errorMessage = `Upload failed: ${xhr.statusText}`;
+                  }
+                  form.setError(name, { message: errorMessage });
+                  onError(file, new Error(errorMessage));
                 }
               };
 
               xhr.onerror = (error) => {
-                form.setError(name, new Error("Upload error"));
-                onError(file, error instanceof Error ? error : new Error("Upload failed"));
+                const errorMessage = "Network error. Please check your connection and try again";
+                form.setError(name, { message: errorMessage });
+                onError(file, new Error(errorMessage));
+              };
+
+              xhr.ontimeout = () => {
+                const errorMessage = "Upload timed out. Please try again";
+                form.setError(name, { message: errorMessage });
+                onError(file, new Error(errorMessage));
               };
 
               xhr.send(file);
-              onSuccess(file);
             }
           } catch (error) {
-            onError(file, error instanceof Error ? error : new Error("Upload failed"));
+            let errorMessage = "Upload failed";
+            if (error instanceof Error) {
+              if (error.message.includes("checksum")) {
+                errorMessage = "File integrity check failed. Please try again";
+              } else if (error.message.includes("network")) {
+                errorMessage = "Network error. Please check your connection";
+              } else {
+                errorMessage = `Upload error: ${error.message}`;
+              }
+            }
+            form.setError(name, { message: errorMessage });
+            onError(file, new Error(errorMessage));
           }
         });
 
@@ -141,9 +222,11 @@ function MediaUploadPreview({
         await Promise.all(uploadPromises);
       } catch (error) {
         console.error("Unexpected error during upload:", error);
+        const errorMessage = "An unexpected error occurred. Please try again";
+        form.setError(name, { message: errorMessage });
       }
     },
-    [form.clearErrors]
+    [form.clearErrors, form.setError, form.setValue, maxSize, maxSizeMB, name]
   );
 
   return (
@@ -180,9 +263,26 @@ function MediaUploadPreview({
                   accept="image/*"
                   maxFiles={1}
                   maxSize={maxSize}
-                  onFileReject={(_, message) => {
+                  onFileReject={(file, message) => {
+                    let errorMessage = message;
+
+                    // Provide more specific error messages based on rejection reason
+                    if (file.size > maxSize) {
+                      errorMessage = `File size (${formatFileSize(file.size)}) exceeds the maximum allowed size of ${maxSizeMB}MB`;
+                    } else if (!file.type.startsWith("image/")) {
+                      errorMessage = `Invalid file type "${file.type}". Please upload an image file (JPEG, PNG, GIF, etc.)`;
+                    } else if (message.includes("too many files")) {
+                      errorMessage = `Only one image file is allowed for ${label.toLowerCase()}`;
+                    } else if (message.includes("file type")) {
+                      errorMessage = "Unsupported file type. Please upload a valid image file";
+                    } else if (message.includes("too large")) {
+                      errorMessage = `File size (${formatFileSize(file.size)}) exceeds the maximum allowed size of ${maxSizeMB}MB`;
+                    } else if (message.includes("not accepted")) {
+                      errorMessage = `Invalid file type "${file.type}". Please upload an image file (JPEG, PNG, GIF, etc.)`;
+                    }
+
                     form.setError(name, {
-                      message,
+                      message: errorMessage,
                     });
                   }}
                   onUpload={onUpload}

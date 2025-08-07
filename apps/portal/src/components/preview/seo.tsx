@@ -43,7 +43,7 @@ export const SeoPreview = ({ metadata, slug }: Props) => {
         </div>
         <div className="max-w-sm md:max-w-md">
           <h3 className="mb-2 font-semibold text-muted-foreground text-sm">Twitter</h3>
-          <div className="group w-full cursor-pointer overflow-hidden rounded-xl border transition-colors hover:border-[rgba(136,153,166,.5)] hover:bg-[#f5f8fa]">
+          <div className="group w-full cursor-pointer overflow-hidden rounded-xl border bg-white transition-colors hover:border-[rgba(136,153,166,.5)] hover:bg-[#f5f8fa]">
             <div className="relative aspect-[1.91/1] bg-primary-foreground/20">
               <img
                 alt=""

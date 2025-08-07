@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { Badge } from "@ziron/ui/badge";
 import { cn } from "@ziron/utils";
 
 import { getShortcutKey } from "../utils";
@@ -13,11 +14,17 @@ export const ShortcutKey = ({ ref, className, keys, ...props }: ShortcutKeyProps
   const ariaLabel = modifiedKeys.map((shortcut) => shortcut.readable).join(" + ");
 
   return (
-    <span aria-label={ariaLabel} className={cn("inline-flex items-center gap-0.5", className)} {...props} ref={ref}>
+    <Badge
+      aria-label={ariaLabel}
+      className={cn("inline-flex items-center gap-0.5", className)}
+      variant="secondary"
+      {...props}
+      ref={ref}
+    >
       {modifiedKeys.map((shortcut) => (
         <kbd
           className={cn(
-            "inline-block min-w-2.5 text-center align-baseline font-medium font-sans text-[rgb(156,157,160)] text-xs capitalize",
+            "inline-block min-w-2.5 text-center align-baseline font-medium font-sans text-[10px] text-[rgb(156,157,160)] capitalize",
 
             className
           )}
@@ -28,7 +35,7 @@ export const ShortcutKey = ({ ref, className, keys, ...props }: ShortcutKeyProps
           {shortcut.symbol}
         </kbd>
       ))}
-    </span>
+    </Badge>
   );
 };
 

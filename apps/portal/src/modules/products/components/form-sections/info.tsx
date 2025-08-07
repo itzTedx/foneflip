@@ -57,11 +57,11 @@ export const ProductInfo = memo(function ProductInfo({ collections }: Props) {
                   <FormControl>
                     <Editor
                       {...field}
-                      className={cn("h-full min-h-96 w-full min-w-0 rounded-xl")}
+                      className={cn("h-full min-h-96 w-full min-w-0 rounded-md")}
                       content={field.value}
                       editable={true}
-                      editorClassName="focus:outline-hidden px-5 py-4 h-full"
-                      editorContentClassName="overflow-auto h-full prose dark:prose-invert"
+                      editorClassName="focus:outline-hidden px-4 pb-4 pt-px h-full bg-transparent w-full dark:bg-input/30"
+                      editorContentClassName="overflow-auto h-full prose dark:prose-invert prose-sm w-full max-w-none"
                       output="html"
                       placeholder="Type your description here..."
                       throttleDelay={2000}

@@ -4,10 +4,10 @@ import { collectionsTable } from "@ziron/db/schema";
 import { asc, db, eq, isNull, sql } from "@ziron/db/server";
 
 import { CACHE_TAGS, REDIS_KEYS, redisCache } from "@/modules/cache";
+import { CACHE_DURATIONS } from "@/modules/cache/constants";
 
 import type { Collection, CollectionMetadata, CollectionQueryResult, CollectionsQueryResult } from "../types";
 import { withCacheMonitoring } from "../utils/cache-monitor";
-import { CACHE_DURATIONS } from "./cache";
 
 export const existingCollection = cache(
   async (slug: string) => {
@@ -220,7 +220,9 @@ export const getCollectionsMetadata = cache(
         id: true,
         title: true,
         createdAt: true,
+        slug: true,
       },
+      orderBy: asc(collectionsTable.sortOrder),
     });
 
     // Cache the result

@@ -1,15 +1,9 @@
 import * as React from "react";
 
-import {
-  IconBold,
-  IconClearFormatting,
-  IconDots,
-  IconItalic,
-  IconStrikethrough,
-  IconUnderline,
-} from "@tabler/icons-react";
+import { IconClearFormatting, IconDots, IconStrikethrough } from "@tabler/icons-react";
 import type { Editor } from "@tiptap/react";
 
+import { IconBold, IconItalic, IconUnderline } from "@ziron/ui/assets/icons";
 import { toggleVariants } from "@ziron/ui/toggle";
 import { VariantProps } from "@ziron/utils";
 
@@ -26,7 +20,7 @@ const formatActions: TextStyle[] = [
   {
     value: "bold",
     label: "Bold",
-    icon: <IconBold className="size-5" />,
+    icon: <IconBold className="size-4" />,
     action: (editor) => editor.chain().focus().toggleBold().run(),
     isActive: (editor) => editor.isActive("bold"),
     canExecute: (editor) => editor.can().chain().focus().toggleBold().run() && !editor.isActive("codeBlock"),
@@ -35,7 +29,7 @@ const formatActions: TextStyle[] = [
   {
     value: "italic",
     label: "Italic",
-    icon: <IconItalic className="size-5" />,
+    icon: <IconItalic className="size-4" />,
     action: (editor) => editor.chain().focus().toggleItalic().run(),
     isActive: (editor) => editor.isActive("italic"),
     canExecute: (editor) => editor.can().chain().focus().toggleItalic().run() && !editor.isActive("codeBlock"),
@@ -44,7 +38,7 @@ const formatActions: TextStyle[] = [
   {
     value: "underline",
     label: "Underline",
-    icon: <IconUnderline className="size-5" />,
+    icon: <IconUnderline className="size-4" />,
     action: (editor) => editor.chain().focus().toggleUnderline().run(),
     isActive: (editor) => editor.isActive("underline"),
     canExecute: (editor) => editor.can().chain().focus().toggleUnderline().run() && !editor.isActive("codeBlock"),
@@ -53,7 +47,7 @@ const formatActions: TextStyle[] = [
   {
     value: "strikethrough",
     label: "Strikethrough",
-    icon: <IconStrikethrough className="size-5" />,
+    icon: <IconStrikethrough className="size-4" />,
     action: (editor) => editor.chain().focus().toggleStrike().run(),
     isActive: (editor) => editor.isActive("strike"),
     canExecute: (editor) => editor.can().chain().focus().toggleStrike().run() && !editor.isActive("codeBlock"),
@@ -63,7 +57,7 @@ const formatActions: TextStyle[] = [
   {
     value: "clearFormatting",
     label: "Clear formatting",
-    icon: <IconClearFormatting className="size-5" />,
+    icon: <IconClearFormatting className="size-4" />,
     action: (editor) => editor.chain().focus().unsetAllMarks().run(),
     isActive: () => false,
     canExecute: (editor) => editor.can().chain().focus().unsetAllMarks().run() && !editor.isActive("codeBlock"),
@@ -89,7 +83,7 @@ export const SectionTwo: React.FC<SectionTwoProps> = ({
       actions={formatActions}
       activeActions={activeActions}
       dropdownClassName="w-8"
-      dropdownIcon={<IconDots className="size-5" />}
+      dropdownIcon={<IconDots className="size-4" />}
       dropdownTooltip="More formatting"
       editor={editor}
       mainActionCount={mainActionCount}

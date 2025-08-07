@@ -15,6 +15,13 @@ export const CACHE_TAGS = {
   COLLECTION_BY_ID: "collection-by-id",
   COLLECTION_DETAILS: "collection-details",
   PRODUCT: "product",
+  PRODUCTS: "products",
+  PRODUCT_DRAFTS: "product-drafts",
+  PRODUCT_ACTIVE: "product-active",
+  PRODUCT_ARCHIVED: "product-archived",
+  PRODUCT_BY_SLUG: "product-by-slug",
+  PRODUCT_BY_ID: "product-by-id",
+  PRODUCT_DETAILS: "product-details",
   MEDIA: "media",
   VENDOR: "vendor",
   VENDORS: "vendors",
@@ -38,21 +45,21 @@ export const CACHE_TAGS = {
 export const REDIS_KEYS = {
   COLLECTIONS: "collections:all",
   COLLECTIONS_COUNT: "collections:count",
-  COLLECTIONS_METADATA: "collections:all:metadata",
+  COLLECTIONS_METADATA: "collections:metadata",
   COLLECTION_BY_SLUG: (slug: string) => `collection:${slug}`,
   COLLECTION_BY_ID: (id: string) => `collection:id:${id}`,
   COLLECTION_STATS: "collections:stats",
   COLLECTION_POPULAR: "collections:popular",
   COLLECTION_RECENT: "collections:recent",
   PRODUCTS: "products:all",
-  PRODUCTS_METADATA: "products:all:metadata",
+  PRODUCTS_METADATA: "products:metadata",
   PRODUCT_BY_SLUG: (slug: string) => `product:${slug}`,
   PRODUCT_BY_ID: (id: string) => `product:id:${id}`,
   PRODUCT_STATS: "products:stats",
   PRODUCT_POPULAR: "products:popular",
   PRODUCT_RECENT: "products:recent",
   VENDORS: "vendors:all",
-  VENDORS_METADATA: "vendors:all:metadata",
+  VENDORS_METADATA: "vendors:metadata",
   VENDOR_BY_ID: (id: string) => `vendor:id:${id}`,
   VENDOR_BY_SLUG: (slug: string) => `vendor:${slug}`,
   VENDOR_INVITATIONS: "vendor-invitations:all",
@@ -61,7 +68,7 @@ export const REDIS_KEYS = {
   VENDOR_STATS: "vendors:stats",
   USERS: "users:all",
   USERS_COUNT: "users:count",
-  USERS_METADATA: "users:all:metadata",
+  USERS_METADATA: "users:metadata",
   USER_BY_ID: (id: string) => `user:id:${id}`,
   USER_BY_EMAIL: (email: string) => `user:email:${email}`,
   USER_STATS: "users:stats",
@@ -255,6 +262,21 @@ export const revalidateCollectionCaches = (collectionId?: string, slug?: string)
   revalidatePath("/collections/[slug]", "page");
   revalidatePath("/products");
   revalidatePath("/products/[slug]", "page");
+  revalidatePath("/products/new", "page");
+  revalidatePath("/products/[id]/edit", "page");
+};
+
+// Helper function to revalidate product editing forms specifically
+export const revalidateProductEditingForms = () => {
+  revalidateTag(CACHE_TAGS.PRODUCT);
+  revalidateTag(CACHE_TAGS.PRODUCTS);
+  revalidateTag(CACHE_TAGS.PRODUCT_DETAILS);
+  revalidateTag(CACHE_TAGS.COLLECTION);
+  revalidateTag(CACHE_TAGS.MEDIA);
+
+  revalidatePath("/products/new", "page");
+  revalidatePath("/products/[id]/edit", "page");
+  revalidatePath("/products/[slug]", "page");
 };
 
 // Enhanced cache invalidation with Redis
@@ -263,7 +285,11 @@ export const invalidateCollectionCaches = async (collectionId?: string, slug?: s
   revalidateCollectionCaches(collectionId, slug);
 
   // Invalidate Redis caches
-  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT];
+  const keysToInvalidate: string[] = [
+    REDIS_KEYS.COLLECTIONS,
+    REDIS_KEYS.COLLECTIONS_COUNT,
+    REDIS_KEYS.COLLECTIONS_METADATA,
+  ];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_SLUG(slug));
@@ -274,6 +300,9 @@ export const invalidateCollectionCaches = async (collectionId?: string, slug?: s
   }
 
   await redisCache.del(...keysToInvalidate);
+
+  // Also revalidate product editing forms since collections affect product forms
+  revalidateProductEditingForms();
 };
 
 // Bulk cache invalidation

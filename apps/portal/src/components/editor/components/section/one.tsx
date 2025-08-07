@@ -1,8 +1,8 @@
 import * as React from "react";
 
-import { IconCaretUpDown, IconLetterCaseUpper } from "@tabler/icons-react";
 import type { Editor } from "@tiptap/react";
 
+import { IconChevronUpDown } from "@ziron/ui/assets/icons";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@ziron/ui/dropdown-menu";
 import { toggleVariants } from "@ziron/ui/toggle";
 import { cn, VariantProps } from "@ziron/utils";
@@ -28,42 +28,42 @@ const formatActions: TextStyle[] = [
   {
     label: "Heading 1",
     element: "h1",
-    level: 1,
-    className: "m-0 grow text-3xl font-extrabold",
+    level: 2,
+    className: "m-0 grow text-xl font-extrabold",
     shortcuts: ["mod", "alt", "1"],
   },
   {
     label: "Heading 2",
     element: "h2",
-    level: 2,
-    className: "m-0 grow text-xl font-bold",
+    level: 3,
+    className: "m-0 grow text-lg font-bold",
     shortcuts: ["mod", "alt", "2"],
   },
   {
     label: "Heading 3",
     element: "h3",
-    level: 3,
-    className: "m-0 grow text-lg font-semibold",
+    level: 4,
+    className: "m-0 grow text-base font-semibold",
     shortcuts: ["mod", "alt", "3"],
   },
   {
     label: "Heading 4",
     element: "h4",
-    level: 4,
-    className: "m-0 grow text-base font-semibold",
+    level: 5,
+    className: "m-0 grow text-sm font-semibold",
     shortcuts: ["mod", "alt", "4"],
   },
   {
     label: "Heading 5",
     element: "h5",
-    level: 5,
-    className: "m-0 grow text-sm font-normal",
+    level: 6,
+    className: "m-0 grow text-xs font-normal",
     shortcuts: ["mod", "alt", "5"],
   },
   {
     label: "Heading 6",
     element: "h6",
-    level: 6,
+    level: 1,
     className: "m-0 grow text-sm font-normal",
     shortcuts: ["mod", "alt", "6"],
   },
@@ -79,6 +79,20 @@ export const SectionOne: React.FC<SectionOneProps> = ({ editor, activeLevels = [
     () => formatActions.filter((action) => !action.level || activeLevels.includes(action.level)),
     [activeLevels]
   );
+
+  const getActiveStyle = React.useCallback(() => {
+    if (editor.isActive("paragraph")) {
+      return "Normal Text";
+    }
+
+    for (let level = 1; level <= 6; level++) {
+      if (editor.isActive("heading", { level })) {
+        return `Heading ${level - 1}`;
+      }
+    }
+
+    return "Text styles";
+  }, [editor]);
 
   const handleStyleChange = React.useCallback(
     (level?: Level) => {
@@ -109,11 +123,11 @@ export const SectionOne: React.FC<SectionOneProps> = ({ editor, activeLevels = [
   );
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal>
       <DropdownMenuTrigger asChild>
         <ToolbarButton
           aria-label="Text styles"
-          className="gap-0"
+          className="w-28 justify-between gap-0"
           disabled={editor.isActive("codeBlock")}
           isActive={editor.isActive("heading")}
           pressed={editor.isActive("heading")}
@@ -121,11 +135,11 @@ export const SectionOne: React.FC<SectionOneProps> = ({ editor, activeLevels = [
           tooltip="Text styles"
           variant={variant}
         >
-          <IconLetterCaseUpper className="size-5" />
-          <IconCaretUpDown className="size-5" />
+          <span className="font-medium text-xs">{getActiveStyle()}</span>
+          <IconChevronUpDown className="size-3 text-muted-foreground" />
         </ToolbarButton>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-full">
+      <DropdownMenuContent align="start" alignOffset={-9} className="w-full" side="bottom">
         {filteredActions.map(renderMenuItem)}
       </DropdownMenuContent>
     </DropdownMenu>

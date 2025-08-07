@@ -132,6 +132,7 @@ export class CollectionCacheManager {
           redisCache.del(REDIS_KEYS.COLLECTION_BY_SLUG(collection.slug)),
           redisCache.del(REDIS_KEYS.COLLECTION_BY_ID(collection.id)),
           redisCache.del(REDIS_KEYS.COLLECTIONS), // Invalidate list cache
+          redisCache.del(REDIS_KEYS.COLLECTIONS_METADATA), // Invalidate metadata cache
         ]);
       } else {
         // Update cache optimistically
@@ -139,6 +140,7 @@ export class CollectionCacheManager {
           redisCache.setWithRetry(REDIS_KEYS.COLLECTION_BY_SLUG(collection.slug), collection, CACHE_DURATIONS.MEDIUM),
           redisCache.setWithRetry(REDIS_KEYS.COLLECTION_BY_ID(collection.id), collection, CACHE_DURATIONS.MEDIUM),
           redisCache.del(REDIS_KEYS.COLLECTIONS), // Invalidate list cache
+          redisCache.del(REDIS_KEYS.COLLECTIONS_METADATA), // Invalidate metadata cache
         ]);
       }
     } catch (error) {
@@ -231,7 +233,7 @@ export class CollectionCacheManager {
   // Health check for cache system
   async healthCheck(): Promise<{
     cache: boolean;
-    performance: any;
+    performance: unknown;
     memoryUsage: string;
     totalKeys: number;
   }> {

@@ -2,39 +2,10 @@ import { revalidatePath, revalidateTag } from "next/cache";
 
 import redis from "@ziron/redis";
 
-import { Collection } from "../types";
+import { CACHE_TAGS, REDIS_KEYS, revalidateProductEditingForms } from "@/modules/cache";
+import { CACHE_DURATIONS } from "@/modules/cache/constants";
 
-// Cache configuration constants
-export const CACHE_TAGS = {
-  COLLECTION: "collection",
-  COLLECTIONS: "collections",
-  COLLECTION_DRAFTS: "collection-drafts",
-  COLLECTION_ACTIVE: "collection-active",
-  COLLECTION_ARCHIVED: "collection-archived",
-  COLLECTION_BY_SLUG: "collection-by-slug",
-  COLLECTION_BY_ID: "collection-by-id",
-  COLLECTION_DETAILS: "collection-details",
-  PRODUCT: "product",
-  MEDIA: "media",
-} as const;
-
-export const CACHE_DURATIONS = {
-  SHORT: 60, // 1 minute
-  MEDIUM: 300, // 5 minutes
-  LONG: 3600, // 1 hour
-  VERY_LONG: 86400, // 24 hours
-} as const;
-
-// Redis cache keys
-export const REDIS_KEYS = {
-  COLLECTIONS: "collections:all",
-  COLLECTIONS_COUNT: "collections:count",
-  COLLECTION_BY_SLUG: (slug: string) => `collection:${slug}`,
-  COLLECTION_BY_ID: (id: string) => `collection:id:${id}`,
-  COLLECTION_STATS: "collections:stats",
-  COLLECTION_POPULAR: "collections:popular",
-  COLLECTION_RECENT: "collections:recent",
-} as const;
+import { Collection, CollectionMetadata } from "../types";
 
 // Redis cache utilities with improved typing and error handling
 export const redisCache = {
@@ -231,7 +202,11 @@ export const invalidateCollectionCaches = async (collectionId?: string, slug?: s
   revalidateCollectionCaches(collectionId, slug);
 
   // Invalidate Redis caches
-  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT];
+  const keysToInvalidate: string[] = [
+    REDIS_KEYS.COLLECTIONS,
+    REDIS_KEYS.COLLECTIONS_COUNT,
+    REDIS_KEYS.COLLECTIONS_METADATA,
+  ];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_SLUG(slug));
@@ -242,6 +217,29 @@ export const invalidateCollectionCaches = async (collectionId?: string, slug?: s
   }
 
   await redisCache.del(...keysToInvalidate);
+
+  // Also revalidate product editing forms since collections affect product forms
+  revalidateProductEditingForms();
+};
+
+// Update collections metadata cache
+export const updateCollectionsMetadataCache = async (metadata: CollectionMetadata[]) => {
+  try {
+    await redisCache.set(REDIS_KEYS.COLLECTIONS_METADATA, metadata, CACHE_DURATIONS.MEDIUM);
+    console.log("Updated collections metadata cache");
+  } catch (error) {
+    console.error("Failed to update collections metadata cache:", error);
+  }
+};
+
+// Invalidate collections metadata cache specifically
+export const invalidateCollectionsMetadataCache = async () => {
+  try {
+    await redisCache.del(REDIS_KEYS.COLLECTIONS_METADATA);
+    console.log("Invalidated collections metadata cache");
+  } catch (error) {
+    console.error("Failed to invalidate collections metadata cache:", error);
+  }
 };
 
 // Bulk cache invalidation
@@ -327,8 +325,8 @@ export const updateCollectionCache = async (
       ]);
     }
 
-    // Always invalidate the collections list cache and count
-    await redisCache.del(REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT);
+    // Always invalidate the collections list cache, count, and metadata
+    await redisCache.del(REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT, REDIS_KEYS.COLLECTIONS_METADATA);
   } catch (error) {
     console.error("Failed to update collection cache:", error);
     // Don't throw - cache updates should not break the main operation
@@ -337,7 +335,11 @@ export const updateCollectionCache = async (
 
 // Cache invalidation functions
 export const invalidateCollectionCache = async (slug?: string, id?: string) => {
-  const keysToInvalidate: string[] = [REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT];
+  const keysToInvalidate: string[] = [
+    REDIS_KEYS.COLLECTIONS,
+    REDIS_KEYS.COLLECTIONS_COUNT,
+    REDIS_KEYS.COLLECTIONS_METADATA,
+  ];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_SLUG(slug));

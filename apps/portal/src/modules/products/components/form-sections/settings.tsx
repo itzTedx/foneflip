@@ -4,13 +4,7 @@ import { memo } from "react";
 
 import { IconSpeakerphone } from "@tabler/icons-react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@ziron/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
 import {
   FormControl,
   FormDescription,
@@ -22,13 +16,7 @@ import {
 } from "@ziron/ui/form";
 import { Input } from "@ziron/ui/input";
 import { MultiInput } from "@ziron/ui/multi-input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@ziron/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ziron/ui/select";
 import { Switch } from "@ziron/ui/switch";
 import { Textarea } from "@ziron/ui/textarea";
 import { cn } from "@ziron/utils";
@@ -57,10 +45,7 @@ export const ProductSettings = memo(function ProductSettings() {
         <Card className="h-fit break-inside-avoid">
           <CardHeader>
             <CardTitle>Visibility & status</CardTitle>
-            <CardDescription>
-              Manage whether the product is publicly visible, in draft, or
-              archived.
-            </CardDescription>
+            <CardDescription>Manage whether the product is publicly visible, in draft, or archived.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -69,24 +54,23 @@ export const ProductSettings = memo(function ProductSettings() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel htmlFor={field.name}>
-                    Status{" "}
-                    <InfoTooltip info="Control whether the product is live, in draft, or archived." />
+                    Status <InfoTooltip info="Control whether the product is live, in draft, or archived." />
                   </FormLabel>
                   <FormControl>
                     <Select
                       defaultValue={productStatusEnum.enum.draft}
-                      value={field.value}
                       onValueChange={field.onChange}
+                      value={field.value}
                     >
                       <SelectTrigger
-                        id={field.name}
                         className="min-w-32 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_svg]:shrink-0"
+                        id={field.name}
                       >
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent position="item-aligned">
                         {productStatusEnum.options.map((status) => (
-                          <SelectItem value={status} key={status}>
+                          <SelectItem key={status} value={status}>
                             <span className="flex items-center gap-2">
                               <StatusDot
                                 className={cn(
@@ -96,9 +80,7 @@ export const ProductSettings = memo(function ProductSettings() {
                                   status === "archived" && "text-destructive"
                                 )}
                               />
-                              <span className="truncate capitalize">
-                                {status}
-                              </span>
+                              <span className="truncate capitalize">{status}</span>
                             </span>
                           </SelectItem>
                         ))}
@@ -119,10 +101,10 @@ export const ProductSettings = memo(function ProductSettings() {
                     <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        onBlur={field.onBlur}
-                        disabled={field.disabled}
                         className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
+                        disabled={field.disabled}
+                        onBlur={field.onBlur}
+                        onCheckedChange={field.onChange}
                       />
                       <div className="grid grow gap-2">
                         <FormLabel htmlFor={field.name}>Visibility</FormLabel>
@@ -142,9 +124,7 @@ export const ProductSettings = memo(function ProductSettings() {
         <Card className="h-fit break-inside-avoid">
           <CardHeader>
             <CardTitle>Customer Interactions</CardTitle>
-            <CardDescription>
-              Configure how customers can interact with this product.
-            </CardDescription>
+            <CardDescription>Configure how customers can interact with this product.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -156,15 +136,13 @@ export const ProductSettings = memo(function ProductSettings() {
                     <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        onBlur={field.onBlur}
-                        disabled={field.disabled}
                         className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
+                        disabled={field.disabled}
+                        onBlur={field.onBlur}
+                        onCheckedChange={field.onChange}
                       />
                       <div className="grid grow gap-2">
-                        <FormLabel htmlFor={field.name}>
-                          Allow product reviews
-                        </FormLabel>
+                        <FormLabel htmlFor={field.name}>Allow product reviews</FormLabel>
                         <FormDescription className="text-muted-foreground text-xs">
                           Let customers leave ratings and feedback.
                         </FormDescription>
@@ -185,15 +163,13 @@ export const ProductSettings = memo(function ProductSettings() {
                     <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        onBlur={field.onBlur}
-                        disabled={field.disabled}
                         className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
+                        disabled={field.disabled}
+                        onBlur={field.onBlur}
+                        onCheckedChange={field.onChange}
                       />
                       <div className="grid grow gap-2">
-                        <FormLabel htmlFor={field.name}>
-                          Allow backorders
-                        </FormLabel>
+                        <FormLabel htmlFor={field.name}>Allow backorders</FormLabel>
                         <FormDescription className="text-muted-foreground text-xs">
                           Allow purchase even if item is out of stock.
                         </FormDescription>
@@ -214,15 +190,13 @@ export const ProductSettings = memo(function ProductSettings() {
                     <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        onBlur={field.onBlur}
-                        disabled={field.disabled}
                         className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
+                        disabled={field.disabled}
+                        onBlur={field.onBlur}
+                        onCheckedChange={field.onChange}
                       />
                       <div className="grid grow gap-2">
-                        <FormLabel htmlFor={field.name}>
-                          Show stock status
-                        </FormLabel>
+                        <FormLabel htmlFor={field.name}>Show stock status</FormLabel>
                         <FormDescription className="text-muted-foreground text-xs">
                           Display live stock info on the product page.
                         </FormDescription>
@@ -239,9 +213,7 @@ export const ProductSettings = memo(function ProductSettings() {
         <Card className="h-fit break-inside-avoid">
           <CardHeader>
             <CardTitle>Display Settings</CardTitle>
-            <CardDescription>
-              Adjust how the product is visually and interactively presented.
-            </CardDescription>
+            <CardDescription>Adjust how the product is visually and interactively presented.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -253,15 +225,13 @@ export const ProductSettings = memo(function ProductSettings() {
                     <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        onBlur={field.onBlur}
-                        disabled={field.disabled}
                         className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
+                        disabled={field.disabled}
+                        onBlur={field.onBlur}
+                        onCheckedChange={field.onChange}
                       />
                       <div className="grid grow gap-2">
-                        <FormLabel htmlFor={field.name}>
-                          Featured product
-                        </FormLabel>
+                        <FormLabel htmlFor={field.name}>Featured product</FormLabel>
                         <FormDescription className="text-muted-foreground text-xs">
                           Highlight on homepage or special collections.
                         </FormDescription>
@@ -282,16 +252,15 @@ export const ProductSettings = memo(function ProductSettings() {
                     <div className="relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none has-data-[state=checked]:border-primary/50">
                       <Switch
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        onBlur={field.onBlur}
-                        disabled={field.disabled}
                         className="data-[state=checked]:[&_span]:rtl:-translate-x-2 order-1 h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 data-[state=checked]:[&_span]:translate-x-2"
+                        disabled={field.disabled}
+                        onBlur={field.onBlur}
+                        onCheckedChange={field.onChange}
                       />
                       <div className="grid grow gap-2">
                         <FormLabel htmlFor={field.name}>Hide price</FormLabel>
                         <FormDescription className="text-muted-foreground text-xs">
-                          Hide pricing and show “Contact Us” or “Login to view”
-                          instead.
+                          Hide pricing and show “Contact Us” or “Login to view” instead.
                         </FormDescription>
                       </div>
                     </div>
@@ -306,20 +275,12 @@ export const ProductSettings = memo(function ProductSettings() {
               name="settings.customCTA"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor={field.name}>
-                    Call-to-action button
-                  </FormLabel>
+                  <FormLabel htmlFor={field.name}>Call-to-action button</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Input
-                        {...field}
-                        id={field.name}
-                        className="peer pe-9"
-                        placeholder="Buy Now"
-                        type="text"
-                      />
+                      <Input {...field} className="peer pe-9" id={field.name} placeholder="Buy Now" type="text" />
                       <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                        <IconSpeakerphone size={16} aria-hidden="true" />
+                        <IconSpeakerphone aria-hidden="true" size={16} />
                       </div>
                     </div>
                   </FormControl>
@@ -333,9 +294,7 @@ export const ProductSettings = memo(function ProductSettings() {
         <Card className="h-fit break-inside-avoid">
           <CardHeader>
             <CardTitle>Tagging & Metadata</CardTitle>
-            <CardDescription>
-              Help internal teams manage and find products easily.
-            </CardDescription>
+            <CardDescription>Help internal teams manage and find products easily.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -344,15 +303,10 @@ export const ProductSettings = memo(function ProductSettings() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <MultiInput
-                      label="Tags"
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <MultiInput label="Tags" onChange={field.onChange} value={field.value} />
                   </FormControl>
                   <FormDescription>
-                    Add keywords for internal search/sorting (e.g., trending,
-                    clearance)
+                    Add keywords for internal search/sorting (e.g., trending, clearance)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -369,19 +323,16 @@ export const ProductSettings = memo(function ProductSettings() {
                     <div className="relative">
                       <Textarea
                         {...field}
-                        id={field.name}
                         className="peer pe-9"
+                        id={field.name}
                         placeholder="e.g., Imported on June batch, supplier: TechSource Ltd."
                       />
                       <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                        <IconSpeakerphone size={16} aria-hidden="true" />
+                        <IconSpeakerphone aria-hidden="true" size={16} />
                       </div>
                     </div>
                   </FormControl>
-                  <FormDescription>
-                    Private notes for admins only (e.g., batch info, supplier
-                    notes)
-                  </FormDescription>
+                  <FormDescription>Private notes for admins only (e.g., batch info, supplier notes)</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -402,13 +353,13 @@ export const ProductSettings = memo(function ProductSettings() {
 export function StatusDot({ className }: { className?: string }) {
   return (
     <svg
-      width="8"
-      height="8"
-      fill="currentColor"
-      viewBox="0 0 8 8"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
       aria-hidden="true"
+      className={className}
+      fill="currentColor"
+      height="8"
+      viewBox="0 0 8 8"
+      width="8"
+      xmlns="http://www.w3.org/2000/svg"
     >
       <circle cx="4" cy="4" r="4" />
     </svg>

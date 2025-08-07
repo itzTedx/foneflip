@@ -30,6 +30,8 @@ export const ProductCard = ({ data, showAction = true }: Props) => {
     [data?.hasVariant, data?.variants, data?.stock]
   );
 
+  const image = useMemo(() => data.images?.find((i) => i.isFeatured), [data.images]);
+
   return (
     <Card className="relative overflow-hidden transition-[border-color] duration-300 hover:border-primary/50">
       <Link className="absolute inset-0 z-1" href={`/products/${data.id}?title=${encodeURIComponent(data.title)}`} />
@@ -41,11 +43,11 @@ export const ProductCard = ({ data, showAction = true }: Props) => {
               <div className="relative aspect-square size-14 overflow-hidden rounded-sm border bg-muted">
                 <Image
                   alt={`${data.title} product image`}
-                  blurDataURL={data.images[0]?.media.blurData ?? undefined}
+                  blurDataURL={image?.media.blurData ?? undefined}
                   className="object-cover"
                   fill
-                  placeholder={data.images[0]?.media.blurData ? "blur" : "empty"}
-                  src={data.images[0]?.media.url ?? "/images/product-placeholder.webp"}
+                  placeholder={image?.media.blurData ? "blur" : "empty"}
+                  src={image?.media.url ?? "/images/product-placeholder.webp"}
                 />
               </div>
             )}

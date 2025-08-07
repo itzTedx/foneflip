@@ -73,6 +73,7 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
         key={action.label}
         onClick={() => action.action(editor)}
       >
+        {action.icon}
         <span className="grow">{action.label}</span>
         <ShortcutKey keys={action.shortcuts} />
       </DropdownMenuItem>

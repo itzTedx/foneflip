@@ -1,7 +1,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 
 import { createLog } from "@/lib/utils";
-import { redisCache } from "@/modules/cache";
+import { redisCache, revalidateProductEditingForms } from "@/modules/cache";
 import { CACHE_DURATIONS } from "@/modules/cache/constants";
 import { CacheOperationResult, CacheOperationType } from "@/modules/cache/types";
 import { CacheInvalidationOptions } from "@/modules/collections/utils/cache-helpers";
@@ -101,6 +101,9 @@ export const invalidateProductCaches = async (productId?: string, slug?: string)
   }
 
   await redisCache.del(...keysToInvalidate);
+
+  // Also revalidate product editing forms specifically
+  revalidateProductEditingForms();
 };
 
 /**

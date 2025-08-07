@@ -22,7 +22,7 @@ import {
   revertOptimisticCache,
   updateCacheWithResult,
 } from "../utils/cache-helpers";
-import { updateCollectionCache } from "./cache";
+import { invalidateCollectionsMetadataCache, updateCollectionCache } from "./cache";
 import {
   createCollectionSlug,
   prepareCollectionData,
@@ -247,8 +247,8 @@ export async function upsertCollection(formData: unknown) {
         });
       }
 
-      // Invalidate Next.js caches
-      log.info("Invalidating Next.js caches", {
+      // Invalidate Next.js caches and product editing forms
+      log.info("Invalidating Next.js caches and product editing forms", {
         id: collection.id,
         slug: collection.slug,
       });
@@ -256,6 +256,9 @@ export async function upsertCollection(formData: unknown) {
         id: collection.id,
         slug: collection.slug,
       });
+
+      // Also invalidate collection metadata cache specifically
+      await invalidateCollectionsMetadataCache();
 
       log.info("upsertCollection succeeded", { collection });
       return {
@@ -351,11 +354,14 @@ export async function deleteCollection(id: string) {
       }
 
       // Invalidate all related caches
-      log.info("Invalidating all collection caches after deletion", {
+      log.info("Invalidating all collection caches and product editing forms after deletion", {
         id: deletedCollection.id,
         slug: deletedCollection.slug,
       });
       await invalidateCollectionCaches(deletedCollection.id, deletedCollection.slug);
+
+      // Also invalidate collection metadata cache specifically
+      await invalidateCollectionsMetadataCache();
 
       log.info("deleteCollection succeeded", { deletedCollection });
       return {
@@ -421,6 +427,10 @@ export async function setCollectionStatus(id?: string, status?: (typeof collecti
 
     // Invalidate both Next.js and Redis caches
     await invalidateCollectionCaches(collection.id, collection.slug);
+
+    // Also invalidate collection metadata cache specifically
+    await invalidateCollectionsMetadataCache();
+
     log.info(`Successfully set collection status to ${status} for: "${collection.title}" (ID: ${id})`);
     return {
       success: `Collection (${collection.title}) has been set to ${status}`,
@@ -449,6 +459,10 @@ export async function updateCollectionsOrder({ orders }: { orders: { id: string;
     }
     // Invalidate both Next.js and Redis caches
     await invalidateCollectionCaches();
+
+    // Also invalidate collection metadata cache specifically
+    await invalidateCollectionsMetadataCache();
+
     log.info("Successfully updated collections order");
     return { success: true };
   } catch (err) {
@@ -557,6 +571,9 @@ export async function duplicateCollection(id: string) {
       id: duplicatedCollection.id,
       slug: duplicatedCollection.slug,
     });
+
+    // Also invalidate collection metadata cache specifically
+    await invalidateCollectionsMetadataCache();
 
     return {
       success: `Collection \"${originalCollection.title}\" has been duplicated`,
@@ -746,6 +763,10 @@ export async function saveCollectionDraft(formData: unknown) {
     });
 
     await invalidateCollectionCaches(collection.id, collection.slug);
+
+    // Also invalidate collection metadata cache specifically
+    await invalidateCollectionsMetadataCache();
+
     log.success("Revalidated all collection-related caches for draft");
     return {
       success: true,

@@ -30,7 +30,9 @@ export const ToolbarButton = ({
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>{toggleButton}</TooltipTrigger>
+      <TooltipTrigger asChild className="cursor-pointer">
+        {toggleButton}
+      </TooltipTrigger>
       <TooltipContent {...tooltipOptions}>
         <div className="flex flex-col items-center text-center">{tooltip}</div>
       </TooltipContent>

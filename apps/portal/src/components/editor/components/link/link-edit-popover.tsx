@@ -1,8 +1,8 @@
 import * as React from "react";
 
 import type { Editor } from "@tiptap/react";
-import { Link2Icon } from "lucide-react";
 
+import { IconLink } from "@ziron/ui/assets/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@ziron/ui/popover";
 import type { toggleVariants } from "@ziron/ui/toggle";
 import { VariantProps } from "@ziron/utils";
@@ -58,10 +58,10 @@ const LinkEditPopover = ({ editor, size, variant }: LinkEditPopoverProps) => {
           tooltip="Link"
           variant={variant}
         >
-          <Link2Icon className="size-5" />
+          <IconLink className="size-4" />
         </ToolbarButton>
       </PopoverTrigger>
-      <PopoverContent align="end" side="bottom">
+      <PopoverContent align="end" className="p-0 py-1.5" side="bottom">
         <LinkEditBlock defaultText={text} onSave={onSetLink} />
       </PopoverContent>
     </Popover>
