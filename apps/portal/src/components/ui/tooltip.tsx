@@ -27,7 +27,7 @@ export const TooltipBadge = ({ tooltip, children, asChild = false, variant, clas
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Badge asChild={asChild} className={cn("capitalize", className)} variant={variant}>
+        <Badge asChild={asChild} className={cn("z-10 capitalize", className)} variant={variant}>
           {children}
         </Badge>
       </TooltipTrigger>

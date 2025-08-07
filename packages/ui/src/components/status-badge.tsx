@@ -1,7 +1,8 @@
 // AlignUI StatusBadge v0.0.0
 
-import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";
+
+import { Slot } from "@radix-ui/react-slot";
 
 import type { PolymorphicComponentProps, VariantProps } from "@ziron/utils";
 import { recursiveCloneChildren, tv } from "@ziron/utils";
@@ -105,10 +106,7 @@ type StatusBadgeRootProps = React.HTMLAttributes<HTMLDivElement> &
   };
 
 const StatusBadgeRoot = React.forwardRef<HTMLDivElement, StatusBadgeRootProps>(
-  (
-    { asChild, children, variant, status, className, ...rest },
-    forwardedRef
-  ) => {
+  ({ asChild, children, variant, status, className, ...rest }, forwardedRef) => {
     const uniqueId = React.useId();
     const Component = asChild ? Slot : "div";
     const { root } = statusBadgeVariants({ variant, status });
@@ -127,11 +125,8 @@ const StatusBadgeRoot = React.forwardRef<HTMLDivElement, StatusBadgeRootProps>(
     );
 
     return (
-      <Component
-        ref={forwardedRef}
-        className={root({ class: className })}
-        {...rest}
-      >
+      // biome-ignore lint/style/noParameterAssign: I know what I'm doing
+      <Component className={root({ class: className })} ref={forwardedRef} {...rest}>
         {extendedChildren}
       </Component>
     );
