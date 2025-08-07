@@ -8,6 +8,7 @@ import { passkey } from "better-auth/plugins/passkey";
 import { db } from "@ziron/db/server";
 import { sendEmail } from "@ziron/email";
 import EmailVerification from "@ziron/email/templates/auth/email-verification";
+import PasswordResetEmail from "@ziron/email/templates/auth/reset-password";
 import redis from "@ziron/redis";
 
 import { OTP_EXPIRES_IN, OTP_EXPIRES_IN_MS } from "./data/constants";
@@ -39,6 +40,13 @@ export function initAuth(options: {
     emailAndPassword: {
       enabled: true,
       revokeSessionsOnPasswordReset: true,
+      async sendResetPassword({ user, url }) {
+        sendEmail({
+          email: user.email,
+          subject: "Reset your password",
+          react: PasswordResetEmail({ resetUrl: url, userEmail: user.email }),
+        });
+      },
     },
 
     emailVerification: {
