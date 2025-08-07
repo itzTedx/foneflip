@@ -14,6 +14,7 @@ export const env = createEnv({
 
     BETTER_AUTH_SECRET: z.string().min(1),
     BETTER_AUTH_URL: z.url(),
+    BETTER_AUTH_ALLOWED_ORIGIN: z.string().min(1),
 
     REDIS_HOST: z.string().min(1),
     REDIS_PORT: z.string().min(1),
@@ -26,6 +27,8 @@ export const env = createEnv({
     AWS_BUCKET_REGION: z.string().min(1),
     AWS_ACCESS_KEY: z.string().min(1),
     AWS_SECRET_ACCESS_KEY: z.string().min(1),
+
+    NODE_ENV: z.enum(["development", "production", "test"]).optional(),
   },
 
   createFinalSchema: (env) => {

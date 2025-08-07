@@ -2,6 +2,7 @@
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
   "globalDependencies": ["**/.env"],
+  "concurrency": "12",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -57,12 +58,5 @@
     "AUTH_SECRET",
     "PORT"
   ],
-  "globalPassThroughEnv": [
-    "NODE_ENV",
-    "CI",
-    "VERCEL",
-    "VERCEL_ENV",
-    "VERCEL_URL",
-    "npm_lifecycle_event"
-  ]
+  "globalPassThroughEnv": ["NODE_ENV", "CI", "VERCEL", "VERCEL_ENV", "VERCEL_URL", "npm_lifecycle_event"]
 }

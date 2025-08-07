@@ -26,7 +26,7 @@ export default function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded-full">
-        <Avatar>
+        <Avatar className="size-10 sm:size-9">
           <GlareHover className="size-full rounded-full">
             <AvatarImage alt="Profile image" src={data?.user.image ?? undefined} />
             <AvatarFallback>{data?.user.name.slice(0, 1)}</AvatarFallback>

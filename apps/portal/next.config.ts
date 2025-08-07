@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [{ hostname: "foneflip-local.s3.us-east-1.amazonaws.com" }],
   },
-  allowedDevOrigins: ["192.168.1.158"],
+  allowedDevOrigins: ["192.168.1.158", "192.168.1.215"],
 
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },

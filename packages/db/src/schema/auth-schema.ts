@@ -102,18 +102,6 @@ export const invitations = pgTable(
   (table) => [index("invitations_email_idx").on(table.email), index("invitations_token_idx").on(table.token)]
 );
 
-export const members = pgTable("members", {
-  id: uuid("id").primaryKey().defaultRandom().notNull(),
-  organizationId: uuid("vendors_id")
-    .notNull()
-    .references(() => vendorsTable.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  role: text("role").default("member").notNull(),
-  createdAt: timestamp("created_at").notNull(),
-});
-
 export const twoFactors = pgTable(
   "two_factors",
   {

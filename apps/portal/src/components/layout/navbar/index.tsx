@@ -19,8 +19,8 @@ export default async function Navbar({ session }: NavbarProps) {
   const notifications = await getNotifications(session?.user.id);
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur-xl">
-      <div className="mx-auto flex h-12 max-w-7xl items-center gap-1 px-4 max-sm:justify-between sm:grid sm:grid-cols-3 md:px-6">
+    <header className="sticky top-0 z-50 mx-auto max-w-7xl border-b bg-background/90 backdrop-blur-xl">
+      <div className="mx-auto flex h-14 max-w-7xl items-center gap-1 px-4 max-sm:justify-between sm:grid sm:grid-cols-3 md:px-6">
         <div className="flex flex-1 items-center gap-2">
           <SidebarTrigger className="md:hidden">
             <IconLayoutSidebar />

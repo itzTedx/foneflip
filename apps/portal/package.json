@@ -35,7 +35,7 @@
     "@ziron/ui": "workspace:*",
     "@ziron/utils": "workspace:*",
     "@ziron/validators": "workspace:*",
-    "better-auth": "1.2.9",
+    "better-auth": "catalog:",
     "bullmq": "^5.56.3",
     "date-fns": "^4.1.0",
     "dotenv-cli": "^8.0.0",
@@ -54,10 +54,12 @@
     "radix-ui": "^1.4.2",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
+    "react-qr-code": "^2.0.18",
     "remark-gfm": "^4.0.1",
     "sharp": "^0.34.3",
     "socket.io-client": "^4.8.1",
-    "sonner": "^2.0.6"
+    "sonner": "^2.0.6",
+    "ua-parser-js": "^2.0.4"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",

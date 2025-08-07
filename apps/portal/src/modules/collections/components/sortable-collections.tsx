@@ -27,6 +27,7 @@ const SortableCollectionCard = React.memo(function SortableCollectionCard({
       transform: CSS.Transform.toString(transform),
       transition,
       opacity: isDragging ? 0.3 : 1,
+      border: isDragging ? "1px solid var(--border)" : "none",
     }),
     [transform, transition, isDragging]
   );

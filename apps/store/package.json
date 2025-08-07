@@ -1,0 +1,36 @@
+{
+  "name": "store",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm with-env next dev --turbopack --port 3001",
+    "build": "pnpm with-env next build",
+    "start": "pnpm with-env next start",
+    "lint": "next lint",
+    "format": "biome format --write ./src",
+    "clean": "git clean -xdf .cache .next .turbo node_modules",
+    "typecheck": "tsc --noEmit",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "dependencies": {
+    "@ziron/auth": "workspace:*",
+    "@ziron/db": "workspace:*",
+    "@ziron/seo": "workspace:*",
+    "@ziron/ui": "workspace:*",
+    "@ziron/utils": "workspace:*",
+    "better-auth": "1.2.9",
+    "next": "15.4.5",
+    "pg": "^8.16.3",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "sonner": "^2.0.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@ziron/tsconfig": "workspace:*",
+    "dotenv-cli": "^8.0.0",
+    "typescript": "catalog:"
+  }
+}
