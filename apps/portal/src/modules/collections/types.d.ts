@@ -37,9 +37,7 @@ export type UpsertCollectionSeo = InferInsertModel<typeof seoTable>;
 
 export type Seo = InferSelectModel<typeof seoTable>;
 export type Media = InferSelectModel<typeof mediaTable>;
-export type User = InferSelectModel<typeof users> & {
-  image: string | null | undefined;
-};
+export type User = InferSelectModel<typeof users>;
 
 export type NewCollection = InferInsertModel<typeof collectionsTable>;
 export type CollectionMetadata = Pick<Collection, "id" | "title" | "createdAt">;

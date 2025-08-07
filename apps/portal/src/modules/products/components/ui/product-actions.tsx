@@ -64,7 +64,7 @@ export const ProductActions = ({ id, title }: { id: string; title: string }) => 
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="z-10" size="btn" variant={"ghost"}>
+          <Button className="z-10 size-7" size={"icon"} variant={"ghost"}>
             <Ellipsis />
           </Button>
         </DropdownMenuTrigger>

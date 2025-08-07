@@ -35,15 +35,11 @@ export const PersonalInfoCard = ({ vendor }: Props) => {
         </div>
         <div>
           <h4 className="mb-1 text-muted-foreground text-xs">Mobile</h4>
-          <div className="font-medium">
-            {vendor.vendorNumber ? formatPhoneNumber(vendor.vendorNumber) : "Not provided"}
-          </div>
+          <div className="font-medium">{formatPhoneNumber(vendor.vendorNumber)}</div>
         </div>
         <div>
           <h4 className="mb-1 text-muted-foreground text-xs">WhatsApp</h4>
-          <div className="font-medium">
-            {vendor.vendorWhatsappNumber ? formatPhoneNumber(vendor.vendorWhatsappNumber) : "Not provided"}
-          </div>{" "}
+          <div className="font-medium">{formatPhoneNumber(vendor.vendorWhatsappNumber)}</div>
         </div>
         <div className="flex gap-3">
           <Button asChild size="icon" type="button" variant="outline">

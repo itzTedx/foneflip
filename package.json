@@ -26,7 +26,7 @@
     "docker:down": "pnpm -F @ziron/docker down"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.3",
+    "@biomejs/biome": "catalog:",
     "@turbo/gen": "^2.5.5",
     "@ziron/eslint-config": "workspace:*",
     "@ziron/prettier-config": "workspace:*",

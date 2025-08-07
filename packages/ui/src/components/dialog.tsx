@@ -75,7 +75,7 @@ function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Content
         className={cn(
-          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-9999 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] rounded-lg border border-border/40 bg-background/60 shadow-lg shadow-primary-background/5 backdrop-blur-xl duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:max-w-lg",
+          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-9999 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] rounded-sm border bg-background shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:max-w-lg",
           className
         )}
         data-slot="dialog-content"
@@ -132,7 +132,7 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
  * Intended for structuring header or grouped elements within a dialog.
  */
 function DialogContainer({ className, ...props }: React.ComponentProps<"div">) {
-  return <div className={cn("flex flex-row items-center gap-2 p-3", className)} {...props} />;
+  return <div className={cn("flex flex-row items-center gap-2 border-b p-3", className)} {...props} />;
 }
 
 /**
@@ -140,12 +140,8 @@ function DialogContainer({ className, ...props }: React.ComponentProps<"div">) {
  *
  * Additional class names and div props can be provided for further customization.
  */
-function DialogContentContainer({ className, children, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div className={cn("flex flex-col gap-4 px-1.5 pb-1.5", className)} {...props}>
-      <div className="rounded-md border bg-accent/60 p-3">{children}</div>
-    </div>
-  );
+function DialogContentContainer({ className, ...props }: React.ComponentProps<"div">) {
+  return <div className={cn("flex flex-col gap-4 p-3", className)} {...props} />;
 }
 
 /**

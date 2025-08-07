@@ -64,7 +64,7 @@ async function getStepsStorage(): Promise<StorageFactory<OnboardingStep>> {
     const manager = DatabaseManager.getInstance();
     await manager.initialize();
 
-    // biome-ignore lint/suspicious/noExplicitAny: I dont know what this is
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = DatabaseManager.STORAGE_CONFIGS.onboarding.steps as unknown as any;
     stepsStorage = await manager.createStorage<OnboardingStep>(config);
   }
@@ -76,7 +76,7 @@ async function getProgressStorage(): Promise<StorageFactory<OnboardingProgress>>
     const manager = DatabaseManager.getInstance();
     await manager.initialize();
 
-    // biome-ignore lint/suspicious/noExplicitAny: I dont know what this is
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = DatabaseManager.STORAGE_CONFIGS.onboarding.progress as unknown as any;
     progressStorage = await manager.createStorage<OnboardingProgress>(config);
   }
@@ -88,7 +88,7 @@ async function getDataStorage(): Promise<StorageFactory<OnboardingData>> {
     const manager = DatabaseManager.getInstance();
     await manager.initialize();
 
-    // biome-ignore lint/suspicious/noExplicitAny: I dont know what this is
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = DatabaseManager.STORAGE_CONFIGS.onboarding.data as unknown as any;
     dataStorage = await manager.createStorage<OnboardingData>(config);
   }
@@ -157,8 +157,6 @@ export async function getStepByUserAndName(
 }
 
 // Progress management functions
-const TOTAL_ONBOARDING_STEPS = ONBOARDING_STEPS.length + 1; // +1 for "complete"
-
 export async function initializeProgress(userId: string): Promise<void> {
   const storage = await getProgressStorage();
   const now = new Date().toISOString();
@@ -167,7 +165,7 @@ export async function initializeProgress(userId: string): Promise<void> {
     userId,
     currentStep: "registration",
     completedSteps: [],
-    totalSteps: TOTAL_ONBOARDING_STEPS,
+    totalSteps: 4, // registration, verification, organization, documents
     progress: 0,
     startedAt: now,
     lastUpdatedAt: now,
@@ -180,7 +178,7 @@ export async function updateProgress(
   completedSteps: OnboardingStep["stepName"][]
 ): Promise<void> {
   const storage = await getProgressStorage();
-  const progress = Math.round((completedSteps.length / TOTAL_ONBOARDING_STEPS) * 100);
+  const progress = Math.round((completedSteps.length / 4) * 100);
 
   await storage.update(userId, {
     currentStep,
@@ -189,6 +187,7 @@ export async function updateProgress(
     lastUpdatedAt: new Date().toISOString(),
   });
 }
+
 export async function getProgress(userId: string): Promise<OnboardingProgress | null> {
   const storage = await getProgressStorage();
   return await storage.get(userId);
@@ -258,12 +257,10 @@ export async function isStepCompleted(userId: string, stepName: OnboardingStep["
   const step = await getStepByUserAndName(userId, stepName);
   return step?.status === "completed";
 }
+
 export async function getCompletedSteps(userId: string): Promise<OnboardingStep["stepName"][]> {
   const steps = await getUserSteps(userId);
-  return steps
-    .filter((step) => step.status === "completed" && step.stepName)
-    .map((step) => step.stepName)
-    .filter((stepName): stepName is OnboardingStep["stepName"] => stepName !== undefined);
+  return steps.filter((step) => step.status === "completed" && step.stepName).map((step) => step.stepName!);
 }
 
 export async function clearOnboardingData(userId: string): Promise<void> {

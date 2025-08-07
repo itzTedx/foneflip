@@ -13,7 +13,6 @@ import { toast } from "@ziron/ui/sonner";
 import { registerUserSchema, z } from "@ziron/validators";
 
 import { signUp } from "@/lib/auth/client";
-import { invalidateUserCaches } from "@/modules/users/actions/cache";
 
 export const RegisterForm = () => {
   const router = useRouter();
@@ -38,9 +37,7 @@ export const RegisterForm = () => {
         name: values.username,
         password: values.password,
         fetchOptions: {
-          onSuccess: async (_response) => {
-            // Invalidate user caches after successful registration
-            await invalidateUserCaches(undefined, values.email);
+          onSuccess: () => {
             toast.success("Registration Successful!");
             router.push("/");
           },
@@ -65,7 +62,7 @@ export const RegisterForm = () => {
                   <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input
-                      autoComplete="username"
+                      autoComplete="name webauthn"
                       autoFocus
                       id="username"
                       placeholder="Username"
