@@ -1,9 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { IconX } from "@tabler/icons-react";
 import { Upload } from "lucide-react";
 
 import { Button } from "@ziron/ui/button";
-import { FileUpload, FileUploadDropzone, FileUploadProps, FileUploadTrigger } from "@ziron/ui/file-upload";
+import {
+  FileUpload,
+  FileUploadDropzone,
+  FileUploadItem,
+  FileUploadItemDelete,
+  FileUploadItemPreview,
+  FileUploadItemProgress,
+  FileUploadList,
+  FileUploadProps,
+  FileUploadTrigger,
+} from "@ziron/ui/file-upload";
 import { useFieldArray, useFormContext } from "@ziron/ui/form";
 import { ProductFormType } from "@ziron/validators";
 
@@ -154,7 +165,7 @@ export const MediaUpload = () => {
             Browse files
           </Button>
         </FileUploadTrigger>
-        {/* <FileUploadList orientation="horizontal">
+        <FileUploadList orientation="horizontal">
           {files.map((file, index) => {
             // console.log(file);
             return (
@@ -171,7 +182,7 @@ export const MediaUpload = () => {
               </FileUploadItem>
             );
           })}
-        </FileUploadList> */}
+        </FileUploadList>
       </FileUploadDropzone>
     </FileUpload>
   );

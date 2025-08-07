@@ -2,13 +2,7 @@
 
 import { memo } from "react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@ziron/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
 import {
   FormControl,
   FormDescription,
@@ -57,10 +51,7 @@ export const ProductSeo = memo(function ProductSeo() {
         <Card className="h-fit md:sticky md:top-[20vh]">
           <CardHeader>
             <CardTitle>Meta Tags</CardTitle>
-            <CardDescription>
-              Improve search visibility with meta title, description, and
-              keywords
-            </CardDescription>
+            <CardDescription>Improve search visibility with meta title, description, and keywords</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -71,13 +62,7 @@ export const ProductSeo = memo(function ProductSeo() {
                   <FormLabel className="justify-between">
                     Meta Title{" "}
                     <div className="mt-1 flex justify-between text-sm">
-                      <span
-                        className={
-                          titleHook.isMaxLengthExceeded
-                            ? "text-destructive"
-                            : "text-muted-foreground"
-                        }
-                      >
+                      <span className={titleHook.isMaxLengthExceeded ? "text-destructive" : "text-muted-foreground"}>
                         {titleHook.characterCount}
                       </span>
                     </div>
@@ -85,11 +70,11 @@ export const ProductSeo = memo(function ProductSeo() {
                   <FormControl>
                     <div>
                       <Input
+                        name={field.name}
+                        onBlur={field.onBlur}
+                        onChange={titleHook.handleChange}
                         placeholder="Meta Title"
                         value={field.value}
-                        onChange={titleHook.handleChange}
-                        onBlur={field.onBlur}
-                        name={field.name}
                       />
                     </div>
                   </FormControl>
@@ -99,9 +84,7 @@ export const ProductSeo = memo(function ProductSeo() {
                       <span
                         className={cn(
                           "tabular-nums",
-                          titleHook.isMaxLengthExceeded
-                            ? "text-destructive"
-                            : "text-yellow-500"
+                          titleHook.isMaxLengthExceeded ? "text-destructive" : "text-yellow-500"
                         )}
                       >
                         {titleHook.statusMessage}
@@ -121,22 +104,14 @@ export const ProductSeo = memo(function ProductSeo() {
                     Meta Description{" "}
                     <div className="mt-1 flex justify-between text-sm">
                       <span
-                        className={
-                          descriptionHook.isMaxLengthExceeded
-                            ? "text-destructive"
-                            : "text-muted-foreground"
-                        }
+                        className={descriptionHook.isMaxLengthExceeded ? "text-destructive" : "text-muted-foreground"}
                       >
                         {descriptionHook.characterCount}
                       </span>
                     </div>
                   </FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Meta Description"
-                      className="min-h-[8ch]"
-                      {...field}
-                    />
+                    <Textarea className="min-h-[8ch]" placeholder="Meta Description" {...field} />
                   </FormControl>
                   <FormDescription className="flex items-center justify-between">
                     Recommended length: 150-160 characters{" "}
@@ -144,9 +119,7 @@ export const ProductSeo = memo(function ProductSeo() {
                       <span
                         className={cn(
                           "tabular-nums",
-                          descriptionHook.isMaxLengthExceeded
-                            ? "text-destructive"
-                            : "text-yellow-500"
+                          descriptionHook.isMaxLengthExceeded ? "text-destructive" : "text-yellow-500"
                         )}
                       >
                         {descriptionHook.statusMessage}
@@ -166,6 +139,7 @@ export const ProductSeo = memo(function ProductSeo() {
                   <FormLabel>Meta keywords</FormLabel>
                   <FormControl>
                     <MultiInput
+                      onChange={(tags) => field.onChange(tags.join(","))}
                       placeholder="Meta Keywords"
                       storageKey="keywords"
                       suggestions={["Apple", "Iphone", "Pro Max", "ultra"]}
@@ -175,12 +149,9 @@ export const ProductSeo = memo(function ProductSeo() {
                           .map((k: string) => k.trim())
                           .filter(Boolean) ?? []
                       }
-                      onChange={(tags) => field.onChange(tags.join(","))}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Add relevant keywords separated by commas
-                  </FormDescription>
+                  <FormDescription>Add relevant keywords separated by commas</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

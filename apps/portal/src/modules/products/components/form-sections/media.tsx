@@ -1,15 +1,26 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
-import { closestCenter, DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { IconX } from "@tabler/icons-react";
+import { Upload } from "lucide-react";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { toast } from "sonner";
 
 import { Button } from "@ziron/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ziron/ui/card";
+import {
+  FileUpload,
+  FileUploadDropzone,
+  FileUploadItem,
+  FileUploadItemDelete,
+  FileUploadItemMetadata,
+  FileUploadItemPreview,
+  FileUploadItemProgress,
+  FileUploadList,
+  FileUploadProps,
+  FileUploadTrigger,
+} from "@ziron/ui/file-upload";
 import {
   FormControl,
   FormField,
@@ -24,11 +35,12 @@ import { ProductFormType } from "@ziron/validators";
 
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import { Media } from "@/modules/collections/types";
+import { getSignedURL } from "@/modules/media/actions/mutations";
 import { MediaPickerModal } from "@/modules/media/components/media-picker";
+import { computeSHA256 } from "@/modules/media/utils/compute-sha256";
+import { getImageMetadata } from "@/modules/media/utils/get-image-data";
 
-import { ImagePreviewCard } from "./fields/media/image-preview-card";
-import { MediaUpload } from "./fields/media/media-upload";
-import { SortableImageItem } from "./fields/media/sortable-image";
+import { UploadedImagesList } from "./fields/media/uploaded-images-list";
 
 /**
  * Renders the product image gallery section within a product form, providing upload, selection, preview, drag-and-drop reordering, featuring, and removal of images.
@@ -36,21 +48,108 @@ import { SortableImageItem } from "./fields/media/sortable-image";
  * Integrates with form state to manage a dynamic array of images, allowing users to upload new images, select from existing media, mark one image as featured, remove individual or all images, and reorder images via drag-and-drop. Displays image previews with metadata and provides a drag overlay during reordering.
  */
 export function ProductMedia() {
-  const [activeId, setActiveId] = useState<string | null>(null);
   const form = useFormContext<ProductFormType>();
+  const [files, setFiles] = useState<File[]>([]);
+  const maxSizeMB = 4;
+  const maxSize = maxSizeMB * 1024 * 1024; // 4MB default
 
   const { fields, remove, append, move } = useFieldArray({
     control: form.control,
     name: "images",
   });
 
-  // dnd-kit sensors
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    })
+  // Clear files state when images are removed
+  useEffect(() => {
+    if (fields.length === 0) {
+      setFiles([]);
+    }
+  }, [fields.length]);
+
+  const onUpload: NonNullable<FileUploadProps["onUpload"]> = useCallback(
+    async (files, { onProgress, onSuccess, onError }) => {
+      try {
+        // Process each file individually
+        const uploadPromises = files.map(async (file) => {
+          try {
+            const checksum = await computeSHA256(file);
+
+            const signedUrl = await getSignedURL({
+              file: {
+                type: file.type,
+                size: file.size,
+                fileName: file.name,
+              },
+              collection: "product",
+              checksum: checksum,
+            });
+
+            if (signedUrl.error !== undefined) {
+              form.setError("images", new Error(signedUrl.message));
+              return;
+            }
+
+            if (signedUrl.success) {
+              const url = signedUrl.success.url;
+              const key = signedUrl.success.key;
+
+              // Get image metadata (blurData, width, height)
+              const metadata = await getImageMetadata(file);
+
+              const xhr = new XMLHttpRequest();
+              xhr.open("PUT", url, true);
+              xhr.setRequestHeader("Content-Type", file.type);
+              xhr.setRequestHeader("Content-Language", file.size.toString());
+              xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                  const progress = (event.loaded / event.total) * 100;
+                  onProgress(file, progress);
+                }
+              };
+
+              xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  form.clearErrors("images");
+
+                  // Add the uploaded image to the form
+                  append({
+                    file: {
+                      url: url.split("?")[0] ?? "",
+                      name: file.name,
+                      size: file.size,
+                      key: key,
+                    },
+                    metadata: {
+                      ...metadata,
+                    },
+                  });
+
+                  onSuccess(file);
+                  setFiles([]);
+                } else {
+                  form.setError("images", new Error("Upload failed"));
+                  onError(file, new Error("Upload failed"));
+                }
+              };
+
+              xhr.onerror = (error) => {
+                form.setError("images", new Error("Upload error"));
+                onError(file, error instanceof Error ? error : new Error("Upload failed"));
+              };
+
+              xhr.send(file);
+            }
+          } catch (error) {
+            onError(file, error instanceof Error ? error : new Error("Upload failed"));
+          }
+        });
+
+        // Wait for all uploads to complete
+        await Promise.all(uploadPromises);
+      } catch (error) {
+        console.error("Unexpected error during upload:", error);
+      }
+    },
+    [form.clearErrors, append]
   );
 
   // Dialog state for selecting existing media
@@ -94,36 +193,8 @@ export function ProductMedia() {
     toast.success(`${mediaArray.length} image(s) selected from library`);
   }
 
-  // Memoized onDragStart
-  function onDragStart(event: DragStartEvent) {
-    setActiveId(event.active.id as string);
-  }
-
-  // Memoized onDragEnd
-  function onDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    setActiveId(null);
-    if (active.id !== over?.id) {
-      const oldIndex = fields.findIndex((f) => f.id === active.id);
-      const newIndex = fields.findIndex((f) => f.id === over?.id);
-      move(oldIndex, newIndex);
-    }
-  }
-
-  // Memoized onDragCancel
-  function onDragCancel() {
-    setActiveId(null);
-  }
-
   // Always get the latest images from the form state
   const watchedImages = form.watch("images") || [];
-
-  // Featured status for each image
-  const featuredStatus = fields.map((_, i) => form.getValues(`images.${i}.isPrimary`));
-
-  // Find the active image for overlay
-  const idx = fields.findIndex((f) => f.id === activeId);
-  const activeImage = idx !== -1 ? watchedImages[idx] : undefined;
 
   return (
     <>
@@ -131,11 +202,13 @@ export function ProductMedia() {
         <h2 className="px-2 font-medium text-lg">Product Image Gallery</h2>
         <TabNavigation currentTab="media" />
       </div>
+
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        {/* Upload Section */}
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle>Product Images</CardTitle>
-            <CardDescription>Upload and manage product images including thumbnails and order.</CardDescription>
+            <CardTitle>Upload Images</CardTitle>
+            <CardDescription>Upload new product images or select from existing media library.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -155,8 +228,70 @@ export function ProductMedia() {
                       Choose from existing
                     </Button>
                   </div>
-                  <MediaUpload />
-                  <FormControl />
+                  <FormControl>
+                    <FileUpload
+                      accept="image/*"
+                      maxFiles={10}
+                      maxSize={maxSize}
+                      multiple
+                      onFileReject={(_, message) => {
+                        form.setError("images", {
+                          message,
+                        });
+                      }}
+                      onUpload={onUpload}
+                      onValueChange={setFiles}
+                      value={files}
+                    >
+                      <FileUploadDropzone className="relative flex select-none flex-col items-center justify-center gap-2 rounded-lg border-dashed py-12 outline-none transition-colors hover:bg-accent/30 focus-visible:border-ring/50 data-[disabled]:pointer-events-none data-[dragging]:border-primary data-[invalid]:border-destructive data-[dragging]:bg-accent/30 data-[invalid]:ring-destructive/20">
+                        <div className="flex flex-col items-center gap-1 text-center">
+                          <div className="flex items-center justify-center rounded-full border p-2.5">
+                            <Upload className="size-6 text-muted-foreground" />
+                          </div>
+                          <p className="font-medium text-sm">Drag & drop image here</p>
+                          <p className="text-muted-foreground text-xs">Or click to browse</p>
+                          <FileUploadTrigger asChild>
+                            <Button className="mt-2 w-fit" size="sm" variant="outline">
+                              Browse files
+                            </Button>
+                          </FileUploadTrigger>
+                        </div>
+                      </FileUploadDropzone>
+
+                      {/* Upload Progress Section */}
+                      <div className="mt-4">
+                        <div className="mb-2 flex items-center justify-between">
+                          <h4 className="text-muted-foreground text-sm">
+                            Uploading:{" "}
+                            <span className="font-medium">
+                              {files.length} {pluralize("File", files.length)}
+                            </span>
+                          </h4>
+                          {files.length > 0 && (
+                            <Button onClick={() => setFiles([])} size="sm" variant="outline">
+                              Clear queue
+                            </Button>
+                          )}
+                        </div>
+                        <FileUploadList orientation="vertical">
+                          {files.map((file, index) => (
+                            <FileUploadItem key={index} value={file}>
+                              <FileUploadItemPreview className="size-20 [&>svg]:size-12">
+                                <FileUploadItemProgress size={30} variant="fill" />
+                              </FileUploadItemPreview>
+                              <FileUploadItemMetadata />
+
+                              <FileUploadItemDelete asChild>
+                                <Button className="size-5 rounded-full" size="icon" variant="secondary">
+                                  <IconX className="size-3" />
+                                </Button>
+                              </FileUploadItemDelete>
+                            </FileUploadItem>
+                          ))}
+                        </FileUploadList>
+                      </div>
+                    </FileUpload>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -164,10 +299,11 @@ export function ProductMedia() {
           </CardContent>
         </Card>
 
+        {/* Uploaded Images Gallery */}
         {fields && fields.length > 0 && (
           <Card className="h-fit">
             <CardHeader>
-              <CardTitle>Images Preview</CardTitle>
+              <CardTitle>Product Images Gallery</CardTitle>
               <div className="mb-2 flex items-center justify-between">
                 <h4 className="text-muted-foreground text-sm">
                   Uploaded:{" "}
@@ -183,37 +319,32 @@ export function ProductMedia() {
               </div>
             </CardHeader>
             <CardContent>
-              <DndContext
-                collisionDetection={closestCenter}
-                onDragCancel={onDragCancel}
-                onDragEnd={onDragEnd}
-                onDragStart={onDragStart}
-                sensors={sensors}
-              >
-                <SortableContext items={fields.map((f) => f.id)} strategy={verticalListSortingStrategy}>
-                  <div className="grid gap-3">
-                    {watchedImages.map((img, i) => (
-                      <SortableImageItem
-                        f={{
-                          ...img,
-                          id: img.id || String(i),
-                        }}
-                        i={i}
-                        key={img.id || i}
-                        remove={remove}
-                        toggleFeaturedImage={toggleFeaturedImage}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-                <DragOverlay>
-                  {activeImage ? <ImagePreviewCard media={activeImage} showActions={false} /> : null}
-                </DragOverlay>
-              </DndContext>
+              <UploadedImagesList
+                images={watchedImages.map((img) => ({
+                  id: img.id,
+                  file: {
+                    url: img.file?.url,
+                    name: img.file?.name || undefined,
+                    size: img.file?.size || undefined,
+                  },
+                  metadata: img.metadata
+                    ? {
+                        width: img.metadata.width || undefined,
+                        height: img.metadata.height || undefined,
+                        blurData: img.metadata.blurData || undefined,
+                      }
+                    : undefined,
+                  isPrimary: img.isPrimary,
+                }))}
+                onRemove={remove}
+                onReorder={move}
+                onToggleFeatured={toggleFeaturedImage}
+              />
             </CardContent>
           </Card>
         )}
       </div>
+
       <MediaPickerModal multiple onSelect={handleSelectMedia} />
     </>
   );
