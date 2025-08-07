@@ -222,6 +222,26 @@ export const getVendors = cache(
       const vendors = await db.query.vendorsTable.findMany({
         orderBy: (vendors, { desc }) => desc(vendors.createdAt),
         with: {
+          members: {
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  emailVerified: true,
+                  image: true,
+                  role: true,
+                  banned: true,
+                  banReason: true,
+                  banExpires: true,
+                  twoFactorEnabled: true,
+                  createdAt: true,
+                  updatedAt: true,
+                },
+              },
+            },
+          },
           documents: true,
         },
       });

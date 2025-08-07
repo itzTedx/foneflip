@@ -51,7 +51,7 @@ async function verifyAndUseInvitation(token: string) {
       .set({
         usedAt: new Date(),
         expiresAt: null,
-        status: "onboarding",
+        status: "accepted",
         updatedAt: new Date(),
       })
       .where(and(eq(vendorInvitations.id, invitation.id), isNull(vendorInvitations.usedAt)))
@@ -106,7 +106,7 @@ export async function GET(request: Request) {
     const validatedToken = tokenSchema.parse(token);
 
     // 2. Execute business logic
-    await verifyAndUseInvitation(validatedToken);
+    const verifiedInvitation = await verifyAndUseInvitation(validatedToken);
 
     // 3. Redirect to onboarding page on success
     const redirectUrl = new URL("/onboarding", origin);
@@ -150,14 +150,7 @@ export async function GET(request: Request) {
     }
 
     // Store error securely and get error ID
-    const errorId = await storeError(
-      errorType,
-      errorMessage,
-      errorDetails,
-      errorStatus,
-      "medium",
-      userAgent || undefined
-    );
+    const errorId = storeError(errorType, errorMessage, errorDetails, errorStatus, "medium", userAgent || undefined);
 
     // Redirect to error page with only the error ID
     const errorUrl = new URL("/verify/error", origin);

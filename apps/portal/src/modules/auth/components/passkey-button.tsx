@@ -25,9 +25,10 @@ export function PasskeyButton({ className, isSubmitting, setIsSubmitting, email,
       return;
     }
 
+    setIsSubmitting?.(true);
+
     startTransition(async () => {
       try {
-        setIsSubmitting?.(true);
         await signIn.passkey({
           email,
           autoFill: true,

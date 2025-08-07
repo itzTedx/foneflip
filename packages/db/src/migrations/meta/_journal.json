@@ -15,20 +15,6 @@
       "when": 1754232692279,
       "tag": "0001_damp_red_ghost",
       "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1754550747638,
-      "tag": "0002_early_orphan",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1754557399278,
-      "tag": "0003_amusing_inertia",
-      "breakpoints": true
     }
   ]
 }

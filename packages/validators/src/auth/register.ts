@@ -10,4 +10,6 @@ export const registerUserSchema = z
     email: z.email(),
     password: z.string().min(4),
   })
-  .describe("Validates user registration data: username (2-50 chars), valid email, and password (min 4 chars).");
+  .describe(
+    "Validates user registration data: username (2-50 chars), valid email, and password (min 4 chars)."
+  );

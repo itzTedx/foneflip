@@ -253,9 +253,9 @@ export const AvatarUpload = ({ form, avatar }: Props) => {
           onDrop={handleDrop}
           type="button"
         >
-          <Avatar className="size-full rounded-full bg-accent/30 p-2">
-            <AvatarImage alt="User avatar" className="rounded-full" src={finalImageUrl ?? undefined} />
-            <AvatarFallback className="rounded-full font-medium text-sm">Upload</AvatarFallback>
+          <Avatar className="size-full bg-accent/30 p-2">
+            <AvatarImage alt="User avatar" src={finalImageUrl ?? undefined} />
+            <AvatarFallback className="font-medium text-sm">Upload</AvatarFallback>
           </Avatar>
         </button>
         {/* Remove button - depends on finalImageUrl */}

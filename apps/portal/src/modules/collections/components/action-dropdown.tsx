@@ -112,7 +112,7 @@ export const ActionDropdown = ({ title, id, status }: Props) => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button aria-label="Open actions menu" size="btn" variant="ghost">
+          <Button aria-label="Open actions menu" className="size-7" size="icon" variant="ghost">
             <Ellipsis />
           </Button>
         </DropdownMenuTrigger>

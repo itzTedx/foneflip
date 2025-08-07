@@ -63,7 +63,7 @@ export function LoginForm() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">Password</Label>
-          <PasswordInput onChange={(e) => setPassword(e.target.value)} required value={password} />
+          <PasswordInput onChange={setPassword} required value={password} />
         </div>
 
         <Button className="w-full" disabled={isPending} type="submit">

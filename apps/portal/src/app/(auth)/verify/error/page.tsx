@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { AlertCircle, Clock, Phone, Shield, XCircle } from "lucide-react";
+import { IconPhone } from "@tabler/icons-react";
+import { AlertCircle, Clock, Shield, XCircle } from "lucide-react";
 
 import { Badge } from "@ziron/ui/badge";
 import { Button } from "@ziron/ui/button";
@@ -13,8 +14,8 @@ import { Card, CardContent } from "@ziron/ui/card";
 import {
   type ErrorType,
   getErrorDisplayInfo,
-  getErrorInfoAction,
   getErrorSuggestions,
+  getErrorInfo as getStoredErrorInfo,
   getUserFriendlyMessage,
 } from "@/lib/error-handler";
 
@@ -33,117 +34,84 @@ type SearchParams = Promise<{ [key: string]: string | undefined }>;
 
 export default function VerifyErrorPage({ searchParams }: { searchParams: SearchParams }) {
   const router = useRouter();
-  const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorId, setErrorId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const initializeErrorInfo = async () => {
-      try {
-        const params = await searchParams;
-        const id = params.id;
-        setErrorId(id || null);
-
-        if (!id) {
-          setErrorInfo({
-            type: "server",
-            message: "No error information available",
-            icon: <AlertCircle className="h-8 w-8 text-destructive" />,
-            title: "Server Error",
-            description:
-              "We encountered an unexpected error while processing your verification. Our team has been notified.",
-            suggestions: [
-              "Please try again in a few moments",
-              "Check your internet connection",
-              "Contact support if the problem persists",
-              "Try accessing the link from a different device",
-            ],
-            canRetry: true,
-          });
-          setIsLoading(false);
-          return;
-        }
-
-        // Get error information from secure storage
-        const errorData = await getErrorInfoAction(id);
-
-        if (!errorData) {
-          setErrorInfo({
-            type: "server",
-            message: "Error information not found",
-            icon: <AlertCircle className="h-8 w-8 text-destructive" />,
-            title: "Server Error",
-            description:
-              "We encountered an unexpected error while processing your verification. Our team has been notified.",
-            suggestions: [
-              "Please try again in a few moments",
-              "Check your internet connection",
-              "Contact support if the problem persists",
-              "Try accessing the link from a different device",
-            ],
-            canRetry: true,
-          });
-          setIsLoading(false);
-          return;
-        }
-
-        // Get display information based on error type
-        const displayInfo = getErrorDisplayInfo(errorData.type, errorData.status);
-        const userFriendlyMessage = getUserFriendlyMessage(errorData.type, errorData.status);
-        const suggestions = getErrorSuggestions(errorData.type, errorData.status);
-
-        // Map icon string to component
-        const getIconComponent = (iconName: string) => {
-          switch (iconName) {
-            case "XCircle":
-              return <XCircle className="h-8 w-8 text-warn" />;
-            case "Clock":
-              return <Clock className="h-8 w-8 text-destructive" />;
-            case "Shield":
-              return <Shield className="h-8 w-8 text-info" />;
-            case "AlertCircle":
-            default:
-              return <AlertCircle className="h-8 w-8 text-destructive" />;
-          }
-        };
-
-        setErrorInfo({
-          type: errorData.type,
-          message: userFriendlyMessage,
-          status: errorData.status?.toString(),
-          icon: getIconComponent(displayInfo.icon),
-          title: displayInfo.title,
-          description: getErrorDescription(errorData.type, errorData.status),
-          suggestions,
-          canRetry: displayInfo.canRetry,
-        });
-      } catch (error) {
-        console.error("Failed to load error information:", error);
-        setErrorInfo({
-          type: "server",
-          message: "Failed to load error information",
-          icon: <AlertCircle className="h-8 w-8 text-destructive" />,
-          title: "Server Error",
-          description:
-            "We encountered an unexpected error while processing your verification. Our team has been notified.",
-          suggestions: [
-            "Please try again in a few moments",
-            "Check your internet connection",
-            "Contact support if the problem persists",
-            "Try accessing the link from a different device",
-          ],
-          canRetry: true,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initializeErrorInfo();
-  }, [searchParams]);
+  const searchParam = use(searchParams);
+  const errorId = searchParam.id;
 
   const handleRetry = () => {
     router.refresh();
+  };
+
+  const getErrorInfo = (): ErrorInfo => {
+    // If no error ID, show generic error
+    if (!errorId) {
+      return {
+        type: "server",
+        message: "No error information available",
+        icon: <AlertCircle className="h-8 w-8 text-destructive" />,
+        title: "Server Error",
+        description:
+          "We encountered an unexpected error while processing your verification. Our team has been notified.",
+        suggestions: [
+          "Please try again in a few moments",
+          "Check your internet connection",
+          "Contact support if the problem persists",
+          "Try accessing the link from a different device",
+        ],
+        canRetry: true,
+      };
+    }
+
+    // Get error information from secure storage
+    const errorData = getStoredErrorInfo(errorId);
+
+    if (!errorData) {
+      return {
+        type: "server",
+        message: "Error information not found",
+        icon: <AlertCircle className="h-8 w-8 text-destructive" />,
+        title: "Server Error",
+        description:
+          "We encountered an unexpected error while processing your verification. Our team has been notified.",
+        suggestions: [
+          "Please try again in a few moments",
+          "Check your internet connection",
+          "Contact support if the problem persists",
+          "Try accessing the link from a different device",
+        ],
+        canRetry: true,
+      };
+    }
+
+    // Get display information based on error type
+    const displayInfo = getErrorDisplayInfo(errorData.type, errorData.status);
+    const userFriendlyMessage = getUserFriendlyMessage(errorData.type, errorData.status);
+    const suggestions = getErrorSuggestions(errorData.type, errorData.status);
+
+    // Map icon string to component
+    const getIconComponent = (iconName: string) => {
+      switch (iconName) {
+        case "XCircle":
+          return <XCircle className="h-8 w-8 text-warn" />;
+        case "Clock":
+          return <Clock className="h-8 w-8 text-destructive" />;
+        case "Shield":
+          return <Shield className="h-8 w-8 text-info" />;
+        case "AlertCircle":
+        default:
+          return <AlertCircle className="h-8 w-8 text-destructive" />;
+      }
+    };
+
+    return {
+      type: errorData.type,
+      message: userFriendlyMessage,
+      status: errorData.status?.toString(),
+      icon: getIconComponent(displayInfo.icon),
+      title: displayInfo.title,
+      description: getErrorDescription(errorData.type, errorData.status),
+      suggestions,
+      canRetry: displayInfo.canRetry,
+    };
   };
 
   const getErrorDescription = (type: ErrorType, status?: number): string => {
@@ -171,45 +139,7 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="relative flex min-h-screen items-center justify-center">
-        <div className="flex flex-1 flex-col justify-center px-4 py-10 lg:px-6">
-          <Card className="relative overflow-hidden sm:mx-auto sm:w-full sm:max-w-xl">
-            <CardContent className="z-10 p-6 px-9">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted/50">
-                <AlertCircle className="h-8 w-8 animate-pulse text-muted-foreground" />
-              </div>
-              <h3 className="text-center font-semibold text-foreground text-lg">Loading...</h3>
-              <p className="mx-auto max-w-sm text-center text-muted-foreground text-sm">
-                Retrieving error information...
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  if (!errorInfo) {
-    return (
-      <div className="relative flex min-h-screen items-center justify-center">
-        <div className="flex flex-1 flex-col justify-center px-4 py-10 lg:px-6">
-          <Card className="relative overflow-hidden sm:mx-auto sm:w-full sm:max-w-xl">
-            <CardContent className="z-10 p-6 px-9">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted/50">
-                <AlertCircle className="h-8 w-8 text-destructive" />
-              </div>
-              <h3 className="text-center font-semibold text-foreground text-lg">Error</h3>
-              <p className="mx-auto max-w-sm text-center text-muted-foreground text-sm">
-                Failed to load error information.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  const errorInfo = getErrorInfo();
 
   return (
     <div className="relative flex min-h-screen items-center justify-center">
@@ -264,7 +194,7 @@ export default function VerifyErrorPage({ searchParams }: { searchParams: Search
 
               <Button asChild className="w-full" variant="outline">
                 <Link href="/contact">
-                  <Phone className="mr-2 h-4 w-4" />
+                  <IconPhone className="mr-2 h-4 w-4" />
                   Contact Support
                 </Link>
               </Button>

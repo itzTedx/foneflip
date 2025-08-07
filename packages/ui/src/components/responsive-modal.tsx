@@ -9,7 +9,6 @@ import {
   Dialog,
   DialogContainer,
   DialogContent,
-  DialogContentContainer,
   DialogDescription,
   DialogHeader,
   DialogIcon,
@@ -29,7 +28,6 @@ interface Props {
   title?: React.ReactNode;
   description?: string;
   className?: string;
-  dialogClassName?: string;
   extraProps?: Record<string, unknown>;
   icon?: React.ReactNode;
 }
@@ -37,7 +35,6 @@ interface Props {
 export const ResponsiveModal = ({
   children,
   className,
-  dialogClassName,
   isOpen,
   closeModal,
   trigger,
@@ -71,7 +68,7 @@ export const ResponsiveModal = ({
   return (
     <Dialog onOpenChange={closeModal} open={isOpen} {...extraProps}>
       {trigger && <DialogTrigger asChild={asChild}>{trigger}</DialogTrigger>}
-      <DialogContent className={cn("gap-0 p-0", dialogClassName, className)}>
+      <DialogContent className={cn("gap-0 p-0", className)}>
         {(title || description) && (
           <DialogContainer>
             {icon && <DialogIcon>{icon}</DialogIcon>}
@@ -81,7 +78,7 @@ export const ResponsiveModal = ({
             </DialogHeader>
           </DialogContainer>
         )}
-        <DialogContentContainer>{children}</DialogContentContainer>
+        {children}
       </DialogContent>
     </Dialog>
   );

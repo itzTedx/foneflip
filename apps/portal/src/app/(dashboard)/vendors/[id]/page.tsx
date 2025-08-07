@@ -106,16 +106,6 @@ export default async function VendorDashboard({ params }: { params: Params }) {
             products.map((product) => <ProductCard data={product} key={product.id} showAction={false} />)
           )}
         </TabsContent>
-        <TabsContent className="flex flex-col items-center justify-center py-12" value="transaction">
-          <IconEmpty className="mb-4 size-60" />
-          <div className="text-lg text-muted-foreground">Transaction history coming soon.</div>
-          <p className="text-muted-foreground text-sm">This feature is currently under development.</p>
-        </TabsContent>
-        <TabsContent className="flex flex-col items-center justify-center py-12" value="archived">
-          <IconEmpty className="mb-4 size-60" />
-          <div className="text-lg text-muted-foreground">Archived items coming soon.</div>
-          <p className="text-muted-foreground text-sm">This feature is currently under development.</p>
-        </TabsContent>
       </Tabs>
     </MainWrapper>
   );
