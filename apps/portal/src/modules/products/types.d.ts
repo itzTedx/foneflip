@@ -38,7 +38,7 @@ export type ProductQueryResult = Product & {
   collection?: Collection | null;
   delivery?: ProductDelivery | null;
   images?: (ProductImage & { media: Media })[];
-  vendor?: Vendor | null;
+  vendor?: (Vendor & { members: Member[] }) | null;
 };
 
 export type ProductUpsertType = InferInsertModel<typeof productsTable>;

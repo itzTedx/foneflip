@@ -22,6 +22,46 @@ async function getCurrentUserContext() {
   };
 }
 
+// Helper function to get vendor ID for a user
+async function getVendorIdForUser(userId: string): Promise<string | null> {
+  const memberRecord = await db.query.members.findFirst({
+    where: (members, { eq }) => eq(members.userId, userId),
+  });
+  return memberRecord?.vendorId || null;
+}
+
+// Helper function to get role-specific cache keys
+function getRoleSpecificCacheKeys(
+  currentUserRole?: string,
+  currentUserId?: string,
+  vendorId?: string | null
+): { productsKey: string; countKey: string } {
+  if (currentUserRole === "admin" || currentUserRole === "dev") {
+    return {
+      productsKey: REDIS_KEYS.PRODUCTS_ADMIN,
+      countKey: REDIS_KEYS.PRODUCTS_COUNT_ADMIN,
+    };
+  }
+  if (currentUserRole === "vendor" && vendorId) {
+    return {
+      productsKey: REDIS_KEYS.PRODUCTS_BY_VENDOR(vendorId),
+      countKey: REDIS_KEYS.PRODUCTS_COUNT_BY_VENDOR(vendorId),
+    };
+  }
+  if (currentUserId) {
+    return {
+      productsKey: REDIS_KEYS.PRODUCTS_BY_USER(currentUserId),
+      countKey: REDIS_KEYS.PRODUCTS_COUNT_BY_USER(currentUserId),
+    };
+  }
+
+  // Fallback to general cache for unauthenticated users
+  return {
+    productsKey: REDIS_KEYS.PRODUCTS,
+    countKey: REDIS_KEYS.PRODUCTS_COUNT,
+  };
+}
+
 export const existingProduct = cache(
   async (slug: string) => {
     return withSmartCacheMonitoring(async () => {
@@ -78,6 +118,9 @@ export const fetchProducts = cache(
 
     const resolvedCollectionId = await resolveCollectionId(collectionId, collectionSlug);
 
+    // Get vendor information for vendor users
+    const vendorId = currentUserRole === "vendor" && currentUserId ? await getVendorIdForUser(currentUserId) : null;
+
     // Build where conditions with role-based filtering
     const products = await db.query.productsTable.findMany({
       where: (fields, { eq, and, ilike, or, exists }) => {
@@ -86,9 +129,9 @@ export const fetchProducts = cache(
         // Role-based filtering
         if (currentUserRole === "admin" || currentUserRole === "dev") {
           // Admins can see all products - no additional filtering needed
-        } else if (currentUserRole === "vendor" && currentUserId) {
-          // Vendors can only see their own products
-          conditions.push(eq(fields.userId, currentUserId));
+        } else if (currentUserRole === "vendor" && vendorId) {
+          // Vendors can only see products from their vendor organization
+          conditions.push(eq(fields.vendorId, vendorId));
         } else if (currentUserId) {
           // Regular users can only see their own products
           conditions.push(eq(fields.userId, currentUserId));
@@ -149,88 +192,129 @@ export const fetchProducts = cache(
   }
 );
 
-export const getProducts = cache(
-  async (options: { currentUserId?: string; currentUserRole?: string } = {}) => {
-    // If no options provided, get current user context from session
-    const userContext = Object.keys(options).length === 0 ? await getCurrentUserContext() : options;
+export const getProducts = async (options: { currentUserId?: string; currentUserRole?: string } = {}) => {
+  // If no options provided, get current user context from session
+  const userContext = Object.keys(options).length === 0 ? await getCurrentUserContext() : options;
 
-    const { currentUserId, currentUserRole } = userContext;
+  const { currentUserId, currentUserRole } = userContext;
 
-    return withCacheMonitoring(
-      async () => {
-        try {
-          // Try Redis first
-          const cached = await redisCache.get<ProductQueryResult[]>(REDIS_KEYS.PRODUCTS);
-          if (cached) {
-            return cached;
+  // Get vendor information for vendor users
+  const vendorId = currentUserRole === "vendor" && currentUserId ? await getVendorIdForUser(currentUserId) : null;
+
+  // Get role-specific cache keys
+  const { productsKey } = getRoleSpecificCacheKeys(currentUserRole, currentUserId, vendorId);
+
+  console.log("=== getProducts Debug ===");
+  console.log(`Role: ${currentUserRole}`);
+  console.log(`User ID: ${currentUserId}`);
+  console.log(`Vendor ID: ${vendorId}`);
+  console.log(`Cache Key: ${productsKey}`);
+
+  return withCacheMonitoring(
+    async () => {
+      try {
+        // Try Redis first with role-specific key
+        const cached = await redisCache.get<ProductQueryResult[]>(productsKey);
+        if (cached) {
+          console.log(`Cache HIT for key: ${productsKey}, role: ${currentUserRole}, products count: ${cached.length}`);
+          // Debug: Log first few product titles to see what's cached
+          if (cached.length > 0) {
+            console.log(
+              `Cached products: ${cached
+                .slice(0, 3)
+                .map((p) => p.title)
+                .join(", ")}`
+            );
           }
-        } catch (error) {
-          console.error("Error fetching products from Redis", error);
+          return cached;
         }
+      } catch (error) {
+        console.error("Error fetching products from Redis", error);
+      }
 
-        // Build where conditions with role-based filtering
-        const products = await db.query.productsTable.findMany({
-          where: (fields, { eq, and, isNull }) => {
-            const conditions = [isNull(fields.deletedAt)];
+      console.log(`Cache MISS for key: ${productsKey}, role: ${currentUserRole}, fetching from DB...`);
 
-            // Role-based filtering
-            if (currentUserRole === "admin" || currentUserRole === "dev") {
-              // Admins can see all products - no additional filtering needed
-            } else if (currentUserRole === "vendor" && currentUserId) {
-              // Vendors can only see their own products
-              conditions.push(eq(fields.userId, currentUserId));
-            } else if (currentUserId) {
-              // Regular users can only see their own products
-              conditions.push(eq(fields.userId, currentUserId));
-            }
+      // Build where conditions with role-based filtering
+      const products = await db.query.productsTable.findMany({
+        where: (fields, { eq, and, isNull }) => {
+          const conditions = [isNull(fields.deletedAt)];
 
-            return and(...conditions);
-          },
-          with: {
-            seo: true,
-            settings: true,
-            attributes: {
-              with: {
-                options: true,
-              },
+          // Role-based filtering
+          if (currentUserRole === "admin" || currentUserRole === "dev") {
+            // Admins can see all products - no additional filtering needed
+            console.log("Admin/Dev: No additional filtering applied");
+          } else if (currentUserRole === "vendor" && vendorId) {
+            // Vendors can only see products from their vendor organization
+            conditions.push(eq(fields.vendorId, vendorId));
+            console.log(`Vendor: Filtering by vendorId = ${vendorId}`);
+          } else if (currentUserId) {
+            // Regular users can only see their own products
+            conditions.push(eq(fields.userId, currentUserId));
+            console.log(`User: Filtering by userId = ${currentUserId}`);
+          }
+
+          return and(...conditions);
+        },
+        with: {
+          seo: true,
+          settings: true,
+          attributes: {
+            with: {
+              options: true,
             },
-            specifications: true,
-            variants: {
-              with: {
-                options: {
-                  with: {
-                    option: {
-                      with: {
-                        attribute: true,
-                      },
+          },
+          specifications: true,
+          variants: {
+            with: {
+              options: {
+                with: {
+                  option: {
+                    with: {
+                      attribute: true,
                     },
                   },
                 },
               },
             },
-            collection: true,
-            delivery: true,
-            images: { with: { media: true } },
-            vendor: true,
           },
-          orderBy: desc(productsTable.createdAt),
-        });
+          collection: true,
+          delivery: true,
+          images: { with: { media: true } },
+          vendor: {
+            with: {
+              members: {
+                with: {
+                  user: true,
+                },
+              },
+              documents: true,
+            },
+          },
+        },
+        orderBy: desc(productsTable.createdAt),
+      });
 
-        // Cache the result
-        await redisCache.set(REDIS_KEYS.PRODUCTS, products, CACHE_DURATIONS.LONG);
+      console.log(`DB query completed for role: ${currentUserRole}, products count: ${products.length}`);
+      // Debug: Log first few product titles to see what was fetched
+      if (products.length > 0) {
+        console.log(
+          `Fetched products: ${products
+            .slice(0, 3)
+            .map((p) => p.title)
+            .join(", ")}`
+        );
+      }
 
-        return products;
-      },
-      REDIS_KEYS.PRODUCTS,
-      false // This is a miss since we're fetching fresh data
-    );
-  },
-  ["get-products"],
-  {
-    tags: [CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT, CACHE_TAGS.COLLECTION, CACHE_TAGS.MEDIA],
-    revalidate: CACHE_DURATIONS.LONG,
-  }
-);
+      // Cache the result with role-specific key
+      await redisCache.set(productsKey, products, CACHE_DURATIONS.LONG);
+      console.log(`Cached ${products.length} products with key: ${productsKey}`);
+
+      return products;
+    },
+    productsKey,
+    false // This is a miss since we're fetching fresh data
+  );
+};
 
 export const getProductById = cache(
   async (id: string): Promise<ProductQueryResult | undefined> => {
@@ -278,6 +362,16 @@ export const getProductById = cache(
             collection: true,
             delivery: true,
             images: { with: { media: true } },
+            vendor: {
+              with: {
+                members: {
+                  with: {
+                    user: true,
+                  },
+                },
+                documents: true,
+              },
+            },
           },
         });
 
@@ -303,60 +397,59 @@ export const getProductById = cache(
   }
 );
 
-export const getProductsCount = cache(
-  async (options: { currentUserId?: string; currentUserRole?: string } = {}) => {
-    // If no options provided, get current user context from session
-    const userContext = Object.keys(options).length === 0 ? await getCurrentUserContext() : options;
+export const getProductsCount = async (options: { currentUserId?: string; currentUserRole?: string } = {}) => {
+  // If no options provided, get current user context from session
+  const userContext = Object.keys(options).length === 0 ? await getCurrentUserContext() : options;
 
-    const { currentUserId, currentUserRole } = userContext;
+  const { currentUserId, currentUserRole } = userContext;
 
-    return withCacheMonitoring(
-      async () => {
-        try {
-          // Try Redis first
-          const cached = await redisCache.get<number>(REDIS_KEYS.PRODUCTS_COUNT);
-          if (cached) {
-            return cached;
-          }
-        } catch (error) {
-          console.error("Error fetching products count from Redis", error);
+  // Get vendor information for vendor users
+  const vendorId = currentUserRole === "vendor" && currentUserId ? await getVendorIdForUser(currentUserId) : null;
+
+  // Get role-specific cache keys
+  const { countKey } = getRoleSpecificCacheKeys(currentUserRole, currentUserId, vendorId);
+
+  return withCacheMonitoring(
+    async () => {
+      try {
+        // Try Redis first with role-specific key
+        const cached = await redisCache.get<number>(countKey);
+        if (cached) {
+          return cached;
         }
+      } catch (error) {
+        console.error("Error fetching products count from Redis", error);
+      }
 
-        // Build where conditions with role-based filtering
-        let whereCondition: ReturnType<typeof isNull> | ReturnType<typeof and> = isNull(productsTable.deletedAt);
+      // Build where conditions with role-based filtering
+      let whereCondition: ReturnType<typeof isNull> | ReturnType<typeof and> = isNull(productsTable.deletedAt);
 
-        // Role-based filtering
-        if (currentUserRole === "admin" || currentUserRole === "dev") {
-          // Admins can see all products - no additional filtering needed
-        } else if (currentUserRole === "vendor" && currentUserId) {
-          // Vendors can only see their own products
-          whereCondition = and(isNull(productsTable.deletedAt), eq(productsTable.userId, currentUserId));
-        } else if (currentUserId) {
-          // Regular users can only see their own products
-          whereCondition = and(isNull(productsTable.deletedAt), eq(productsTable.userId, currentUserId));
-        }
+      // Role-based filtering
+      if (currentUserRole === "admin" || currentUserRole === "dev") {
+        // Admins can see all products - no additional filtering needed
+      } else if (currentUserRole === "vendor" && vendorId) {
+        // Vendors can only see products from their vendor organization
+        whereCondition = and(isNull(productsTable.deletedAt), eq(productsTable.vendorId, vendorId));
+      } else if (currentUserId) {
+        // Regular users can only see their own products
+        whereCondition = and(isNull(productsTable.deletedAt), eq(productsTable.userId, currentUserId));
+      }
 
-        const countResult = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(productsTable)
-          .where(whereCondition)
-          .then((result) => result[0]?.count ?? 0);
+      const countResult = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(productsTable)
+        .where(whereCondition)
+        .then((result) => result[0]?.count ?? 0);
 
-        // Cache the result
-        await redisCache.set(REDIS_KEYS.PRODUCTS_COUNT, countResult, CACHE_DURATIONS.LONG);
+      // Cache the result with role-specific key
+      await redisCache.set(countKey, countResult, CACHE_DURATIONS.LONG);
 
-        return countResult;
-      },
-      REDIS_KEYS.PRODUCTS_COUNT,
-      false // This is a miss since we're fetching fresh data
-    );
-  },
-  ["get-products-count"],
-  {
-    tags: [CACHE_TAGS.PRODUCTS, CACHE_TAGS.PRODUCT],
-    revalidate: CACHE_DURATIONS.LONG,
-  }
-);
+      return countResult;
+    },
+    countKey,
+    false // This is a miss since we're fetching fresh data
+  );
+};
 
 export const getProductsByVendorId = cache(
   async (vendorId: string): Promise<ProductQueryResult[]> => {
@@ -404,6 +497,16 @@ export const getProductsByVendorId = cache(
             collection: true,
             delivery: true,
             images: { with: { media: true } },
+            vendor: {
+              with: {
+                members: {
+                  with: {
+                    user: true,
+                  },
+                },
+                documents: true,
+              },
+            },
           },
           orderBy: desc(productsTable.createdAt),
         });
