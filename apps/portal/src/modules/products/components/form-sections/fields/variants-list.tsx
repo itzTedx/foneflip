@@ -111,6 +111,11 @@ const VariantAttribute = ({
   const attributeName = form.watch(`attributes.${attrIndex}.name`);
   const attributeOptions = form.watch(`attributes.${attrIndex}.options`);
 
+  // Early return if attribute data is not available
+  if (!attributeName || !attributeOptions || attributeOptions.length === 0) {
+    return null;
+  }
+
   return (
     <FormField
       control={form.control}
@@ -203,15 +208,6 @@ function StockInput({ variantIndex }: { variantIndex: number }) {
   );
 }
 
-/**
- * Renders the header section for a product variant panel, displaying the variant's index, label, and controls for removing or toggling the panel.
- *
- * @param index - The zero-based index of the variant in the list.
- * @param variantLabel - The display label for the variant.
- * @param hasVariant - Whether the variant exists and is enabled.
- * @param canRemove - Whether the remove button should be shown.
- * @param onRemove - Callback invoked when the remove button is clicked.
- */
 function VariantHeader({
   index,
   variantLabel,
@@ -254,12 +250,6 @@ function VariantHeader({
   );
 }
 
-/**
- * Renders the collapsible content for a product variant, including attribute selectors, pricing inputs, inventory controls, and SKU generation logic.
- *
- * @param variantIndex - The index of the variant in the variants array
- * @param attrFields - The list of attribute fields available for this variant
- */
 function VariantContent({
   variantIndex,
   attrFields,
@@ -268,6 +258,7 @@ function VariantContent({
   attrFields: Array<{ id: string; name?: string; options?: string[] }>;
 }) {
   const form = useFormContext<ProductFormType>();
+  const attributes = form.watch("attributes");
   const handleGenerateSku = useCallback(
     (index: number) => {
       const sku = `variants.${index}.sku` as const;
@@ -278,15 +269,7 @@ function VariantContent({
       const variants = (form.getValues("variants") ?? []).filter(isValidVariant);
       const currentSku = form.getValues(sku);
       const variantAttributes = form.getValues(`variants.${index}.attributes`);
-      // Define attribute types enum or constants
 
-      /**
-       * Returns the value of the first attribute whose name includes any of the specified keywords.
-       *
-       * @param attributes - Array of attribute objects with optional `name` and `value` fields
-       * @param type - Array of keyword strings to match against attribute names
-       * @returns The value of the matching attribute, or an empty string if none is found
-       */
       function findAttributeByType(
         attributes: Array<{ name?: string; value?: string }>,
         type: readonly string[]
@@ -341,12 +324,12 @@ function VariantContent({
           </Button>
         </div>
         <div className="grid divide-y rounded-md border md:grid-cols-2 md:gap-3 md:divide-x">
-          {attrFields.map((attr, attrIndex) => (
+          {attributes?.map((attr: { name?: string; options?: string[] }, attrIndex: number) => (
             <VariantAttribute
-              attrId={attr.id}
+              attrId={`attr-${attrIndex}`}
               attrIndex={attrIndex}
-              fieldId={attr.id}
-              key={`${attr.id}-${variantIndex}`}
+              fieldId={`attr-${attrIndex}`}
+              key={`attr-${attrIndex}-${variantIndex}`}
               variantIndex={variantIndex}
             />
           ))}
@@ -372,13 +355,6 @@ function VariantContent({
   );
 }
 
-/**
- * Renders a form section for managing product variants, allowing users to add, remove, and edit variants with their own attributes, pricing, stock, and SKU.
- *
- * Displays a list of collapsible panels for each variant, synchronizes variant attributes with the main attributes array, and validates that at least one attribute with options exists before enabling variant creation.
- *
- * @param isEditMode - Whether the form is in edit mode, affecting initial open state of variant panels
- */
 export function ProductVariantsList({ isEditMode }: Props) {
   const form = useFormContext<ProductFormType>();
   const hasVariant = form.watch("hasVariant");
@@ -477,6 +453,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
   useEffect(() => {
     if (!hasVariant) return;
     const attributes = form.watch("attributes") ?? [];
+
     variantFields.forEach((_, variantIndex) => {
       const variantAttributes = form.getValues(`variants.${variantIndex}.attributes`) ?? [];
       // If the number of attributes has changed, update the variant's attributes
@@ -491,7 +468,7 @@ export function ProductVariantsList({ isEditMode }: Props) {
         });
       }
     });
-  }, [hasVariant, form, variantFields.length]);
+  }, [hasVariant, form, variantFields.length, attributes]);
 
   return (
     <Card className="h-fit md:col-span-2">
