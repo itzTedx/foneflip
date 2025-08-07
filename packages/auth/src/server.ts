@@ -6,8 +6,6 @@ import { admin as adminPlugin, emailOTP, organization, twoFactor } from "better-
 import { passkey } from "better-auth/plugins/passkey";
 
 import { db } from "@ziron/db/server";
-import { sendEmail } from "@ziron/email";
-import EmailVerification from "@ziron/email/templates/auth/email-verification";
 import redis from "@ziron/redis";
 
 import { OTP_EXPIRES_IN, OTP_EXPIRES_IN_MS } from "./data/constants";
@@ -27,7 +25,6 @@ export function initAuth(options: {
   productionUrl: string;
   secret: string | undefined;
   plugins?: BetterAuthPlugin[];
-  afterEmailVerification?: (email: string) => Promise<void>;
 }) {
   const config = {
     database: drizzleAdapter(db, {
@@ -38,25 +35,6 @@ export function initAuth(options: {
     appName: "Foneflip",
     emailAndPassword: {
       enabled: true,
-      revokeSessionsOnPasswordReset: true,
-    },
-
-    emailVerification: {
-      sendVerificationEmail: async ({ user, url }) => {
-        try {
-          await sendEmail({
-            email: user.email,
-            subject: "Verify your email address",
-            react: EmailVerification({ verificationUrl: url }),
-          });
-        } catch (error) {
-          console.error("Failed to send OTP email:", error instanceof Error ? error.message : error);
-          throw new Error("Failed to send verification email");
-        }
-      },
-      afterEmailVerification: async (user) => {
-        await options.afterEmailVerification?.(user.email);
-      },
     },
 
     baseURL: options.baseUrl,
@@ -155,16 +133,7 @@ export function initAuth(options: {
         maxAge: 5 * 60, // Cache duration in seconds
       },
     },
-    trustedOrigins: [
-      "expo://",
-      "http://localhost:3000",
-      "http://localhost:3001",
-      "http://192.168.0.206:3000",
-      "http://192.168.1.158:3000",
-      "http://192.168.1.215:3000",
-      // Add your production domain here
-      // "https://your-domain.com",
-    ],
+    trustedOrigins: ["expo://", "http://localhost:3000", "http://192.168.0.206:3000", "http://192.168.1.158:3000"],
   } satisfies BetterAuthOptions;
 
   return betterAuth(config);
@@ -172,5 +141,4 @@ export function initAuth(options: {
 
 export type Auth = ReturnType<typeof initAuth>;
 export type Session = Auth["$Infer"]["Session"];
-export type User = Auth["$Infer"]["Session"]["user"];
 export type ErrorCode = Auth["$ERROR_CODES"] | "UNKNOWN";

@@ -19,13 +19,7 @@ import { baseSchema } from "./base-schema";
 export const organizationRolesEnum = pgEnum("organization_roles", ["owner", "admin", "member"]);
 
 // Invitation status enum
-export const invitationStatusEnum = pgEnum("invitation_status", [
-  "pending",
-  "accepted",
-  "expired",
-  "revoked",
-  "onboarding",
-]);
+export const invitationStatusEnum = pgEnum("invitation_status", ["pending", "accepted", "expired", "revoked"]);
 
 // Vendor status enum
 export const vendorStatusEnum = pgEnum("vendor_status", [
@@ -111,36 +105,24 @@ export const vendorDocumentsTable = pgTable(
   ]
 );
 
-// export const members = pgTable("members", {
-//   id: uuid("id").primaryKey().defaultRandom().notNull(),
-//   organizationId: uuid("vendors_id")
-//     .notNull()
-//     .references(() => vendorsTable.id, { onDelete: "cascade" }),
-//   userId: uuid("user_id")
-//     .notNull()
-//     .references(() => users.id, { onDelete: "cascade" }),
-//   role: text("role").default("member").notNull(),
-//   createdAt: timestamp("created_at").notNull(),
-// });
-
 // Member table - links users to vendors
-export const members = pgTable(
-  "members",
+export const member = pgTable(
+  "member",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    vendorsId: uuid("vendors_id")
+    vendorId: uuid("vendor_id")
       .notNull()
       .references(() => vendorsTable.id, { onDelete: "cascade" }),
     role: organizationRolesEnum("role").notNull().default("member"),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
+    ...baseSchema,
   },
   (table) => [
-    uniqueIndex("idx_member_user_vendor").on(table.userId, table.vendorsId),
+    uniqueIndex("idx_member_user_vendor").on(table.userId, table.vendorId),
     index("idx_member_user_id").on(table.userId),
-    index("idx_member_vendor_id").on(table.vendorsId),
+    index("idx_member_vendor_id").on(table.vendorId),
     index("idx_member_role").on(table.role),
   ]
 );
@@ -174,17 +156,17 @@ export const vendorInvitations = pgTable(
 
 // Relations
 export const vendorsRelations = relations(vendorsTable, ({ many }) => ({
-  members: many(members),
+  members: many(member),
   documents: many(vendorDocumentsTable),
 }));
 
-export const memberRelations = relations(members, ({ one }) => ({
+export const memberRelations = relations(member, ({ one }) => ({
   user: one(users, {
-    fields: [members.userId],
+    fields: [member.userId],
     references: [users.id],
   }),
   vendor: one(vendorsTable, {
-    fields: [members.vendorsId],
+    fields: [member.vendorId],
     references: [vendorsTable.id],
   }),
 }));

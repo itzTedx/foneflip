@@ -67,7 +67,7 @@ export default async function VendorOnboardingPage({ searchParams }: { searchPar
 
             {/* Progress Indicator */}
             <div className="mt-6 mb-8">
-              <OnboardingProgressIndicator className="mb-6" currentStep="registration" userId={res.data.id!} />
+              <OnboardingProgressIndicator className="mb-6" currentStep="registration" userId="temp-user-id" />
             </div>
 
             <VendorRegisterForm invitation={res.data} />

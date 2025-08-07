@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 
 import { addHours } from "date-fns";
 
-import { members, users, vendorDocumentsTable, vendorInvitations, vendorsTable } from "@ziron/db/schema";
+import { member, users, vendorDocumentsTable, vendorInvitations, vendorsTable } from "@ziron/db/schema";
 import { and, db, eq, lt } from "@ziron/db/server";
 import { sendEmail } from "@ziron/email";
 import VerificationEmail from "@ziron/email/templates/onboarding/token-verification";
@@ -422,20 +422,20 @@ export async function createOrganization(formData: unknown) {
     }
 
     // Check if member relationship already exists
-    const existingMember = await db.query.members.findFirst({
+    const existingMember = await db.query.member.findFirst({
       where: (m, { and, eq }) => and(eq(m.userId, userId), eq(m.vendorId, vendor.id)),
     });
 
     if (!existingMember) {
       // Create member relationship with owner role
-      await db.insert(members).values({
+      await db.insert(member).values({
         userId,
         vendorId: vendor.id,
         role: "owner",
       });
     } else if (existingMember.role !== "owner") {
       // Update existing member to owner role
-      await db.update(members).set({ role: "owner" }).where(eq(members.id, existingMember.id));
+      await db.update(member).set({ role: "owner" }).where(eq(member.id, existingMember.id));
     }
 
     return createSuccessResponse(updatedVendor, "Organization created successfully");
@@ -528,24 +528,24 @@ export async function createAdminOrganization(formData: unknown) {
     }
 
     // Check if member relationship already exists
-    const existingMember = await db.query.members.findFirst({
+    const existingMember = await db.query.member.findFirst({
       where: (m, { and, eq }) => and(eq(m.userId, userId), eq(m.vendorId, vendor.id)),
     });
 
     if (!existingMember) {
       // Create member relationship with owner role
-      await db.insert(members).values({
+      await db.insert(member).values({
         userId,
         vendorId: vendor.id,
         role: "owner",
       });
     } else if (existingMember.role !== "owner") {
       // Update existing member to owner role
-      await db.update(members).set({ role: "owner" }).where(eq(members.id, existingMember.id));
+      await db.update(member).set({ role: "owner" }).where(eq(member.id, existingMember.id));
     }
 
     // Get the current member relationship for the response
-    const currentMember = await db.query.members.findFirst({
+    const currentMember = await db.query.member.findFirst({
       where: (m, { and, eq }) => and(eq(m.userId, userId), eq(m.vendorId, vendor.id)),
     });
 
