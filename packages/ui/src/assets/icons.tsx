@@ -1,6 +1,7 @@
 import { JSX, SVGProps } from "react";
 
 export * from "./currency";
+export * from "./icons/brands";
 export * from "./icons/chevrons";
 export * from "./icons/crown";
 export * from "./icons/editor";

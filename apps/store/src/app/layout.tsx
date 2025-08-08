@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
+import { Geist } from "next/font/google";
 import "@ziron/ui/globals.css";
 
-import { Navbar } from "@/components/layout/navbar";
+import { cn } from "@ziron/utils";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,9 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      <Navbar />
-      {children}
-    </>
+    <html lang="en">
+      <body className={cn("antialiased", geistSans.className)}>{children}</body>
+    </html>
   );
 }
