@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html className="dark" lang="en">
       <body className={cn("antialiased", geistSans.className)}>
         <Navbar />
         {children}
