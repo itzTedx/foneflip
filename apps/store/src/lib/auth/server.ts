@@ -7,11 +7,11 @@ import { initAuth } from "@ziron/auth";
 
 import { env } from "@/lib/env/server";
 
-const baseUrl = env.BETTER_AUTH_ALLOWED_ORIGIN;
+const baseUrl = env.STORE_URL;
 
 export const auth = initAuth({
   baseUrl,
-  productionUrl: env.BETTER_AUTH_URL,
+  productionUrl: env.PRODUCTION_URL,
   secret: env.BETTER_AUTH_SECRET,
 });
 

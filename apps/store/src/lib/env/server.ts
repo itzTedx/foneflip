@@ -6,13 +6,10 @@ import { z } from "@ziron/validators";
 export const env = createEnv({
   extends: [authEnv()],
   server: {
-    BETTER_AUTH_SECRET: z.string().min(1),
-    BETTER_AUTH_URL: z.url(),
-    BETTER_AUTH_ALLOWED_ORIGIN: z.string().min(1),
+    STORE_URL: z.string().min(1, "STORE_URL is required"),
+    PORTAL_URL: z.string().min(1, "PORTAL_URL is required"),
 
-    PRODUCTION_URL: z.string().min(1),
-
-    NODE_ENV: z.enum(["development", "production", "test"]).optional(),
+    PRODUCTION_URL: z.string().min(1, "PRODUCTION_URL is required"),
   },
 
   emptyStringAsUndefined: true,
