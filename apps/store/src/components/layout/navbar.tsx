@@ -1,9 +1,11 @@
 import Link from "next/link";
 
 import { db } from "@ziron/db/server";
+import { IconBolt } from "@ziron/ui/assets/icons";
 import { Logo } from "@ziron/ui/assets/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@ziron/ui/avatar";
 import { Button } from "@ziron/ui/button";
+import { Input } from "@ziron/ui/input";
 import { Separator } from "@ziron/ui/separator";
 
 import { getSession } from "@/lib/auth/server";
@@ -37,17 +39,51 @@ export const Navbar = async () => {
         </div>
       </div>
       <Separator />
-      <div className="container mx-auto flex items-center gap-4 py-2">
-        <Link href="/shop">Shop</Link>
+      <ul className="container mx-auto flex items-center gap-3 py-2 text-sm">
+        <li>
+          <Link
+            className="flex h-9 items-center justify-center rounded-sm bg-muted px-3 py-1.5 font-medium"
+            href="/shop"
+          >
+            Shop
+          </Link>
+        </li>
         {categories.map(
           (category) =>
             category.settings.showInNav && (
-              <Link href={`/shop/${category.slug}`} key={category.id}>
-                {category.title}
-              </Link>
+              <li key={category.id}>
+                <Link
+                  className="flex h-9 items-center justify-center rounded-sm bg-muted px-3 py-1.5"
+                  href={`/shop/${category.slug}`}
+                >
+                  {category.title}
+                </Link>
+              </li>
             )
         )}
-      </div>
+        <li className="flex-1">
+          <Input className="w-full bg-muted" placeholder="Search..." />
+        </li>
+        <li>
+          <Link className="flex h-9 items-center justify-center rounded-sm bg-muted px-3 py-1.5" href="/help">
+            Help
+          </Link>
+        </li>
+        <li>
+          <Link className="flex h-9 items-center justify-center rounded-sm bg-muted px-3 py-1.5" href="/sell-phone">
+            Sell your phone
+          </Link>
+        </li>
+        <li>
+          <Link
+            className="flex h-9 items-center justify-center gap-1.5 rounded-sm bg-muted px-3 py-1.5"
+            href="/sell-phone"
+          >
+            <IconBolt className="size-4 text-warn" />
+            Foneflip Express
+          </Link>
+        </li>
+      </ul>
     </nav>
   );
 };
