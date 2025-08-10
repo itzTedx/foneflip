@@ -4,8 +4,6 @@ import "@ziron/ui/globals.css";
 
 import { cn } from "@ziron/utils";
 
-import { Navbar } from "@/components/layout/navbar";
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -23,10 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn("antialiased", geistSans.className)}>
-        <Navbar />
-        {children}
-      </body>
+      <body className={cn("antialiased", geistSans.className)}>{children}</body>
     </html>
   );
 }

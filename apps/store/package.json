@@ -13,12 +13,14 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@t3-oss/env-nextjs": "^0.13.8",
     "@ziron/auth": "workspace:*",
     "@ziron/db": "workspace:*",
     "@ziron/seo": "workspace:*",
     "@ziron/ui": "workspace:*",
     "@ziron/utils": "workspace:*",
-    "better-auth": "1.2.9",
+    "@ziron/validators": "workspace:*",
+    "better-auth": "catalog:",
     "next": "15.4.5",
     "pg": "^8.16.3",
     "react": "catalog:react19",

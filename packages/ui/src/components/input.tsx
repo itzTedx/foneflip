@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { type ComponentProps } from "react";
 
@@ -7,11 +9,8 @@ import { Input as AriaInput, Button, Group, NumberField } from "react-aria-compo
 
 import { cn } from "@ziron/utils";
 
-/****
- * Renders a styled input element with support for various states and accessibility features.
- *
- * Applies consistent styling for focus, hover, disabled, and invalid states, and forwards all standard input props to the underlying element.
- */
+import { IconEye, IconEyeOff } from "../assets/icons";
+
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input
@@ -28,11 +27,6 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   );
 }
 
-/**
- * Renders an accessible numeric input field with increment and decrement buttons.
- *
- * Provides a styled number input using `react-aria-components`, supporting keyboard and button-based value changes, accessibility features, and visual feedback for focus, invalid, disabled, and hover states.
- */
 function NumberInput(props: NumberFieldProps) {
   return (
     <NumberField {...props}>
@@ -77,6 +71,48 @@ function NumInput({
       type="number"
       value={value ?? ""}
     />
+  );
+}
+
+interface PasswordInputProps {
+  className?: string;
+}
+
+export function PasswordInput({
+  className,
+  id,
+  ...props
+}: PasswordInputProps & React.InputHTMLAttributes<HTMLInputElement>) {
+  const [isVisible, setIsVisible] = React.useState<boolean>(false);
+
+  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+
+  return (
+    <div className="relative">
+      <Input
+        autoComplete="current-password webauthn"
+        className={`pe-9 ${className || ""}`}
+        id={id}
+        name="password"
+        type={isVisible ? "text" : "password"}
+        {...props}
+      />
+      <button
+        aria-controls={id}
+        aria-label={isVisible ? "Hide password" : "Show password"}
+        aria-pressed={isVisible}
+        className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-[color,box-shadow] hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+        onClick={toggleVisibility}
+        tabIndex={-1}
+        type="button"
+      >
+        {isVisible ? (
+          <IconEyeOff aria-hidden="true" className="size-4" />
+        ) : (
+          <IconEye aria-hidden="true" className="size-4" />
+        )}
+      </button>
+    </div>
   );
 }
 
