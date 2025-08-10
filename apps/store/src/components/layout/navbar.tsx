@@ -24,19 +24,19 @@ export const Navbar = async () => {
         <Link href="/">
           <Logo className="h-9" />
         </Link>
-        <div>Search</div>
-        <div>
-          {session ? (
+
+        {session ? (
+          <div>
             <Avatar>
               <AvatarImage src={session.user.image ?? ""} />
               <AvatarFallback>{session.user.name?.charAt(0)}</AvatarFallback>
             </Avatar>
-          ) : (
-            <Button asChild>
-              <Link href="/auth/login">Sign in</Link>
-            </Button>
-          )}
-        </div>
+          </div>
+        ) : (
+          <Button asChild>
+            <Link href="/auth/login">Sign in</Link>
+          </Button>
+        )}
       </div>
       <Separator />
       <ul className="container mx-auto flex items-center gap-3 py-2 text-sm">

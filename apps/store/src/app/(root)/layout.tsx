@@ -15,6 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <>
+      {/* <Banner inset>
+        <BannerIcon icon={<IconExpandDiagonalDuo className="size-4" />} />
+        <BannerTitle>Important message</BannerTitle>
+        <BannerAction>Learn more</BannerAction>
+        <BannerClose />
+      </Banner> */}
       <Navbar />
       {children}
     </>
