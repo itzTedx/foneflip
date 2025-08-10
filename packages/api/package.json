@@ -1,0 +1,37 @@
+{
+  "name": "@ziron/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsc",
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "format": "biome format --write ./src",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orpc/client": "^1.7.11",
+    "@orpc/server": "^1.7.11",
+    "@t3-oss/env-nextjs": "^0.13.6",
+    "@ziron/db": "workspace:*",
+    "@ziron/email": "workspace:*",
+    "@ziron/redis": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@ziron/tsconfig": "workspace:*",
+    "dotenv-cli": "^8.0.0",
+    "server-only": "^0.0.1",
+    "typescript": "catalog:"
+  }
+}

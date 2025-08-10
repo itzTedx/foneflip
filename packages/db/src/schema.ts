@@ -5,4 +5,5 @@ export * from "./schema/notification-schema";
 export * from "./schema/product-schema";
 export * from "./schema/seo-schema";
 export * from "./schema/settings-schema";
+export * from "./schema/todo-schema";
 export * from "./schema/vendor-schema";
