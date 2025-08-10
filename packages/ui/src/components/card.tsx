@@ -2,11 +2,6 @@ import * as React from "react";
 
 import { cn } from "@ziron/utils";
 
-/**
- * Renders a styled card container with customizable class names and div props.
- *
- * The card serves as the main wrapper for card UI elements, applying background, text color, shadow, border, padding, and rounded corners.
- */
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -20,11 +15,6 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-/**
- * Renders the header section of a card with grid layout and optional action slot support.
- *
- * Applies styling for spacing, alignment, and responsive grid columns when a card action is present. Additional div props are supported.
- */
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -52,11 +42,6 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-/**
- * Renders a container for card action elements, positioned in the top-right area of the card header.
- *
- * Additional props are spread onto the underlying div element.
- */
 function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div

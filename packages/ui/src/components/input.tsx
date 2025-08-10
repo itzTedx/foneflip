@@ -11,11 +11,6 @@ import { cn } from "@ziron/utils";
 
 import { IconEye, IconEyeOff } from "../assets/icons";
 
-/****
- * Renders a styled input element with support for various states and accessibility features.
- *
- * Applies consistent styling for focus, hover, disabled, and invalid states, and forwards all standard input props to the underlying element.
- */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input
@@ -32,11 +27,6 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   );
 }
 
-/**
- * Renders an accessible numeric input field with increment and decrement buttons.
- *
- * Provides a styled number input using `react-aria-components`, supporting keyboard and button-based value changes, accessibility features, and visual feedback for focus, invalid, disabled, and hover states.
- */
 function NumberInput(props: NumberFieldProps) {
   return (
     <NumberField {...props}>
