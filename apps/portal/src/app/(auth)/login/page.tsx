@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
+import { db } from "@ziron/db/server";
 import { createMetadata } from "@ziron/seo";
 import { IconLogoMono } from "@ziron/ui/assets/logo";
 import { Card, CardContent } from "@ziron/ui/card";
@@ -17,8 +18,11 @@ export const generateMetadata = (): Metadata => {
 
 export default async function LoginPage() {
   const session = await getSession();
-
   if (session) redirect("/");
+
+  const isFirstUser = await db.query.users.findFirst();
+
+  if (!isFirstUser) redirect("/register");
 
   return (
     <div className="relative flex min-h-screen items-center justify-center">
