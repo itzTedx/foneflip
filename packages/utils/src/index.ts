@@ -1,3 +1,4 @@
+export * from "./calculate-discount-percentage";
 export * from "./cn";
 export * from "./format-byte";
 export * from "./format-date";

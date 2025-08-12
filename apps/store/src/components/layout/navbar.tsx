@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { db } from "@ziron/db/server";
-import { IconBolt } from "@ziron/ui/assets/icons";
+import { IconBolt, IconHeart, IconShoppingBasketFilled } from "@ziron/ui/assets/icons";
 import { Logo } from "@ziron/ui/assets/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@ziron/ui/avatar";
 import { Button } from "@ziron/ui/button";
@@ -20,13 +20,19 @@ export const Navbar = async () => {
 
   return (
     <nav className="sticky top-0 z-9999 border-b bg-background/80 backdrop-blur-xl">
-      <div className="container mx-auto flex items-center justify-between gap-2 py-2">
+      <div className="container mx-auto flex max-w-7xl items-center justify-between gap-2 py-2">
         <Link href="/">
           <Logo className="h-9" />
         </Link>
 
         {session ? (
-          <div>
+          <div className="flex items-center gap-2">
+            <Button size="icon" variant="outline">
+              <IconHeart />
+            </Button>
+            <Button size="icon" variant="outline">
+              <IconShoppingBasketFilled />
+            </Button>
             <Avatar>
               <AvatarImage src={session.user.image ?? ""} />
               <AvatarFallback>{session.user.name?.charAt(0)}</AvatarFallback>
@@ -39,7 +45,7 @@ export const Navbar = async () => {
         )}
       </div>
       <Separator />
-      <ul className="container mx-auto flex items-center gap-3 py-2 text-sm">
+      <ul className="container mx-auto flex max-w-7xl items-center gap-3 py-2 text-sm">
         <li>
           <Link
             className="flex h-9 items-center justify-center rounded-sm bg-muted px-3 py-1.5 font-medium"
