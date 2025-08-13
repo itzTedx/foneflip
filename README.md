@@ -4,8 +4,6 @@ A modern, scalable monorepo for building web applications with a focus on e-comm
 
 ---
 
-Testing
-
 ## Table of Contents
 
 - [Features](#features)
@@ -30,10 +28,13 @@ Testing
 - **Monorepo**: Managed with TurboRepo for fast builds and efficient dependency management.
 - **Component Library**: Uses shadcn/ui for reusable, customizable UI components.
 - **Admin Dashboard**: Portal app for managing products, collections, orders, users, and vendors.
+- **E-commerce Store**: Customer-facing store application with modern UI and features.
 - **Authentication**: Pluggable auth with support for email/password, OTP, 2FA, and organizations.
 - **Caching**: Multi-layer caching with Redis and Next.js for high performance.
 - **Database**: PostgreSQL with Drizzle ORM and Zod validation.
-- **Real-time**: WebSocket server for live updates.
+- **Real-time**: WebSocket server for live updates and notifications.
+- **Email System**: React-based email templates with preview and development tools.
+- **API Layer**: Type-safe API layer using ORPC for client-server communication.
 - **Utilities**: Shared utility functions and types.
 - **Dockerized**: Local development with Docker Compose for Postgres and Redis.
 
@@ -44,11 +45,14 @@ Testing
 ```
 apps/
   portal/         # Main admin dashboard (Next.js)
+  store/          # Customer-facing e-commerce store (Next.js)
   ws-server/      # WebSocket server for real-time features
   worker/         # Background job processor (BullMQ)
 packages/
+  api/            # Type-safe API layer (ORPC)
   auth/           # Authentication logic and providers
   db/             # Database schema and ORM
+  email/          # Email templates and utilities
   queue/          # Queue management (BullMQ)
   redis/          # Redis client and helpers
   seo/            # SEO utilities and metadata
@@ -56,6 +60,12 @@ packages/
   utils/          # Shared utility functions
   validators/     # Zod schemas and validation
   docker/         # Docker Compose and related files
+tooling/
+  eslint/         # ESLint configuration
+  biome/          # Biome configuration
+  prettier/       # Prettier configuration
+  typescript/     # TypeScript configuration
+  github/         # GitHub workflows and templates
 turbo/            # TurboRepo generators and templates
 ```
 
@@ -66,7 +76,7 @@ turbo/            # TurboRepo generators and templates
 ### Prerequisites
 
 - Node.js v20+
-- [pnpm](https://pnpm.io/) v8+
+- [pnpm](https://pnpm.io/) v10.14.0+
 - Docker (for local database/redis)
 
 ### Installation
@@ -84,8 +94,7 @@ Copy `.env.example` to `.env` and fill in required values (database, auth secret
 ### Start Docker Services
 
 ```bash
-cd packages/docker
-docker compose up -d
+pnpm docker:up
 ```
 
 ### Database Migrations
@@ -98,7 +107,7 @@ pnpm db:migrate
 
 ## Development
 
-Start the main portal app:
+Start all applications in development mode:
 
 ```bash
 pnpm dev
@@ -106,13 +115,21 @@ pnpm dev
 
 This runs all apps/packages in development mode using TurboRepo.
 
+### Individual Apps
+
+- **Portal (Admin Dashboard)**: `pnpm -F portal dev` (runs on port 3000)
+- **Store (E-commerce)**: `pnpm -F store dev` (runs on port 3001)
+- **Email Development**: `pnpm dev:email` (runs on port 3333)
+
 ---
 
 ## Packages
 
+- **@ziron/api**: Type-safe API layer using ORPC for client-server communication.
 - **@ziron/ui**: Shared UI components using shadcn/ui and Tailwind CSS.
 - **@ziron/auth**: Authentication with support for organizations, 2FA, OTP, and role-based access.
 - **@ziron/db**: Database schema and migrations using Drizzle ORM and PostgreSQL.
+- **@ziron/email**: React-based email templates with development and preview tools.
 - **@ziron/queue**: Queue management with BullMQ.
 - **@ziron/redis**: Redis client and helpers.
 - **@ziron/seo**: SEO metadata utilities.
@@ -124,6 +141,7 @@ This runs all apps/packages in development mode using TurboRepo.
 ## Apps
 
 - **portal**: The main admin dashboard for managing products, collections, orders, users, and vendors. Built with Next.js and React.
+- **store**: Customer-facing e-commerce store with modern UI, product browsing, and checkout functionality.
 - **ws-server**: WebSocket server for real-time features (e.g., live updates, notifications).
 - **worker**: Background job processor for scheduled and queued tasks (e.g., notifications, cleanup, data maintenance) using BullMQ and Redis.
 
@@ -162,9 +180,14 @@ Common scripts (run from the repo root):
 - `pnpm dev` – Start all apps/packages in dev mode
 - `pnpm build` – Build all apps/packages
 - `pnpm lint` – Lint all code
+- `pnpm format` – Format all code
 - `pnpm db:migrate` – Run database migrations
 - `pnpm db:studio` – Open Drizzle Studio for DB management
+- `pnpm db:reset` – Reset database and run migrations
 - `pnpm ui-add` – Add new UI components via shadcn/ui
+- `pnpm dev:email` – Start email development server
+- `pnpm docker:up` – Start Docker services
+- `pnpm docker:down` – Stop Docker services
 
 ---
 
@@ -176,11 +199,12 @@ Common scripts (run from the repo root):
 
 **Technical:**
 
-- Built with Next.js and React.
+- Built with Next.js 15 and React 19.
 - Provides a user interface for managing products, collections, orders, users, and vendors.
 - Integrates with shared UI components (`@ziron/ui`), authentication (`@ziron/auth`), and data from the database (`@ziron/db`).
 - Implements advanced features like caching (Redis + Next.js), role-based navigation, and real-time updates via WebSockets.
 - Uses Tailwind CSS for styling and shadcn/ui for consistent UI patterns.
+- Features drag-and-drop functionality with `@dnd-kit`, rich text editing with TipTap, and file management with AWS S3.
 
 **Business:**
 
@@ -191,7 +215,25 @@ Common scripts (run from the repo root):
 
 ---
 
-#### 2. `apps/ws-server` (WebSocket Server)
+#### 2. `apps/store` (E-commerce Store)
+
+**Technical:**
+
+- Built with Next.js 15 and React 19.
+- Customer-facing e-commerce application with modern UI and features.
+- Integrates with the API layer (`@ziron/api`) for type-safe data fetching.
+- Uses shared UI components and authentication system.
+- Implements SEO optimization and performance best practices.
+
+**Business:**
+
+- Provides customers with a seamless shopping experience.
+- Features product browsing, search, and checkout functionality.
+- Integrates with the admin dashboard for inventory and order management.
+
+---
+
+#### 3. `apps/ws-server` (WebSocket Server)
 
 **Technical:**
 
@@ -202,13 +244,13 @@ Common scripts (run from the repo root):
 
 **Business:**
 
-- Powers live features in the admin dashboard and potentially customer-facing apps.
+- Powers live features in the admin dashboard and customer-facing apps.
 - Enables instant updates for orders, inventory changes, or support chat.
 - Improves user engagement and operational responsiveness.
 
 ---
 
-#### 3. `apps/worker` (Worker App)
+#### 4. `apps/worker` (Worker App)
 
 **Technical:**
 
@@ -232,7 +274,41 @@ Common scripts (run from the repo root):
 
 ### Packages
 
-#### 1. `packages/ui` (`@ziron/ui`)
+#### 1. `packages/api` (`@ziron/api`)
+
+**Technical:**
+
+- Type-safe API layer using ORPC (Object Remote Procedure Call).
+- Provides end-to-end type safety between client and server.
+- Integrates with TanStack Query for efficient data fetching and caching.
+- Exports API types and utilities for use across applications.
+
+**Business:**
+
+- Ensures data consistency and type safety across the entire application.
+- Reduces API-related bugs and improves developer experience.
+- Enables efficient data fetching and caching strategies.
+
+---
+
+#### 2. `packages/email` (`@ziron/email`)
+
+**Technical:**
+
+- React-based email template system using React Email.
+- Provides development server for email preview and testing.
+- Supports multiple email templates with TypeScript validation.
+- Integrates with nodemailer for email delivery.
+
+**Business:**
+
+- Ensures consistent, branded email communications.
+- Enables rapid email template development and testing.
+- Supports transactional emails, notifications, and marketing communications.
+
+---
+
+#### 3. `packages/ui` (`@ziron/ui`)
 
 **Technical:**
 
@@ -248,7 +324,7 @@ Common scripts (run from the repo root):
 
 ---
 
-#### 2. `packages/auth` (`@ziron/auth`)
+#### 4. `packages/auth` (`@ziron/auth`)
 
 **Technical:**
 
@@ -265,7 +341,7 @@ Common scripts (run from the repo root):
 
 ---
 
-#### 3. `packages/db` (`@ziron/db`)
+#### 5. `packages/db` (`@ziron/db`)
 
 **Technical:**
 
@@ -280,7 +356,7 @@ Common scripts (run from the repo root):
 
 ---
 
-#### 4. `packages/queue` (`@ziron/queue`)
+#### 6. `packages/queue` (`@ziron/queue`)
 
 **Technical:**
 
@@ -294,7 +370,7 @@ Common scripts (run from the repo root):
 
 ---
 
-#### 5. `packages/redis` (`@ziron/redis`)
+#### 7. `packages/redis` (`@ziron/redis`)
 
 **Technical:**
 
@@ -308,7 +384,7 @@ Common scripts (run from the repo root):
 
 ---
 
-#### 6. `packages/seo` (`@ziron/seo`)
+#### 8. `packages/seo` (`@ziron/seo`)
 
 **Technical:**
 
@@ -322,7 +398,7 @@ Common scripts (run from the repo root):
 
 ---
 
-#### 7. `packages/utils` (`@ziron/utils`)
+#### 9. `packages/utils` (`@ziron/utils`)
 
 **Technical:**
 
@@ -335,7 +411,7 @@ Common scripts (run from the repo root):
 
 ---
 
-#### 8. `packages/validators` (`@ziron/validators`)
+#### 10. `packages/validators` (`@ziron/validators`)
 
 **Technical:**
 
@@ -349,7 +425,7 @@ Common scripts (run from the repo root):
 
 ---
 
-#### 9. `packages/docker`
+#### 11. `packages/docker`
 
 **Technical:**
 
@@ -360,6 +436,23 @@ Common scripts (run from the repo root):
 
 - Simplifies developer setup and ensures consistency across environments.
 - Reduces onboarding time for new team members.
+
+---
+
+### tooling/ (Development Tools)
+
+**Technical:**
+
+- **eslint/**: ESLint configuration for code linting.
+- **biome/**: Biome configuration for formatting and linting.
+- **prettier/**: Prettier configuration for code formatting.
+- **typescript/**: TypeScript configuration and shared types.
+- **github/**: GitHub workflows and templates for CI/CD.
+
+**Business:**
+
+- Ensures code quality and consistency across the team.
+- Automates development workflows and reduces manual tasks.
 
 ---
 
@@ -380,26 +473,11 @@ Common scripts (run from the repo root):
 
 - **Developers:** Use this as a reference for where to add new features or fix bugs.
 - **Product Managers:** Understand what each part of the system does and how it supports business goals.
-- **Contributors:** Quickly get up to speed on the project’s structure and responsibilities.
+- **Contributors:** Quickly get up to speed on the project's structure and responsibilities.
 
 ---
 
 **For more details, see the README files in each package/app and the code comments.**
 
----
 
-## Contributing
-
-1. Fork the repo and create your branch.
-2. Make your changes and add tests where appropriate.
-3. Run lint and type checks before committing.
-4. Open a pull request and describe your changes.
-
----
-
-## License
-
-[MIT](LICENSE)
-
----
 

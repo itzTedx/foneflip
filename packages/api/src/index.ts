@@ -1,28 +1,25 @@
-// Export types and schemas
+import { protectedProcedure, publicProcedure } from "./lib/orpc";
+import { createPlanet, findPlanet, listPlanet } from "./router/planet";
 
-// Export client utilities
-export * from "./client";
-// Export server procedures
-export * from "./server";
-export * from "./types";
+export const appRouter = {
+  planet: {
+    list: listPlanet,
+    find: findPlanet,
+    create: createPlanet,
+  },
+};
 
-import { ORPCError, os } from "@orpc/server";
+export const router = {
+  healthCheck: publicProcedure.handler(() => {
+    return "OK";
+  }),
+  privateData: protectedProcedure.handler(({ context }) => {
+    return {
+      message: "This is private",
+      user: context.session?.user,
+    };
+  }),
+  planet: appRouter,
+};
 
-import type { Context } from "./context";
-
-export const o = os.$context<Context>();
-
-export const publicProcedure = o;
-
-const requireAuth = o.middleware(({ context, next }) => {
-  if (!context.session?.user) {
-    throw new ORPCError("UNAUTHORIZED");
-  }
-  return next({
-    context: {
-      session: context.session,
-    },
-  });
-});
-
-export const protectedProcedure = publicProcedure.use(requireAuth);
+export type AppRouter = typeof router;
