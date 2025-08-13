@@ -18,17 +18,17 @@ export const transporter = nodemailer.createTransport({
 });
 
 // Verify SMTP connection on startup
-transporter.verify((error) => {
-  if (error) {
-    console.error("SMTP configuration error:", error);
-    // In production, you might want to fail fast
-    if (env.NODE_ENV === "production") {
-      process.exit(1);
-    }
-  } else {
-    console.log("SMTP server is ready to send emails");
-  }
-});
+// transporter.verify((error) => {
+//   if (error) {
+//     console.error("SMTP configuration error:", error);
+//     // In production, you might want to fail fast
+//     if (env.NODE_ENV === "production") {
+//       process.exit(1);
+//     }
+//   } else {
+//     console.log("SMTP server is ready to send emails");
+//   }
+// });
 type SendEmailOptions =
   | {
       email: string;

@@ -13,7 +13,10 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@orpc/client": "catalog:",
+    "@orpc/server": "catalog:",
     "@t3-oss/env-nextjs": "^0.13.8",
+    "@ziron/api": "workspace:*",
     "@ziron/auth": "workspace:*",
     "@ziron/db": "workspace:*",
     "@ziron/seo": "workspace:*",
