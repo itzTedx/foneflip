@@ -35,6 +35,7 @@ A modern, scalable monorepo for building web applications with a focus on e-comm
 - **Real-time**: WebSocket server for live updates and notifications.
 - **Email System**: React-based email templates with preview and development tools.
 - **API Layer**: Type-safe API layer using ORPC for client-server communication.
+- **Mobile Apps**: Cross-platform mobile development support for Android and iOS.
 - **Utilities**: Shared utility functions and types.
 - **Dockerized**: Local development with Docker Compose for Postgres and Redis.
 
@@ -119,6 +120,7 @@ This runs all apps/packages in development mode using TurboRepo.
 
 - **Portal (Admin Dashboard)**: `pnpm -F portal dev` (runs on port 3000)
 - **Store (E-commerce)**: `pnpm -F store dev` (runs on port 3001)
+- **Mobile Apps**: `pnpm -F mobile dev` (React Native/Expo development)
 - **Email Development**: `pnpm dev:email` (runs on port 3333)
 
 ---
@@ -142,6 +144,7 @@ This runs all apps/packages in development mode using TurboRepo.
 
 - **portal**: The main admin dashboard for managing products, collections, orders, users, and vendors. Built with Next.js and React.
 - **store**: Customer-facing e-commerce store with modern UI, product browsing, and checkout functionality.
+- **mobile**: Cross-platform mobile applications for Android and iOS (React Native/Expo).
 - **ws-server**: WebSocket server for real-time features (e.g., live updates, notifications).
 - **worker**: Background job processor for scheduled and queued tasks (e.g., notifications, cleanup, data maintenance) using BullMQ and Redis.
 
@@ -149,7 +152,7 @@ This runs all apps/packages in development mode using TurboRepo.
 
 ## Authentication
 
-- Uses `@ziron/auth` with [Better Auth](https://github.com/your-org/better-auth).
+- Uses `@ziron/auth` with [Better Auth](http://better-auth.com/).
 - Supports email/password, OTP, 2FA, and organization-based roles (`user`, `vendor`, `admin`, `dev`).
 - Session management with cookies and Redis for secondary storage.
 
@@ -233,7 +236,27 @@ Common scripts (run from the repo root):
 
 ---
 
-#### 3. `apps/ws-server` (WebSocket Server)
+#### 3. `apps/mobile` (Mobile Applications) (UPCOMING)
+
+**Technical:**
+
+- Built with React Native and Expo for cross-platform development.
+- Supports both Android and iOS platforms from a single codebase.
+- Integrates with the shared API layer (`@ziron/api`) for consistent data access.
+- Uses shared authentication system and business logic from packages.
+- Implements native mobile features like push notifications, camera access, and offline capabilities.
+- Supports real-time updates via WebSocket connections.
+
+**Business:**
+
+- Extends the e-commerce experience to mobile devices.
+- Provides native mobile features like push notifications and offline shopping.
+- Enables location-based services and mobile-specific optimizations.
+- Maintains brand consistency across web and mobile platforms.
+
+---
+
+#### 4. `apps/ws-server` (WebSocket Server)
 
 **Technical:**
 
@@ -244,13 +267,13 @@ Common scripts (run from the repo root):
 
 **Business:**
 
-- Powers live features in the admin dashboard and customer-facing apps.
+- Powers live features in the admin dashboard, customer-facing apps, and mobile applications.
 - Enables instant updates for orders, inventory changes, or support chat.
-- Improves user engagement and operational responsiveness.
+- Improves user engagement and operational responsiveness across all platforms.
 
 ---
 
-#### 4. `apps/worker` (Worker App)
+#### 5. `apps/worker` (Worker App)
 
 **Technical:**
 
@@ -278,16 +301,16 @@ Common scripts (run from the repo root):
 
 **Technical:**
 
-- Type-safe API layer using ORPC (Object Remote Procedure Call).
+- Type-safe API layer using ORPC (OpenAPI Remote Procedure Call).
 - Provides end-to-end type safety between client and server.
 - Integrates with TanStack Query for efficient data fetching and caching.
 - Exports API types and utilities for use across applications.
 
 **Business:**
 
-- Ensures data consistency and type safety across the entire application.
+- Ensures data consistency and type safety across web and mobile applications.
 - Reduces API-related bugs and improves developer experience.
-- Enables efficient data fetching and caching strategies.
+- Enables efficient data fetching and caching strategies for all platforms.
 
 ---
 
@@ -320,7 +343,8 @@ Common scripts (run from the repo root):
 **Business:**
 
 - Reduces development time by providing ready-to-use, branded UI components.
-- Ensures a professional and cohesive look across all user interfaces.
+- Ensures a professional and cohesive look across web and mobile user interfaces.
+- Enables consistent design patterns across all platforms.
 
 ---
 
@@ -335,9 +359,10 @@ Common scripts (run from the repo root):
 
 **Business:**
 
-- Secures the platform with modern authentication methods.
+- Secures the platform with modern authentication methods across web and mobile.
 - Supports complex business roles (user, vendor, admin, dev) for granular access control.
 - Enables features like vendor onboarding and multi-tenant access.
+- Provides consistent authentication experience across all platforms.
 
 ---
 
@@ -353,6 +378,7 @@ Common scripts (run from the repo root):
 
 - Centralizes all business data (products, users, orders, vendors, etc.).
 - Ensures data integrity and supports business analytics and reporting.
+- Provides consistent data access patterns for web and mobile applications.
 
 ---
 
@@ -380,7 +406,8 @@ Common scripts (run from the repo root):
 **Business:**
 
 - Boosts performance by reducing database load.
-- Enables real-time features and fast data access.
+- Enables real-time features and fast data access across all platforms.
+- Supports offline capabilities and data synchronization for mobile apps.
 
 ---
 
