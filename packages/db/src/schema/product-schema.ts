@@ -12,6 +12,8 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import z from "zod/v4";
 
 import { users as user } from "./auth-schema";
 import { baseSchema } from "./base-schema";
@@ -63,6 +65,15 @@ export const productsTable = pgTable(
     index("products_vendor_id_idx").on(table.vendorId),
   ]
 );
+
+export const CreateProductSchema = createInsertSchema(productsTable, {
+  title: z.string().max(256),
+  description: z.string().max(256),
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
 export const productVariantsTable = pgTable("product_variants", {
   id: uuid("id").primaryKey().defaultRandom(),

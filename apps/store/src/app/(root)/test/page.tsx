@@ -1,14 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
-import { orpc } from "@/lib/orpc";
+import { useTRPC } from "@/lib/trpc/react";
 
 export default function Test() {
-  const healthCheck = useQuery({
-    queryKey: ["healthCheck"],
-    queryFn: () => orpc.healthCheck.queryOptions(),
-  });
-
-  return <div>{JSON.stringify(healthCheck.data)}</div>;
+  const trpc = useTRPC();
+  const { data: posts } = useSuspenseQuery(trpc.auth.getSecretMessage.queryOptions());
+  return <div>{JSON.stringify(posts)}</div>;
 }

@@ -19,14 +19,6 @@
     "./types": {
       "types": "./src/types/index.ts",
       "default": "./dist/types/index.d.ts"
-    },
-    "./indexdb": {
-      "types": "./src/indexdb/index.ts",
-      "default": "./dist/indexdb/index.js"
-    },
-    "./storage": {
-      "types": "./src/storage/index.ts",
-      "default": "./dist/storage/index.js"
     }
   },
   "license": "MIT",
