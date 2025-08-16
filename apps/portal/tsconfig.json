@@ -10,6 +10,10 @@
     "plugins": [{ "name": "next" }],
     "module": "esnext"
   },
-  "include": [".", ".next/types/**/*.ts"],
+  "include": [
+    ".",
+    ".next/types/**/*.ts",
+    "src/modules/collections/components/form-sections/.backup/collection-media.tsx"
+  ],
   "exclude": ["node_modules"]
 }

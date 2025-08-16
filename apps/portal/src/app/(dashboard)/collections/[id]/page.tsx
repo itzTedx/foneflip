@@ -24,11 +24,6 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
-/**
- * Renders the collection form page, handling both creation and editing modes based on the route parameter.
- *
- * Checks user permissions for collection management, fetches and transforms collection data if editing, and displays the form with appropriate initial values.
- */
 export default async function CollectionPage({ params }: { params: Params }) {
   await hasPermission({
     permissions: {
@@ -40,7 +35,6 @@ export default async function CollectionPage({ params }: { params: Params }) {
 
   const collection = await getCollectionById(id);
   const initialData = transformCollectionToFormType(collection);
-  // console.log("initial data from the page", collection);
 
   return (
     <MainWrapper>

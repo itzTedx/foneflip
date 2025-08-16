@@ -204,35 +204,17 @@ export const getProducts = async (options: { currentUserId?: string; currentUser
   // Get role-specific cache keys
   const { productsKey } = getRoleSpecificCacheKeys(currentUserRole, currentUserId, vendorId);
 
-  console.log("=== getProducts Debug ===");
-  console.log(`Role: ${currentUserRole}`);
-  console.log(`User ID: ${currentUserId}`);
-  console.log(`Vendor ID: ${vendorId}`);
-  console.log(`Cache Key: ${productsKey}`);
-
   return withCacheMonitoring(
     async () => {
       try {
         // Try Redis first with role-specific key
         const cached = await redisCache.get<ProductQueryResult[]>(productsKey);
         if (cached) {
-          console.log(`Cache HIT for key: ${productsKey}, role: ${currentUserRole}, products count: ${cached.length}`);
-          // Debug: Log first few product titles to see what's cached
-          if (cached.length > 0) {
-            console.log(
-              `Cached products: ${cached
-                .slice(0, 3)
-                .map((p) => p.title)
-                .join(", ")}`
-            );
-          }
           return cached;
         }
       } catch (error) {
         console.error("Error fetching products from Redis", error);
       }
-
-      console.log(`Cache MISS for key: ${productsKey}, role: ${currentUserRole}, fetching from DB...`);
 
       // Build where conditions with role-based filtering
       const products = await db.query.productsTable.findMany({
@@ -242,15 +224,12 @@ export const getProducts = async (options: { currentUserId?: string; currentUser
           // Role-based filtering
           if (currentUserRole === "admin" || currentUserRole === "dev") {
             // Admins can see all products - no additional filtering needed
-            console.log("Admin/Dev: No additional filtering applied");
           } else if (currentUserRole === "vendor" && vendorId) {
             // Vendors can only see products from their vendor organization
             conditions.push(eq(fields.vendorId, vendorId));
-            console.log(`Vendor: Filtering by vendorId = ${vendorId}`);
           } else if (currentUserId) {
             // Regular users can only see their own products
             conditions.push(eq(fields.userId, currentUserId));
-            console.log(`User: Filtering by userId = ${currentUserId}`);
           }
 
           return and(...conditions);
@@ -294,20 +273,8 @@ export const getProducts = async (options: { currentUserId?: string; currentUser
         orderBy: desc(productsTable.createdAt),
       });
 
-      console.log(`DB query completed for role: ${currentUserRole}, products count: ${products.length}`);
-      // Debug: Log first few product titles to see what was fetched
-      if (products.length > 0) {
-        console.log(
-          `Fetched products: ${products
-            .slice(0, 3)
-            .map((p) => p.title)
-            .join(", ")}`
-        );
-      }
-
       // Cache the result with role-specific key
       await redisCache.set(productsKey, products, CACHE_DURATIONS.LONG);
-      console.log(`Cached ${products.length} products with key: ${productsKey}`);
 
       return products;
     },

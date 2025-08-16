@@ -9,6 +9,7 @@ export * from "./icons/editor";
 export * from "./icons/eye";
 export * from "./icons/refresh";
 export * from "./icons/trash";
+export * from "./icons/upload";
 
 export const IconMenu = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => {
   return (
