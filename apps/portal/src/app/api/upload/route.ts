@@ -43,7 +43,7 @@ const router: Router = {
           objectKey: key,
         };
       },
-      onAfterSignedUrl: async ({ req, file, metadata, clientMetadata }) => {
+      onAfterSignedUrl: async ({ file }) => {
         const publicUrl = `https://${env.AWS_BUCKET_NAME}.s3.${env.AWS_BUCKET_REGION}.amazonaws.com/${file.objectKey}`;
 
         return {

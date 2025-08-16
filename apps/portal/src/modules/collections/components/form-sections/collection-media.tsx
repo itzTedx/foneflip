@@ -13,41 +13,10 @@ import { CollectionFormType } from "@ziron/validators";
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { UploadDropzone } from "@/components/ui/upload-dropzone";
+import { getImageMetadata } from "@/modules/media/utils/get-image-data";
 
 import { ImagePreview } from "./ui/image-preview";
 
-/**
- * Formats file size in a human-readable format
- */
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-}
-
-/**
- * Provides a UI component for uploading, previewing, and removing a single image file (thumbnail or banner) within a form.
- *
- * Supports drag-and-drop or browsing for image selection, displays upload progress, handles file validation and errors, and integrates with form state for value and error management. Allows users to remove the uploaded image or choose from existing media.
- *
- * Enhanced error handling includes:
- * - File size validation with human-readable size formatting
- * - File type validation for image files
- * - Network error handling with specific messages
- * - Upload timeout handling (30 seconds)
- * - HTTP status code specific error messages
- * - Metadata extraction error handling
- * - Checksum validation error handling
- *
- * @param label - The display label for the upload section.
- * @param name - The form field name, either "thumbnail" or "banner".
- * @param tooltip - Tooltip text explaining the upload field.
- * @param value - The current value of the media file from the form.
- * @param onRemove - Callback to remove the current media.
- * @param form - The form context object for managing form state and errors.
- */
 function MediaUploadPreview({
   label,
   name,
@@ -66,16 +35,19 @@ function MediaUploadPreview({
   // Dialog state for selecting existing media
   const [_mediaDialog, setMediaDialog] = useQueryState(`${name}-media-dialog`, parseAsBoolean.withDefault(false));
 
-  const { control, uploadedFile } = useUploadFile({
+  const { control } = useUploadFile({
     route: "collection",
-    onUploadComplete: ({ file, metadata }) => {
+    onUploadComplete: async ({ file, metadata: objectMetadata }) => {
+      const metadata = await getImageMetadata(file.raw);
+
       form.setValue(name, {
         file: {
-          url: metadata.url as string,
+          url: objectMetadata.url as string,
           key: file.objectKey,
           name: file.name,
           size: file.size,
         },
+        metadata,
       });
     },
     onError: (error) => {
@@ -115,7 +87,7 @@ function MediaUploadPreview({
                 </Button>
               </div>
               <FormControl>
-                {value || uploadedFile ? (
+                {value ? (
                   <div className="flex flex-col">
                     <ImagePreview files={[]} name={name} onRemove={onRemove} value={value} />
                   </div>
