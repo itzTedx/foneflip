@@ -7,6 +7,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./src/index.ts"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "default": "./src/client.ts"
     }
   },
   "license": "MIT",
@@ -26,6 +30,8 @@
     "@ziron/db": "workspace:*",
     "@ziron/email": "workspace:*",
     "@ziron/redis": "workspace:*",
+    "@ziron/auth": "workspace:*",
+    "next": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

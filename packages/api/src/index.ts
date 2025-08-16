@@ -1,13 +1,5 @@
-import { protectedProcedure, publicProcedure } from "./lib/orpc";
+import { protectedProcedure, publicProcedure } from "./lib/procedures";
 import { createPlanet, findPlanet, listPlanet } from "./router/planet";
-
-export const appRouter = {
-  planet: {
-    list: listPlanet,
-    find: findPlanet,
-    create: createPlanet,
-  },
-};
 
 export const router = {
   healthCheck: publicProcedure.handler(() => {
@@ -19,7 +11,11 @@ export const router = {
       user: context.session?.user,
     };
   }),
-  planet: appRouter,
+  planet: {
+    list: listPlanet,
+    find: findPlanet,
+    create: createPlanet,
+  },
 };
 
 export type AppRouter = typeof router;

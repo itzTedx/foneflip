@@ -22,6 +22,20 @@
       "when": 1754600682758,
       "tag": "0002_bizarre_kat_farrell",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1755341308440,
+      "tag": "0003_modern_firelord",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1755341637670,
+      "tag": "0004_curly_prowler",
+      "breakpoints": true
     }
   ]
 }

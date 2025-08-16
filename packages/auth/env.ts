@@ -12,6 +12,8 @@ export function authEnv() {
   return createEnv({
     server: {
       BETTER_AUTH_SECRET: z.string().min(1),
+      BETTER_AUTH_ALLOWED_ORIGIN: z.string().min(1),
+      BETTER_AUTH_URL: z.string().min(1),
       NODE_ENV: z.enum(["development", "production"]).optional(),
     },
 

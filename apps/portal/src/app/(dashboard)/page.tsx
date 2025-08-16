@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Button } from "@ziron/ui/button";
 
 import { getSession } from "@/lib/auth/server";
+import LineChartComp from "@/modules/dashboard/components/chart";
 import { sendMockNotification } from "@/modules/notifications/actions/sendMockNotification";
 import { CreateBaseVendor } from "@/modules/vendors/components/create-base-vendor";
 
@@ -28,7 +29,8 @@ export default async function Page() {
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        <pre className="text-wrap text-xs">{JSON.stringify(session, null, 2)}</pre>
+        <LineChartComp />
+        {/* <pre className="text-wrap text-xs">{JSON.stringify(session, null, 2)}</pre> */}
 
         {session && (
           <form

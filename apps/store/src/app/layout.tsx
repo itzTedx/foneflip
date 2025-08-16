@@ -4,6 +4,8 @@ import "@ziron/ui/globals.css";
 
 import { cn } from "@ziron/utils";
 
+import { Providers } from "@/components/providers";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,7 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn("antialiased", geistSans.className)}>{children}</body>
+      <body className={cn("antialiased", geistSans.className)}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
