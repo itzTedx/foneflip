@@ -13,10 +13,11 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@orpc/client": "catalog:",
-    "@orpc/server": "catalog:",
     "@t3-oss/env-nextjs": "^0.13.8",
-    "@tanstack/react-query": "^5.85.3",
+    "@tanstack/react-query": "catalog:",
+    "@trpc/client": "catalog:",
+    "@trpc/server": "catalog:",
+    "@trpc/tanstack-react-query": "catalog:",
     "@ziron/api": "workspace:*",
     "@ziron/auth": "workspace:*",
     "@ziron/db": "workspace:*",
@@ -29,7 +30,8 @@
     "pg": "^8.16.3",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
-    "sonner": "^2.0.6"
+    "sonner": "^2.0.6",
+    "superjson": "2.2.2"
   },
   "devDependencies": {
     "@types/node": "^20",

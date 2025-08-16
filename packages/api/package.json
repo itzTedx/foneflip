@@ -7,38 +7,27 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./src/index.ts"
-    },
-    "./client": {
-      "types": "./dist/client.d.ts",
-      "default": "./src/client.ts"
     }
   },
   "license": "MIT",
   "scripts": {
-    "dev": "tsc --watch",
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
     "format": "biome format --write ./src",
-    "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "lint": "biome lint --write ./src",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@orpc/client": "catalog:",
-    "@orpc/server": "catalog:",
-    "@orpc/tanstack-query": "catalog:",
-    "@t3-oss/env-nextjs": "^0.13.8",
-    "@ziron/db": "workspace:*",
-    "@ziron/email": "workspace:*",
-    "@ziron/redis": "workspace:*",
     "@ziron/auth": "workspace:*",
-    "next": "catalog:",
+    "@ziron/db": "workspace:*",
+    "@ziron/validators": "workspace:*",
+    "@trpc/server": "catalog:",
+    "superjson": "2.2.2",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^20.19.10",
     "@ziron/tsconfig": "workspace:*",
-    "dotenv-cli": "^8.0.0",
-    "server-only": "^0.0.1",
     "typescript": "catalog:"
   }
 }

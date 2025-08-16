@@ -1,21 +1,24 @@
-import { protectedProcedure, publicProcedure } from "./lib/procedures";
-import { createPlanet, findPlanet, listPlanet } from "./router/planet";
+import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
-export const router = {
-  healthCheck: publicProcedure.handler(() => {
-    return "OK";
-  }),
-  privateData: protectedProcedure.handler(({ context }) => {
-    return {
-      message: "This is private",
-      user: context.session?.user,
-    };
-  }),
-  planet: {
-    list: listPlanet,
-    find: findPlanet,
-    create: createPlanet,
-  },
-};
+import type { AppRouter } from "./root";
+import { appRouter } from "./root";
+import { createTRPCContext } from "./trpc";
 
-export type AppRouter = typeof router;
+/**
+ * Inference helpers for input types
+ * @example
+ * type PostByIdInput = RouterInputs['post']['byId']
+ *      ^? { id: number }
+ **/
+type RouterInputs = inferRouterInputs<AppRouter>;
+
+/**
+ * Inference helpers for output types
+ * @example
+ * type AllPostsOutput = RouterOutputs['post']['all']
+ *      ^? Post[]
+ **/
+type RouterOutputs = inferRouterOutputs<AppRouter>;
+
+export { createTRPCContext, appRouter };
+export type { AppRouter, RouterInputs, RouterOutputs };
