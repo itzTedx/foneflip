@@ -1,35 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { db } from "@ziron/db/server";
+import { storeCache } from "@/lib/cache";
 
 export default async function ShopPage() {
-  const categories = await db.query.collectionsTable.findMany({
-    with: {
-      collectionMedia: {
-        with: {
-          media: true,
-        },
-      },
-      products: {
-        with: {
-          images: {
-            with: {
-              media: true,
-            },
-          },
-        },
-      },
-      settings: true,
-    },
-    orderBy: (collections, { asc }) => [asc(collections.sortOrder)],
-  });
+  const categories = await storeCache.getCategoriesWithProducts();
 
   return (
     <main className="container mx-auto max-w-7xl space-y-12 py-12">
       {categories.map((category) => {
         const thumbnail = category.collectionMedia.find((t) => t.type === "thumbnail")?.media;
-        const banner = category.collectionMedia.find((t) => t.type === "banner")?.media;
+        // const banner = category.collectionMedia.find((t) => t.type === "banner")?.media;
         return (
           <section className="grid grid-cols-3 gap-4" key={category.id}>
             <div>

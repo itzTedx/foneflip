@@ -35,6 +35,7 @@ export const Console = () => {
               "flex items-center gap-2 text-sm",
               validationErrors.length ? "cursor-pointer text-destructive" : "cursor-not-allowed"
             )}
+            type="button"
           >
             {validationErrors.length ? <IconFileAlertFilled /> : <IconCheck className="size-4 text-muted-foreground" />}
             <span className={cn(validationErrors.length ? "" : "opacity-50")}>
@@ -50,6 +51,7 @@ export const Console = () => {
                 setCollapsibleOpen(false), setIsOpen(true);
               }}
               size="btn"
+              type="button"
               variant="ghost"
             >
               <IconExpandDuo />
@@ -57,7 +59,7 @@ export const Console = () => {
             </Button>
           </div>
           <CollapsibleTrigger asChild>
-            <Button className="size-6" size="btn" variant="ghost">
+            <Button className="size-6" size="btn" type="button" variant="ghost">
               <IconExpandDiagonalDuo />
               <span className="sr-only">Toggle</span>
             </Button>

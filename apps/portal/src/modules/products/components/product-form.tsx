@@ -133,7 +133,6 @@ export const ProductForm = ({ isEditMode, collections, initialData }: Props) => 
         removeDraft();
         const message = (res as { message?: string }).message;
         toast.success(typeof message === "string" ? message : "Product Updated successfully");
-        router.push("/products");
       }
     });
   }

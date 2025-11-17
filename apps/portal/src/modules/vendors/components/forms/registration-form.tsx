@@ -14,7 +14,6 @@ import { VendorRegistrationFormData, vendorRegistrationSchema } from "@ziron/val
 import { PasswordInput } from "@/components/ui/password-input";
 import { authClient } from "@/lib/auth/client";
 import { signUpEmailAction } from "@/modules/auth/actions/mutations";
-import { useOnboarding } from "@/modules/onboarding";
 
 import { InvitationType } from "../../types";
 
@@ -25,7 +24,6 @@ interface Props {
 export default function VendorRegisterForm({ invitation }: Props) {
   const router = useRouter();
   const [emailPending, startEmailTransition] = useTransition();
-  const { saveData, isLoading: isOnboardingLoading } = useOnboarding(invitation.id);
 
   const form = useForm<VendorRegistrationFormData>({
     resolver: zodResolver(vendorRegistrationSchema),
@@ -47,13 +45,13 @@ export default function VendorRegisterForm({ invitation }: Props) {
 
         if (result.success) {
           // Save registration data
-          await saveData({
-            registration: {
-              name: data.name,
-              email: data.email,
-              invitationToken: invitation.token,
-            },
-          });
+          // await saveData({
+          //   registration: {
+          //     name: data.name,
+          //     email: data.email,
+          //     invitationToken: invitation.token,
+          //   },
+          // });
 
           await authClient.emailOtp.sendVerificationOtp({
             email: data.email,
@@ -122,8 +120,8 @@ export default function VendorRegisterForm({ invitation }: Props) {
             )}
           />
 
-          <Button className="w-full" disabled={emailPending || isOnboardingLoading} type="submit">
-            <LoadingSwap isLoading={emailPending || isOnboardingLoading}>Create Account</LoadingSwap>
+          <Button className="w-full" disabled={emailPending} type="submit">
+            <LoadingSwap isLoading={emailPending}>Create Account</LoadingSwap>
           </Button>
         </div>
       </form>

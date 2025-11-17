@@ -28,6 +28,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tabler/icons-react": "^3.34.0",
+    "@tanstack/react-query": "catalog:",
     "@tanstack/react-table": "^8.21.3",
     "@tiptap/extension-horizontal-rule": "^3.0.9",
     "@tiptap/extension-text-style": "^3.0.9",
@@ -36,7 +37,12 @@
     "@tiptap/pm": "^3.0.9",
     "@tiptap/react": "^3.0.9",
     "@tiptap/starter-kit": "^3.0.9",
+    "@trpc/client": "catalog:",
+    "@trpc/server": "catalog:",
+    "@trpc/tanstack-react-query": "catalog:",
+    "@ziron/api": "workspace:*",
     "@ziron/auth": "workspace:*",
+    "@ziron/cache": "workspace:*",
     "@ziron/db": "workspace:*",
     "@ziron/email": "workspace:*",
     "@ziron/queue": "workspace:*",
@@ -72,6 +78,7 @@
     "sharp": "^0.34.3",
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.6",
+    "superjson": "2.2.2",
     "ua-parser-js": "^2.0.4"
   },
   "devDependencies": {

@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 
-import { OnboardingDataDisplay } from "@/components/debug/onboarding-data-display";
 import { MainWrapper } from "@/components/layout/main-wrapper";
 import { PageHeader } from "@/components/layout/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -64,9 +63,6 @@ export default async function VendorsPage() {
           </Suspense>
         </TabsContent>
         <TabsContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" value="pending">
-          <div className="col-span-full">
-            <OnboardingDataDisplay userId={session?.user?.id} />
-          </div>
           {/* {pendingVendors.length === 0 ? (
             <div className="col-span-full flex flex-col items-center justify-center py-12">
               <IconEmpty className="mb-4 size-60" />

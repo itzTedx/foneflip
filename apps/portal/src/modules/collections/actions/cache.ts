@@ -76,7 +76,6 @@ export const redisCache = {
 
       // Parse stats info
       const evictedKeysMatch = infoStats.match(/evicted_keys:(\d+)/);
-
       const evictedKeys =
         evictedKeysMatch && evictedKeysMatch[1] !== undefined ? Number.parseInt(evictedKeysMatch[1], 10) : 0;
 
@@ -172,8 +171,9 @@ export const redisCache = {
   },
 };
 
-// Helper function to revalidate all collection-related caches
+// Helper function to revalidate all collection-related caches (including store caches)
 export const revalidateCollectionCaches = (collectionId?: string, slug?: string) => {
+  // Portal caches
   revalidateTag(CACHE_TAGS.COLLECTION);
   revalidateTag(CACHE_TAGS.COLLECTIONS);
   revalidateTag(CACHE_TAGS.COLLECTION_DRAFTS);
@@ -183,6 +183,11 @@ export const revalidateCollectionCaches = (collectionId?: string, slug?: string)
   revalidateTag(CACHE_TAGS.PRODUCT);
   revalidateTag(CACHE_TAGS.MEDIA);
 
+  // Store caches
+  revalidateTag("store-categories");
+  revalidateTag("store-collections");
+  revalidateTag("store-products");
+
   if (collectionId) {
     revalidateTag(`${CACHE_TAGS.COLLECTION_BY_ID}:${collectionId}`);
   }
@@ -190,13 +195,19 @@ export const revalidateCollectionCaches = (collectionId?: string, slug?: string)
     revalidateTag(`${CACHE_TAGS.COLLECTION_BY_SLUG}:${slug}`);
   }
 
+  // Portal paths
   revalidatePath("/collections");
   revalidatePath("/collections/[slug]", "page");
   revalidatePath("/products");
   revalidatePath("/products/[slug]", "page");
+
+  // Store paths
+  revalidatePath("/shop");
+  revalidatePath("/shop/[category]", "page");
+  revalidatePath("/shop/[category]/[product]", "page");
 };
 
-// Enhanced cache invalidation with Redis
+// Enhanced cache invalidation with Redis (including store caches)
 export const invalidateCollectionCaches = async (collectionId?: string, slug?: string) => {
   // Invalidate Next.js caches
   revalidateCollectionCaches(collectionId, slug);
@@ -206,10 +217,13 @@ export const invalidateCollectionCaches = async (collectionId?: string, slug?: s
     REDIS_KEYS.COLLECTIONS,
     REDIS_KEYS.COLLECTIONS_COUNT,
     REDIS_KEYS.COLLECTIONS_METADATA,
+    // Store-specific keys
+    "store:categories:with-products",
   ];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_SLUG(slug));
+    keysToInvalidate.push(`store:collection:${slug}`);
   }
 
   if (collectionId) {
@@ -217,6 +231,9 @@ export const invalidateCollectionCaches = async (collectionId?: string, slug?: s
   }
 
   await redisCache.del(...keysToInvalidate);
+
+  // Also invalidate store patterns
+  await redisCache.invalidatePattern("store:*");
 
   // Also revalidate product editing forms since collections affect product forms
   revalidateProductEditingForms();
@@ -242,16 +259,22 @@ export const invalidateCollectionsMetadataCache = async () => {
   }
 };
 
-// Bulk cache invalidation
+// Bulk cache invalidation (including store caches)
 export const invalidateAllCollectionCaches = async () => {
   // Invalidate all Next.js collection tags
   Object.values(CACHE_TAGS).forEach((tag) => {
     revalidateTag(tag);
   });
 
+  // Invalidate store tags
+  revalidateTag("store-categories");
+  revalidateTag("store-collections");
+  revalidateTag("store-products");
+
   // Invalidate all Redis collection keys
   await redisCache.invalidatePattern("collection:*");
   await redisCache.invalidatePattern("collections:*");
+  await redisCache.invalidatePattern("store:*");
 };
 
 // Cache warming utilities
@@ -317,16 +340,19 @@ export const updateCollectionCache = async (
     if (operation === "delete") {
       // Remove from cache
       await redisCache.del(REDIS_KEYS.COLLECTION_BY_SLUG(collection.slug), REDIS_KEYS.COLLECTION_BY_ID(collection.id));
+      await redisCache.del(`store:collection:${collection.slug}`);
     } else {
       // Update cache optimistically
       await Promise.all([
         redisCache.set(REDIS_KEYS.COLLECTION_BY_SLUG(collection.slug), collection, CACHE_DURATIONS.MEDIUM),
         redisCache.set(REDIS_KEYS.COLLECTION_BY_ID(collection.id), collection, CACHE_DURATIONS.MEDIUM),
+        redisCache.set(`store:collection:${collection.slug}`, collection, CACHE_DURATIONS.MEDIUM),
       ]);
     }
 
     // Always invalidate the collections list cache, count, and metadata
     await redisCache.del(REDIS_KEYS.COLLECTIONS, REDIS_KEYS.COLLECTIONS_COUNT, REDIS_KEYS.COLLECTIONS_METADATA);
+    await redisCache.del("store:categories:with-products");
   } catch (error) {
     console.error("Failed to update collection cache:", error);
     // Don't throw - cache updates should not break the main operation
@@ -339,10 +365,12 @@ export const invalidateCollectionCache = async (slug?: string, id?: string) => {
     REDIS_KEYS.COLLECTIONS,
     REDIS_KEYS.COLLECTIONS_COUNT,
     REDIS_KEYS.COLLECTIONS_METADATA,
+    "store:categories:with-products",
   ];
 
   if (slug) {
     keysToInvalidate.push(REDIS_KEYS.COLLECTION_BY_SLUG(slug));
+    keysToInvalidate.push(`store:collection:${slug}`);
   }
 
   if (id) {

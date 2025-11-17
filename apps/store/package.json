@@ -20,6 +20,7 @@
     "@trpc/tanstack-react-query": "catalog:",
     "@ziron/api": "workspace:*",
     "@ziron/auth": "workspace:*",
+    "@ziron/cache": "workspace:*",
     "@ziron/db": "workspace:*",
     "@ziron/seo": "workspace:*",
     "@ziron/ui": "workspace:*",

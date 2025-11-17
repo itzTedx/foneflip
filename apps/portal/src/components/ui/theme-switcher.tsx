@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  IconAdjustmentsHorizontal,
-  IconMoon,
-  IconSun,
-} from "@tabler/icons-react";
+import { IconAdjustmentsHorizontal, IconMoon, IconSun } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
 
-import {
-  SegmentedControl,
-  SegmentedControlList,
-  SegmentedControlTrigger,
-} from "@ziron/ui/segmented-control";
+import { SegmentedControl, SegmentedControlList, SegmentedControlTrigger } from "@ziron/ui/segmented-control";
 
 /**
  * Renders a segmented control for switching between light, dark, and system themes.
@@ -23,19 +15,13 @@ export function ThemeSwitcher() {
   return (
     <SegmentedControl defaultValue={theme}>
       <SegmentedControlList className="flex">
-        <SegmentedControlTrigger
-          value="light"
-          onClick={() => setTheme("light")}
-        >
+        <SegmentedControlTrigger onClick={() => setTheme("light")} value="light">
           <IconSun className="size-4 shrink-0" /> Light
         </SegmentedControlTrigger>
-        <SegmentedControlTrigger value="dark" onClick={() => setTheme("dark")}>
+        <SegmentedControlTrigger onClick={() => setTheme("dark")} value="dark">
           <IconMoon className="size-4 shrink-0" /> Dark
         </SegmentedControlTrigger>
-        <SegmentedControlTrigger
-          value="system"
-          onClick={() => setTheme("system")}
-        >
+        <SegmentedControlTrigger onClick={() => setTheme("system")} value="system">
           <IconAdjustmentsHorizontal className="size-4 shrink-0" /> System
         </SegmentedControlTrigger>
       </SegmentedControlList>

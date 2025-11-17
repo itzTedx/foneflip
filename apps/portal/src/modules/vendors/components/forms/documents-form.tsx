@@ -10,8 +10,6 @@ import { Form, FormField, FormItem, FormMessage, useForm, zodResolver } from "@z
 import { LoadingSwap } from "@ziron/ui/loading-swap";
 import { DocumentsFormData, documentsSchema } from "@ziron/validators";
 
-import { useOnboarding } from "@/modules/onboarding";
-
 import { updateVendorDocuments } from "../../actions/mutation";
 import { DocumentUpload } from "../ui/document-upload";
 
@@ -22,7 +20,6 @@ interface Props {
 export function DocumentsForm({ userId }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const { saveData, isLoading: isOnboardingLoading } = useOnboarding(userId);
 
   const form = useForm<DocumentsFormData>({
     resolver: zodResolver(documentsSchema),
@@ -42,15 +39,6 @@ export function DocumentsForm({ userId }: Props) {
           toast.error(result.message);
           return;
         }
-
-        // Save documents data
-        await saveData({
-          documents: {
-            tradeLicense: data.tradeLicense?.url,
-            emiratesIdFront: data.emiratesIdFront?.url,
-            emiratesIdBack: data.emiratesIdBack?.url,
-          },
-        });
 
         toast.success("Documents uploaded successfully!");
         try {
@@ -132,8 +120,8 @@ export function DocumentsForm({ userId }: Props) {
           <Button onClick={() => router.back()} type="button" variant="outline">
             Back
           </Button>
-          <Button disabled={isPending || isOnboardingLoading} type="submit">
-            <LoadingSwap isLoading={isPending || isOnboardingLoading}>Complete Onboarding</LoadingSwap>
+          <Button disabled={isPending} type="submit">
+            <LoadingSwap isLoading={isPending}>Complete Onboarding</LoadingSwap>
           </Button>
         </div>
       </form>

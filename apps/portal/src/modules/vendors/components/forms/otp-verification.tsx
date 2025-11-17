@@ -21,7 +21,6 @@ import { toast } from "@ziron/ui/sonner";
 import { z } from "@ziron/validators";
 
 import { resendEmailOTPAction, verifyEmailOTPAction } from "@/modules/auth/actions/mutations";
-import { useOnboarding } from "@/modules/onboarding";
 
 const otpSchema = z.object({
   otp: z.string().length(6, {
@@ -38,7 +37,6 @@ export function OtpVerificationForm({ email }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isResending, setIsResending] = useState(false);
   const [showResendOption, setShowResendOption] = useState(false);
-  const { saveData, isLoading: isOnboardingLoading } = useOnboarding(email);
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
@@ -67,12 +65,12 @@ export function OtpVerificationForm({ email }: Props) {
           }
         } else {
           // Save verification data
-          await saveData({
-            verification: {
-              email,
-              verifiedAt: new Date().toISOString(),
-            },
-          });
+          // await saveData({
+          //   verification: {
+          //     email,
+          //     verifiedAt: new Date().toISOString(),
+          //   },
+          // });
 
           toast.success("Email Verified");
           router.push(`/onboarding/organization?userId=${result.data?.userId}`);
@@ -138,8 +136,8 @@ export function OtpVerificationForm({ email }: Props) {
           )}
         />
 
-        <Button className="w-full" disabled={isPending || isOnboardingLoading} type="submit">
-          <LoadingSwap isLoading={isPending || isOnboardingLoading}>Verify Email</LoadingSwap>
+        <Button className="w-full" disabled={isPending} type="submit">
+          <LoadingSwap isLoading={isPending}>Verify Email</LoadingSwap>
         </Button>
 
         {showResendOption && (

@@ -71,55 +71,34 @@ function IconComponent({ size, ...props }: Trash2Props) {
 
   return (
     <motion.svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
       fill="none"
+      height={size}
       stroke="currentColor"
-      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <motion.g variants={variants.group} initial="initial" animate={controls}>
+      <motion.g animate={controls} initial="initial" variants={variants.group}>
         <motion.path
+          animate={controls}
           d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+          initial="initial"
           variants={variants.path1}
-          initial="initial"
-          animate={controls}
         />
-        <motion.path
-          d="M3 6h18"
-          variants={variants.path2}
-          initial="initial"
-          animate={controls}
-        />
+        <motion.path animate={controls} d="M3 6h18" initial="initial" variants={variants.path2} />
       </motion.g>
       <motion.path
+        animate={controls}
         d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+        initial="initial"
         variants={variants.path3}
-        initial="initial"
-        animate={controls}
       />
-      <motion.line
-        x1={10}
-        x2={10}
-        y1={11}
-        y2={17}
-        variants={variants.line1}
-        initial="initial"
-        animate={controls}
-      />
-      <motion.line
-        x1={14}
-        x2={14}
-        y1={11}
-        y2={17}
-        variants={variants.line2}
-        initial="initial"
-        animate={controls}
-      />
+      <motion.line animate={controls} initial="initial" variants={variants.line1} x1={10} x2={10} y1={11} y2={17} />
+      <motion.line animate={controls} initial="initial" variants={variants.line2} x1={14} x2={14} y1={11} y2={17} />
     </motion.svg>
   );
 }
@@ -128,10 +107,4 @@ function Trash2(props: Trash2Props) {
   return <IconWrapper icon={IconComponent} {...props} />;
 }
 
-export {
-  animations,
-  Trash2,
-  Trash2 as Trash2Icon,
-  type Trash2Props as Trash2IconProps,
-  type Trash2Props,
-};
+export { animations, Trash2, Trash2 as Trash2Icon, type Trash2Props as Trash2IconProps, type Trash2Props };

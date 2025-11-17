@@ -4,7 +4,6 @@ import { IconLogoMono } from "@ziron/ui/assets/logo";
 import { Card, CardContent } from "@ziron/ui/card";
 
 import { BackgroundPattern } from "@/components/background-pattern";
-import { OnboardingProgressIndicator } from "@/components/onboarding/progress-indicator";
 import { getInvitationByToken } from "@/modules/vendors/actions/queries";
 import VendorRegisterForm from "@/modules/vendors/components/forms/registration-form";
 
@@ -64,11 +63,6 @@ export default async function VendorOnboardingPage({ searchParams }: { searchPar
             <p className="mx-auto max-w-[30ch] text-balance text-center font-light text-muted-foreground text-xs">
               Become part of Foneflip&apos;s trusted UAE-based vendor network.
             </p>
-
-            {/* Progress Indicator */}
-            <div className="mt-6 mb-8">
-              <OnboardingProgressIndicator className="mb-6" currentStep="registration" userId={res.data.id!} />
-            </div>
 
             <VendorRegisterForm invitation={res.data} />
           </CardContent>

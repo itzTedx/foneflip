@@ -41,7 +41,6 @@ export const ShippingHandlingCard = memo(function ShippingHandlingCard() {
                 <FormLabel>Return Period</FormLabel>
                 <FormControl className="-m-2 p-2">
                   <div className="relative">
-                    {/* TODO: Fix the type error */}
                     <Input
                       {...field}
                       aria-label="Return period in days"

@@ -15,7 +15,6 @@ import { OrganizationFormData, organizationSchema } from "@ziron/validators";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { useVendorStorage } from "@/hooks/use-vendor-storage";
 import { useSession } from "@/lib/auth/client";
-import { useOnboarding } from "@/modules/onboarding";
 
 import { createOrganization } from "../../actions/mutation";
 
@@ -28,7 +27,6 @@ export const OrganizationForm = ({ userId }: Props) => {
   const [isPending, startTransition] = useTransition();
   const { data: session } = useSession();
   const { vendorData, saveData, isLoading: isStorageLoading } = useVendorStorage(userId);
-  const { saveData: saveOnboardingData, isLoading: isOnboardingLoading } = useOnboarding(userId);
 
   const form = useForm<OrganizationFormData>({
     resolver: zodResolver(organizationSchema),
@@ -66,16 +64,6 @@ export const OrganizationForm = ({ userId }: Props) => {
           category: data.category,
           logoUrl: data.logo,
           website: data.website,
-        });
-
-        // Save to onboarding data
-        await saveOnboardingData({
-          organization: {
-            name: data.name,
-            category: data.category!,
-            website: data.website,
-            logoUrl: data.logo,
-          },
         });
 
         // Submit to server
@@ -154,8 +142,8 @@ export const OrganizationForm = ({ userId }: Props) => {
           )}
         />
 
-        <Button className="w-full" disabled={isPending || isStorageLoading || isOnboardingLoading} type="submit">
-          <LoadingSwap isLoading={isPending || isStorageLoading || isOnboardingLoading}>Continue</LoadingSwap>
+        <Button className="w-full" disabled={isPending || isStorageLoading} type="submit">
+          <LoadingSwap isLoading={isPending || isStorageLoading}>Continue</LoadingSwap>
         </Button>
       </form>
     </Form>
